@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
 
 enum AuthorizationAction { login, register }
 
@@ -89,6 +90,8 @@ class AccountController extends ChangeNotifier {
 
   static Future<Widget> checkAuthState() async {
     if (FirebaseAuth.instance.currentUser != null) {
+      AdService.loadCountBet();
+
       return const AllGames();
     } else {
       return const Login();

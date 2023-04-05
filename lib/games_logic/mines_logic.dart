@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
 class MinesLogic extends ChangeNotifier {
@@ -88,6 +89,8 @@ class MinesLogic extends ChangeNotifier {
         gameStatisticModel: GameStatisticModel());
 
     Provider.of<Balance>(context, listen: false).placeBet(bet);
+
+    AdService.showInterstitialAd(context: context, func: () {});
 
     notifyListeners();
   }

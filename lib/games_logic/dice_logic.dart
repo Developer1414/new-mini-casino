@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
 enum EvenOrOddButtonType { even, odd, empty }
@@ -101,6 +102,8 @@ class DiceLogic extends ChangeNotifier {
     if (kDebugMode) {
       print(randomNumber);
     }
+
+    AdService.showInterstitialAd(context: context, func: () {});
 
     notifyListeners();
   }

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:new_mini_casino/models/alert_dialog_model.dart';
 
 class Balance extends ChangeNotifier {
   double _balance = 145000.0;
@@ -46,5 +47,16 @@ class Balance extends ChangeNotifier {
         .update({
       'balance': _balance,
     });
+  }
+
+  void getReward({required BuildContext context, required double rewardCount}) {
+    cashout(rewardCount);
+
+    alertDialogSuccess(
+      context: context,
+      title: 'Поздравляем!',
+      text:
+          'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(rewardCount)}!',
+    );
   }
 }

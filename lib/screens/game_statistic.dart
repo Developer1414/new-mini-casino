@@ -19,79 +19,86 @@ class GameStatistic extends StatelessWidget {
   Widget build(BuildContext context) {
     final statistic = Provider.of<GameStatisticController>(context);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 76.0,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: IconButton(
-                  splashRadius: 25.0,
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    context.beamBack();
-                    //Beamer.of(context).beamBack();
-                  },
-                  icon: const FaIcon(
-                    FontAwesomeIcons.arrowLeft,
+    return WillPopScope(
+      onWillPop: () async {
+        context.beamBack();
+        return false;
+      },
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+            appBar: AppBar(
+              toolbarHeight: 76.0,
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              leading: Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: IconButton(
+                    splashRadius: 25.0,
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      context.beamBack();
+                      //Beamer.of(context).beamBack();
+                    },
+                    icon: const FaIcon(
+                      FontAwesomeIcons.arrowLeft,
+                      color: Colors.black87,
+                      size: 30.0,
+                    )),
+              ),
+              title: AutoSizeText(
+                'Статистика',
+                style: GoogleFonts.roboto(
                     color: Colors.black87,
-                    size: 30.0,
-                  )),
+                    fontSize: 30.0,
+                    fontWeight: FontWeight.w900),
+              ),
             ),
-            title: AutoSizeText(
-              'Статистика',
-              style: GoogleFonts.roboto(
-                  color: Colors.black87,
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.w900),
-            ),
-          ),
-          body: FutureBuilder(
-            future: Provider.of<GameStatisticController>(context)
-                .loadStatistic(gameName: game),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return loading();
-              }
+            body: FutureBuilder(
+              future: Provider.of<GameStatisticController>(context)
+                  .loadStatistic(gameName: game),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return loading();
+                }
 
-              return statistic.gameStatisticModel == null
-                  ? Center(
-                      child: AutoSizeText(
-                        'Статистики пока нет',
-                        style: GoogleFonts.roboto(
-                            color: Colors.black87.withOpacity(0.4),
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w700),
-                      ),
-                    )
-                  : ListView(
-                      children: [
-                        statisticItem(
-                            title: 'Всего игр',
-                            number: double.parse(statistic
-                                .gameStatisticModel!.totalGames
-                                .toString()),
-                            isMoneys: false),
-                        statisticItem(
-                            title: 'Всего выигрыш',
-                            number:
-                                statistic.gameStatisticModel!.winningsMoneys),
-                        statisticItem(
-                            title: 'Всего проигрыш',
-                            number: statistic.gameStatisticModel!.lossesMoneys),
-                        statisticItem(
-                            title: 'Макс. выигрыш',
-                            number: statistic.gameStatisticModel!.maxWin),
-                        statisticItem(
-                            title: 'Макс. проигрыш',
-                            number: statistic.gameStatisticModel!.maxLoss),
-                      ],
-                    );
-            },
-          )),
+                return statistic.gameStatisticModel == null
+                    ? Center(
+                        child: AutoSizeText(
+                          'Статистики пока нет',
+                          style: GoogleFonts.roboto(
+                              color: Colors.black87.withOpacity(0.4),
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      )
+                    : ListView(
+                        children: [
+                          statisticItem(
+                              title: 'Всего игр',
+                              number: double.parse(statistic
+                                  .gameStatisticModel!.totalGames
+                                  .toString()),
+                              isMoneys: false),
+                          statisticItem(
+                              title: 'Всего выигрыш',
+                              number:
+                                  statistic.gameStatisticModel!.winningsMoneys),
+                          statisticItem(
+                              title: 'Всего проигрыш',
+                              number:
+                                  statistic.gameStatisticModel!.lossesMoneys),
+                          statisticItem(
+                              title: 'Макс. выигрыш',
+                              number: statistic.gameStatisticModel!.maxWin),
+                          statisticItem(
+                              title: 'Макс. проигрыш',
+                              number: statistic.gameStatisticModel!.maxLoss),
+                        ],
+                      );
+              },
+            )),
+      ),
     );
   }
 

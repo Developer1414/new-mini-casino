@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
-import 'package:new_mini_casino/models/loading.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
@@ -13,6 +12,7 @@ import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
+import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -25,6 +25,16 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  Appodeal.initialize(
+      appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
+      adTypes: [
+        AppodealAdType.Interstitial,
+        AppodealAdType.Banner,
+        AppodealAdType.RewardedVideo,
+        AppodealAdType.MREC
+      ],
+      onInitializationFinished: (errors) => {});
 
   runApp(MainApp());
 }

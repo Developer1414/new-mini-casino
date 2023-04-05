@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -95,13 +96,51 @@ class LeaderBoard extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  AutoSizeText(
-                                    snapshot.data?.docs[index].get('name') ??
-                                        '',
-                                    style: GoogleFonts.roboto(
-                                        color: Colors.black87,
-                                        fontSize: 23.0,
-                                        fontWeight: FontWeight.w900),
+                                  Row(
+                                    children: [
+                                      AutoSizeText(
+                                        snapshot.data?.docs[index]
+                                                .get('name') ??
+                                            '',
+                                        style: GoogleFonts.roboto(
+                                            color: Colors.black87,
+                                            fontSize: 23.0,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      snapshot.data?.docs[index].get('uid') !=
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid
+                                          ? Container()
+                                          : Container(
+                                              width: 35.0,
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.redAccent
+                                                            .withOpacity(0.5),
+                                                        blurRadius: 10.0,
+                                                        spreadRadius: 1.5)
+                                                  ]),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: AutoSizeText(
+                                                  'Вы',
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts.roboto(
+                                                      color: Colors.white,
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.w900),
+                                                ),
+                                              ),
+                                            ),
+                                    ],
                                   ),
                                   const SizedBox(height: 5.0),
                                   AutoSizeText(

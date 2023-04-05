@@ -29,14 +29,33 @@ Future alertDialogError(
     {required BuildContext context,
     required String title,
     required String text,
-    required String confirmBtnText,
+    String? confirmBtnText,
     Function? onConfirmBtnTap}) async {
   await QuickAlert.show(
       context: context,
       type: QuickAlertType.error,
       title: title,
       text: text,
-      confirmBtnText: confirmBtnText,
+      confirmBtnText: confirmBtnText ?? 'Окей',
+      confirmBtnColor: Colors.green,
+      animType: QuickAlertAnimType.slideInDown,
+      onConfirmBtnTap: () =>
+          onConfirmBtnTap?.call() ??
+          Navigator.of(context, rootNavigator: true).pop());
+}
+
+Future alertDialogSuccess(
+    {required BuildContext context,
+    required String title,
+    required String text,
+    String? confirmBtnText,
+    Function? onConfirmBtnTap}) async {
+  await QuickAlert.show(
+      context: context,
+      type: QuickAlertType.success,
+      title: title,
+      text: text,
+      confirmBtnText: confirmBtnText ?? 'Окей',
       confirmBtnColor: Colors.green,
       animType: QuickAlertAnimType.slideInDown,
       onConfirmBtnTap: () =>

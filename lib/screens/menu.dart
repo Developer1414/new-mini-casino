@@ -8,6 +8,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/models/menu_game_button.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_animtype.dart';
 import 'package:quickalert/models/quickalert_type.dart';
@@ -29,7 +30,15 @@ class AllGames extends StatelessWidget {
                   bottomNavigationBar: Padding(
                       padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          AdService.showRewardedAd(
+                              context: context,
+                              func: () {
+                                Provider.of<Balance>(context, listen: false)
+                                    .getReward(
+                                        context: context, rewardCount: 500);
+                              });
+                        },
                         style: ElevatedButton.styleFrom(
                           elevation: 5,
                           backgroundColor: Colors.orange.shade400,
