@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 
 class Balance extends ChangeNotifier {
-  double _balance = 145000.0;
+  double _balance = 500.0;
 
   double get currentBalance => _balance;
 

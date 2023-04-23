@@ -61,7 +61,7 @@ class AccountController extends ChangeNotifier {
           .set({
         'uid': FirebaseAuth.instance.currentUser!.uid,
         'name': name,
-        'balance': 100000,
+        'balance': 500,
         'totalGames': 0
       });
 
