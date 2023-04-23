@@ -23,7 +23,7 @@ class DiceLogic extends ChangeNotifier {
   NumberFromToButtonType numberFromToType = NumberFromToButtonType.empty;
 
   int selectedNumber = 1;
-  int randomNumber = 0;
+  int randomNumber = 1;
 
   List<double> buttonsCoefficient = [1.05, 1.4, 2.5, 3.6, 4.7, 5.8];
 

@@ -310,6 +310,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  flutter_gif:
+    dependency: "direct main"
+    description:
+      name: flutter_gif
+      sha256: b13d7e484e40685e9236ffbaddf012c2448a2e2c1ac48bed345184dd7bc87f88
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   flutter_hooks:
     dependency: transitive
     description:
@@ -360,6 +368,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "10.4.0"
+  gif:
+    dependency: "direct main"
+    description:
+      name: gif
+      sha256: "1298db27c4edc82f13479f50363895e557079164af368f5e09a858726b0f1e9a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   google_fonts:
     dependency: "direct main"
     description:
@@ -492,10 +508,10 @@ packages:
     dependency: "direct main"
     description:
       name: lottie
-      sha256: "0cf78e7a3dd3431523a7debcf33ce4c41ecbfa113e2d10c24c3fe6667d55b556"
+      sha256: "23522951540d20a57a60202ed7022e6376bed206a4eee1c347a91f58bd57eb9f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.0"
+    version: "2.3.2"
   matcher:
     dependency: transitive
     description:

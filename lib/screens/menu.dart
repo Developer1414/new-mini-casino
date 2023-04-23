@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +38,10 @@ class AllGames extends StatelessWidget {
                               func: () {
                                 Provider.of<Balance>(context, listen: false)
                                     .getReward(
-                                        context: context, rewardCount: 500);
+                                        context: context,
+                                        rewardCount: double.parse(
+                                            (Random().nextInt(200) + 100)
+                                                .toString()));
                               });
                         },
                         style: ElevatedButton.styleFrom(
@@ -61,6 +66,7 @@ class AllGames extends StatelessWidget {
                               const SizedBox(width: 10.0),
                               AutoSizeText(
                                 'Испытать удачу',
+                                maxLines: 1,
                                 style: GoogleFonts.roboto(
                                     color: Colors.white,
                                     fontSize: 24.0,
@@ -170,20 +176,19 @@ class AllGames extends StatelessWidget {
                               ],
                             ),
                             childrenDelegate: SliverChildBuilderDelegate(
-                              childCount: GamesController().games.length,
+                              childCount: GamesController.games.length,
                               (context, index) => gameButtonModel(
                                   gameLogo:
-                                      GamesController().games[index].gameLogo,
+                                      GamesController.games[index].gameLogo,
+                                  isSoon: GamesController.games[index].isSoon,
                                   buttonTitle:
-                                      GamesController().games[index].title,
+                                      GamesController.games[index].title,
                                   onTap: () {
-                                    context.beamToNamed(GamesController()
-                                        .games[index]
-                                        .nextScreen);
+                                    context.beamToNamed(GamesController
+                                        .games[index].nextScreen);
                                   },
-                                  buttonColor: GamesController()
-                                      .games[index]
-                                      .buttonColor,
+                                  buttonColor:
+                                      GamesController.games[index].buttonColor,
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(25.0))),
                             ),

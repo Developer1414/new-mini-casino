@@ -55,6 +55,7 @@ class Balance extends ChangeNotifier {
     alertDialogSuccess(
       context: context,
       title: 'Поздравляем!',
+      confirmBtnText: 'Спасибо!',
       text:
           'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(rewardCount)}!',
     );

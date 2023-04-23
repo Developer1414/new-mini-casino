@@ -1,11 +1,14 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gif/flutter_gif.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gif/gif.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:lottie/lottie.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/models/text_field_model.dart';
@@ -30,12 +33,18 @@ class Dice extends StatefulWidget {
 }
 
 class _DiceState extends State<Dice> with TickerProviderStateMixin {
-  late final AnimationController _controller;
+  late final GifController _gifController;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _gifController = GifController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _gifController.dispose();
+    super.dispose();
   }
 
   @override
@@ -245,11 +254,14 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                                           bet: double.parse(Dice.betFormatter
                                               .getUnformattedValue()
                                               .toString()));
-                                      _controller.reset();
 
-                                      _controller.forward().whenComplete(() {
+                                      _gifController.reset();
+                                      _gifController.forward().whenComplete(() {
                                         diceLogic.cashout();
                                       });
+
+                                      //rand = Random().nextInt(2) + 1;
+                                      //print('rand: $rand');
                                     },
                               style: ElevatedButton.styleFrom(
                                 elevation: 5,
@@ -339,7 +351,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                 ),
               ],
             ),
-            body: Consumer<DiceLogic>(builder: (ctx, minesLogic, _) {
+            body: Consumer<DiceLogic>(builder: (ctx, diceLogic, _) {
               return Column(
                 children: [
                   Padding(
@@ -349,7 +361,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                         //initialValue: Dice.betFormatter.format('100'),
                         textInputFormatter: Dice.betFormatter,
                         keyboardType: TextInputType.number,
-                        readOnly: minesLogic.isGameOn,
+                        readOnly: diceLogic.isGameOn,
                         isBetInput: true,
                         controller: Dice.betController,
                         hintText: 'Ставка...'),
@@ -358,12 +370,19 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: Center(
-                        child: Lottie.asset(
-                          'assets/animations/dice.json',
-                          controller: _controller,
-                          onLoaded: (composition) {
-                            _controller.duration = composition.duration;
-                          },
+                        child: Gif(
+                          image: AssetImage(
+                              'assets/animations/dice-${diceLogic.randomNumber}.gif'),
+                          controller: _gifController,
+                          fps: 60,
+                          autostart: Autostart.no,
+                          placeholder: (context) => AutoSizeText(
+                            'Загрузка...',
+                            style: GoogleFonts.roboto(
+                                color: Colors.black87,
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ),
                     ),

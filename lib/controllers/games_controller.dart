@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/models/game_button_details.dart';
 
 class GamesController {
-  List<GameButtonDetails> games = [
+  static List<GameButtonDetails> games = [
     GameButtonDetails(
         title: 'Mines',
         gameLogo: 'MinesLogo',
@@ -16,11 +16,13 @@ class GamesController {
     GameButtonDetails(
         title: 'Limbo',
         gameLogo: 'LimboLogo',
+        isSoon: true,
         buttonColor: Colors.redAccent,
         nextScreen: '/mines'),
     GameButtonDetails(
         title: 'Fortune wheel',
         gameLogo: 'FortuneWheelLogo',
+        isSoon: true,
         buttonColor: Colors.purpleAccent,
         nextScreen: '/mines'),
   ];
