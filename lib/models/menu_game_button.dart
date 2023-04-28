@@ -32,15 +32,14 @@ Widget gameButtonModel(
             height: 140.0,
           ),
           ClipRect(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(
-                sigmaX: 4.0,
-                sigmaY: 4.0,
-              ),
-              child: Container(
-                alignment: Alignment.center,
-                width: double.infinity,
-                height: double.infinity,
+            child: SizedBox(
+              width: double.infinity,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(
+                  sigmaX: 4.0,
+                  sigmaY: 4.0,
+                ),
+                child: Container(alignment: Alignment.center),
               ),
             ),
           ),

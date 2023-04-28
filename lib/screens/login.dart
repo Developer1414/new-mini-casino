@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
@@ -128,11 +129,27 @@ class Login extends StatelessWidget {
                                         if (accountController
                                                 .authorizationAction ==
                                             AuthorizationAction.register) {
-                                          await accountController.register(
-                                              email:
-                                                  emailController.text.trim(),
-                                              password: passwordController.text,
-                                              name: nameController.text.trim());
+                                          await accountController
+                                              .checkOnExistNickname(
+                                                  nameController.text.trim())
+                                              .then((value) async {
+                                            if (!value) {
+                                              AccountExceptionController
+                                                  .showException(
+                                                      context: context,
+                                                      code:
+                                                          'nickname_already_exist');
+                                              return;
+                                            } else {
+                                              await accountController.register(
+                                                  email: emailController.text
+                                                      .trim(),
+                                                  password:
+                                                      passwordController.text,
+                                                  name: nameController.text
+                                                      .trim());
+                                            }
+                                          });
                                         } else {
                                           await accountController.login(
                                               email:

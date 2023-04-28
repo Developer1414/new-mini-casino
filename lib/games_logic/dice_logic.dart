@@ -103,8 +103,6 @@ class DiceLogic extends ChangeNotifier {
       print(randomNumber);
     }
 
-    AdService.showInterstitialAd(context: context, func: () {});
-
     notifyListeners();
   }
 
@@ -138,5 +136,7 @@ class DiceLogic extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    AdService.showInterstitialAd(context: context, func: () {});
   }
 }

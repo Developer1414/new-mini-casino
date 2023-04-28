@@ -58,6 +58,8 @@ class MinesLogic extends ChangeNotifier {
           maxLoss: bet,
           lossesMoneys: bet,
         ));
+
+    AdService.showInterstitialAd(context: context, func: () {});
   }
 
   void startGame({double bet = 0.0, required BuildContext context}) {
@@ -90,8 +92,6 @@ class MinesLogic extends ChangeNotifier {
 
     Provider.of<Balance>(context, listen: false).placeBet(bet);
 
-    AdService.showInterstitialAd(context: context, func: () {});
-
     notifyListeners();
   }
 
@@ -123,6 +123,8 @@ class MinesLogic extends ChangeNotifier {
             GameStatisticModel(winningsMoneys: profit, maxWin: profit));
 
     notifyListeners();
+
+    AdService.showInterstitialAd(context: context, func: () {});
   }
 
   double factorial(double fact) {

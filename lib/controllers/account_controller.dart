@@ -48,7 +48,6 @@ class AccountController extends ChangeNotifier {
       required String password,
       required String name}) async {
     isLoading = true;
-
     notifyListeners();
 
     try {
@@ -74,8 +73,31 @@ class AccountController extends ChangeNotifier {
     }
 
     isLoading = false;
-
     notifyListeners();
+  }
+
+  Future<bool> checkOnExistNickname(String name) async {
+    isLoading = true;
+    notifyListeners();
+
+    bool result = false;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('name', isEqualTo: name)
+        .get()
+        .then((value) {
+      if (value.docs.isNotEmpty) {
+        result = false;
+      } else {
+        result = true;
+      }
+    });
+
+    isLoading = false;
+    notifyListeners();
+
+    return result;
   }
 
   Future signOut() async {

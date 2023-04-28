@@ -64,6 +64,14 @@ class AccountExceptionController {
           confirmBtnText: 'Окей',
         );
         break;
+      case 'nickname_already_exist':
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          text: 'Такой никнейм уже существует!',
+          confirmBtnText: 'Окей',
+        );
+        break;
     }
   }
 }

@@ -22,8 +22,7 @@ class GamesController {
     GameButtonDetails(
         title: 'Fortune wheel',
         gameLogo: 'FortuneWheelLogo',
-        isSoon: true,
         buttonColor: Colors.purpleAccent,
-        nextScreen: '/mines'),
+        nextScreen: '/fortuneWheel'),
   ];
 }

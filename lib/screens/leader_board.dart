@@ -68,7 +68,12 @@ class LeaderBoard extends StatelessWidget {
 
                     return Container(
                       width: double.infinity,
-                      margin: const EdgeInsets.only(left: 15.0, right: 15.0),
+                      margin: EdgeInsets.only(
+                          left: 15.0,
+                          right: 15.0,
+                          bottom: index + 1 == snapshot.data?.docs.length
+                              ? 15.0
+                              : 0.0),
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
                           color: Colors.white,

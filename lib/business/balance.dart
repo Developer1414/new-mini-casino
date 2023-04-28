@@ -31,9 +31,13 @@ class Balance extends ChangeNotifier {
   }
 
   Future loadBalance() async {
+    if (FirebaseAuth.instance.currentUser?.uid == null) {
+      return;
+    }
+
     await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) {
       _balance = double.parse(value.get('balance').toString());

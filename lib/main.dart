@@ -1,10 +1,13 @@
 import 'package:beamer/beamer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
+import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
+import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
 import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
@@ -52,6 +55,7 @@ class MainApp extends StatelessWidget {
         '/profile': (context, state, data) => const Profile(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
+        '/fortuneWheel': (context, state, data) => const FortuneWheel(),
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/leader-board': (context, state, data) => const LeaderBoard(),
         '/game-statistic/:game': (context, state, data) {
@@ -69,6 +73,7 @@ class MainApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
+        ChangeNotifierProvider(create: (ctx) => FortuneWheelLogic()),
         ChangeNotifierProvider(create: (ctx) => DiceLogic()),
         ChangeNotifierProvider(create: (ctx) => Balance()),
         ChangeNotifierProvider(create: (ctx) => AccountController()),

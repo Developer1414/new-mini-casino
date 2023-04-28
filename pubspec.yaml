@@ -16,7 +16,6 @@ dependencies:
   firebase_auth: ^4.2.2
   firebase_core: ^2.8.0
   firebase_storage: ^11.0.16
-  flutter_fortune_wheel: ^1.2.0
   flutterfire: ^0.0.1
   font_awesome_flutter: ^10.1.0
   google_fonts: ^4.0.3
