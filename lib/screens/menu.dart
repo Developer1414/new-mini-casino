@@ -142,58 +142,61 @@ class AllGames extends StatelessWidget {
                   body: Padding(
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, bottom: 15.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 15.0),
-                            child: Consumer<Balance>(
-                              builder: (context, value, _) {
-                                return AutoSizeText(
-                                  'Баланс: ${value.currentBalanceString}',
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w900),
-                                );
-                              },
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 15.0),
+                              child: Consumer<Balance>(
+                                builder: (context, value, _) {
+                                  return AutoSizeText(
+                                    'Баланс: ${value.currentBalanceString}',
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.black87,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                          GridView.custom(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            gridDelegate: SliverWovenGridDelegate.count(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 8,
-                              crossAxisSpacing: 0,
-                              pattern: const [
-                                WovenGridTile(1),
-                                WovenGridTile(
-                                  7 / 7,
-                                  crossAxisRatio: 0.9,
-                                  alignment: AlignmentDirectional.centerEnd,
-                                ),
-                              ],
+                            GridView.custom(
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              gridDelegate: SliverWovenGridDelegate.count(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 8,
+                                crossAxisSpacing: 0,
+                                pattern: const [
+                                  WovenGridTile(1),
+                                  WovenGridTile(
+                                    7 / 7,
+                                    crossAxisRatio: 0.9,
+                                    alignment: AlignmentDirectional.centerEnd,
+                                  ),
+                                ],
+                              ),
+                              childrenDelegate: SliverChildBuilderDelegate(
+                                childCount: GamesController.games.length,
+                                (context, index) => gameButtonModel(
+                                    gameLogo:
+                                        GamesController.games[index].gameLogo,
+                                    isSoon: GamesController.games[index].isSoon,
+                                    buttonTitle:
+                                        GamesController.games[index].title,
+                                    onTap: () {
+                                      context.beamToNamed(GamesController
+                                          .games[index].nextScreen);
+                                    },
+                                    buttonColor: GamesController
+                                        .games[index].buttonColor,
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(25.0))),
+                              ),
                             ),
-                            childrenDelegate: SliverChildBuilderDelegate(
-                              childCount: GamesController.games.length,
-                              (context, index) => gameButtonModel(
-                                  gameLogo:
-                                      GamesController.games[index].gameLogo,
-                                  isSoon: GamesController.games[index].isSoon,
-                                  buttonTitle:
-                                      GamesController.games[index].title,
-                                  onTap: () {
-                                    context.beamToNamed(GamesController
-                                        .games[index].nextScreen);
-                                  },
-                                  buttonColor:
-                                      GamesController.games[index].buttonColor,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(25.0))),
-                            ),
-                          ),
-                        ]),
+                          ]),
+                    ),
                   ));
             }));
   }

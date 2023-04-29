@@ -24,5 +24,11 @@ class GamesController {
         gameLogo: 'FortuneWheelLogo',
         buttonColor: Colors.purpleAccent,
         nextScreen: '/fortuneWheel'),
+    GameButtonDetails(
+        title: 'Coinflip',
+        gameLogo: 'Coinflip',
+        isSoon: true,
+        buttonColor: const Color.fromARGB(255, 255, 172, 48),
+        nextScreen: '/coinflip'),
   ];
 }

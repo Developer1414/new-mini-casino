@@ -6,6 +6,7 @@ import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthorizationAction { login, register }
 
@@ -63,6 +64,9 @@ class AccountController extends ChangeNotifier {
         'balance': 500,
         'totalGames': 0
       });
+
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isFirstGameStarted', true);
 
       authorizationAction = AuthorizationAction.register;
 
