@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
@@ -34,7 +36,7 @@ class Login extends StatelessWidget {
         home: Consumer<AccountController>(
           builder: (context, accountController, _) {
             return accountController.isLoading
-                ? loading()
+                ? loading(text: accountController.loadingText)
                 : DefaultTabController(
                     length: 2,
                     child: Scaffold(
@@ -310,21 +312,46 @@ class Login extends StatelessWidget {
                                             top: 15.0),
                                         child: loginCustomTextField(
                                             keyboardType: TextInputType.name,
+                                            limitSymbols: true,
                                             controller: Login.nameController,
                                             hintText: 'Имя...'),
                                       )
                                     : Container(),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15.0, right: 15.0, bottom: 15.0),
+                                  padding: EdgeInsets.only(
+                                      left: 15.0,
+                                      right: 15.0,
+                                      bottom: accountController
+                                                  .authorizationAction ==
+                                              AuthorizationAction.register
+                                          ? 5.0
+                                          : 0.0),
                                   child: loginCustomTextField(
                                       keyboardType: TextInputType.emailAddress,
                                       controller: Login.emailController,
                                       hintText: 'Почта...'),
                                 ),
+                                Visibility(
+                                  visible:
+                                      accountController.authorizationAction ==
+                                          AuthorizationAction.register,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 15.0, right: 15.0),
+                                    child: Text(
+                                        'Указывайте существующую почту, на неё будет выслано письмо с подтверждением.',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.roboto(
+                                            textStyle: const TextStyle(
+                                          color: Colors.black87,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                        ))),
+                                  ),
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      left: 15.0, right: 15.0),
+                                      left: 15.0, right: 15.0, top: 15.0),
                                   child: loginCustomTextField(
                                       keyboardType: TextInputType.text,
                                       controller: Login.passwordController,
@@ -349,6 +376,7 @@ class Login extends StatelessWidget {
       required TextEditingController controller,
       bool isLastInput = false,
       bool readOnly = false,
+      bool limitSymbols = false,
       TextInputType? keyboardType,
       bool isPassword = false}) {
     return TextField(
@@ -357,6 +385,11 @@ class Login extends StatelessWidget {
       obscureText: isPassword,
       keyboardType: keyboardType,
       textAlign: TextAlign.center,
+      inputFormatters: limitSymbols
+          ? [
+              LengthLimitingTextInputFormatter(12),
+            ]
+          : null,
       textInputAction:
           isLastInput ? TextInputAction.done : TextInputAction.next,
       decoration: InputDecoration(

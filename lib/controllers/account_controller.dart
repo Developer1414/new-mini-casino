@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,6 +14,10 @@ enum AuthorizationAction { login, register }
 
 class AccountController extends ChangeNotifier {
   bool isLoading = false;
+
+  String loadingText = 'Пожалуйста, подождите...';
+
+  Timer? timer;
 
   static late BuildContext context;
 
@@ -44,6 +50,52 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future sendLinkToEmailToVerifyAccount(
+      {String email = '', String password = '', String name = ''}) async {
+    loadingText =
+        'Перейдите по ссылке отправленная на почту для подтверждения аккаунта. Если не нашли письмо, проверьте папку "Спам".';
+    notifyListeners();
+
+    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+
+    timer = Timer.periodic(
+        const Duration(seconds: 3),
+        (_) =>
+            checkEmailVerified(email: email, password: password, name: name));
+  }
+
+  checkEmailVerified(
+      {String email = '', String password = '', String name = ''}) async {
+    await FirebaseAuth.instance.currentUser?.reload();
+
+    if (FirebaseAuth.instance.currentUser!.emailVerified) {
+      loadingText = 'Пожалуйста, подождите...';
+      isLoading = false;
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .set({
+        'uid': FirebaseAuth.instance.currentUser!.uid,
+        'name': name,
+        'balance': 500,
+        'totalGames': 0
+      }).whenComplete(() async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setBool('isFirstGameStarted', true);
+
+        authorizationAction = AuthorizationAction.register;
+
+        // ignore: use_build_context_synchronously
+        context.beamToReplacementNamed('/games');
+      });
+
+      timer?.cancel();
+    }
+
+    notifyListeners();
+  }
+
   Future register(
       {required String email,
       required String password,
@@ -55,29 +107,10 @@ class AccountController extends ChangeNotifier {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set({
-        'uid': FirebaseAuth.instance.currentUser!.uid,
-        'name': name,
-        'balance': 500,
-        'totalGames': 0
-      });
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setBool('isFirstGameStarted', true);
-
-      authorizationAction = AuthorizationAction.register;
-
-// ignore: use_build_context_synchronously
-      context.beamToReplacementNamed('/games');
+      await sendLinkToEmailToVerifyAccount();
     } on FirebaseAuthException catch (e) {
       AccountExceptionController.showException(context: context, code: e.code);
     }
-
-    isLoading = false;
-    notifyListeners();
   }
 
   Future<bool> checkOnExistNickname(String name) async {
@@ -116,9 +149,13 @@ class AccountController extends ChangeNotifier {
 
   static Future<Widget> checkAuthState() async {
     if (FirebaseAuth.instance.currentUser != null) {
-      AdService.loadCountBet();
-
-      return const AllGames();
+      if (FirebaseAuth.instance.currentUser!.emailVerified) {
+        AdService.loadCountBet();
+        return const AllGames();
+      } else {
+        FirebaseAuth.instance.signOut();
+        return const Login();
+      }
     } else {
       return const Login();
     }
