@@ -128,6 +128,15 @@ class Login extends StatelessWidget {
                                           return;
                                         }
 
+                                        if (nameController.text.length < 4) {
+                                          AccountExceptionController
+                                              .showException(
+                                                  context: context,
+                                                  code: 'nickname_too_short');
+
+                                          return;
+                                        }
+
                                         if (accountController
                                                 .authorizationAction ==
                                             AuthorizationAction.register) {
@@ -314,7 +323,7 @@ class Login extends StatelessWidget {
                                             keyboardType: TextInputType.name,
                                             limitSymbols: true,
                                             controller: Login.nameController,
-                                            hintText: 'Имя...'),
+                                            hintText: 'Никнейм...'),
                                       )
                                     : Container(),
                                 Padding(

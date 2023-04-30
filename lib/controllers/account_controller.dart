@@ -50,22 +50,18 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future sendLinkToEmailToVerifyAccount(
-      {String email = '', String password = '', String name = ''}) async {
+  Future sendLinkToEmailToVerifyAccount({required String name}) async {
     loadingText =
-        'Перейдите по ссылке отправленная на почту для подтверждения аккаунта. Если не нашли письмо, проверьте папку "Спам".';
+        'Перейдите по ссылке, отправленной на вашу электронную почту, чтобы подтвердить свою учетную запись. Если вы не нашли письмо, проверьте папку «Спам».';
     notifyListeners();
 
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
 
     timer = Timer.periodic(
-        const Duration(seconds: 3),
-        (_) =>
-            checkEmailVerified(email: email, password: password, name: name));
+        const Duration(seconds: 3), (_) => checkEmailVerified(name: name));
   }
 
-  checkEmailVerified(
-      {String email = '', String password = '', String name = ''}) async {
+  checkEmailVerified({required String name}) async {
     await FirebaseAuth.instance.currentUser?.reload();
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
@@ -107,7 +103,7 @@ class AccountController extends ChangeNotifier {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await sendLinkToEmailToVerifyAccount();
+      await sendLinkToEmailToVerifyAccount(name: name);
     } on FirebaseAuthException catch (e) {
       AccountExceptionController.showException(context: context, code: e.code);
     }

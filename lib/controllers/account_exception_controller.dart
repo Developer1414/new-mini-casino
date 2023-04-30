@@ -72,6 +72,14 @@ class AccountExceptionController {
           confirmBtnText: 'Окей',
         );
         break;
+      case 'nickname_too_short':
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          text: 'Слишком короткий никнейм. Минимум 4 символа!',
+          confirmBtnText: 'Окей',
+        );
+        break;
     }
   }
 }
