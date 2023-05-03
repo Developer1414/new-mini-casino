@@ -14,21 +14,20 @@ class GamesController {
         buttonColor: Colors.green.shade500,
         nextScreen: '/dice'),
     GameButtonDetails(
-        title: 'Limbo',
-        gameLogo: 'LimboLogo',
-        isSoon: true,
-        buttonColor: Colors.redAccent,
-        nextScreen: '/mines'),
+        title: 'Coinflip',
+        gameLogo: 'Coinflip',
+        buttonColor: const Color.fromARGB(255, 255, 172, 48),
+        nextScreen: '/coinflip'),
     GameButtonDetails(
         title: 'Fortune wheel',
         gameLogo: 'FortuneWheelLogo',
         buttonColor: Colors.purpleAccent,
         nextScreen: '/fortuneWheel'),
     GameButtonDetails(
-        title: 'Coinflip',
-        gameLogo: 'Coinflip',
+        title: 'Crash',
+        gameLogo: 'LimboLogo',
         isSoon: true,
-        buttonColor: const Color.fromARGB(255, 255, 172, 48),
-        nextScreen: '/coinflip'),
+        buttonColor: Colors.redAccent,
+        nextScreen: '/crash'),
   ];
 }

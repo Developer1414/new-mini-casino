@@ -4,6 +4,7 @@ import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
@@ -65,29 +66,36 @@ class AccountController extends ChangeNotifier {
     await FirebaseAuth.instance.currentUser?.reload();
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
-      loadingText = 'Пожалуйста, подождите...';
-      isLoading = false;
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set({
-        'uid': FirebaseAuth.instance.currentUser!.uid,
-        'name': name,
-        'balance': 500,
-        'totalGames': 0
-      }).whenComplete(() async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setBool('isFirstGameStarted', true);
-
-        authorizationAction = AuthorizationAction.register;
-
-        // ignore: use_build_context_synchronously
-        context.beamToReplacementNamed('/games');
-      });
+      setDataToDatabase(name);
 
       timer?.cancel();
     }
+
+    notifyListeners();
+  }
+
+  Future setDataToDatabase(String name) async {
+    loadingText = 'Пожалуйста, подождите...';
+    isLoading = false;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .set({
+      'uid': FirebaseAuth.instance.currentUser!.uid,
+      'name': name,
+      'balance': 500,
+      'status': 'online',
+      'totalGames': 0
+    }).whenComplete(() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setBool('isFirstGameStarted', true);
+
+      authorizationAction = AuthorizationAction.register;
+
+      // ignore: use_build_context_synchronously
+      context.beamToReplacementNamed('/games');
+    });
 
     notifyListeners();
   }
@@ -141,6 +149,19 @@ class AccountController extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
+
+  Future<UserCredential> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   static Future<Widget> checkAuthState() async {

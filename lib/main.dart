@@ -1,15 +1,18 @@
 import 'package:beamer/beamer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
+import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
 import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
@@ -56,7 +59,7 @@ class MainApp extends StatefulWidget {
   State<MainApp> createState() => _MainAppState();
 }
 
-class _MainAppState extends State<MainApp> {
+class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   AppUpdateInfo? _updateInfo;
 
   Future<void> checkForUpdate() async {
@@ -114,6 +117,7 @@ class _MainAppState extends State<MainApp> {
         '/profile': (context, state, data) => const Profile(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
+        '/coinflip': (context, state, data) => const Coinflip(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/leader-board': (context, state, data) => const LeaderBoard(),
@@ -128,9 +132,23 @@ class _MainAppState extends State<MainApp> {
   );
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      changeUserStatus('online');
+    } else {
+      changeUserStatus(DateTime.now().toString());
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
+
     checkForUpdate();
+    changeUserStatus('online');
   }
 
   @override
@@ -138,6 +156,7 @@ class _MainAppState extends State<MainApp> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
+        ChangeNotifierProvider(create: (ctx) => CoinflipLogic()),
         ChangeNotifierProvider(create: (ctx) => FortuneWheelLogic()),
         ChangeNotifierProvider(create: (ctx) => DiceLogic()),
         ChangeNotifierProvider(create: (ctx) => Balance()),
@@ -158,4 +177,13 @@ class _MainAppState extends State<MainApp> {
       ),
     );
   }
+}
+
+Future changeUserStatus(String status) async {
+  if (FirebaseAuth.instance.currentUser == null) return;
+
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser?.uid)
+      .update({'status': status});
 }

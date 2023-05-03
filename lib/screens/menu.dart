@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/menu_game_button.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
@@ -100,6 +101,8 @@ class AllGames extends StatelessWidget {
                                 onCancelBtnTap: () {
                                   Navigator.of(context, rootNavigator: true)
                                       .pop();
+
+                                  changeUserStatus(DateTime.now().toString());
 
                                   accountController.signOut().whenComplete(() {
                                     context.beamToReplacementNamed('/login');

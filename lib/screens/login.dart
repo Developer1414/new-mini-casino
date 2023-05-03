@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,152 +39,18 @@ class Login extends StatelessWidget {
                 : DefaultTabController(
                     length: 2,
                     child: Scaffold(
+                      resizeToAvoidBottomInset: false,
                       bottomNavigationBar: SizedBox(
                           height: accountController.authorizationAction ==
                                   AuthorizationAction.register
-                              ? 140
-                              : 95,
+                              ? 60
+                              : 0,
                           child: Padding(
                             padding:
                                 const EdgeInsets.only(left: 15.0, right: 15.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 15.0, bottom: 15.0),
-                                  child: SizedBox(
-                                    height: 65.0,
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 5,
-                                        backgroundColor: Colors.green,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                        ),
-                                      ),
-                                      onPressed: () async {
-                                        if (accountController
-                                                .authorizationAction ==
-                                            AuthorizationAction.register) {
-                                          if (accountController
-                                                  .authorizationAction ==
-                                              AuthorizationAction.register) {
-                                            if (nameController.text.isEmpty) {
-                                              QuickAlert.show(
-                                                  context: context,
-                                                  type: QuickAlertType.error,
-                                                  title: 'Упс...',
-                                                  text: 'Вы не вписали имя!',
-                                                  confirmBtnText: 'Окей',
-                                                  animType: QuickAlertAnimType
-                                                      .slideInDown);
-
-                                              return;
-                                            }
-                                          }
-                                        }
-
-                                        if (emailController.text.isEmpty) {
-                                          QuickAlert.show(
-                                              context: context,
-                                              type: QuickAlertType.error,
-                                              title: 'Упс...',
-                                              text: 'Вы не вписали почту!',
-                                              confirmBtnText: 'Окей',
-                                              animType: QuickAlertAnimType
-                                                  .slideInDown);
-
-                                          return;
-                                        }
-
-                                        if (passwordController.text.isEmpty) {
-                                          QuickAlert.show(
-                                              context: context,
-                                              type: QuickAlertType.error,
-                                              title: 'Упс...',
-                                              text: 'Вы не вписали пароль!',
-                                              confirmBtnText: 'Окей',
-                                              animType: QuickAlertAnimType
-                                                  .slideInDown);
-
-                                          return;
-                                        }
-
-                                        if (passwordController.text.length <
-                                            6) {
-                                          QuickAlert.show(
-                                              context: context,
-                                              type: QuickAlertType.error,
-                                              title: 'Упс...',
-                                              text: 'Пароль слишком короткий!',
-                                              confirmBtnText: 'Окей',
-                                              animType: QuickAlertAnimType
-                                                  .slideInDown);
-
-                                          return;
-                                        }
-
-                                        if (nameController.text.length < 4) {
-                                          AccountExceptionController
-                                              .showException(
-                                                  context: context,
-                                                  code: 'nickname_too_short');
-
-                                          return;
-                                        }
-
-                                        if (accountController
-                                                .authorizationAction ==
-                                            AuthorizationAction.register) {
-                                          await accountController
-                                              .checkOnExistNickname(
-                                                  nameController.text.trim())
-                                              .then((value) async {
-                                            if (!value) {
-                                              AccountExceptionController
-                                                  .showException(
-                                                      context: context,
-                                                      code:
-                                                          'nickname_already_exist');
-                                              return;
-                                            } else {
-                                              await accountController.register(
-                                                  email: emailController.text
-                                                      .trim(),
-                                                  password:
-                                                      passwordController.text,
-                                                  name: nameController.text
-                                                      .trim());
-                                            }
-                                          });
-                                        } else {
-                                          await accountController.login(
-                                              email:
-                                                  emailController.text.trim(),
-                                              password:
-                                                  passwordController.text);
-                                        }
-                                      },
-                                      child: AutoSizeText(
-                                        accountController.authorizationAction ==
-                                                AuthorizationAction.register
-                                            ? 'Зарегистрироваться'
-                                            : 'Войти',
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
                                 accountController.authorizationAction ==
                                         AuthorizationAction.login
                                     ? Container(height: 0.0)
@@ -367,6 +232,196 @@ class Login extends StatelessWidget {
                                       isLastInput: true,
                                       hintText: 'Пароль...'),
                                 ),
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: SizedBox(
+                                    height: 60.0,
+                                    width: double.infinity,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 5,
+                                        backgroundColor: Colors.green,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                        ),
+                                      ),
+                                      onPressed: () async {
+                                        if (accountController
+                                                .authorizationAction ==
+                                            AuthorizationAction.register) {
+                                          if (accountController
+                                                  .authorizationAction ==
+                                              AuthorizationAction.register) {
+                                            if (nameController.text.isEmpty) {
+                                              QuickAlert.show(
+                                                  context: context,
+                                                  type: QuickAlertType.error,
+                                                  title: 'Упс...',
+                                                  text:
+                                                      'Вы не вписали никнейм!',
+                                                  confirmBtnText: 'Окей',
+                                                  animType: QuickAlertAnimType
+                                                      .slideInDown);
+
+                                              return;
+                                            }
+                                          }
+                                        }
+
+                                        if (emailController.text.isEmpty) {
+                                          QuickAlert.show(
+                                              context: context,
+                                              type: QuickAlertType.error,
+                                              title: 'Упс...',
+                                              text: 'Вы не вписали почту!',
+                                              confirmBtnText: 'Окей',
+                                              animType: QuickAlertAnimType
+                                                  .slideInDown);
+
+                                          return;
+                                        }
+
+                                        if (passwordController.text.isEmpty) {
+                                          QuickAlert.show(
+                                              context: context,
+                                              type: QuickAlertType.error,
+                                              title: 'Упс...',
+                                              text: 'Вы не вписали пароль!',
+                                              confirmBtnText: 'Окей',
+                                              animType: QuickAlertAnimType
+                                                  .slideInDown);
+
+                                          return;
+                                        }
+
+                                        if (passwordController.text.length <
+                                            6) {
+                                          QuickAlert.show(
+                                              context: context,
+                                              type: QuickAlertType.error,
+                                              title: 'Упс...',
+                                              text: 'Пароль слишком короткий!',
+                                              confirmBtnText: 'Окей',
+                                              animType: QuickAlertAnimType
+                                                  .slideInDown);
+
+                                          return;
+                                        }
+
+                                        if (accountController
+                                                .authorizationAction ==
+                                            AuthorizationAction.register) {
+                                          if (nameController.text.length < 4) {
+                                            AccountExceptionController
+                                                .showException(
+                                                    context: context,
+                                                    code: 'nickname_too_short');
+
+                                            return;
+                                          }
+
+                                          await accountController
+                                              .checkOnExistNickname(
+                                                  nameController.text.trim())
+                                              .then((value) async {
+                                            if (!value) {
+                                              AccountExceptionController
+                                                  .showException(
+                                                      context: context,
+                                                      code:
+                                                          'nickname_already_exist');
+                                              return;
+                                            } else {
+                                              await accountController.register(
+                                                  email: emailController.text
+                                                      .trim(),
+                                                  password:
+                                                      passwordController.text,
+                                                  name: nameController.text
+                                                      .trim());
+                                            }
+                                          });
+                                        } else {
+                                          await accountController.login(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password:
+                                                  passwordController.text);
+                                        }
+                                      },
+                                      child: AutoSizeText(
+                                        accountController.authorizationAction ==
+                                                AuthorizationAction.register
+                                            ? 'Зарегистрироваться'
+                                            : 'Войти',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.roboto(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 15.0, right: 15.0),
+                                  child: Divider(
+                                    color: Colors.black.withOpacity(0.5),
+                                  ),
+                                ),
+                                Container(
+                                  height: 60.0,
+                                  margin: const EdgeInsets.all(15.0),
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      await signInWithGoogle(
+                                          context: context,
+                                          name: nameController.text,
+                                          authorizationAction: accountController
+                                              .authorizationAction,
+                                          accountController: accountController);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      elevation: 5,
+                                      backgroundColor: Colors.redAccent,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const FaIcon(
+                                            FontAwesomeIcons.google,
+                                            color: Colors.white,
+                                            size: 25.0,
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          AutoSizeText(
+                                            'Войти через Google',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -378,6 +433,57 @@ class Login extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future signInWithGoogle(
+      {required BuildContext context,
+      required AccountController accountController,
+      required String name,
+      required AuthorizationAction authorizationAction}) async {
+    if (authorizationAction == AuthorizationAction.register) {
+      if (nameController.text.isEmpty) {
+        QuickAlert.show(
+            context: context,
+            type: QuickAlertType.error,
+            title: 'Упс...',
+            text: 'Вы не вписали никнейм!',
+            confirmBtnText: 'Окей',
+            animType: QuickAlertAnimType.slideInDown);
+
+        return;
+      }
+
+      if (accountController.authorizationAction ==
+          AuthorizationAction.register) {
+        if (nameController.text.length < 4) {
+          AccountExceptionController.showException(
+              context: context, code: 'nickname_too_short');
+
+          return;
+        }
+      }
+
+      await accountController
+          .checkOnExistNickname(nameController.text.trim())
+          .then((value) async {
+        if (!value) {
+          AccountExceptionController.showException(
+              context: context, code: 'nickname_already_exist');
+          return;
+        } else {
+          accountController.isLoading = true;
+          await accountController.signInWithGoogle().whenComplete(() {
+            accountController.setDataToDatabase(name);
+          });
+        }
+      });
+    } else {
+      accountController.isLoading = true;
+      await accountController.signInWithGoogle().whenComplete(() {
+        accountController.isLoading = false;
+        context.beamToReplacementNamed('/games');
+      });
+    }
   }
 
   Widget loginCustomTextField(
