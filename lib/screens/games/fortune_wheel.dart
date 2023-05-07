@@ -108,22 +108,22 @@ class _FortuneWheelState extends State<FortuneWheel>
             } else {
               fortuneWheelLogic.loose();
             }
-          }
 
-          /*switch (_items[index].value) {
-            case '2x':
-              controller.lastColors.add(Colors.blueGrey);
-              break;
-            case '3x':
-              controller.lastColors.add(Colors.orangeAccent);
-              break;
-            case '5x':
-              controller.lastColors.add(Colors.redAccent);
-              break;
-            case '30x':
-              controller.lastColors.add(Colors.green);
-              break;
-          }*/
+            switch (_items[index].value) {
+              case '2x':
+                fortuneWheelLogic.setNewColor(Colors.blueGrey);
+                break;
+              case '3x':
+                fortuneWheelLogic.setNewColor(Colors.orangeAccent);
+                break;
+              case '5x':
+                fortuneWheelLogic.setNewColor(Colors.redAccent);
+                break;
+              case '30x':
+                fortuneWheelLogic.setNewColor(Colors.green);
+                break;
+            }
+          }
         });
       }
 
@@ -363,7 +363,9 @@ class _FortuneWheelState extends State<FortuneWheel>
                   padding:
                       const EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
                   child: customTextField(
+                      currencyTextInputFormatter: FortuneWheel.betFormatter,
                       textInputFormatter: FortuneWheel.betFormatter,
+                      context: context,
                       keyboardType: TextInputType.number,
                       readOnly: fortuneWheelLogic.isGameOn,
                       isBetInput: true,
@@ -386,6 +388,53 @@ class _FortuneWheelState extends State<FortuneWheel>
                         );
                       }),
                 ),
+                Container(
+                  margin: const EdgeInsets.only(
+                      left: 15.0, right: 15.0, bottom: 15.0),
+                  height: 40.0,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.3),
+                            blurRadius: 10.0)
+                      ]),
+                  child: fortuneWheelLogic.lastColors.isEmpty
+                      ? Center(
+                          child: AutoSizeText(
+                            'Ставок ещё нет',
+                            style: GoogleFonts.roboto(
+                                color: Colors.black87.withOpacity(0.4),
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        )
+                      : ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) {
+                            List<Color> value =
+                                fortuneWheelLogic.lastColors.reversed.toList();
+
+                            return Container(
+                              width: 15.0,
+                              margin: EdgeInsets.only(
+                                  top: 5.0,
+                                  bottom: 5.0,
+                                  left: index == 0 ? 5.0 : 0.0,
+                                  right: index + 1 ==
+                                          fortuneWheelLogic.lastColors.length
+                                      ? 5.0
+                                      : 0.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  color: value[index]),
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(width: 5.0),
+                          itemCount: fortuneWheelLogic.lastColors.length),
+                )
               ],
             );
           }),

@@ -26,8 +26,13 @@ class GamesController {
     GameButtonDetails(
         title: 'Crash',
         gameLogo: 'LimboLogo',
-        isSoon: true,
         buttonColor: Colors.redAccent,
         nextScreen: '/crash'),
+    GameButtonDetails(
+        title: 'Keno',
+        gameLogo: 'Keno',
+        isSoon: true,
+        buttonColor: const Color.fromRGBO(129, 209, 72, 1),
+        nextScreen: '/keno'),
   ];
 }

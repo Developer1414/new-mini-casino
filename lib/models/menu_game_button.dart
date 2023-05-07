@@ -22,31 +22,31 @@ Widget gameButtonModel(
       shape: RoundedRectangleBorder(borderRadius: borderRadius),
     ),
     child: Padding(
-      padding: const EdgeInsets.all(18.0),
-      child: SizedBox(
-        width: double.infinity,
-        child: Stack(alignment: AlignmentDirectional.center, children: [
-          Image(
-            image: AssetImage('assets/games_logo/$gameLogo.png'),
-            width: 140.0,
-            height: 140.0,
-          ),
-          ClipRect(
-            child: SizedBox(
-              width: double.infinity,
-              child: BackdropFilter(
-                filter: ImageFilter.blur(
-                  sigmaX: 4.0,
-                  sigmaY: 4.0,
-                ),
-                child: Container(alignment: Alignment.center),
+      padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
+      child: Stack(alignment: AlignmentDirectional.center, children: [
+        Image(
+          image: AssetImage('assets/games_logo/$gameLogo.png'),
+          width: 160.0,
+          height: 160.0,
+        ),
+        ClipRect(
+          child: SizedBox(
+            width: double.infinity,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 4.0,
+                sigmaY: 4.0,
               ),
+              child: Container(alignment: Alignment.center),
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AutoSizeText(
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 12.0),
+              child: AutoSizeText(
                 buttonTitle,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
@@ -59,25 +59,25 @@ Widget gameButtonModel(
                           blurRadius: 12.0)
                     ]),
               ),
-              !isSoon
-                  ? Container()
-                  : AutoSizeText(
-                      'Скоро',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.roboto(
-                          color: Colors.white,
-                          fontSize: 15.0,
-                          fontWeight: FontWeight.w700,
-                          shadows: [
-                            Shadow(
-                                color: Colors.black.withOpacity(0.7),
-                                blurRadius: 12.0)
-                          ]),
-                    ),
-            ],
-          ),
-        ]),
-      ),
+            ),
+            !isSoon
+                ? Container()
+                : AutoSizeText(
+                    'Скоро',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w700,
+                        shadows: [
+                          Shadow(
+                              color: Colors.black.withOpacity(0.7),
+                              blurRadius: 12.0)
+                        ]),
+                  ),
+          ],
+        ),
+      ]),
     ),
   );
 }

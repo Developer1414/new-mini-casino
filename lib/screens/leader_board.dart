@@ -66,22 +66,6 @@ class LeaderBoard extends StatelessWidget {
                             .toString() ??
                         '0');
 
-                    Color status = Colors.white;
-
-                    if (!snapshot.data!.docs[index]
-                        .data()
-                        .keys
-                        .contains('status')) {
-                      status = Colors.redAccent;
-                    } else {
-                      if (snapshot.data?.docs[index].get('status') ==
-                          'online') {
-                        status = Colors.green;
-                      } else {
-                        status = Colors.redAccent;
-                      }
-                    }
-
                     return StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('users')
@@ -105,14 +89,25 @@ class LeaderBoard extends StatelessWidget {
                                         (index + 1) == 3
                                     ? Border.all(
                                         color: Colors.orangeAccent, width: 2.0)
-                                    : null,
+                                    : snapshot.data?.docs[index].get('uid') ==
+                                            FirebaseAuth
+                                                .instance.currentUser!.uid
+                                        ? Border.all(
+                                            color: Colors.redAccent, width: 2.0)
+                                        : null,
                                 boxShadow: [
                                   BoxShadow(
                                       color: (index + 1) == 1 ||
                                               (index + 1) == 2 ||
                                               (index + 1) == 3
                                           ? Colors.orangeAccent.withOpacity(0.5)
-                                          : Colors.black.withOpacity(0.3),
+                                          : snapshot.data?.docs[index]
+                                                      .get('uid') ==
+                                                  FirebaseAuth
+                                                      .instance.currentUser!.uid
+                                              ? Colors.redAccent
+                                                  .withOpacity(0.5)
+                                              : Colors.black.withOpacity(0.3),
                                       blurRadius: 10.0)
                                 ]),
                             child: Row(
@@ -127,24 +122,6 @@ class LeaderBoard extends StatelessWidget {
                                       children: [
                                         Row(
                                           children: [
-                                            Container(
-                                              margin: const EdgeInsets.only(
-                                                  right: 10.0),
-                                              width: 15.0,
-                                              height: 15.0,
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          100.0),
-                                                  color: status,
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: status
-                                                            .withOpacity(0.7),
-                                                        blurRadius: 8.0,
-                                                        spreadRadius: 1.5)
-                                                  ]),
-                                            ),
                                             AutoSizeText(
                                               snapshot.data?.docs[index]
                                                       .get('name') ??
@@ -161,6 +138,8 @@ class LeaderBoard extends StatelessWidget {
                                                         .currentUser!.uid
                                                 ? index == 0
                                                     ? Container(
+                                                        margin: const EdgeInsets
+                                                            .only(right: 10.0),
                                                         decoration: BoxDecoration(
                                                             color:
                                                                 Colors.orange,
@@ -199,6 +178,9 @@ class LeaderBoard extends StatelessWidget {
                                                       )
                                                     : Container()
                                                 : Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 10.0),
                                                     decoration: BoxDecoration(
                                                         color: Colors.redAccent,
                                                         borderRadius:
@@ -237,6 +219,9 @@ class LeaderBoard extends StatelessWidget {
                                                     snapshot.data?.docs[index]
                                                         .get('uid')
                                                 ? Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 10.0),
                                                     decoration: BoxDecoration(
                                                         color:
                                                             Colors.blueAccent,

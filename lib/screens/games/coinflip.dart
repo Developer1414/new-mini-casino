@@ -364,7 +364,9 @@ class _CoinflipState extends State<Coinflip>
                       padding: const EdgeInsets.only(
                           left: 15.0, right: 15.0, top: 15.0),
                       child: customTextField(
+                          currencyTextInputFormatter: Coinflip.betFormatter,
                           textInputFormatter: Coinflip.betFormatter,
+                          context: context,
                           keyboardType: TextInputType.number,
                           readOnly: coinflipLogic.isGameOn,
                           isBetInput: true,

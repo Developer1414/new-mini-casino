@@ -16,6 +16,8 @@ class FortuneWheelLogic extends ChangeNotifier {
 
   List<int> buttonsCoefficient = [2, 3, 5, 30];
 
+  List<Color> lastColors = [];
+
   late BuildContext context;
 
   void selectNumber({required int number}) {
@@ -43,6 +45,11 @@ class FortuneWheelLogic extends ChangeNotifier {
 
     Provider.of<Balance>(context, listen: false).placeBet(bet);
 
+    notifyListeners();
+  }
+
+  void setNewColor(Color color) {
+    lastColors.add(color);
     notifyListeners();
   }
 

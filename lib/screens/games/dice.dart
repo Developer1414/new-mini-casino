@@ -355,8 +355,9 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 15.0),
                     child: customTextField(
-                        //initialValue: Dice.betFormatter.format('100'),
+                        currencyTextInputFormatter: Dice.betFormatter,
                         textInputFormatter: Dice.betFormatter,
+                        context: context,
                         keyboardType: TextInputType.number,
                         readOnly: diceLogic.isGameOn,
                         isBetInput: true,

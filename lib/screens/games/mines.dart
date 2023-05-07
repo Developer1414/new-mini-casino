@@ -287,6 +287,8 @@ class Mines extends StatelessWidget {
                     padding: const EdgeInsets.only(
                         left: 15.0, right: 15.0, top: 15.0),
                     child: customTextField(
+                        context: context,
+                        currencyTextInputFormatter: betFormatter,
                         textInputFormatter: betFormatter,
                         keyboardType: TextInputType.number,
                         readOnly: minesLogic.isGameOn,
