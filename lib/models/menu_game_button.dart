@@ -26,8 +26,8 @@ Widget gameButtonModel(
       child: Stack(alignment: AlignmentDirectional.center, children: [
         Image(
           image: AssetImage('assets/games_logo/$gameLogo.png'),
-          width: 160.0,
-          height: 160.0,
+          width: 150.0,
+          height: 150.0,
         ),
         ClipRect(
           child: SizedBox(

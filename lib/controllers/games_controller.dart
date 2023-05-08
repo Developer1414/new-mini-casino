@@ -11,12 +11,12 @@ class GamesController {
     GameButtonDetails(
         title: 'Dice',
         gameLogo: 'DiceLogo',
-        buttonColor: Colors.green.shade500,
+        buttonColor: const Color.fromARGB(255, 255, 172, 48),
         nextScreen: '/dice'),
     GameButtonDetails(
         title: 'Coinflip',
         gameLogo: 'Coinflip',
-        buttonColor: const Color.fromARGB(255, 255, 172, 48),
+        buttonColor: const Color.fromARGB(255, 79, 173, 79),
         nextScreen: '/coinflip'),
     GameButtonDetails(
         title: 'Fortune wheel',

@@ -12,6 +12,8 @@ class CoinflipLogic extends ChangeNotifier {
   bool isWin = false;
   bool isContinueGame = false;
 
+  List<bool> lastGames = [];
+
   List<double> coefficients = [
     1.9,
     3.8,
@@ -57,14 +59,13 @@ class CoinflipLogic extends ChangeNotifier {
   void raiseWinnings() {
     currentCoefficient++;
 
-    print('currentCoefficient: $currentCoefficient');
+    lastGames.add(true);
 
     if (currentCoefficient < coefficients.length) {
       profit = bet * coefficients[currentCoefficient];
       isContinueGame = true;
     } else {
       cashout();
-      print('cashout: $profit');
     }
     notifyListeners();
   }
@@ -73,7 +74,6 @@ class CoinflipLogic extends ChangeNotifier {
     isGameOn = false;
     isWin = false;
     isContinueGame = false;
-
     currentCoefficient = -1;
 
     Provider.of<Balance>(context, listen: false).cashout(profit);
@@ -93,6 +93,8 @@ class CoinflipLogic extends ChangeNotifier {
     isContinueGame = false;
     currentCoefficient = -1;
     profit = 0.0;
+
+    lastGames.add(false);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'coinflip',

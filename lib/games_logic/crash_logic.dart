@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -10,6 +9,13 @@ import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
 enum CrashStatus { win, loss, idle }
+
+class CrashRound {
+  final String coefficient;
+  final bool isWin;
+
+  CrashRound({required this.coefficient, required this.isWin});
+}
 
 class CrashLogic extends ChangeNotifier {
   bool isGameOn = false;
@@ -25,7 +31,7 @@ class CrashLogic extends ChangeNotifier {
   double profit = 0.0;
   double bet = 0.0;
 
-  LinkedHashMap<String, bool> lastCoefficients = LinkedHashMap<String, bool>();
+  List<CrashRound> lastCoefficients = [];
 
   late Timer timer = Timer(const Duration(seconds: 1), () {});
 
@@ -84,7 +90,8 @@ class CrashLogic extends ChangeNotifier {
       ..reset();
     crashStatus = CrashStatus.idle;
     isGameOn = false;
-    lastCoefficients.addAll({maxCoefficient.toStringAsFixed(2): true});
+    lastCoefficients.add(CrashRound(
+        coefficient: maxCoefficient.toStringAsFixed(2), isWin: true));
     profit = 0.0;
     winCoefficient = 0.0;
     notifyListeners();
@@ -142,14 +149,16 @@ class CrashLogic extends ChangeNotifier {
       if (!timer.isActive) {
         if (winCoefficient < targetCoefficient) {
           crashStatus = CrashStatus.loss;
-          lastCoefficients.addAll({maxCoefficient.toStringAsFixed(2): false});
+          lastCoefficients.add(CrashRound(
+              coefficient: maxCoefficient.toStringAsFixed(2), isWin: false));
           notifyListeners();
           loss();
         } else if (winCoefficient >= targetCoefficient) {
           crashStatus = CrashStatus.win;
           isGameOn = false;
           animationController.stop();
-          lastCoefficients.addAll({maxCoefficient.toStringAsFixed(2): true});
+          lastCoefficients.add(CrashRound(
+              coefficient: maxCoefficient.toStringAsFixed(2), isWin: true));
           notifyListeners();
         }
       } else {

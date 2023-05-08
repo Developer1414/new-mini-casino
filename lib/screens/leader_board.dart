@@ -66,224 +66,153 @@ class LeaderBoard extends StatelessWidget {
                             .toString() ??
                         '0');
 
-                    return StreamBuilder(
-                        stream: FirebaseFirestore.instance
-                            .collection('users')
-                            .orderBy('totalGames', descending: true)
-                            .limit(1)
-                            .snapshots(),
-                        builder: (context, mostActivityUser) {
-                          return Container(
-                            width: double.infinity,
-                            margin: EdgeInsets.only(
-                                left: 15.0,
-                                right: 15.0,
-                                bottom: index + 1 == snapshot.data?.docs.length
-                                    ? 15.0
-                                    : 0.0),
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                color: Colors.white,
-                                border: (index + 1) == 1 ||
+                    return Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(
+                          left: 15.0,
+                          right: 15.0,
+                          bottom: index + 1 == snapshot.data?.docs.length
+                              ? 15.0
+                              : 0.0),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Colors.white,
+                          border: (index + 1) == 1 ||
+                                  (index + 1) == 2 ||
+                                  (index + 1) == 3
+                              ? Border.all(
+                                  color: Colors.orangeAccent, width: 2.0)
+                              : snapshot.data?.docs[index].get('uid') ==
+                                      FirebaseAuth.instance.currentUser!.uid
+                                  ? Border.all(
+                                      color: Colors.redAccent, width: 2.0)
+                                  : null,
+                          boxShadow: [
+                            BoxShadow(
+                                color: (index + 1) == 1 ||
                                         (index + 1) == 2 ||
                                         (index + 1) == 3
-                                    ? Border.all(
-                                        color: Colors.orangeAccent, width: 2.0)
+                                    ? Colors.orangeAccent.withOpacity(0.5)
                                     : snapshot.data?.docs[index].get('uid') ==
                                             FirebaseAuth
                                                 .instance.currentUser!.uid
-                                        ? Border.all(
-                                            color: Colors.redAccent, width: 2.0)
-                                        : null,
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: (index + 1) == 1 ||
-                                              (index + 1) == 2 ||
-                                              (index + 1) == 3
-                                          ? Colors.orangeAccent.withOpacity(0.5)
-                                          : snapshot.data?.docs[index]
-                                                      .get('uid') ==
-                                                  FirebaseAuth
-                                                      .instance.currentUser!.uid
-                                              ? Colors.redAccent
-                                                  .withOpacity(0.5)
-                                              : Colors.black.withOpacity(0.3),
-                                      blurRadius: 10.0)
-                                ]),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            AutoSizeText(
-                                              snapshot.data?.docs[index]
-                                                      .get('name') ??
-                                                  '',
-                                              style: GoogleFonts.roboto(
-                                                  color: Colors.black87,
-                                                  fontSize: 23.0,
-                                                  fontWeight: FontWeight.w900),
-                                            ),
-                                            const SizedBox(width: 10.0),
-                                            snapshot.data?.docs[index]
-                                                        .get('uid') !=
-                                                    FirebaseAuth.instance
-                                                        .currentUser!.uid
-                                                ? index == 0
-                                                    ? Container(
-                                                        margin: const EdgeInsets
-                                                            .only(right: 10.0),
-                                                        decoration: BoxDecoration(
-                                                            color:
-                                                                Colors.orange,
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12.0),
-                                                            boxShadow: [
-                                                              BoxShadow(
-                                                                  color: Colors
-                                                                      .orange
-                                                                      .withOpacity(
-                                                                          0.5),
-                                                                  blurRadius:
-                                                                      8.0,
-                                                                  spreadRadius:
-                                                                      1.5)
-                                                            ]),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: AutoSizeText(
-                                                            'Самый богатый',
-                                                            textAlign: TextAlign
-                                                                .center,
-                                                            style: GoogleFonts.roboto(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w900),
-                                                          ),
-                                                        ),
-                                                      )
-                                                    : Container()
-                                                : Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 10.0),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.redAccent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.0),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                              color: Colors
-                                                                  .redAccent
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                              blurRadius: 8.0,
-                                                              spreadRadius: 1.5)
-                                                        ]),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: AutoSizeText(
-                                                        'Вы',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w900),
-                                                      ),
+                                        ? Colors.redAccent.withOpacity(0.5)
+                                        : Colors.black.withOpacity(0.3),
+                                blurRadius: 10.0)
+                          ]),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      AutoSizeText(
+                                        snapshot.data?.docs[index]
+                                                .get('name') ??
+                                            '',
+                                        style: GoogleFonts.roboto(
+                                            color: Colors.black87,
+                                            fontSize: 23.0,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                      const SizedBox(width: 10.0),
+                                      snapshot.data?.docs[index].get('uid') !=
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid
+                                          ? index == 0
+                                              ? Container(
+                                                  margin: const EdgeInsets.only(
+                                                      right: 10.0),
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.orange,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.0),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            color: Colors.orange
+                                                                .withOpacity(
+                                                                    0.5),
+                                                            blurRadius: 8.0,
+                                                            spreadRadius: 1.5)
+                                                      ]),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: AutoSizeText(
+                                                      'Самый богатый',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: GoogleFonts.roboto(
+                                                          color: Colors.white,
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.w900),
                                                     ),
                                                   ),
-                                            mostActivityUser.data?.docs[0]
-                                                        .get('uid') ==
-                                                    snapshot.data?.docs[index]
-                                                        .get('uid')
-                                                ? Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 10.0),
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            Colors.blueAccent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.0),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                              color: Colors
-                                                                  .blueAccent
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                              blurRadius: 8.0,
-                                                              spreadRadius: 1.5)
-                                                        ]),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: AutoSizeText(
-                                                        'Самый активный',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w900),
-                                                      ),
-                                                    ),
-                                                  )
-                                                : Container()
-                                          ],
-                                        ),
-                                        const SizedBox(height: 5.0),
-                                        AutoSizeText(
-                                          'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}\nВсего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.black87,
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ],
-                                    )),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 15.0, top: 15.0),
-                                  child: AutoSizeText(
-                                    '#${(index + 1)}',
+                                                )
+                                              : Container()
+                                          : Container(
+                                              margin: const EdgeInsets.only(
+                                                  right: 10.0),
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent,
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          12.0),
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                        color: Colors.redAccent
+                                                            .withOpacity(0.5),
+                                                        blurRadius: 8.0,
+                                                        spreadRadius: 1.5)
+                                                  ]),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: AutoSizeText(
+                                                  'Вы',
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts.roboto(
+                                                      color: Colors.white,
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.w900),
+                                                ),
+                                              ),
+                                            ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  AutoSizeText(
+                                    'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}\nВсего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
                                     style: GoogleFonts.roboto(
                                         color: Colors.black87,
-                                        fontSize: 25.0,
-                                        fontWeight: FontWeight.w900),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w700),
                                   ),
-                                ),
-                              ],
+                                ],
+                              )),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(right: 15.0, top: 15.0),
+                            child: AutoSizeText(
+                              '#${(index + 1)}',
+                              style: GoogleFonts.roboto(
+                                  color: Colors.black87,
+                                  fontSize: 25.0,
+                                  fontWeight: FontWeight.w900),
                             ),
-                          );
-                        });
+                          ),
+                        ],
+                      ),
+                    );
                   },
                   separatorBuilder: (contex, index) =>
                       const SizedBox(height: 15.0),

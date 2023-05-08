@@ -54,7 +54,7 @@ class _CoinflipState extends State<Coinflip>
         vsync: this, duration: const Duration(milliseconds: 2000));
     flipAnimation = Tween(begin: 0, end: 1.0).animate(CurvedAnimation(
         parent: _controller,
-        curve: const Interval(0.0, 1, curve: Curves.elasticInOut)));
+        curve: const Interval(0.0, 1, curve: Curves.bounceOut)));
 
     final coinflipLogic = Provider.of<CoinflipLogic>(context, listen: false);
 
@@ -405,6 +405,52 @@ class _CoinflipState extends State<Coinflip>
                                     );
                                   }))),
                     ),
+                    Container(
+                      margin: const EdgeInsets.all(15.0),
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10.0)
+                          ]),
+                      child: coinflipLogic.lastGames.isEmpty
+                          ? Center(
+                              child: AutoSizeText(
+                                'Ставок ещё нет',
+                                style: GoogleFonts.roboto(
+                                    color: Colors.black87.withOpacity(0.4),
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            )
+                          : ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                List<bool> value =
+                                    coinflipLogic.lastGames.reversed.toList();
+
+                                return Container(
+                                  margin: EdgeInsets.only(
+                                      top: 5.0,
+                                      bottom: 5.0,
+                                      left: index == 0 ? 5.0 : 0.0,
+                                      right: index + 1 ==
+                                              coinflipLogic.lastGames.length
+                                          ? 5.0
+                                          : 0.0),
+                                  child: Center(
+                                    child: Image.asset(
+                                        value[index] ? frontCoin : backCoint),
+                                  ),
+                                );
+                              },
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(width: 5.0),
+                              itemCount: coinflipLogic.lastGames.length),
+                    )
                   ],
                 );
               }),

@@ -374,7 +374,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                               color: Colors.black.withOpacity(0.3),
                               blurRadius: 10.0)
                         ]),
-                    child: crashLogic.lastCoefficients.entries.isEmpty
+                    child: crashLogic.lastCoefficients.isEmpty
                         ? Center(
                             child: AutoSizeText(
                               'Ставок ещё нет',
@@ -387,9 +387,9 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                         : ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              List<MapEntry<String, bool>> value = crashLogic
-                                  .lastCoefficients.entries
-                                  .toList()
+                              List<CrashRound> value = crashLogic
+                                  .lastCoefficients
+                                  
                                   .reversed
                                   .toList();
 
@@ -404,14 +404,14 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                         : 0.0),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
-                                    color: value[index].value
+                                    color: value[index].isWin
                                         ? Colors.green
                                         : Colors.redAccent),
                                 child: Center(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: AutoSizeText(
-                                      '${value[index].key}x',
+                                      '${value[index].coefficient}x',
                                       style: GoogleFonts.roboto(
                                           color: Colors.white,
                                           fontSize: 15.0,
