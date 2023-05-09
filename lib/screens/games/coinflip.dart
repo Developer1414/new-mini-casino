@@ -61,9 +61,19 @@ class _CoinflipState extends State<Coinflip>
     _controller.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
         if (randAngle == 540) {
-          coinflipLogic.loss();
+          if (coinflipLogic.randomCoinflipStatus ==
+              coinflipLogic.userCoinflipStatus) {
+            coinflipLogic.raiseWinnings();
+          } else {
+            coinflipLogic.loss();
+          }
         } else {
-          coinflipLogic.raiseWinnings();
+          if (coinflipLogic.randomCoinflipStatus ==
+              coinflipLogic.userCoinflipStatus) {
+            coinflipLogic.raiseWinnings();
+          } else {
+            coinflipLogic.loss();
+          }
         }
       }
     });
@@ -201,14 +211,18 @@ class _CoinflipState extends State<Coinflip>
                               child: Row(
                                 children: [
                                   Expanded(
+                                    flex: 2,
                                     child: ElevatedButton(
-                                      onPressed: !coinflipLogic.isWin ||
-                                              _controller.status ==
-                                                  AnimationStatus.forward
-                                          ? null
-                                          : () {
-                                              coinflipLogic.cashout();
-                                            },
+                                      onPressed:
+                                          coinflipLogic.randomCoinflipStatus !=
+                                                      coinflipLogic
+                                                          .userCoinflipStatus ||
+                                                  _controller.status ==
+                                                      AnimationStatus.forward
+                                              ? null
+                                              : () {
+                                                  coinflipLogic.cashout();
+                                                },
                                       style: ElevatedButton.styleFrom(
                                         elevation: 5,
                                         backgroundColor: Colors.blueAccent,
@@ -233,56 +247,136 @@ class _CoinflipState extends State<Coinflip>
                                   ),
                                   const SizedBox(width: 15.0),
                                   Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: !coinflipLogic.isGameOn ||
-                                              coinflipLogic.isWin &&
-                                                  _controller.status !=
-                                                      AnimationStatus.forward
-                                          ? () {
-                                              if (balance.currentBalance <
-                                                  double.parse(Coinflip
-                                                      .betFormatter
-                                                      .getUnformattedValue()
-                                                      .toString())) {
-                                                return;
+                                    child: SizedBox(
+                                      height: 64.0,
+                                      child: ElevatedButton(
+                                        onPressed: !coinflipLogic.isGameOn &&
+                                                _controller.status !=
+                                                    AnimationStatus.forward
+                                            ? () {
+                                                if (balance.currentBalance <
+                                                    double.parse(Coinflip
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString())) {
+                                                  return;
+                                                }
+
+                                                coinflipLogic.startGame(
+                                                    context: context,
+                                                    status:
+                                                        CoinflipStatus.dollar,
+                                                    bet: double.parse(Coinflip
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString()));
+
+                                                if (coinflipLogic
+                                                        .randomCoinflipStatus ==
+                                                    CoinflipStatus.nothing) {
+                                                  randAngle = 540;
+                                                } else {
+                                                  randAngle = 760;
+                                                }
+
+                                                _controller
+                                                  ..reset()
+                                                  ..forward(from: 0);
                                               }
-
-                                              coinflipLogic.startGame(
-                                                  context: context,
-                                                  bet: double.parse(Coinflip
-                                                      .betFormatter
-                                                      .getUnformattedValue()
-                                                      .toString()));
-
-                                              if (!coinflipLogic.isWin) {
-                                                randAngle = 540;
-                                              } else {
-                                                randAngle = 760;
-                                              }
-
-                                              _controller
-                                                ..reset()
-                                                ..forward(from: 0);
-                                            }
-                                          : null,
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 5,
-                                        backgroundColor: Colors.green,
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(25.0),
-                                              topRight: Radius.circular(25.0)),
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 98, 206, 107),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(25.0),
+                                                topRight:
+                                                    Radius.circular(25.0)),
+                                          ),
+                                        ),
+                                        child: Transform.translate(
+                                          offset: const Offset(0.0, 1.0),
+                                          child: Image.asset(frontCoin,
+                                              width: 38.0,
+                                              height: 38.0,
+                                              opacity: !coinflipLogic
+                                                          .isGameOn ||
+                                                      _controller.status !=
+                                                          AnimationStatus
+                                                              .forward
+                                                  ? const AlwaysStoppedAnimation(
+                                                      1.0)
+                                                  : const AlwaysStoppedAnimation(
+                                                      0.4)),
                                         ),
                                       ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(18.0),
-                                        child: AutoSizeText(
-                                          'СТАВКА',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 24.0,
-                                              fontWeight: FontWeight.w900),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 15.0),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 64.0,
+                                      child: ElevatedButton(
+                                        onPressed: !coinflipLogic.isGameOn ||
+                                                _controller.status !=
+                                                    AnimationStatus.forward
+                                            ? () {
+                                                if (balance.currentBalance <
+                                                    double.parse(Coinflip
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString())) {
+                                                  return;
+                                                }
+
+                                                coinflipLogic.startGame(
+                                                    context: context,
+                                                    status:
+                                                        CoinflipStatus.nothing,
+                                                    bet: double.parse(Coinflip
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString()));
+
+                                                if (coinflipLogic
+                                                        .randomCoinflipStatus ==
+                                                    CoinflipStatus.nothing) {
+                                                  randAngle = 540;
+                                                } else {
+                                                  randAngle = 760;
+                                                }
+
+                                                _controller
+                                                  ..reset()
+                                                  ..forward(from: 0);
+                                              }
+                                            : null,
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 255, 128, 128),
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(25.0),
+                                                topRight:
+                                                    Radius.circular(25.0)),
+                                          ),
+                                        ),
+                                        child: Transform.translate(
+                                          offset: const Offset(0.0, 1.0),
+                                          child: Image.asset(backCoint,
+                                              width: 38.0,
+                                              height: 38.0,
+                                              opacity: !coinflipLogic
+                                                          .isGameOn ||
+                                                      _controller.status !=
+                                                          AnimationStatus
+                                                              .forward
+                                                  ? const AlwaysStoppedAnimation(
+                                                      1.0)
+                                                  : const AlwaysStoppedAnimation(
+                                                      0.4)),
                                         ),
                                       ),
                                     ),

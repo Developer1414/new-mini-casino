@@ -7,10 +7,14 @@ import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
+enum CoinflipStatus { dollar, nothing, init }
+
 class CoinflipLogic extends ChangeNotifier {
   bool isGameOn = false;
-  bool isWin = false;
   bool isContinueGame = false;
+
+  CoinflipStatus randomCoinflipStatus = CoinflipStatus.init;
+  CoinflipStatus userCoinflipStatus = CoinflipStatus.nothing;
 
   List<bool> lastGames = [];
 
@@ -34,17 +38,23 @@ class CoinflipLogic extends ChangeNotifier {
 
   late BuildContext context;
 
-  void startGame({required BuildContext context, required double bet}) {
+  void startGame(
+      {required BuildContext context,
+      required double bet,
+      required CoinflipStatus status}) {
     isGameOn = true;
 
     this.bet = bet;
     this.context = context;
+    userCoinflipStatus = status;
 
     if (!isContinueGame) {
       profit = 0.0;
     }
 
-    isWin = Random().nextInt(2) == 1;
+    randomCoinflipStatus = Random().nextInt(2) == 1
+        ? CoinflipStatus.dollar
+        : CoinflipStatus.nothing;
 
     GameStatisticController.updateGameStatistic(
         gameName: 'coinflip',
@@ -58,8 +68,11 @@ class CoinflipLogic extends ChangeNotifier {
 
   void raiseWinnings() {
     currentCoefficient++;
-
-    lastGames.add(true);
+    isGameOn = false;
+    lastGames.add(randomCoinflipStatus == CoinflipStatus.dollar &&
+            userCoinflipStatus == CoinflipStatus.dollar
+        ? true
+        : false);
 
     if (currentCoefficient < coefficients.length) {
       profit = bet * coefficients[currentCoefficient];
@@ -72,9 +85,10 @@ class CoinflipLogic extends ChangeNotifier {
 
   void cashout() {
     isGameOn = false;
-    isWin = false;
     isContinueGame = false;
     currentCoefficient = -1;
+
+    randomCoinflipStatus = CoinflipStatus.init;
 
     Provider.of<Balance>(context, listen: false).cashout(profit);
 
@@ -94,7 +108,7 @@ class CoinflipLogic extends ChangeNotifier {
     currentCoefficient = -1;
     profit = 0.0;
 
-    lastGames.add(false);
+    lastGames.add(randomCoinflipStatus == CoinflipStatus.dollar ? true : false);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'coinflip',

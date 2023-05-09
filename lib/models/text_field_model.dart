@@ -1,9 +1,10 @@
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
-import 'package:flutter/foundation.dart';
+import 'dart:io' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:provider/provider.dart';
 
@@ -76,8 +77,10 @@ Widget customTextField(
                 onPressed: () {
                   final balance = context.read<Balance>();
 
-                  controller.text = currencyTextInputFormatter
-                      .format(balance.currentBalanceString);
+                  controller.text = currencyTextInputFormatter.format(
+                      NumberFormat.simpleCurrency(
+                              locale: ui.Platform.localeName)
+                          .format(balance.currentBalance - 0.001));
                 },
                 icon: Text(
                   'max',
