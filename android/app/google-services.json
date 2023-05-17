@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "242091631777-2bup0eosrodueh37lki9foudqo2ln9l0.apps.googleusercontent.com",
+          "client_id": "242091631777-pa6j76ajkkbgn9vl2rbmmtosek5849sm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -50,7 +50,15 @@
       },
       "oauth_client": [
         {
-          "client_id": "242091631777-2bup0eosrodueh37lki9foudqo2ln9l0.apps.googleusercontent.com",
+          "client_id": "242091631777-9c3fg9v2qhod9lobv8qrd3hc1tohimkn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.revens.mini.casino",
+            "certificate_hash": "8bff82b73a0b76bb92d1e1424618c0e640a7c50b"
+          }
+        },
+        {
+          "client_id": "242091631777-pa6j76ajkkbgn9vl2rbmmtosek5849sm.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

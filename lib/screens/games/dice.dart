@@ -22,6 +22,8 @@ class Dice extends StatefulWidget {
         .currencySymbol,
   );
 
+  static bool isFetchCompleted = false;
+
   static TextEditingController betController =
       TextEditingController(text: betFormatter.format('10000'));
 
@@ -228,7 +230,8 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: diceLogic.isGameOn
+                              onPressed: diceLogic.isGameOn ||
+                                      !Dice.isFetchCompleted
                                   ? null
                                   : () {
                                       if (balance.currentBalance <
@@ -256,9 +259,6 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                                       _gifController.forward().whenComplete(() {
                                         diceLogic.cashout();
                                       });
-
-                                      //rand = Random().nextInt(2) + 1;
-                                      //print('rand: $rand');
                                     },
                               style: ElevatedButton.styleFrom(
                                 elevation: 5,
@@ -374,6 +374,12 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                           controller: _gifController,
                           fps: 60,
                           autostart: Autostart.no,
+                          onFetchCompleted: () {
+                            if (Dice.isFetchCompleted) return;
+
+                            Dice.isFetchCompleted = true;
+                            setState(() {});
+                          },
                           placeholder: (context) => AutoSizeText(
                             'Загрузка...',
                             style: GoogleFonts.roboto(

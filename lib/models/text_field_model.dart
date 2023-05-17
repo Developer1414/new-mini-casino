@@ -80,7 +80,7 @@ Widget customTextField(
                   controller.text = currencyTextInputFormatter.format(
                       NumberFormat.simpleCurrency(
                               locale: ui.Platform.localeName)
-                          .format(balance.currentBalance - 0.001));
+                          .format(balance.currentBalance - 0.01));
                 },
                 icon: Text(
                   'max',

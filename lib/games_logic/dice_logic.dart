@@ -89,7 +89,7 @@ class DiceLogic extends ChangeNotifier {
     this.bet = bet;
     this.context = context;
 
-    randomNumber = Random().nextInt(6) + 1;
+    randomNumber = Random.secure().nextInt(6) + 1;
     profit = 0.0;
 
     GameStatisticController.updateGameStatistic(

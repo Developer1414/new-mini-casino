@@ -120,22 +120,22 @@ class CrashLogic extends ChangeNotifier {
   }
 
   void incrementCoefficient() {
-    int temp = Random().nextInt(100);
+    int temp = Random.secure().nextInt(100);
 
     int time = 10;
 
     if (temp < 65.0) {
-      maxCoefficient = Random().nextDouble() * (1.5 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (1.5 - 1.0) + 1.0;
     } else if (temp >= 65.0 && temp < 75) {
-      maxCoefficient = Random().nextDouble() * (5.0 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (5.0 - 1.0) + 1.0;
     } else if (temp >= 75.0 && temp < 85) {
-      maxCoefficient = Random().nextDouble() * (10.0 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (10.0 - 1.0) + 1.0;
     } else if (temp >= 85.0 && temp < 95) {
-      maxCoefficient = Random().nextDouble() * (15.0 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (15.0 - 1.0) + 1.0;
     } else if (temp >= 95.0 && temp < 99.5) {
-      maxCoefficient = Random().nextDouble() * (35.0 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (35.0 - 1.0) + 1.0;
     } else if (temp >= 99.5) {
-      maxCoefficient = Random().nextDouble() * (100.0 - 1.0) + 1.0;
+      maxCoefficient = Random.secure().nextDouble() * (100.0 - 1.0) + 1.0;
     }
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {

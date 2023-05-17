@@ -33,6 +33,7 @@ Future alertDialogError(
     Function? onConfirmBtnTap}) async {
   await QuickAlert.show(
       context: context,
+      barrierDismissible: false,
       type: QuickAlertType.error,
       title: title,
       text: text,

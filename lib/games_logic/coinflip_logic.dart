@@ -52,7 +52,7 @@ class CoinflipLogic extends ChangeNotifier {
       profit = 0.0;
     }
 
-    randomCoinflipStatus = Random().nextInt(2) == 1
+    randomCoinflipStatus = Random.secure().nextInt(2) == 1
         ? CoinflipStatus.dollar
         : CoinflipStatus.nothing;
 

@@ -78,7 +78,7 @@ class MinesLogic extends ChangeNotifier {
     int rand = 0;
 
     while (minesIndex.length != countMines) {
-      rand = Random().nextInt(25);
+      rand = Random.secure().nextInt(25);
 
       if (!minesIndex.contains(rand)) {
         minesIndex.add(rand);
@@ -100,7 +100,7 @@ class MinesLogic extends ChangeNotifier {
     bool successed = false;
 
     while (!successed) {
-      rand = Random().nextInt(25);
+      rand = Random.secure().nextInt(25);
 
       if (!openedIndexes.contains(rand)) {
         checkItem(rand);

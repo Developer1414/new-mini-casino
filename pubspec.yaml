@@ -1,7 +1,7 @@
 name: new_mini_casino
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.0.7+8
+version: 1.0.8+9
 
 environment:
   sdk: '>=2.19.3 <3.0.0'
@@ -41,6 +41,9 @@ dependencies:
   flutter_gif: ^0.0.4
   gif: ^2.2.0
   shaky_animated_listview: ^0.0.5
+  dropdown_button2: ^2.1.2
+  freerasp: ^4.0.0
+  blur: ^3.1.0
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -72,29 +73,61 @@ class GameStatistic extends StatelessWidget {
                               fontWeight: FontWeight.w700),
                         ),
                       )
-                    : ListView(
-                        children: [
-                          statisticItem(
-                              title: 'Всего игр',
-                              number: double.parse(statistic
-                                  .gameStatisticModel!.totalGames
-                                  .toString()),
-                              isMoneys: false),
-                          statisticItem(
-                              title: 'Всего выигрыш',
-                              number:
-                                  statistic.gameStatisticModel!.winningsMoneys),
-                          statisticItem(
-                              title: 'Всего проигрыш',
-                              number:
-                                  statistic.gameStatisticModel!.lossesMoneys),
-                          statisticItem(
-                              title: 'Макс. выигрыш',
-                              number: statistic.gameStatisticModel!.maxWin),
-                          statisticItem(
-                              title: 'Макс. проигрыш',
-                              number: statistic.gameStatisticModel!.maxLoss),
-                        ],
+                    : SingleChildScrollView(
+                        physics: const BouncingScrollPhysics(),
+                        child: Column(
+                          children: [
+                            /*ListView(
+                              children: [
+                                statisticItem(
+                                    title: 'Всего выигрыш',
+                                    number: statistic
+                                        .gameStatisticModel!.winningsMoneys),
+                                statisticItem(
+                                    title: 'Всего проигрыш',
+                                    number: statistic
+                                        .gameStatisticModel!.lossesMoneys),
+                                statisticItem(
+                                    title: 'Макс. выигрыш',
+                                    number: statistic.gameStatisticModel!.maxWin),
+                                statisticItem(
+                                    title: 'Макс. проигрыш',
+                                    number:
+                                        statistic.gameStatisticModel!.maxLoss),
+                              ],
+                            ),*/
+                            GridView.count(
+                              shrinkWrap: true,
+                              physics: const BouncingScrollPhysics(),
+                              crossAxisCount: 1,
+                              childAspectRatio: 3.0,
+                              children: [
+                                gridItem(
+                                    title: 'Ставок',
+                                    isMoneys: false,
+                                    number: double.parse(statistic
+                                        .gameStatisticModel!.totalGames
+                                        .toString())),
+                                gridItem(
+                                    title: 'Выигрыш',
+                                    number: statistic
+                                        .gameStatisticModel!.winningsMoneys),
+                                gridItem(
+                                    title: 'Проигрыш',
+                                    number: statistic
+                                        .gameStatisticModel!.lossesMoneys),
+                                gridItem(
+                                    title: 'Макс. выигрыш за ставку',
+                                    number:
+                                        statistic.gameStatisticModel!.maxWin),
+                                gridItem(
+                                    title: 'Макс. проигрыш за ставку',
+                                    number:
+                                        statistic.gameStatisticModel!.maxLoss),
+                              ],
+                            ),
+                          ],
+                        ),
                       );
               },
             )),
@@ -102,48 +135,55 @@ class GameStatistic extends StatelessWidget {
     );
   }
 
-  Widget statisticItem(
-      {String title = '', double number = 0.0, bool isMoneys = true}) {
+  Widget gridItem(
+      {required String title, required double number, bool isMoneys = true}) {
     return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
+      height: 10.0,
+      width: 100.0,
+      margin: EdgeInsets.only(
+          left: 15.0, right: 15.0, bottom: 15.0, top: !isMoneys ? 15.0 : 0.0),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
           color: Colors.white,
+          borderRadius: BorderRadius.circular(25.0),
           boxShadow: [
             BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
           ]),
-      child: Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AutoSizeText(
-                title,
-                style: GoogleFonts.roboto(
-                    color: Colors.black87,
-                    fontSize: 23.0,
-                    fontWeight: FontWeight.w900),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
+            child: AutoSizeText(
+              isMoneys
+                  ? number < 1000000
+                      ? NumberFormat.simpleCurrency(
+                              locale: ui.Platform.localeName)
+                          .format(number)
+                      : NumberFormat.compactSimpleCurrency(
+                              locale: ui.Platform.localeName)
+                          .format(number)
+                  : NumberFormat.compact(locale: ui.Platform.localeName)
+                      .format(number),
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.roboto(
+                color: Colors.black87,
+                fontSize: 35.0,
+                fontWeight: FontWeight.w900,
               ),
-              const SizedBox(height: 5.0),
-              AutoSizeText(
-                isMoneys
-                    ? number < 1000000
-                        ? NumberFormat.simpleCurrency(
-                                locale: ui.Platform.localeName)
-                            .format(number)
-                        : NumberFormat.compactSimpleCurrency(
-                                locale: ui.Platform.localeName)
-                            .format(number)
-                    : NumberFormat.compact(locale: ui.Platform.localeName)
-                        .format(number),
-                style: GoogleFonts.roboto(
-                    color: Colors.black87,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w700),
-              ),
-            ],
-          )),
+            ),
+          ),
+          AutoSizeText(
+            title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.roboto(
+              color: Colors.black87,
+              fontSize: 15.0,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
