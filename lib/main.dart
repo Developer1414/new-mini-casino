@@ -28,6 +28,7 @@ import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
+import 'package:new_mini_casino/screens/raffle_info.dart';
 import 'package:new_mini_casino/screens/user_games_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
@@ -123,6 +124,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/games': (context, state, data) => const AllGames(),
         '/login': (context, state, data) => const Login(),
         '/profile': (context, state, data) => const Profile(),
+        '/raffle_info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
         '/crash': (context, state, data) => const Crash(),
@@ -153,7 +155,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    initSecurityState();
+    //initSecurityState();
 
     checkForUpdate();
   }

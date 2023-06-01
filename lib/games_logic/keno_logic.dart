@@ -34,12 +34,12 @@ class KenoLogic extends ChangeNotifier {
       return;
     }
 
+    int currentItem = -1;
+
     userNumbersList.clear();
     randomNumbersList.clear();
 
     List<int> numbers = [];
-
-    int currentItem = -1;
 
     timer.cancel();
 
@@ -59,7 +59,10 @@ class KenoLogic extends ChangeNotifier {
           timer.cancel();
         }
 
-        userNumbersList.add(numbers[currentItem]);
+        if (userNumbersList.length < 10) {
+          userNumbersList.add(numbers[currentItem]);
+        }
+
         coefficients = calculateCoefficients(10);
         notifyListeners();
       });
@@ -165,7 +168,7 @@ class KenoLogic extends ChangeNotifier {
       return;
     }
 
-    if (userNumbersList.length >= 10) {
+    if (userNumbersList.length >= 10 && !userNumbersList.contains(index)) {
       return;
     }
 
@@ -217,7 +220,7 @@ class KenoLogic extends ChangeNotifier {
 
     for (int i = 0; i < selectedCellsCount; i++) {
       double t = i / (selectedCellsCount - 1);
-      num t65 = pow(t, 3);
+      num t65 = pow(t, 1.6);
       double coefficient =
           startCoefficient * (1 - t65) * (1 - t65) + endCoefficient * t65 * t65;
       coefficients.add(

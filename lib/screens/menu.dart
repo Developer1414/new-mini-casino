@@ -116,12 +116,31 @@ class AllGames extends StatelessWidget {
                             size: 30.0,
                           )),
                     ),
-                    title: AutoSizeText(
-                      'Игры',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AutoSizeText(
+                          'Игры',
+                          style: GoogleFonts.roboto(
+                              color: Colors.black87,
+                              fontSize: 30.0,
+                              fontWeight: FontWeight.w900),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 0.0),
+                          child: Consumer<Balance>(
+                            builder: (context, value, _) {
+                              return AutoSizeText(
+                                value.currentBalanceString,
+                                style: GoogleFonts.roboto(
+                                    color: Colors.black87,
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w900),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                     actions: [
                       Padding(
@@ -148,17 +167,55 @@ class AllGames extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 15.0),
-                              child: Consumer<Balance>(
-                                builder: (context, value, _) {
-                                  return AutoSizeText(
-                                    'Баланс: ${value.currentBalanceString}',
-                                    style: GoogleFonts.roboto(
-                                        color: Colors.black87,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w900),
-                                  );
-                                },
+                              padding: const EdgeInsets.only(bottom: 16.0),
+                              child: SizedBox(
+                                height: 60.0,
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: () =>
+                                      context.beamToNamed('/raffle_info'),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    shadowColor:
+                                        const Color.fromARGB(255, 255, 0, 96)
+                                            .withOpacity(0.8),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 255, 0, 96),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0)),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10.0, right: 12.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const FaIcon(
+                                          FontAwesomeIcons.sackDollar,
+                                          color: Colors.white,
+                                          size: 25.0,
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        AutoSizeText(
+                                          'Розыгрыш',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 25.0,
+                                              fontWeight: FontWeight.w900,
+                                              shadows: [
+                                                Shadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.3),
+                                                    blurRadius: 20.0)
+                                              ]),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                             GridView.custom(

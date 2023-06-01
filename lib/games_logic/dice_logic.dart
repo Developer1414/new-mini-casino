@@ -99,10 +99,6 @@ class DiceLogic extends ChangeNotifier {
 
     Provider.of<Balance>(context, listen: false).placeBet(bet);
 
-    if (kDebugMode) {
-      print(randomNumber);
-    }
-
     notifyListeners();
   }
 
