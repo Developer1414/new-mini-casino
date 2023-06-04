@@ -57,7 +57,7 @@ class GameStatistic extends StatelessWidget {
             ),
             body: FutureBuilder(
               future: Provider.of<GameStatisticController>(context)
-                  .loadStatistic(gameName: game),
+                  .loadStatistic(game),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return loading();
@@ -77,25 +77,6 @@ class GameStatistic extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         child: Column(
                           children: [
-                            /*ListView(
-                              children: [
-                                statisticItem(
-                                    title: 'Всего выигрыш',
-                                    number: statistic
-                                        .gameStatisticModel!.winningsMoneys),
-                                statisticItem(
-                                    title: 'Всего проигрыш',
-                                    number: statistic
-                                        .gameStatisticModel!.lossesMoneys),
-                                statisticItem(
-                                    title: 'Макс. выигрыш',
-                                    number: statistic.gameStatisticModel!.maxWin),
-                                statisticItem(
-                                    title: 'Макс. проигрыш',
-                                    number:
-                                        statistic.gameStatisticModel!.maxLoss),
-                              ],
-                            ),*/
                             GridView.count(
                               shrinkWrap: true,
                               physics: const BouncingScrollPhysics(),
@@ -108,6 +89,18 @@ class GameStatistic extends StatelessWidget {
                                     number: double.parse(statistic
                                         .gameStatisticModel!.totalGames
                                         .toString())),
+                                gridItem(
+                                    title: 'Побед',
+                                    isMoneys: false,
+                                    isPercent: true,
+                                    number: (double.parse(statistic
+                                                .gameStatisticModel!
+                                                .winGamesCount
+                                                .toString()) /
+                                            double.parse(statistic
+                                                .gameStatisticModel!.totalGames
+                                                .toString())) *
+                                        100),
                                 gridItem(
                                     title: 'Выигрыш',
                                     number: statistic
@@ -126,6 +119,19 @@ class GameStatistic extends StatelessWidget {
                                         statistic.gameStatisticModel!.maxLoss),
                               ],
                             ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 15.0, right: 15.0, bottom: 15.0),
+                              child: AutoSizeText(
+                                'Вся статистика хранится на вашем устройстве. Если вы удалите игру или очистите кеш, данные будут удалены.',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.black87.withOpacity(0.4),
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -136,12 +142,16 @@ class GameStatistic extends StatelessWidget {
   }
 
   Widget gridItem(
-      {required String title, required double number, bool isMoneys = true}) {
+      {required String title,
+      required double number,
+      bool isMoneys = true,
+      bool isPercent = false}) {
     return Container(
-      height: 10.0,
-      width: 100.0,
       margin: EdgeInsets.only(
-          left: 15.0, right: 15.0, bottom: 15.0, top: !isMoneys ? 15.0 : 0.0),
+          left: 15.0,
+          right: 15.0,
+          bottom: 15.0,
+          top: !isMoneys && !isPercent ? 15.0 : 0.0),
       decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(25.0),
@@ -162,8 +172,10 @@ class GameStatistic extends StatelessWidget {
                       : NumberFormat.compactSimpleCurrency(
                               locale: ui.Platform.localeName)
                           .format(number)
-                  : NumberFormat.compact(locale: ui.Platform.localeName)
-                      .format(number),
+                  : isPercent
+                      ? '${number.toStringAsFixed(2)}%'
+                      : NumberFormat.compact(locale: ui.Platform.localeName)
+                          .format(number),
               maxLines: 1,
               textAlign: TextAlign.center,
               style: GoogleFonts.roboto(

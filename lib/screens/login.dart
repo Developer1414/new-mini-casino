@@ -201,6 +201,7 @@ class Login extends StatelessWidget {
                                         keyboardType: TextInputType.text,
                                         controller: Login.passwordController,
                                         isLastInput: true,
+                                        isPassword: true,
                                         hintText: 'Пароль...'),
                                   ),
                                   Padding(

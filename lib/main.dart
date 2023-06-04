@@ -5,8 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
@@ -15,6 +18,7 @@ import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/crash.dart';
@@ -26,9 +30,11 @@ import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
+import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
 import 'package:new_mini_casino/screens/raffle_info.dart';
+import 'package:new_mini_casino/screens/user_agreement.dart';
 import 'package:new_mini_casino/screens/user_games_history.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
@@ -58,7 +64,11 @@ void main() async {
 
   //FirebaseAuth.instance.signOut();
 
-  runApp(const MainApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((value) {
+    initializeDateFormatting('ru_RU', null)
+        .then((value) => runApp(const MainApp()));
+  });
 }
 
 class MainApp extends StatefulWidget {
@@ -122,6 +132,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       routes: {
         '/': (context, state, data) => const Home(),
         '/games': (context, state, data) => const AllGames(),
+        '/premium': (context, state, data) => const PremiumInfo(),
         '/login': (context, state, data) => const Login(),
         '/profile': (context, state, data) => const Profile(),
         '/raffle_info': (context, state, data) => const RaffleInfo(),
@@ -132,7 +143,16 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/coinflip': (context, state, data) => const Coinflip(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
+        '/user-agreement': (context, state, data) => const UserAgreement(),
         '/leader-board': (context, state, data) => const LeaderBoard(),
+        '/ban/:couse/:date': (context, state, data) {
+          final couse = state.pathParameters['couse']!;
+          final date = DateFormat.yMMMMd('ru_RU')
+              .format(DateTime.parse(state.pathParameters['date']!));
+          return BeamPage(
+            child: BannedUser(couse: couse, date: date),
+          );
+        },
         '/user-history/:userNickname/:userid': (context, state, data) {
           final userNickname = state.pathParameters['userNickname']!;
           final userid = state.pathParameters['userid']!;
@@ -155,7 +175,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    //initSecurityState();
+    initSecurityState();
 
     checkForUpdate();
   }
@@ -181,11 +201,11 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             onConfirmBtnTap: () => exit(0));
       },
       onEmulatorDetected: () {
-        alertDialogError(
+        /*alertDialogError(
             context: context,
             title: 'Error',
             text: 'Emulator detected',
-            onConfirmBtnTap: () => exit(0));
+            onConfirmBtnTap: () => exit(0));*/
       },
       onHookDetected: () {
         alertDialogError(

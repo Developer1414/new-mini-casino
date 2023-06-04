@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 class LeaderBoard extends StatefulWidget {
   const LeaderBoard({super.key});
 
-  static final List<String> items = ['Баланс', 'Кол. игр'];
+  static final List<String> items = ['Баланс', 'Кол. игр', 'Участники'];
 
   static String? selectedValue = items.first;
 
@@ -65,7 +65,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                           );
                         }),
                   )
-                : Container(),
+                : Container(height: 15.0),
         appBar: AppBar(
           toolbarHeight: 76.0,
           elevation: 0,
@@ -163,23 +163,48 @@ class _LeaderBoardState extends State<LeaderBoard> {
             ),
           ],
         ),
-        body: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .orderBy(
-                    LeaderBoard.selectedValue == LeaderBoard.items.first
-                        ? 'balance'
-                        : 'totalGames',
-                    descending: true)
-                .limit(100)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return loading();
-              }
+        body: LeaderBoard.selectedValue == LeaderBoard.items[2]
+            ? StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .where('participant', isEqualTo: true)
+                    .orderBy('balance', descending: true)
+                    .limit(100)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return loading();
+                  }
 
-              return list(snapshot: snapshot);
-            }),
+                  return snapshot.data!.docs.isEmpty
+                      ? Center(
+                          child: AutoSizeText(
+                            'Участников пока нет',
+                            style: GoogleFonts.roboto(
+                                color: Colors.black87.withOpacity(0.4),
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        )
+                      : list(snapshot: snapshot);
+                })
+            : StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection('users')
+                    .orderBy(
+                        LeaderBoard.selectedValue == LeaderBoard.items.first
+                            ? 'balance'
+                            : 'totalGames',
+                        descending: true)
+                    .limit(100)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return loading();
+                  }
+
+                  return list(snapshot: snapshot);
+                }),
       ),
     );
   }

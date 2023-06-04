@@ -85,8 +85,9 @@ class AccountController extends ChangeNotifier {
       'uid': FirebaseAuth.instance.currentUser!.uid,
       'name': name,
       'balance': 500,
-      'status': 'online',
-      'totalGames': 0
+      'totalGames': 0,
+      'participant': false,
+      'premium': false,
     }).whenComplete(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isFirstGameStarted', true);

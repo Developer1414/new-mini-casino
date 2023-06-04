@@ -148,6 +148,18 @@ class AllGames extends StatelessWidget {
                         child: IconButton(
                             splashRadius: 25.0,
                             padding: EdgeInsets.zero,
+                            onPressed: () => context.beamToNamed('/premium'),
+                            icon: const FaIcon(
+                              FontAwesomeIcons.solidStar,
+                              color: Colors.redAccent,
+                              size: 28.0,
+                            )),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 15.0),
+                        child: IconButton(
+                            splashRadius: 25.0,
+                            padding: EdgeInsets.zero,
                             onPressed: () =>
                                 context.beamToNamed('/leader-board'),
                             icon: const FaIcon(
@@ -172,8 +184,10 @@ class AllGames extends StatelessWidget {
                                 height: 60.0,
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () =>
-                                      context.beamToNamed('/raffle_info'),
+                                  onPressed: () {
+                                    context.beamToNamed(
+                                        '/raffle_info'); // /ban/Читерство/2023-12-31
+                                  },
                                   style: ElevatedButton.styleFrom(
                                     elevation: 5,
                                     shadowColor:
