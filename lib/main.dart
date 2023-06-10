@@ -167,7 +167,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    //initSecurityState();
+    initSecurityState();
 
     checkForUpdate();
   }
