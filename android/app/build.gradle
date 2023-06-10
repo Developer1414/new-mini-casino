@@ -77,6 +77,10 @@ android {
             signingConfig signingConfigs.release
         }
    }
+
+    configurations {
+        all*.exclude group: 'io.bidmachine', module: 'analytics'
+    }
 }
 
 flutter {

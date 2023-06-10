@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
@@ -16,6 +17,9 @@ enum AuthorizationAction { login, register }
 class AccountController extends ChangeNotifier {
   bool isLoading = false;
 
+  static bool isPremium = false;
+  static DateTime expiredSubscriptionDate = DateTime.now();
+
   String loadingText = 'Пожалуйста, подождите...';
 
   Timer? timer;
@@ -23,6 +27,52 @@ class AccountController extends ChangeNotifier {
   static late BuildContext context;
 
   AuthorizationAction authorizationAction = AuthorizationAction.register;
+
+  Future checkPremium() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) async {
+      if (value.data()!.containsKey('premium')) {
+        expiredSubscriptionDate = (value.get('premium') as Timestamp).toDate();
+
+        if (expiredSubscriptionDate.difference(DateTime.now()).inDays <= 0 &&
+            expiredSubscriptionDate.difference(DateTime.now()).inHours <= 0 &&
+            expiredSubscriptionDate.difference(DateTime.now()).inMinutes <= 0) {
+          isPremium = false;
+        } else {
+          isPremium = true;
+        }
+      }
+    });
+
+    notifyListeners();
+  }
+
+  Future<List> checkBanAccount() async {
+    List list = [];
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((value) {
+      if (value.data()!.containsKey('ban')) {
+        list = value.get('ban') as List;
+
+        DateTime expiredDate = (list[1] as Timestamp).toDate();
+
+        if (expiredDate.difference(DateTime.now()).inDays <= 0 &&
+            expiredDate.difference(DateTime.now()).inHours <= 0 &&
+            expiredDate.difference(DateTime.now()).inMinutes <= 0) {
+          list = [];
+        }
+      }
+    });
+
+    return list;
+  }
 
   Future login({required String email, required String password}) async {
     isLoading = true;
@@ -87,7 +137,6 @@ class AccountController extends ChangeNotifier {
       'balance': 500,
       'totalGames': 0,
       'participant': false,
-      'premium': false,
     }).whenComplete(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isFirstGameStarted', true);
@@ -165,11 +214,25 @@ class AccountController extends ChangeNotifier {
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
-  static Future<Widget> checkAuthState() async {
+  Future<Widget> checkAuthState() async {
+    Widget? newScreen;
+
     if (FirebaseAuth.instance.currentUser != null) {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
-        AdService.loadCountBet();
-        return const AllGames();
+        await checkBanAccount().then((value) async {
+          if (value.isNotEmpty) {
+            newScreen = BannedUser(
+                reason: value[0].toString(),
+                date: (value[1] as Timestamp).toDate());
+          } else {
+            await checkPremium();
+
+            AdService.loadCountBet();
+            newScreen = const AllGames();
+          }
+        });
+
+        return newScreen!;
       } else {
         FirebaseAuth.instance.signOut();
         return const Login();

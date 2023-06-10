@@ -53,7 +53,8 @@ class Balance extends ChangeNotifier {
     });
   }
 
-  void getReward({required BuildContext context, required double rewardCount}) {
+  void getReward(
+      {required BuildContext context, required double rewardCount}) async {
     cashout(rewardCount);
 
     alertDialogSuccess(
@@ -63,5 +64,32 @@ class Balance extends ChangeNotifier {
       text:
           'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(rewardCount)}!',
     );
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((value) {
+      List freeBonusInfo = [0, DateTime.now()];
+
+      if (value.data()!.containsKey('freeBonusInfo')) {
+        freeBonusInfo = value.get('freeBonusInfo') as List;
+
+        if ((freeBonusInfo[1] as Timestamp).toDate().day !=
+            DateTime.now().day) {
+          freeBonusInfo[0] = 0;
+        }
+      }
+
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .update({
+        'freeBonusInfo': [
+          int.parse(freeBonusInfo[0].toString()) + 1,
+          DateTime.now()
+        ]
+      });
+    });
   }
 }

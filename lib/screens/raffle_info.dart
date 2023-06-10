@@ -60,7 +60,7 @@ class RaffleInfo extends StatelessWidget {
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                text: 'Привет! Скоро мы запустим розыгрыш на ',
+                text: 'Привет! Скоро мы запустим розыгрыш на реальные ',
                 style: GoogleFonts.roboto(
                     textStyle: const TextStyle(
                   color: Colors.black87,

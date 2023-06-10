@@ -1,0 +1,11 @@
+[
+    {
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.revens.mini.casino",
+        "sha256_cert_fingerprints":
+          ["4A:67:54:B0:90:F0:6F:A6:65:91:04:BE:07:68:90:2A:94:55:79:0B:0A:B0:88:1B:3B:9B:84:03:8B:64:88:95"]
+      }
+    }
+  ]

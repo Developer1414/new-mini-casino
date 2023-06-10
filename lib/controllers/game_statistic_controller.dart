@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 
@@ -59,6 +61,13 @@ class GameStatisticController extends ChangeNotifier {
           maxWin: double.parse(loadedData['maxWin'].toString()),
           maxLoss: double.parse(loadedData['maxLoss'].toString()),
         );
+      }
+
+      if (incrementTotalGames) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'totalGames': FieldValue.increment(1)});
       }
 
       Map<String, dynamic> data = {
