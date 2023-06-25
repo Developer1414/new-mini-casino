@@ -6,10 +6,15 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class BannedUser extends StatelessWidget {
-  const BannedUser({super.key, required this.reason, required this.date});
+  const BannedUser(
+      {super.key,
+      required this.reason,
+      required this.date,
+      required this.isBannedAccount});
 
   final String reason;
   final DateTime date;
+  final bool isBannedAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,9 @@ class BannedUser extends StatelessWidget {
                   ),
                   const SizedBox(height: 15.0),
                   Text(
-                      'Вы заблокированны до ${DateFormat.yMMMMd('ru_RU').format(date)}\nПричина: $reason',
+                      isBannedAccount
+                          ? 'Вы заблокированы до ${DateFormat.yMMMMd('ru_RU').format(date)}\nПричина: $reason'
+                          : reason,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.roboto(
                           textStyle: const TextStyle(

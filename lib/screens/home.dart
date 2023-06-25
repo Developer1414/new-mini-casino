@@ -1,9 +1,11 @@
 import 'dart:async';
-
 import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,12 +18,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late StreamSubscription internetCheckerSubscription;
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void dispose() {
     super.dispose();
-    internetCheckerSubscription.cancel();
+
+    _connectivitySubscription.cancel();
   }
 
   Future showPremiumSubscription() async {
@@ -49,19 +54,40 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future<void> initConnectivity() async {
+    late ConnectivityResult result;
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print('Couldn\'t check connectivity status: ${e.message}');
+      }
+      return;
+    }
+
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {
+      _connectionStatus = result;
+
+      if (_connectionStatus == ConnectivityResult.none) {
+        Beamer.of(context).beamToNamed('/no-internet');
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
-
     showPremiumSubscription();
-
-    internetCheckerSubscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      if (result.index == 0) {
-        Beamer.of(context).beamToNamed('/no_internet');
-      }
-    });
+    initConnectivity();
+    DailyBonusManager().checkDailyBonus(context);
   }
 
   @override

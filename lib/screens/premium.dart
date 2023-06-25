@@ -14,7 +14,9 @@ import 'dart:io' as ui;
 import 'package:webview_flutter/webview_flutter.dart';
 
 class PremiumInfo extends StatelessWidget {
-  const PremiumInfo({super.key});
+  const PremiumInfo({super.key, this.showCloseButton = true});
+
+  final bool showCloseButton;
 
   @override
   Widget build(BuildContext context) {
@@ -117,20 +119,22 @@ class PremiumInfo extends StatelessWidget {
                       backgroundColor: Colors.transparent,
                       automaticallyImplyLeading: false,
                       actions: [
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
-                          child: IconButton(
-                              splashRadius: 25.0,
-                              padding: EdgeInsets.zero,
-                              onPressed: () {
-                                Beamer.of(context).beamBack();
-                              },
-                              icon: const FaIcon(
-                                FontAwesomeIcons.xmark,
-                                color: Colors.redAccent,
-                                size: 30.0,
-                              )),
-                        ),
+                        !showCloseButton
+                            ? Container()
+                            : Padding(
+                                padding: const EdgeInsets.only(right: 15.0),
+                                child: IconButton(
+                                    splashRadius: 25.0,
+                                    padding: EdgeInsets.zero,
+                                    onPressed: () {
+                                      Beamer.of(context).beamBack();
+                                    },
+                                    icon: const FaIcon(
+                                      FontAwesomeIcons.xmark,
+                                      color: Colors.redAccent,
+                                      size: 30.0,
+                                    )),
+                              ),
                       ],
                     ),
                     body: Padding(
@@ -240,7 +244,8 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Есть реклама\n• 5 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}\n• Участие в розыгрыше только после 5000 игр.',
+                                    '• Есть реклама\n• 5 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
+                                    // \n• Участие в розыгрыше только после 5000 игр.
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,
@@ -316,8 +321,8 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Нет рекламы\n• 10 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Участие в розыгрыше в любое время.',
-                                    // \n• Ежедневные бонусы увеличены в 2 раза.
+                                    '• Нет рекламы\n• 10 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.',
+                                    // \n• Участие в розыгрыше в любое время
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,

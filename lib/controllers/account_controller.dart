@@ -4,12 +4,13 @@ import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:ntp/ntp.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthorizationAction { login, register }
@@ -85,7 +86,22 @@ class AccountController extends ChangeNotifier {
 
       authorizationAction = AuthorizationAction.register;
 
-      if (context.mounted) context.beamToReplacementNamed('/games');
+      await checkBanAccount().then((value) async {
+        if (value.isNotEmpty) {
+          Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                  builder: (ctx) => BannedUser(
+                      isBannedAccount: true,
+                      reason: value[0].toString(),
+                      date: (value[1] as Timestamp).toDate())),
+              (route) => false);
+        } else {
+          await checkPremium();
+
+          AdService.loadCountBet();
+          if (context.mounted) context.beamToReplacementNamed('/games');
+        }
+      });
     } on FirebaseAuthException catch (e) {
       AccountExceptionController.showException(context: context, code: e.code);
     }
@@ -101,22 +117,23 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future sendLinkToEmailToVerifyAccount({required String name}) async {
+  Future sendLinkToEmailToVerifyAccount(
+      {required String name, String referalCode = ''}) async {
     loadingText =
-        'Перейдите по ссылке, отправленной на вашу электронную почту, чтобы подтвердить свою учетную запись. Если вы не нашли письмо, проверьте папку «Спам».';
+        'Перейдите по ссылке, отправленной на Вашу электронную почту, чтобы подтвердить свою учетную запись. Если Вы не нашли письмо, проверьте папку «Спам».';
     notifyListeners();
 
     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
 
-    timer = Timer.periodic(
-        const Duration(seconds: 3), (_) => checkEmailVerified(name: name));
+    timer = Timer.periodic(const Duration(seconds: 3),
+        (_) => checkEmailVerified(name: name, referalCode: referalCode));
   }
 
-  checkEmailVerified({required String name}) async {
+  checkEmailVerified({required String name, String referalCode = ''}) async {
     await FirebaseAuth.instance.currentUser?.reload();
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
-      setDataToDatabase(name);
+      setDataToDatabase(name, referalCode);
 
       timer?.cancel();
     }
@@ -124,9 +141,13 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future setDataToDatabase(String name) async {
+  Future setDataToDatabase(String name, String signedCode) async {
     loadingText = 'Пожалуйста, подождите...';
     isLoading = false;
+
+    DateTime dateTimeNow = await NTP.now();
+
+    List freeBonusInfo = [0, dateTimeNow];
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -134,9 +155,10 @@ class AccountController extends ChangeNotifier {
         .set({
       'uid': FirebaseAuth.instance.currentUser!.uid,
       'name': name,
-      'balance': 500,
+      'balance': signedCode.isEmpty ? 500 : 5000,
       'totalGames': 0,
       'participant': false,
+      'freeBonusInfo': freeBonusInfo
     }).whenComplete(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isFirstGameStarted', true);
@@ -144,7 +166,7 @@ class AccountController extends ChangeNotifier {
       authorizationAction = AuthorizationAction.register;
 
       // ignore: use_build_context_synchronously
-      context.beamToReplacementNamed('/games');
+      context.beamToReplacementNamed('/welcome');
     });
 
     notifyListeners();
@@ -153,16 +175,60 @@ class AccountController extends ChangeNotifier {
   Future register(
       {required String email,
       required String password,
+      String? referalCode,
       required String name}) async {
     isLoading = true;
     notifyListeners();
 
+    /*if (referalCode != null) {
+      await checkOnExistReferalCode(
+          email: email,
+          password: password,
+          referalCode: referalCode,
+          name: name);
+    } else {
+      await createUser(email: email, password: password, name: name);
+    }*/
+
+    await createUser(email: email, password: password, name: name);
+  }
+
+  Future checkOnExistReferalCode(
+      {required String email,
+      required String password,
+      required referalCode,
+      required String name}) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: referalCode)
+        .get()
+        .then((value) async {
+      if (value.docs.isEmpty) {
+        isLoading = false;
+        notifyListeners();
+
+        AccountExceptionController.showException(
+            context: context, code: 'referal_code_not_found');
+        return;
+      } else {
+        await createUser(email: email, password: password, name: name);
+      }
+    });
+  }
+
+  Future createUser(
+      {required String email,
+      required String password,
+      String referalCode = '',
+      required String name}) async {
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      await sendLinkToEmailToVerifyAccount(name: name);
+      await sendLinkToEmailToVerifyAccount(
+          name: name, referalCode: referalCode);
     } on FirebaseAuthException catch (e) {
+      // ignore: use_build_context_synchronously
       AccountExceptionController.showException(context: context, code: e.code);
     }
   }
@@ -201,19 +267,6 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    return await FirebaseAuth.instance.signInWithCredential(credential);
-  }
-
   Future<Widget> checkAuthState() async {
     Widget? newScreen;
 
@@ -222,13 +275,14 @@ class AccountController extends ChangeNotifier {
         await checkBanAccount().then((value) async {
           if (value.isNotEmpty) {
             newScreen = BannedUser(
+                isBannedAccount: true,
                 reason: value[0].toString(),
                 date: (value[1] as Timestamp).toDate());
           } else {
             await checkPremium();
-
-            AdService.loadCountBet();
+            await RaffleManager().checkOnStartedRaffle();
             newScreen = const AllGames();
+            AdService.loadCountBet();
           }
         });
 

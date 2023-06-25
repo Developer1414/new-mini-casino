@@ -36,16 +36,12 @@ class _LeaderBoardState extends State<LeaderBoard> {
             LeaderBoard.selectedValue == LeaderBoard.items.first
                 ? Container(
                     height: 60.0,
-                    margin: const EdgeInsets.all(15.0),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        color: Colors.white,
-                        border: Border.all(color: Colors.redAccent, width: 2.0),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.redAccent.withOpacity(0.5),
-                              blurRadius: 10.0)
-                        ]),
+                    margin: const EdgeInsets.only(top: 15.0),
+                    decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                      BoxShadow(
+                          color: Colors.black87.withOpacity(0.4),
+                          blurRadius: 5.0)
+                    ]),
                     child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                             .collection('users')
@@ -293,13 +289,16 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: AutoSizeText(
-                                                  'Самый богатый',
+                                                  LeaderBoard.selectedValue ==
+                                                          LeaderBoard.items[1]
+                                                      ? 'Самый активный'
+                                                      : 'Самый богатый',
                                                   textAlign: TextAlign.center,
                                                   style: GoogleFonts.roboto(
                                                       color: Colors.white,
                                                       fontSize: 12.0,
                                                       fontWeight:
-                                                          FontWeight.w900),
+                                                          FontWeight.w700),
                                                 ),
                                               ),
                                             )
@@ -337,7 +336,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                           AutoSizeText(
                             'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}\nВсего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
                             style: GoogleFonts.roboto(
-                                color: Colors.black87,
+                                color: Colors.black87.withOpacity(0.8),
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.w700),
                           ),

@@ -34,7 +34,7 @@ class Payment extends ChangeNotifier {
   }) async {
     var clientApplicationKey =
         "live_OTgyMTMyd3WgKx6U_t_xHzTFWmt93Qp1Anns6ZErqWM";
-    var amount = Amount(value: 1.0, currency: Currency.rub);
+    var amount = Amount(value: 99.0, currency: Currency.rub);
     var shopId = "982132";
     var moneyAuthClientId = "gganqqp7bvspn3g47ehqe2vtnut8hv59";
 

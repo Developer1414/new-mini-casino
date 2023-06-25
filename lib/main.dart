@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'dart:io';
 
+import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -8,7 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:new_mini_casino/business/bonus_manager.dart';
+import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
+import 'package:new_mini_casino/business/promocode_manager.dart';
+import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
@@ -16,7 +20,7 @@ import 'package:new_mini_casino/games_logic/crash_logic.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/crash.dart';
@@ -32,9 +36,11 @@ import 'package:new_mini_casino/screens/no_internet_connection.dart';
 import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
+import 'package:new_mini_casino/screens/promocode.dart';
 import 'package:new_mini_casino/screens/raffle_info.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
 import 'package:new_mini_casino/screens/user_games_history.dart';
+import 'package:new_mini_casino/screens/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'firebase_options.dart';
@@ -42,7 +48,6 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:provider/provider.dart';
-import 'package:freerasp/talsec_app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,6 +55,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // FirebaseAuth.instance.signOut();
 
   Appodeal.initialize(
       appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
@@ -61,9 +68,11 @@ void main() async {
       ],
       onInitializationFinished: (errors) => {});
 
-  //FirebaseAuth.instance.signOut();
+  await AppMetrica.activate(
+      const AppMetricaConfig("c7091f0c-996b-4764-a824-8b1570535fd6"));
+  AppMetrica.reportEvent('My first AppMetrica event!');
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
     initializeDateFormatting('ru_RU', null)
         .then((value) => runApp(const MainApp()));
@@ -131,11 +140,14 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       routes: {
         '/': (context, state, data) => const Home(),
         '/games': (context, state, data) => const AllGames(),
-        '/no_internet': (context, state, data) => const NoInternetConnection(),
+        '/no-internet': (context, state, data) => const NoInternetConnection(),
         '/premium': (context, state, data) => const PremiumInfo(),
+        '/welcome': (context, state, data) => const Welcome(),
+        '/daily-bonus': (context, state, data) => const DailyBonus(),
         '/login': (context, state, data) => const Login(),
         '/profile': (context, state, data) => const Profile(),
-        '/raffle_info': (context, state, data) => const RaffleInfo(),
+        '/promocode': (context, state, data) => const Promocode(),
+        '/raffle-info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
         '/crash': (context, state, data) => const Crash(),
@@ -157,7 +169,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           return BeamPage(
             child: GameStatistic(game: game),
           );
-        }
+        },
       },
     ),
   );
@@ -167,74 +179,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
-    initSecurityState();
-
     checkForUpdate();
-  }
-
-  Future<void> initSecurityState() async {
-    TalsecConfig config = TalsecConfig(
-      androidConfig: AndroidConfig(
-        expectedPackageName: 'com.revens.mini.casino',
-        expectedSigningCertificateHashes: [
-          'SmdUsJDwb6ZlkQS+B2iQKpRVeQsKsIgbO5uEA4tkiJU='
-        ],
-      ),
-      watcherMail: 'develope14000@gmail.com',
-    );
-
-    TalsecCallback callback = TalsecCallback(
-        androidCallback: AndroidCallback(
-      onRootDetected: () {
-        alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Root detected',
-            onConfirmBtnTap: () => exit(0));
-      },
-      onEmulatorDetected: () {
-        /*alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Emulator detected',
-            onConfirmBtnTap: () => exit(0));*/
-      },
-      onHookDetected: () {
-        alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Hook detected',
-            onConfirmBtnTap: () => exit(0));
-      },
-      onTamperDetected: () {
-        alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Tamper detected',
-            onConfirmBtnTap: () => exit(0));
-      },
-      onDeviceBindingDetected: () {
-        alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Device binding',
-            onConfirmBtnTap: () => exit(0));
-      },
-      onUntrustedInstallationDetected: () {
-        alertDialogError(
-            context: context,
-            title: 'Error',
-            text: 'Untrusted install',
-            onConfirmBtnTap: () => exit(0));
-      },
-    ));
-
-    TalsecApp app = TalsecApp(
-      config: config,
-      callback: callback,
-    );
-
-    app.start();
   }
 
   @override
@@ -243,6 +188,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
+        ChangeNotifierProvider(create: (ctx) => RaffleManager()),
+        ChangeNotifierProvider(create: (ctx) => DailyBonusManager()),
+        ChangeNotifierProvider(create: (ctx) => PromocodeManager()),
+        ChangeNotifierProvider(create: (ctx) => BonusManager()),
         ChangeNotifierProvider(create: (ctx) => CoinflipLogic()),
         ChangeNotifierProvider(create: (ctx) => CrashLogic()),
         ChangeNotifierProvider(create: (ctx) => KenoLogic()),

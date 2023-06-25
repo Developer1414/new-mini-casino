@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
 
 class Balance extends ChangeNotifier {
   double _balance = 500.0;
@@ -50,46 +49,6 @@ class Balance extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .update({
       'balance': _balance,
-    });
-  }
-
-  void getReward(
-      {required BuildContext context, required double rewardCount}) async {
-    cashout(rewardCount);
-
-    alertDialogSuccess(
-      context: context,
-      title: 'Поздравляем!',
-      confirmBtnText: 'Спасибо!',
-      text:
-          'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(rewardCount)}!',
-    );
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get()
-        .then((value) {
-      List freeBonusInfo = [0, DateTime.now()];
-
-      if (value.data()!.containsKey('freeBonusInfo')) {
-        freeBonusInfo = value.get('freeBonusInfo') as List;
-
-        if ((freeBonusInfo[1] as Timestamp).toDate().day !=
-            DateTime.now().day) {
-          freeBonusInfo[0] = 0;
-        }
-      }
-
-      FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({
-        'freeBonusInfo': [
-          int.parse(freeBonusInfo[0].toString()) + 1,
-          DateTime.now()
-        ]
-      });
     });
   }
 }

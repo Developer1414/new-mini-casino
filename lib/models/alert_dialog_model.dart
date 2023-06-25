@@ -50,10 +50,12 @@ Future alertDialogSuccess(
     required String title,
     required String text,
     String? confirmBtnText,
+    bool? barrierDismissible,
     Function? onConfirmBtnTap}) async {
   await QuickAlert.show(
       context: context,
       type: QuickAlertType.success,
+      barrierDismissible: barrierDismissible ?? true,
       title: title,
       text: text,
       confirmBtnText: confirmBtnText ?? 'Окей',

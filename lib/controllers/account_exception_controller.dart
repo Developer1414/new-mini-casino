@@ -80,6 +80,14 @@ class AccountExceptionController {
           confirmBtnText: 'Окей',
         );
         break;
+      case 'referal_code_not_found':
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          text: 'Реферальный код не найден!',
+          confirmBtnText: 'Окей',
+        );
+        break;
     }
   }
 }

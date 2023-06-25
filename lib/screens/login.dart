@@ -17,6 +17,7 @@ class Login extends StatelessWidget {
   static TextEditingController nameController = TextEditingController();
   static TextEditingController emailController = TextEditingController();
   static TextEditingController passwordController = TextEditingController();
+  static TextEditingController referalCode = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +180,7 @@ class Login extends StatelessWidget {
                                           child: loginCustomTextField(
                                               keyboardType: TextInputType.name,
                                               limitSymbols: true,
-                                              controller: Login.nameController,
+                                              controller: nameController,
                                               hintText: 'Никнейм...'),
                                         )
                                       : Container(),
@@ -191,7 +192,7 @@ class Login extends StatelessWidget {
                                     child: loginCustomTextField(
                                         keyboardType:
                                             TextInputType.emailAddress,
-                                        controller: Login.emailController,
+                                        controller: emailController,
                                         hintText: 'Почта...'),
                                   ),
                                   Padding(
@@ -199,11 +200,24 @@ class Login extends StatelessWidget {
                                         left: 15.0, right: 15.0, top: 15.0),
                                     child: loginCustomTextField(
                                         keyboardType: TextInputType.text,
-                                        controller: Login.passwordController,
+                                        controller: passwordController,
                                         isLastInput: true,
                                         isPassword: true,
                                         hintText: 'Пароль...'),
                                   ),
+                                  /*accountController.authorizationAction ==
+                                          AuthorizationAction.register
+                                      ? Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 15.0,
+                                              right: 15.0,
+                                              top: 15.0),
+                                          child: loginCustomTextField(
+                                              keyboardType: TextInputType.text,
+                                              controller: referalCode,
+                                              hintText: 'Реферальный код...'),
+                                        )
+                                      : Container(),*/
                                   Padding(
                                     padding: const EdgeInsets.all(15.0),
                                     child: SizedBox(
@@ -285,7 +299,7 @@ class Login extends StatelessWidget {
                                           if (accountController
                                                   .authorizationAction ==
                                               AuthorizationAction.register) {
-                                            if (nameController.text.length <
+                                            /*if (nameController.text.length <
                                                 4) {
                                               AccountExceptionController
                                                   .showException(
@@ -294,7 +308,7 @@ class Login extends StatelessWidget {
                                                           'nickname_too_short');
 
                                               return;
-                                            }
+                                            }*/
 
                                             await accountController
                                                 .checkOnExistNickname(
@@ -318,7 +332,9 @@ class Login extends StatelessWidget {
                                                                 .text,
                                                         name: nameController
                                                             .text
-                                                            .trim());
+                                                            .trim(),
+                                                        referalCode:
+                                                            referalCode.text);
                                               }
                                             });
                                           } else {
