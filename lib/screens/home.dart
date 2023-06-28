@@ -92,17 +92,20 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: FutureBuilder(
-        future: AccountController().checkAuthState(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return loading();
-          }
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: FutureBuilder(
+          future: AccountController().checkAuthState(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return loading();
+            }
 
-          return snapshot.data!;
-        },
+            return snapshot.data!;
+          },
+        ),
       ),
     );
   }

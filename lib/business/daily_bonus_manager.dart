@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
@@ -42,9 +41,6 @@ class DailyBonusManager extends ChangeNotifier {
       // ignore: use_build_context_synchronously
       context.beamToNamed('/daily-bonus');
     }
-
-    // ignore: use_build_context_synchronously
-    Provider.of<BonusManager>(context, listen: false).loadFreeBonusCount();
   }
 
   Future<String> showCurrentBonus() async {
