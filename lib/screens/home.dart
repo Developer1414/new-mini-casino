@@ -94,18 +94,15 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async => false,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: FutureBuilder(
-          future: AccountController().checkAuthState(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return loading();
-            }
+      child: FutureBuilder(
+        future: AccountController().checkAuthState(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return loading();
+          }
 
-            return snapshot.data!;
-          },
-        ),
+          return snapshot.data!;
+        },
       ),
     );
   }

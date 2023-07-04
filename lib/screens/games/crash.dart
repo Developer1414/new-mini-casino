@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
+import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/models/text_field_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -148,6 +149,19 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                       double.parse(
                                               Crash.targetCoefficient.text) <
                                           1) {
+                                    return;
+                                  }
+
+                                  if (double.parse(
+                                          Crash.targetCoefficient.text) <
+                                      1.1) {
+                                    alertDialogError(
+                                      context: context,
+                                      title: 'Ошибка',
+                                      text: 'Минимальный коэффициент: 1.1',
+                                      confirmBtnText: 'Окей',
+                                    );
+
                                     return;
                                   }
 
@@ -305,6 +319,11 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                   extentOffset:
                                       Crash.targetCoefficient.text.length);
                             },
+                            onSubmitted: (value) {
+                              if (double.parse(value) < 1.1) {
+                                Crash.targetCoefficient.text = '1.1';
+                              }
+                            },
                             decoration: InputDecoration(
                                 hintText: 'Коэффициент...',
                                 hintStyle: GoogleFonts.roboto(
@@ -387,11 +406,8 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                         : ListView.separated(
                             scrollDirection: Axis.horizontal,
                             itemBuilder: (context, index) {
-                              List<CrashRound> value = crashLogic
-                                  .lastCoefficients
-                                  
-                                  .reversed
-                                  .toList();
+                              List<CrashRound> value =
+                                  crashLogic.lastCoefficients.reversed.toList();
 
                               return Container(
                                 margin: EdgeInsets.only(

@@ -9,6 +9,7 @@ Widget gameButtonModel(
     required String gameLogo,
     required Function onTap,
     bool isSoon = false,
+    bool isNew = false,
     required BorderRadiusGeometry borderRadius,
     required Color buttonColor}) {
   return ElevatedButton(
@@ -27,8 +28,8 @@ Widget gameButtonModel(
           padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
           child: Image(
             image: AssetImage('assets/games_logo/$gameLogo.png'),
-            width: 130.0,
-            height: 130.0,
+            width: 140.0,
+            height: 140.0,
           )),
       Padding(
         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -36,11 +37,39 @@ Widget gameButtonModel(
           decoration: BoxDecoration(borderRadius: borderRadius),
         ).blurred(colorOpacity: 0.0, blur: 4.0),
       ),
+      !isNew
+          ? Container()
+          : Align(
+              alignment: Alignment.topLeft,
+              child: Container(
+                margin: const EdgeInsets.only(top: 17.0),
+                decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(12.0),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.redAccent.withOpacity(0.5),
+                          blurRadius: 8.0,
+                          spreadRadius: 1.5)
+                    ]),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: AutoSizeText(
+                    'Новое',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w900),
+                  ),
+                ),
+              ),
+            ),
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 10.0, right: 12.0),
+            padding: const EdgeInsets.only(left: 12.0, right: 12.0),
             child: AutoSizeText(
               buttonTitle,
               textAlign: TextAlign.center,

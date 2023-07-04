@@ -19,6 +19,7 @@ import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
+import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
@@ -26,6 +27,7 @@ import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/crash.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
 import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
+import 'package:new_mini_casino/screens/games/jackpot.dart';
 import 'package:new_mini_casino/screens/games/keno.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
 import 'package:new_mini_casino/screens/home.dart';
@@ -151,6 +153,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
         '/crash': (context, state, data) => const Crash(),
+        '/jackpot': (context, state, data) => const Jackpot(),
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
@@ -197,6 +200,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => KenoLogic()),
         ChangeNotifierProvider(create: (ctx) => FortuneWheelLogic()),
         ChangeNotifierProvider(create: (ctx) => DiceLogic()),
+        ChangeNotifierProvider(create: (ctx) => JackpotLogic()),
         ChangeNotifierProvider(create: (ctx) => Balance()),
         ChangeNotifierProvider(create: (ctx) => AccountController()),
         ChangeNotifierProvider(create: (ctx) => GameStatisticController()),

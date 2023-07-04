@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 class LeaderBoard extends StatefulWidget {
   const LeaderBoard({super.key});
 
-  static final List<String> items = ['Баланс', 'Кол. игр', 'Участники'];
+  static final List<String> items = ['Баланс', 'Кол. игр'];
 
   static String? selectedValue = items.first;
 
@@ -159,7 +159,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
             ),
           ],
         ),
-        body: LeaderBoard.selectedValue == LeaderBoard.items[2]
+        body: /* LeaderBoard.selectedValue == LeaderBoard.items[2]
             ? StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('users')
@@ -184,7 +184,8 @@ class _LeaderBoardState extends State<LeaderBoard> {
                         )
                       : list(snapshot: snapshot);
                 })
-            : StreamBuilder(
+            :*/
+            StreamBuilder(
                 stream: FirebaseFirestore.instance
                     .collection('users')
                     .orderBy(

@@ -6,6 +6,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:provider/provider.dart';
 
 enum CrashStatus { win, loss, idle }
@@ -41,31 +42,35 @@ class CrashLogic extends ChangeNotifier {
       {required BuildContext context,
       required double bet,
       required double targetCoefficient}) {
-    this.bet = bet;
-    this.targetCoefficient = targetCoefficient;
-    this.context = context;
+    if (AutoclickerSecure.isCanPlay) {
+      this.bet = bet;
+      this.targetCoefficient = targetCoefficient;
+      this.context = context;
 
-    winCoefficient = 1.00;
-    maxCoefficient = 0.0;
+      winCoefficient = 1.00;
+      maxCoefficient = 0.0;
 
-    isGameOn = true;
+      isGameOn = true;
 
-    crashStatus = CrashStatus.idle;
+      crashStatus = CrashStatus.idle;
 
-    animationController
-      ..reset()
-      ..forward();
+      animationController
+        ..reset()
+        ..forward();
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'crash',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
+      GameStatisticController.updateGameStatistic(
+          gameName: 'crash',
+          incrementTotalGames: true,
+          gameStatisticModel: GameStatisticModel());
 
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
+      Provider.of<Balance>(context, listen: false).placeBet(bet);
 
-    incrementCoefficient();
+      incrementCoefficient();
 
-    notifyListeners();
+      notifyListeners();
+    } else {
+      AutoclickerSecure().checkClicksBeforeCanPlay(context);
+    }
   }
 
   void cashout() {
@@ -81,6 +86,8 @@ class CrashLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
 
     notifyListeners();
+
+    AutoclickerSecure().checkAutoclicker();
   }
 
   void stop() {
