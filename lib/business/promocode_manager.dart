@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -15,13 +16,45 @@ class PromocodeManager extends ChangeNotifier {
     notifyListeners();
   }
 
+  void useLocalPromocode(
+      {required String myPromocode, required BuildContext context}) {
+    String promocode = LocalPromocodes.promocodes.entries
+        .where((element) => element.key == myPromocode)
+        .first
+        .key;
+
+    double prize = LocalPromocodes.promocodes.entries
+        .where((element) => element.key == myPromocode)
+        .first
+        .value;
+
+    Provider.of<Balance>(context, listen: false).cashout(prize);
+
+    alertDialogSuccess(
+      context: context,
+      title: 'Поздравляем!',
+      confirmBtnText: 'Спасибо!',
+      text:
+          'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(prize)}!',
+    );
+
+    LocalPromocodes().removePromocode(promocode);
+
+    notifyListeners();
+  }
+
   Future usePromocode(
-      {required BuildContext context, required String promocode}) async {
+      {required BuildContext context, required String myPromocode}) async {
+    if (LocalPromocodes.promocodes.containsKey(myPromocode)) {
+      useLocalPromocode(myPromocode: myPromocode, context: context);
+      return;
+    }
+
     showLoading(true);
 
     await FirebaseFirestore.instance
         .collection('promocodes')
-        .doc(promocode)
+        .doc(myPromocode)
         .get()
         .then((value) async {
       if (value.exists) {
@@ -44,7 +77,7 @@ class PromocodeManager extends ChangeNotifier {
             if (value.data()!.containsKey('promocodes')) {
               List list = value.get('promocodes') as List;
 
-              if (list.contains(promocode)) {
+              if (list.contains(myPromocode)) {
                 alertDialogError(
                   context: context,
                   title: 'Ошибка',
@@ -55,7 +88,7 @@ class PromocodeManager extends ChangeNotifier {
                 return;
               }
 
-              list.add(promocode);
+              list.add(myPromocode);
 
               await FirebaseFirestore.instance
                   .collection('users')
@@ -66,13 +99,13 @@ class PromocodeManager extends ChangeNotifier {
                   .collection('users')
                   .doc(FirebaseAuth.instance.currentUser?.uid)
                   .update({
-                'promocodes': [promocode]
+                'promocodes': [myPromocode]
               });
             }
 
             await FirebaseFirestore.instance
                 .collection('promocodes')
-                .doc(promocode)
+                .doc(myPromocode)
                 .update({'count': FieldValue.increment(-1)});
 
             // ignore: use_build_context_synchronously
@@ -81,7 +114,7 @@ class PromocodeManager extends ChangeNotifier {
             if (activationCount <= 1) {
               await FirebaseFirestore.instance
                   .collection('promocodes')
-                  .doc(promocode)
+                  .doc(myPromocode)
                   .delete();
             }
 

@@ -28,8 +28,8 @@ Widget gameButtonModel(
           padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
           child: Image(
             image: AssetImage('assets/games_logo/$gameLogo.png'),
-            width: 140.0,
-            height: 140.0,
+            width: 130.0,
+            height: 130.0,
           )),
       Padding(
         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),

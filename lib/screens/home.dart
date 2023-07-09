@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -87,7 +86,6 @@ class _HomeState extends State<Home> {
     super.initState();
     showPremiumSubscription();
     initConnectivity();
-    DailyBonusManager().checkDailyBonus(context);
   }
 
   @override
@@ -95,7 +93,7 @@ class _HomeState extends State<Home> {
     return WillPopScope(
       onWillPop: () async => false,
       child: FutureBuilder(
-        future: AccountController().checkAuthState(),
+        future: AccountController().checkAuthState(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return loading();

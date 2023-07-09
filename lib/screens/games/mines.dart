@@ -171,24 +171,45 @@ class Mines extends StatelessWidget {
                             const SizedBox(width: 15.0),
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: () {
-                                  if (!minesLogic.isGameOn) {
-                                    if (balance.currentBalance <
-                                        double.parse(betFormatter
-                                            .getUnformattedValue()
-                                            .toString())) {
-                                      return;
-                                    }
+                                onPressed: !minesLogic.isGameOn
+                                    ? () {
+                                        if (!minesLogic.isGameOn) {
+                                          if (balance.currentBalance <
+                                              double.parse(betFormatter
+                                                  .getUnformattedValue()
+                                                  .toString())) {
+                                            return;
+                                          }
 
-                                    minesLogic.startGame(
-                                        context: context,
-                                        bet: double.parse(betFormatter
-                                            .getUnformattedValue()
-                                            .toString()));
-                                  } else {
-                                    minesLogic.cashout();
-                                  }
-                                },
+                                          minesLogic.startGame(
+                                              context: context,
+                                              bet: double.parse(betFormatter
+                                                  .getUnformattedValue()
+                                                  .toString()));
+                                        } else {
+                                          minesLogic.cashout();
+                                        }
+                                      }
+                                    : minesLogic.openedIndexes.isEmpty
+                                        ? null
+                                        : () {
+                                            if (!minesLogic.isGameOn) {
+                                              if (balance.currentBalance <
+                                                  double.parse(betFormatter
+                                                      .getUnformattedValue()
+                                                      .toString())) {
+                                                return;
+                                              }
+
+                                              minesLogic.startGame(
+                                                  context: context,
+                                                  bet: double.parse(betFormatter
+                                                      .getUnformattedValue()
+                                                      .toString()));
+                                            } else {
+                                              minesLogic.cashout();
+                                            }
+                                          },
                                 style: ElevatedButton.styleFrom(
                                   elevation: 5,
                                   backgroundColor: Colors.green,

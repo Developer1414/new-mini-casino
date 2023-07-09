@@ -29,7 +29,7 @@ class Balance extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> loadBalance() async {
+  Future loadBalance() async {
     if (FirebaseAuth.instance.currentUser?.uid == null) {
       return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
           .format(0.0);
@@ -42,9 +42,6 @@ class Balance extends ChangeNotifier {
         .then((value) {
       _balance = double.parse(value.get('balance').toString());
     });
-
-    return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .format(_balance);
   }
 
   void updateBalance() {

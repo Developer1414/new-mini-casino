@@ -53,13 +53,15 @@ class JackpotLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
   }
 
-  void loss({required double bet}) {
-    GameStatisticController.updateGameStatistic(
-        gameName: 'jackpot',
-        gameStatisticModel: GameStatisticModel(
-          maxLoss: bet,
-          lossesMoneys: bet,
-        ));
+  void loss({required double bet, required BuildContext context}) {
+    if (isGameOn) {
+      GameStatisticController.updateGameStatistic(
+          gameName: 'jackpot',
+          gameStatisticModel: GameStatisticModel(
+            maxLoss: bet,
+            lossesMoneys: bet,
+          ));
+    }
 
     AdService.showInterstitialAd(context: context, func: () {});
   }

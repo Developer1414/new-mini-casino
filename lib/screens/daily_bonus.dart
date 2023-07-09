@@ -1,8 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'dart:io' as ui;
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +20,34 @@ class DailyBonus extends StatelessWidget {
         return value.isLoading
             ? loading()
             : Scaffold(
+                appBar: AppBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  toolbarHeight: 160.0,
+                  centerTitle: true,
+                  title: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'Ежедневный\n',
+                      style: GoogleFonts.roboto(
+                          textStyle: const TextStyle(
+                        color: Colors.black87,
+                        fontSize: 50,
+                        fontWeight: FontWeight.w900,
+                      )),
+                      children: [
+                        TextSpan(
+                            text: 'бонус',
+                            style: GoogleFonts.roboto(
+                                textStyle: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 40,
+                              fontWeight: FontWeight.w900,
+                            ))),
+                      ],
+                    ),
+                  ),
+                ),
                 bottomNavigationBar: Padding(
                   padding: const EdgeInsets.only(right: 15.0, left: 15.0),
                   child: SizedBox(
@@ -36,13 +67,24 @@ class DailyBonus extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(18.0),
-                        child: AutoSizeText(
-                          'Забрать',
-                          maxLines: 1,
-                          style: GoogleFonts.roboto(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.gift,
                               color: Colors.white,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.w700),
+                              size: 22.0,
+                            ),
+                            const SizedBox(width: 10.0),
+                            AutoSizeText(
+                              'Забрать',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 22.0,
+                                  fontWeight: FontWeight.w800),
+                            )
+                          ],
                         ),
                       ),
                     ),
@@ -51,77 +93,106 @@ class DailyBonus extends StatelessWidget {
                 body: Padding(
                   padding: const EdgeInsets.all(15.0),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          RichText(
-                            textAlign: TextAlign.center,
-                            text: TextSpan(
-                              text: 'Ежедневный\n',
-                              style: GoogleFonts.roboto(
-                                  textStyle: const TextStyle(
-                                color: Colors.black87,
-                                fontSize: 50,
-                                fontWeight: FontWeight.w900,
-                              )),
-                              children: [
-                                TextSpan(
-                                    text: 'бонус',
-                                    style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                      color: Colors.redAccent,
-                                      fontSize: 40,
-                                      fontWeight: FontWeight.w900,
-                                    ))),
-                              ],
+                      AccountController.isPremium
+                          ? Container()
+                          : Padding(
+                              padding: const EdgeInsets.only(bottom: 15.0),
+                              child: AutoSizeText(
+                                'В Mini Casino Premium бонусы увеличены в 2 раза!',
+                                maxLines: 1,
+                                style: GoogleFonts.roboto(
+                                    color: Colors.black54,
+                                    fontSize: 15.0,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
-                          ),
-                          // Expanded(child: Container()),
-                          const SizedBox(height: 15.0),
-                          FutureBuilder(
-                              future: value.showCurrentBonus(),
-                              builder: (context, snapshot) {
-                                return Text(
-                                  '+${snapshot.data}',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                      textStyle: const TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 25.0,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                                );
-                              }),
-                          const SizedBox(height: 15.0),
-                          FutureBuilder(
-                              future: value.showNextBonus(),
-                              builder: (context, snapshot) {
-                                return Text(
-                                  'Следующий бонус: ${snapshot.data}',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                      textStyle: const TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                                );
-                              }),
-                          const SizedBox(height: 15.0),
-                          !AccountController.isPremium
-                              ? Text(
-                                  'P.S. В Mini Casino Premium ежедневные бонусы увеличены в 2 раза!',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                    color: Colors.black87.withOpacity(0.7),
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                                )
-                              : Container(),
-                        ],
+                      GridView.custom(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                mainAxisSpacing: 8,
+                                crossAxisSpacing: 8),
+                        childrenDelegate: SliverChildBuilderDelegate(
+                            childCount: value.bonuses.length, (context, index) {
+                          return Container(
+                            decoration: BoxDecoration(
+                                color:
+                                    DailyBonusManager.currentBonusIndex == index
+                                        ? Colors.green.withOpacity(0.1)
+                                        : Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                    color:
+                                        DailyBonusManager.currentBonusIndex ==
+                                                index
+                                            ? Colors.green
+                                            : index <
+                                                    DailyBonusManager
+                                                        .currentBonusIndex
+                                                ? Colors.grey.shade300
+                                                    .withOpacity(0.8)
+                                                : Colors.grey.shade300,
+                                    width: 2.0)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(5.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.gift,
+                                    color: index <
+                                            DailyBonusManager.currentBonusIndex
+                                        ? value.colors[index].withOpacity(0.6)
+                                        : value.colors[index],
+                                    size: 25.0,
+                                  ),
+                                  const SizedBox(height: 10.0),
+                                  AutoSizeText(
+                                    '+${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(value.bonuses[index] * (AccountController.isPremium ? 2 : 1))}',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: index <
+                                                DailyBonusManager
+                                                    .currentBonusIndex
+                                            ? Colors.green.withOpacity(0.6)
+                                            : Colors.green,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: AutoSizeText(
+                                      DailyBonusManager.currentBonusIndex ==
+                                              index
+                                          ? 'Сегодня'
+                                          : index <
+                                                  DailyBonusManager
+                                                      .currentBonusIndex
+                                              ? 'Получен!'
+                                              : DateFormat.MMMMd('ru_RU')
+                                                  .format(DailyBonusManager
+                                                      .firstBonusDate
+                                                      .add(Duration(
+                                                          days: index))),
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                          color: index <
+                                                  DailyBonusManager
+                                                      .currentBonusIndex
+                                              ? Colors.black54.withOpacity(0.3)
+                                              : Colors.black54,
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }),
                       ),
                     ],
                   ),

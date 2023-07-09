@@ -131,9 +131,9 @@ class CrashLogic extends ChangeNotifier {
 
     int time = 10;
 
-    if (temp < 65.0) {
+    if (temp < 50.0) {
       maxCoefficient = Random.secure().nextDouble() * (1.5 - 1.0) + 1.0;
-    } else if (temp >= 65.0 && temp < 75) {
+    } else if (temp >= 50.0 && temp < 75) {
       maxCoefficient = Random.secure().nextDouble() * (5.0 - 1.0) + 1.0;
     } else if (temp >= 75.0 && temp < 85) {
       maxCoefficient = Random.secure().nextDouble() * (10.0 - 1.0) + 1.0;

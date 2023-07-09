@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'dart:io' as ui;
-import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +10,13 @@ import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/models/quickalert_animtype.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class BonusManager extends ChangeNotifier {
   bool isLoadingBonus = false;
 
   int freeBonusCount = 0;
 
-  void shoowLoading(bool isActive) {
+  void showLoading(bool isActive) {
     isLoadingBonus = isActive;
     notifyListeners();
   }
@@ -28,69 +24,18 @@ class BonusManager extends ChangeNotifier {
   Future getFreeBonus(BuildContext context) async {
     if (isLoadingBonus) return;
 
-    shoowLoading(true);
+    showLoading(true);
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get()
-        .then((value) async {
-      if (value.data()!.containsKey('freeBonusInfo')) {
-        List freeBonusInfo = value.get('freeBonusInfo') as List;
-
-        DateTime dateTimeNow = await NTP.now();
-
-        if ((freeBonusInfo[1] as Timestamp).toDate().day == dateTimeNow.day) {
-          if (int.parse(freeBonusInfo[0].toString()) >=
-              (AccountController.isPremium ? 10 : 5)) {
-            if (AccountController.isPremium) {
-              // ignore: use_build_context_synchronously
-              alertDialogError(
-                  context: context,
-                  title: 'Ошибка',
-                  text:
-                      'Вы превысили лимит бесплатного бонуса (10 использований в день). Попробуйте на следующий день.');
-              return;
-            } else {
-              // ignore: use_build_context_synchronously
-              await QuickAlert.show(
-                  context: context,
-                  type: QuickAlertType.confirm,
-                  title: 'Ошибка',
-                  text:
-                      'Вы превысили лимит бесплатного бонуса (5 использований в день). Хотите приобрести Mini Casino Premium с доступом к 10 бесплатным бонусам в день и другим возможностям всего за 99 рублей?',
-                  confirmBtnText: 'Да',
-                  cancelBtnText: 'Нет',
-                  confirmBtnColor: Colors.green,
-                  animType: QuickAlertAnimType.slideInDown,
-                  onCancelBtnTap: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-                  },
-                  onConfirmBtnTap: () {
-                    Navigator.of(context, rootNavigator: true).pop();
-
-                    context.beamToNamed('/premium');
-                  });
-            }
-            return;
-          }
-        }
-      }
-
-      // ignore: use_build_context_synchronously
-      await AdService.showRewardedAd(
-          context: context,
-          func: () async {
-            getReward(
-                context: context,
-                rewardCount: double.parse(
-                    (Random().nextInt(AccountController.isPremium ? 900 : 200) +
-                            100)
-                        .toString()));
-          });
-    });
-
-    shoowLoading(false);
+    await AdService.showRewardedAd(
+        context: context,
+        func: () async {
+          getReward(
+              context: context,
+              rewardCount: double.parse(
+                  (Random().nextInt(AccountController.isPremium ? 900 : 200) +
+                          100)
+                      .toString()));
+        }).whenComplete(() => showLoading(false));
   }
 
   void getReward(

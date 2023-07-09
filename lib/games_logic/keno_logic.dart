@@ -135,14 +135,13 @@ class KenoLogic extends ChangeNotifier {
                   lossesMoneys: bet,
                 ));
           } else {
-            Provider.of<Balance>(context, listen: false).cashout(profit);
-
             GameStatisticController.updateGameStatistic(
                 gameName: 'keno',
                 gameStatisticModel:
                     GameStatisticModel(winningsMoneys: profit, maxWin: profit));
           }
 
+          Provider.of<Balance>(context, listen: false).cashout(profit);
           AdService.showInterstitialAd(context: context, func: () {});
         }
 

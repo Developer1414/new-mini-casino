@@ -469,6 +469,7 @@ class _JackpotState extends State<Jackpot> {
                                                   profit: Jackpot.profit);
                                             } else {
                                               jackpotLogic.loss(
+                                                  context: context,
                                                   bet: double.parse(Jackpot
                                                       .betFormatter
                                                       .getUnformattedValue()
@@ -478,7 +479,7 @@ class _JackpotState extends State<Jackpot> {
                                         }
 
                                         await Future.delayed(
-                                            const Duration(seconds: 3));
+                                            const Duration(seconds: 2));
 
                                         if (context.mounted) {
                                           setState(() {

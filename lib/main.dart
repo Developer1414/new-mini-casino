@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +33,7 @@ import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
+import 'package:new_mini_casino/screens/my_promocodes.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
 import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
@@ -57,8 +57,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  // FirebaseAuth.instance.signOut();
 
   Appodeal.initialize(
       appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
@@ -144,11 +142,11 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/games': (context, state, data) => const AllGames(),
         '/no-internet': (context, state, data) => const NoInternetConnection(),
         '/premium': (context, state, data) => const PremiumInfo(),
+        '/my-promocodes': (context, state, data) => const MyPromocodes(),
         '/welcome': (context, state, data) => const Welcome(),
         '/daily-bonus': (context, state, data) => const DailyBonus(),
         '/login': (context, state, data) => const Login(),
         '/profile': (context, state, data) => const Profile(),
-        '/promocode': (context, state, data) => const Promocode(),
         '/raffle-info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
@@ -171,6 +169,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           final game = state.pathParameters['game']!;
           return BeamPage(
             child: GameStatistic(game: game),
+          );
+        },
+        '/promocode/:initPromocode': (context, state, data) {
+          final initPromocode = state.pathParameters['initPromocode']!;
+          return BeamPage(
+            child: Promocode(initPromocode: initPromocode),
           );
         },
       },

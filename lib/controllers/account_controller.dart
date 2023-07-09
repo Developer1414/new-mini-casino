@@ -4,13 +4,16 @@ import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/business/raffle_manager.dart';
+import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
+import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
-import 'package:ntp/ntp.dart';
+import 'package:new_mini_casino/business/local_promocodes_service.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum AuthorizationAction { login, register }
@@ -145,20 +148,14 @@ class AccountController extends ChangeNotifier {
     loadingText = 'Пожалуйста, подождите...';
     isLoading = false;
 
-    DateTime dateTimeNow = await NTP.now();
-
-    List freeBonusInfo = [0, dateTimeNow];
-
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .set({
       'uid': FirebaseAuth.instance.currentUser!.uid,
       'name': name,
-      'balance': signedCode.isEmpty ? 500 : 5000,
-      'totalGames': 0,
-      'participant': false,
-      'freeBonusInfo': freeBonusInfo
+      'balance': 500,
+      'totalGames': 0
     }).whenComplete(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isFirstGameStarted', true);
@@ -267,11 +264,13 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Widget> checkAuthState() async {
+  Future<Widget> checkAuthState(BuildContext context) async {
     Widget? newScreen;
 
     if (FirebaseAuth.instance.currentUser != null) {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
+        AdService.loadCountBet();
+
         await checkBanAccount().then((value) async {
           if (value.isNotEmpty) {
             newScreen = BannedUser(
@@ -280,9 +279,16 @@ class AccountController extends ChangeNotifier {
                 date: (value[1] as Timestamp).toDate());
           } else {
             await checkPremium();
-            await RaffleManager().checkOnStartedRaffle();
-            newScreen = const AllGames();
-            AdService.loadCountBet();
+            await LocalPromocodes().initializeMyPromocodes();
+            // ignore: use_build_context_synchronously
+            await Provider.of<Balance>(context, listen: false).loadBalance();
+            await DailyBonusManager().checkDailyBonus().then((value) {
+              if (value) {
+                newScreen = const DailyBonus();
+              } else {
+                newScreen = const AllGames();
+              }
+            });
           }
         });
 

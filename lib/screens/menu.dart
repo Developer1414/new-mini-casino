@@ -67,13 +67,13 @@ class _AllGamesState extends State<AllGames> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const FaIcon(
-                                FontAwesomeIcons.coins,
+                                FontAwesomeIcons.gift,
                                 color: Colors.white,
                                 size: 22.0,
                               ),
                               const SizedBox(width: 10.0),
                               AutoSizeText(
-                                'Бесплатный бонус (${value.freeBonusCount} / ${AccountController.isPremium ? 10 : 5})',
+                                'Бесплатный бонус',
                                 maxLines: 1,
                                 style: GoogleFonts.roboto(
                                     color: Colors.white,
@@ -135,18 +135,15 @@ class _AllGamesState extends State<AllGames> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 0.0),
-                child: FutureBuilder(
-                  future: Provider.of<Balance>(context).loadBalance(),
-                  builder: (context, snapshot) {
-                    return AutoSizeText(
-                      snapshot.data.toString(),
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
-                    );
-                  },
-                ),
+                child: Consumer<Balance>(builder: (ctx, balance, _) {
+                  return AutoSizeText(
+                    balance.currentBalanceString,
+                    style: GoogleFonts.roboto(
+                        color: Colors.black87,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w900),
+                  );
+                }),
               ),
             ],
           ),
@@ -156,7 +153,7 @@ class _AllGamesState extends State<AllGames> {
               child: IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
-                onPressed: () => context.beamToNamed('/promocode'),
+                onPressed: () => context.beamToNamed('/promocode/ '),
                 icon: const Icon(
                   Icons.card_giftcard_rounded,
                   color: Color.fromARGB(255, 100, 34, 255),

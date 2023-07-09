@@ -244,8 +244,7 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Есть реклама\n• 5 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
-                                    // \n• Участие в розыгрыше только после 5000 игр.
+                                    '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,
@@ -321,8 +320,7 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Нет рекламы\n• 10 бесплатных бонусов в день\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.',
-                                    // \n• Участие в розыгрыше в любое время
+                                    '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок.',
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,
