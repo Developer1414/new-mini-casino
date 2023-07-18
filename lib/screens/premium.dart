@@ -244,7 +244,7 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
+                                    '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}\n• Создание промокодов с 50% комиссии.',
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,
@@ -320,7 +320,7 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 5.0),
                                   Text(
-                                    '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок.',
+                                    '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок\n• Создание промокодов без комиссии.',
                                     style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                       color: Colors.black87,

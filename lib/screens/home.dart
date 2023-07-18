@@ -93,7 +93,7 @@ class _HomeState extends State<Home> {
     return WillPopScope(
       onWillPop: () async => false,
       child: FutureBuilder(
-        future: AccountController().checkAuthState(context),
+        future: AccountController().initUserData(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return loading();

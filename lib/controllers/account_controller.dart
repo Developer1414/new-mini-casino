@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
@@ -13,6 +14,7 @@ import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
+import 'package:new_mini_casino/services/freerasp_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -264,7 +266,7 @@ class AccountController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Widget> checkAuthState(BuildContext context) async {
+  Future<Widget> initUserData(BuildContext context) async {
     Widget? newScreen;
 
     if (FirebaseAuth.instance.currentUser != null) {
@@ -278,6 +280,11 @@ class AccountController extends ChangeNotifier {
                 reason: value[0].toString(),
                 date: (value[1] as Timestamp).toDate());
           } else {
+            if (!kDebugMode) {
+              // ignore: use_build_context_synchronously
+              await FreeraspService().initSecurityState(context);
+            }
+
             await checkPremium();
             await LocalPromocodes().initializeMyPromocodes();
             // ignore: use_build_context_synchronously

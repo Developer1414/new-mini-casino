@@ -69,7 +69,7 @@ class PromocodeManager extends ChangeNotifier {
             text: 'Исчерпано количество использований!',
           );
         } else {
-          FirebaseFirestore.instance
+          await FirebaseFirestore.instance
               .collection('users')
               .doc(FirebaseAuth.instance.currentUser?.uid)
               .get()

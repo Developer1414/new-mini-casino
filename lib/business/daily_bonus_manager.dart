@@ -47,7 +47,11 @@ class DailyBonusManager extends ChangeNotifier {
       var data = jsonDecode(prefs.getString('dailyBonus').toString());
       firstBonusDate = DateTime.parse(data[0]);
       currentBonusIndex = int.parse(data[1].toString());
-      lastBonusDate = DateTime.parse(data[2]);
+
+      if ((data as List).length == 3) {
+        lastBonusDate = DateTime.parse(data[2]);
+      }
+
       currentBonus =
           bonuses[currentBonusIndex] * (AccountController.isPremium ? 2 : 1);
     } else {

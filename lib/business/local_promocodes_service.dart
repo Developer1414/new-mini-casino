@@ -58,8 +58,6 @@ class LocalPromocodes {
 
     betCount++;
 
-    print('betCount: $betCount');
-
     prefs.setInt('betCountLocalPromocodes', betCount);
 
     if (betCount < 350) return;

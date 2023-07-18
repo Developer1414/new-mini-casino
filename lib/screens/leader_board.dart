@@ -159,49 +159,23 @@ class _LeaderBoardState extends State<LeaderBoard> {
             ),
           ],
         ),
-        body: /* LeaderBoard.selectedValue == LeaderBoard.items[2]
-            ? StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .where('participant', isEqualTo: true)
-                    .orderBy('balance', descending: true)
-                    .limit(100)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return loading();
-                  }
+        body: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .orderBy(
+                    LeaderBoard.selectedValue == LeaderBoard.items.first
+                        ? 'balance'
+                        : 'totalGames',
+                    descending: true)
+                .limit(100)
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return loading();
+              }
 
-                  return snapshot.data!.docs.isEmpty
-                      ? Center(
-                          child: AutoSizeText(
-                            'Участников пока нет',
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87.withOpacity(0.4),
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w700),
-                          ),
-                        )
-                      : list(snapshot: snapshot);
-                })
-            :*/
-            StreamBuilder(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .orderBy(
-                        LeaderBoard.selectedValue == LeaderBoard.items.first
-                            ? 'balance'
-                            : 'totalGames',
-                        descending: true)
-                    .limit(100)
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return loading();
-                  }
-
-                  return list(snapshot: snapshot);
-                }),
+              return list(snapshot: snapshot);
+            }),
       ),
     );
   }
@@ -334,12 +308,40 @@ class _LeaderBoardState extends State<LeaderBoard> {
                             ],
                           ),
                           const SizedBox(height: 5.0),
-                          AutoSizeText(
-                            'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}\nВсего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87.withOpacity(0.8),
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w700),
+                          Row(
+                            children: [
+                              const FaIcon(
+                                FontAwesomeIcons.sackDollar,
+                                color: Colors.green,
+                                size: 18.0,
+                              ),
+                              const SizedBox(width: 5.0),
+                              AutoSizeText(
+                                'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}',
+                                style: GoogleFonts.roboto(
+                                    color: Colors.black87.withOpacity(0.8),
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5.0),
+                          Row(
+                            children: [
+                              const FaIcon(
+                                FontAwesomeIcons.gamepad,
+                                color: Colors.blueGrey,
+                                size: 18.0,
+                              ),
+                              const SizedBox(width: 5.0),
+                              AutoSizeText(
+                                'Всего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
+                                style: GoogleFonts.roboto(
+                                    color: Colors.black87.withOpacity(0.8),
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.w700),
+                              ),
+                            ],
                           ),
                         ],
                       )),

@@ -299,7 +299,7 @@ class Login extends StatelessWidget {
                                           if (accountController
                                                   .authorizationAction ==
                                               AuthorizationAction.register) {
-                                            /*if (nameController.text.length <
+                                            if (nameController.text.length <
                                                 4) {
                                               AccountExceptionController
                                                   .showException(
@@ -308,7 +308,7 @@ class Login extends StatelessWidget {
                                                           'nickname_too_short');
 
                                               return;
-                                            }*/
+                                            }
 
                                             await accountController
                                                 .checkOnExistNickname(
@@ -427,6 +427,7 @@ class Login extends StatelessWidget {
       inputFormatters: limitSymbols
           ? [
               LengthLimitingTextInputFormatter(12),
+              FilteringTextInputFormatter.allow(RegExp('[a-z A-Z 0-9]'))
             ]
           : null,
       textInputAction:

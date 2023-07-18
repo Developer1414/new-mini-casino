@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
+import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
@@ -20,6 +22,7 @@ import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
+import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/coinflip.dart';
@@ -29,12 +32,14 @@ import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
 import 'package:new_mini_casino/screens/games/jackpot.dart';
 import 'package:new_mini_casino/screens/games/keno.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
+import 'package:new_mini_casino/screens/games/stairs.dart';
 import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/my_promocodes.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
+import 'package:new_mini_casino/screens/own_promocode.dart';
 import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
@@ -53,6 +58,16 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  if (prefs.containsKey('dailyBonus')) {
+    var data = jsonDecode(prefs.getString('dailyBonus').toString());
+
+    if ((data as List).length < 3) {
+      prefs.remove('dailyBonus');
+    }
+  }
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -143,6 +158,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/no-internet': (context, state, data) => const NoInternetConnection(),
         '/premium': (context, state, data) => const PremiumInfo(),
         '/my-promocodes': (context, state, data) => const MyPromocodes(),
+        '/own-promocode': (context, state, data) => const OwnPromocode(),
         '/welcome': (context, state, data) => const Welcome(),
         '/daily-bonus': (context, state, data) => const DailyBonus(),
         '/login': (context, state, data) => const Login(),
@@ -150,7 +166,9 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/raffle-info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
+        '/promocode': (context, state, data) => const Promocode(),
         '/crash': (context, state, data) => const Crash(),
+        '/stairs': (context, state, data) => const Stairs(),
         '/jackpot': (context, state, data) => const Jackpot(),
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
@@ -169,12 +187,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           final game = state.pathParameters['game']!;
           return BeamPage(
             child: GameStatistic(game: game),
-          );
-        },
-        '/promocode/:initPromocode': (context, state, data) {
-          final initPromocode = state.pathParameters['initPromocode']!;
-          return BeamPage(
-            child: Promocode(initPromocode: initPromocode),
           );
         },
       },
@@ -199,9 +211,11 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => DailyBonusManager()),
         ChangeNotifierProvider(create: (ctx) => PromocodeManager()),
         ChangeNotifierProvider(create: (ctx) => BonusManager()),
+        ChangeNotifierProvider(create: (ctx) => OwnPromocodeManager()),
         ChangeNotifierProvider(create: (ctx) => CoinflipLogic()),
         ChangeNotifierProvider(create: (ctx) => CrashLogic()),
         ChangeNotifierProvider(create: (ctx) => KenoLogic()),
+        ChangeNotifierProvider(create: (ctx) => StairsLogic()),
         ChangeNotifierProvider(create: (ctx) => FortuneWheelLogic()),
         ChangeNotifierProvider(create: (ctx) => DiceLogic()),
         ChangeNotifierProvider(create: (ctx) => JackpotLogic()),

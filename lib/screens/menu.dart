@@ -6,13 +6,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/models/menu_game_button.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/models/quickalert_animtype.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AllGames extends StatefulWidget {
@@ -31,8 +27,6 @@ class _AllGamesState extends State<AllGames> {
 
   @override
   Widget build(BuildContext context) {
-    AccountController accountController = AccountController();
-
     return Scaffold(
         bottomNavigationBar: Consumer<BonusManager>(
           builder: (ctx, value, _) {
@@ -96,31 +90,12 @@ class _AllGamesState extends State<AllGames> {
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  QuickAlert.show(
-                      context: context,
-                      type: QuickAlertType.confirm,
-                      title: 'Подтверждение',
-                      text: 'Вы уверены что хотите выйти из аккаунта?',
-                      confirmBtnText: 'Нет',
-                      cancelBtnText: 'Да',
-                      showCancelBtn: true,
-                      confirmBtnColor: Colors.redAccent,
-                      animType: QuickAlertAnimType.slideInDown,
-                      onCancelBtnTap: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-
-                        accountController.signOut().whenComplete(() {
-                          context.beamToReplacementNamed('/login');
-                        });
-                      },
-                      onConfirmBtnTap: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-                      });
+                  context.beamToNamed('/profile');
                 },
                 icon: const FaIcon(
-                  FontAwesomeIcons.rightFromBracket,
-                  color: Colors.redAccent,
-                  size: 30.0,
+                  FontAwesomeIcons.solidUser,
+                  color: Colors.black87,
+                  size: 28.0,
                 )),
           ),
           title: Column(
@@ -153,7 +128,7 @@ class _AllGamesState extends State<AllGames> {
               child: IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
-                onPressed: () => context.beamToNamed('/promocode/ '),
+                onPressed: () => context.beamToNamed('/promocode'),
                 icon: const Icon(
                   Icons.card_giftcard_rounded,
                   color: Color.fromARGB(255, 100, 34, 255),

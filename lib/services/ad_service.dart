@@ -17,19 +17,26 @@ class AdService {
   }
 
   static Future showInterstitialAd(
-      {required BuildContext context, required Function func}) async {
+      {required BuildContext context,
+      required Function func,
+      bool isBet = true}) async {
     if (AccountController.isPremium) {
-      LocalPromocodes().getPromocode(context);
+      if (isBet) {
+        LocalPromocodes().getPromocode(context);
+      }
+
       return;
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    countBet++;
-    prefs.setInt('countBetForAd', countBet);
+    if (isBet) {
+      countBet++;
+      prefs.setInt('countBetForAd', countBet);
 
-    if (countBet < 50) {
-      return;
+      if (countBet < 50) {
+        return;
+      }
     }
 
     var isCanShow = await Appodeal.canShow(AppodealAdType.Interstitial);
@@ -56,7 +63,10 @@ class AdService {
         onInterstitialClosed: () {
           func.call();
           countBet = 0;
-          prefs.setInt('countBetForAd', 0);
+
+          if (isBet) {
+            prefs.setInt('countBetForAd', 0);
+          }
         },
         onInterstitialExpired: () => {
               alertDialogError(
