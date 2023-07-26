@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class Balance extends ChangeNotifier {
-  double _balance = 500.0;
+  double balance = 500.0;
 
-  double get currentBalance => _balance;
+  double get currentBalance => balance;
 
   String get currentBalanceString =>
       NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-          .format(_balance);
+          .format(balance);
 
   void placeBet(double bet) {
-    if (_balance >= bet) {
-      _balance -= bet;
+    if (balance >= bet) {
+      balance -= bet;
       updateBalance();
     }
 
@@ -23,7 +23,7 @@ class Balance extends ChangeNotifier {
   }
 
   void cashout(double profit) {
-    _balance += profit;
+    balance += profit;
     updateBalance();
 
     notifyListeners();
@@ -40,7 +40,7 @@ class Balance extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) {
-      _balance = double.parse(value.get('balance').toString());
+      balance = double.parse(value.get('balance').toString());
     });
   }
 
@@ -49,7 +49,7 @@ class Balance extends ChangeNotifier {
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .update({
-      'balance': _balance,
+      'balance': balance,
     });
   }
 }

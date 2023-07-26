@@ -7,12 +7,18 @@ class ProfileController extends ChangeNotifier {
   bool isLoading = false;
 
   static Future<ProfileModel> getUserProfile() async {
+    if (FirebaseAuth.instance.currentUser == null) {
+      return ProfileModel(nickname: 'null', totalGame: 0);
+    }
+
     return await FirebaseFirestore.instance
         .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) {
-      return ProfileModel(nickname: value.get('name'));
+      return ProfileModel(
+          nickname: value.get('name'),
+          totalGame: int.parse(value.get('totalGames').toString()));
     });
   }
 }

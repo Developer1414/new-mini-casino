@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/login.dart';
@@ -104,7 +106,14 @@ class AccountController extends ChangeNotifier {
           await checkPremium();
 
           AdService.loadCountBet();
-          if (context.mounted) context.beamToReplacementNamed('/games');
+
+          // ignore: use_build_context_synchronously
+          alertDialogSuccess(
+              context: context,
+              title: 'Уведомление',
+              confirmBtnText: 'Окей',
+              text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
+              onConfirmBtnTap: () => exit(0));
         }
       });
     } on FirebaseAuthException catch (e) {

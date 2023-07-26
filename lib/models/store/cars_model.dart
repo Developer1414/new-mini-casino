@@ -1,0 +1,130 @@
+import 'package:flutter/material.dart';
+import 'package:new_mini_casino/business/store_manager.dart';
+
+List<StoreItemModel> carModels = [
+  StoreItemModel(
+    title: 'Wolce Vagen Colf',
+    price: 100000,
+    imageId: 0,
+    color: Colors.blue.shade300,
+  ),
+  StoreItemModel(
+    title: 'Mircides S600',
+    price: 500000,
+    imageId: 2,
+    color: Colors.purple.shade300,
+  ),
+  StoreItemModel(
+    title: 'Nessan Skaylane GT-R',
+    price: 800000,
+    imageId: 4,
+    color: Colors.deepPurple.shade300,
+  ),
+  StoreItemModel(
+    title: 'Tyoata Cumry',
+    price: 1150000,
+    imageId: 1,
+    color: Colors.blue.shade300,
+  ),
+  StoreItemModel(
+    title: 'BMV X5',
+    price: 1720000,
+    imageId: 10,
+    color: Colors.indigo.shade300,
+  ),
+  StoreItemModel(
+    title: 'Meatshibisi Lancir Evo',
+    price: 1730000,
+    imageId: 3,
+    color: Colors.purple.shade300,
+  ),
+  StoreItemModel(
+    title: 'Mazta RX7',
+    price: 1900000,
+    imageId: 6,
+    color: Colors.deepOrange.shade300,
+  ),
+  StoreItemModel(
+    title: 'Nessan Skaylane R34',
+    price: 2030000,
+    imageId: 5,
+    color: Colors.red.shade300,
+  ),
+  StoreItemModel(
+    title: 'Tyoata Lend Cryser 200',
+    price: 4570000,
+    imageId: 7,
+    color: Colors.deepPurple.shade300,
+  ),
+  StoreItemModel(
+    title: 'Parschi Cayene',
+    price: 7500000,
+    imageId: 11,
+    color: Colors.indigo.shade300,
+  ),
+  StoreItemModel(
+    title: 'Mircides CLS AMG',
+    price: 4180000,
+    imageId: 14,
+    color: Colors.blue.shade300,
+  ),
+  StoreItemModel(
+    title: 'Furd Mystang',
+    price: 3710000,
+    imageId: 9,
+    color: Colors.blue.shade300,
+  ),
+  StoreItemModel(
+    title: 'Lixys LX',
+    price: 9120000,
+    imageId: 8,
+    color: Colors.green.shade300,
+  ),
+  StoreItemModel(
+    title: 'Mircides G63',
+    price: 15000000,
+    imageId: 13,
+    premium: true,
+    color: Colors.green.shade300,
+  ),
+  StoreItemModel(
+    title: 'Parschi 911',
+    price: 7240000,
+    imageId: 15,
+    color: Colors.teal.shade300,
+  ),
+  StoreItemModel(
+    title: 'Lambargini Urus',
+    price: 16500000,
+    imageId: 17,
+    premium: true,
+    color: Colors.teal.shade300,
+  ),
+  StoreItemModel(
+    title: 'Bygarri Diva',
+    price: 456700000,
+    imageId: 19,
+    premium: true,
+    color: Colors.red.shade300,
+  ),
+  StoreItemModel(
+    title: 'BMV M8',
+    price: 3800000,
+    imageId: 16,
+    color: Colors.deepOrange.shade300,
+  ),
+  StoreItemModel(
+    title: 'Rolls Roce Phuntom',
+    price: 40000000,
+    imageId: 18,
+    premium: true,
+    color: Colors.pink.shade300,
+  ),
+  StoreItemModel(
+    title: 'Mircides S65',
+    price: 18320000,
+    imageId: 12,
+    premium: true,
+    color: Colors.pink.shade300,
+  ),
+];

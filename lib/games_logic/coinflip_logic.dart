@@ -50,6 +50,7 @@ class CoinflipLogic extends ChangeNotifier {
 
     if (!isContinueGame) {
       profit = 0.0;
+      Provider.of<Balance>(context, listen: false).placeBet(bet);
     }
 
     randomCoinflipStatus = Random.secure().nextInt(2) == 1
@@ -60,8 +61,6 @@ class CoinflipLogic extends ChangeNotifier {
         gameName: 'coinflip',
         incrementTotalGames: true,
         gameStatisticModel: GameStatisticModel());
-
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
 
     notifyListeners();
   }

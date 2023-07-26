@@ -1,14 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
-import 'package:new_mini_casino/services/generate_unique_bank_id.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -91,6 +90,9 @@ class _ProfileState extends State<Profile> {
                                     accountController
                                         .signOut()
                                         .whenComplete(() {
+                                      Provider.of<Balance>(context,
+                                              listen: false)
+                                          .balance = 0.0;
                                       context.beamToReplacementNamed('/login');
                                     });
                                   },
@@ -190,31 +192,31 @@ class _ProfileState extends State<Profile> {
                                   child: Consumer<Balance>(
                                       builder: (ctx, balance, _) {
                                     return AutoSizeText(
-                                      balance.currentBalanceString,
+                                      'Баланс: ${balance.currentBalanceString}',
                                       style: GoogleFonts.roboto(
                                           color: Colors.grey.shade300,
-                                          fontSize: 25.0,
+                                          fontSize: 20.0,
                                           fontWeight: FontWeight.w800),
                                     );
                                   }),
                                 ),
-                                const SizedBox(height: 20.0),
+                                const SizedBox(height: 5.0),
                                 Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0, right: 20.0),
-                                  child: AutoSizeText(
-                                    FirebaseAuth.instance.currentUser != null
-                                        ? generateUniqueId(FirebaseAuth
-                                            .instance.currentUser!.uid)
-                                        : 'null',
-                                    maxLines: 1,
-                                    style: GoogleFonts.shareTechMono(
-                                        letterSpacing: 3.0,
-                                        color: Colors.grey.shade300,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w900),
-                                  ),
-                                ),
+                                    padding: const EdgeInsets.only(
+                                        left: 20.0, right: 20.0),
+                                    child: FutureBuilder(
+                                      future:
+                                          ProfileController.getUserProfile(),
+                                      builder: (context, snapshot) {
+                                        return AutoSizeText(
+                                          'Игр: ${snapshot.data?.totalGame.toString() ?? '0'}',
+                                          style: GoogleFonts.roboto(
+                                              color: Colors.grey.shade300,
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.w700),
+                                        );
+                                      },
+                                    )),
                               ],
                             ),
                             Padding(
@@ -260,10 +262,82 @@ class _ProfileState extends State<Profile> {
                           ],
                         ),
                       ),
+                      /*buttonModel(
+                          buttonName: 'Хранилище',
+                          uri: '/storage',
+                          color: Colors.blue,
+                          icon: FontAwesomeIcons.coins),
+                      const SizedBox(height: 15.0),*/
+                      buttonModel(
+                          buttonName: 'Имущество',
+                          uri: '/store-items',
+                          onPressed: () {
+                            StoreManager.showOnlyMyItems = true;
+                          },
+                          color: Colors.pink,
+                          icon: FontAwesomeIcons.car),
                     ],
                   ),
                 );
         },
+      ),
+    );
+  }
+
+  Widget buttonModel(
+      {required String buttonName,
+      required String uri,
+      required Color color,
+      Function()? onPressed,
+      required IconData icon}) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+      child: SizedBox(
+        height: 60.0,
+        child: ElevatedButton(
+          onPressed: () {
+            onPressed?.call();
+            context.beamToNamed(uri);
+          },
+          style: ElevatedButton.styleFrom(
+            elevation: 5,
+            shadowColor: color.withOpacity(0.8),
+            backgroundColor: color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 10.0, right: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FaIcon(
+                  icon,
+                  color: Colors.white,
+                  size: 22.0,
+                ),
+                const SizedBox(width: 10.0),
+                AutoSizeText(
+                  buttonName,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    color: Colors.white,
+                    fontSize: 22.0,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w800,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.3),
+                        blurRadius: 20.0,
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

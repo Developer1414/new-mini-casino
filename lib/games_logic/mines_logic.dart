@@ -4,6 +4,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:provider/provider.dart';
 
 class MinesLogic extends ChangeNotifier {
@@ -63,36 +64,40 @@ class MinesLogic extends ChangeNotifier {
   }
 
   void startGame({double bet = 0.0, required BuildContext context}) {
-    isGameOn = true;
+    if (AutoclickerSecure.isCanPlay) {
+      isGameOn = true;
 
-    minesIndex.clear();
-    openedIndexes.clear();
-    brilliantsIndex.clear();
+      minesIndex.clear();
+      openedIndexes.clear();
+      brilliantsIndex.clear();
 
-    profit = 0.0;
-    currentCoefficient = 0;
+      profit = 0.0;
+      currentCoefficient = 0;
 
-    this.bet = bet;
-    this.context = context;
+      this.bet = bet;
+      this.context = context;
 
-    int rand = 0;
+      int rand = 0;
 
-    while (minesIndex.length != countMines) {
-      rand = Random.secure().nextInt(25);
+      while (minesIndex.length != countMines) {
+        rand = Random.secure().nextInt(25);
 
-      if (!minesIndex.contains(rand)) {
-        minesIndex.add(rand);
+        if (!minesIndex.contains(rand)) {
+          minesIndex.add(rand);
+        }
       }
+
+      GameStatisticController.updateGameStatistic(
+          gameName: 'mines',
+          incrementTotalGames: true,
+          gameStatisticModel: GameStatisticModel());
+
+      Provider.of<Balance>(context, listen: false).placeBet(bet);
+
+      notifyListeners();
+    } else {
+      AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
-
-    GameStatisticController.updateGameStatistic(
-        gameName: 'mines',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
-
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
-
-    notifyListeners();
   }
 
   autoMove() {
@@ -124,6 +129,7 @@ class MinesLogic extends ChangeNotifier {
 
     notifyListeners();
 
+    AutoclickerSecure().checkAutoclicker();
     AdService.showInterstitialAd(context: context, func: () {});
   }
 

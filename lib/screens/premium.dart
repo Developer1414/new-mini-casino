@@ -48,15 +48,91 @@ class PremiumInfo extends StatelessWidget {
                             ),
                           )
                         : Container(
-                            height: 124.0,
+                            height: 152.0,
                             margin: const EdgeInsets.only(
                                 bottom: 15.0, left: 15.0, right: 15.0),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          paymentController
+                                              .chooseSubscriptionDuration(true);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: paymentController
+                                                  .isYearSubscription
+                                              ? Colors.green
+                                              : Colors.grey.shade400,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft:
+                                                      Radius.circular(15.0),
+                                                  topRight:
+                                                      Radius.circular(15.0),
+                                                  bottomLeft:
+                                                      Radius.circular(5.0),
+                                                  bottomRight:
+                                                      Radius.circular(5.0))),
+                                        ),
+                                        child: AutoSizeText(
+                                          'Год (выгодно)',
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          paymentController
+                                              .chooseSubscriptionDuration(
+                                                  false);
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: !paymentController
+                                                  .isYearSubscription
+                                              ? Colors.green
+                                              : Colors.grey.shade400,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                  topLeft:
+                                                      Radius.circular(15.0),
+                                                  topRight:
+                                                      Radius.circular(15.0),
+                                                  bottomLeft:
+                                                      Radius.circular(5.0),
+                                                  bottomRight:
+                                                      Radius.circular(5.0))),
+                                        ),
+                                        child: AutoSizeText(
+                                          'Месяц',
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 15.0, bottom: 15.0),
+                                      top: 5.0, bottom: 15.0),
                                   child: SizedBox(
                                     height: 60.0,
                                     width: double.infinity,
@@ -139,11 +215,11 @@ class PremiumInfo extends StatelessWidget {
                     ),
                     body: Padding(
                       padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Column(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Column(
                               children: [
                                 RichText(
                                   textAlign: TextAlign.center,
@@ -169,7 +245,7 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 15.0),
                                 Text(
-                                  'Попробуйте Mini Casino Premium всего за 99 рублей в месяц!',
+                                  'Попробуйте Mini Casino Premium всего за 99 руб. в месяц или 999 руб. в год!',
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.roboto(
                                       textStyle: const TextStyle(
@@ -180,160 +256,161 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                               ],
                             ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(15.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 5.0,
-                                      offset: const Offset(0, 3.0),
-                                      spreadRadius: 0.5)
-                                ]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Бесплатный план',
-                                        style: GoogleFonts.roboto(
-                                            textStyle: const TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w900,
-                                        )),
-                                      ),
-                                      !AccountController.isPremium
-                                          ? Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 10.0),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.blueGrey,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.blueGrey
-                                                            .withOpacity(0.5),
-                                                        blurRadius: 3.0,
-                                                        spreadRadius: 0.5)
-                                                  ]),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: AutoSizeText(
-                                                  'Текущий',
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.roboto(
-                                                      color: Colors.white,
-                                                      fontSize: 12.0,
-                                                      fontWeight:
-                                                          FontWeight.w700),
+                            const SizedBox(height: 15.0),
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 5.0,
+                                        offset: const Offset(0, 3.0),
+                                        spreadRadius: 0.5)
+                                  ]),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Бесплатный план',
+                                          style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                            color: Colors.black87,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w900,
+                                          )),
+                                        ),
+                                        !AccountController.isPremium
+                                            ? Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 10.0),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blueGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          color: Colors.blueGrey
+                                                              .withOpacity(0.5),
+                                                          blurRadius: 3.0,
+                                                          spreadRadius: 0.5)
+                                                    ]),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: AutoSizeText(
+                                                    'Текущий',
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.roboto(
+                                                        color: Colors.white,
+                                                        fontSize: 12.0,
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
                                                 ),
-                                              ),
-                                            )
-                                          : Container()
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5.0),
-                                  Text(
-                                    '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}\n• Создание промокодов с 50% комиссии.',
-                                    style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                    )),
-                                  ),
-                                ],
+                                              )
+                                            : Container()
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5.0),
+                                    Text(
+                                      '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}\n• Создание промокодов с 60% комиссии.',
+                                      style: GoogleFonts.roboto(
+                                          textStyle: const TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                      )),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 15.0),
-                          Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: Colors.grey.shade200,
-                                borderRadius: BorderRadius.circular(15.0),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 5.0,
-                                      offset: const Offset(0, 3.0),
-                                      spreadRadius: 0.5)
-                                ]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Premium план',
-                                        style: GoogleFonts.roboto(
-                                            textStyle: const TextStyle(
-                                          color: Colors.redAccent,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w900,
-                                        )),
-                                      ),
-                                      AccountController.isPremium
-                                          ? Container(
-                                              margin: const EdgeInsets.only(
-                                                  left: 10.0),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.blueGrey,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.blueGrey
-                                                            .withOpacity(0.5),
-                                                        blurRadius: 3.0,
-                                                        spreadRadius: 0.5)
-                                                  ]),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: AutoSizeText(
-                                                  'Текущий',
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.roboto(
-                                                      color: Colors.white,
-                                                      fontSize: 12.0,
-                                                      fontWeight:
-                                                          FontWeight.w700),
+                            const SizedBox(height: 15.0),
+                            Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                  color: Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black.withOpacity(0.3),
+                                        blurRadius: 5.0,
+                                        offset: const Offset(0, 3.0),
+                                        spreadRadius: 0.5)
+                                  ]),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Premium план',
+                                          style: GoogleFonts.roboto(
+                                              textStyle: const TextStyle(
+                                            color: Colors.redAccent,
+                                            fontSize: 25,
+                                            fontWeight: FontWeight.w900,
+                                          )),
+                                        ),
+                                        AccountController.isPremium
+                                            ? Container(
+                                                margin: const EdgeInsets.only(
+                                                    left: 10.0),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.blueGrey,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            8.0),
+                                                    boxShadow: [
+                                                      BoxShadow(
+                                                          color: Colors.blueGrey
+                                                              .withOpacity(0.5),
+                                                          blurRadius: 3.0,
+                                                          spreadRadius: 0.5)
+                                                    ]),
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: AutoSizeText(
+                                                    'Текущий',
+                                                    textAlign: TextAlign.center,
+                                                    style: GoogleFonts.roboto(
+                                                        color: Colors.white,
+                                                        fontSize: 12.0,
+                                                        fontWeight:
+                                                            FontWeight.w700),
+                                                  ),
                                                 ),
-                                              ),
-                                            )
-                                          : Container()
-                                    ],
-                                  ),
-                                  const SizedBox(height: 5.0),
-                                  Text(
-                                    '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок\n• Создание промокодов без комиссии.',
-                                    style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
-                                      color: Colors.black87,
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w700,
-                                    )),
-                                  ),
-                                ],
+                                              )
+                                            : Container()
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5.0),
+                                    Text(
+                                      '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок\n• Создание промокодов без комиссии.',
+                                      style: GoogleFonts.roboto(
+                                          textStyle: const TextStyle(
+                                        color: Colors.black87,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w700,
+                                      )),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          Expanded(child: Container())
-                        ],
+                            //Expanded(child: Container())
+                          ],
+                        ),
                       ),
                     ),
                   ),

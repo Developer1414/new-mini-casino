@@ -202,6 +202,7 @@ class _PromocodeState extends State<Promocode> {
                                       textStyle: const TextStyle(
                                     letterSpacing: 0.5,
                                     fontSize: 12,
+                                    decoration: TextDecoration.underline,
                                     fontWeight: FontWeight.w700,
                                     color: Colors.blue,
                                   )),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:provider/provider.dart';
 
 import '../business/balance.dart';
@@ -74,79 +75,83 @@ class KenoLogic extends ChangeNotifier {
       return;
     }
 
-    this.bet = bet;
-    this.context = context;
+    if (AutoclickerSecure.isCanPlay) {
+      this.bet = bet;
+      this.context = context;
 
-    randomNumbersList.clear();
+      randomNumbersList.clear();
 
-    currentCoefficient = 0;
-    int currentItem = -1;
-    profit = 0.0;
-    coefficient = 0.0;
+      currentCoefficient = 0;
+      int currentItem = -1;
+      profit = 0.0;
+      coefficient = 0.0;
 
-    isGameOn = true;
+      isGameOn = true;
 
-    List<int> numbers = [];
-    Set<int> alreadyChecked = {};
+      List<int> numbers = [];
+      Set<int> alreadyChecked = {};
 
-    timer.cancel();
+      timer.cancel();
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'keno',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
+      GameStatisticController.updateGameStatistic(
+          gameName: 'keno',
+          incrementTotalGames: true,
+          gameStatisticModel: GameStatisticModel());
 
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
+      Provider.of<Balance>(context, listen: false).placeBet(bet);
 
-    while (numbers.length < 10) {
-      int rand = Random.secure().nextInt(40) + 0;
+      while (numbers.length < 10) {
+        int rand = Random.secure().nextInt(40) + 0;
 
-      if (!numbers.contains(rand)) {
-        numbers.add(rand);
+        if (!numbers.contains(rand)) {
+          numbers.add(rand);
+        }
       }
-    }
 
-    if (numbers.length == 10) {
-      timer = Timer.periodic(const Duration(milliseconds: 40), (timer) {
-        if (currentItem + 1 < numbers.length) {
-          currentItem++;
-        } else {
-          timer.cancel();
-          isGameOn = false;
-        }
-
-        randomNumbersList.add(numbers[currentItem]);
-
-        if (userNumbersList.contains(randomNumbersList[currentItem]) &&
-            !alreadyChecked.contains(randomNumbersList[currentItem])) {
-          currentCoefficient++;
-          coefficient = coefficients[currentCoefficient - 1];
-          profit = bet * coefficients[currentCoefficient - 1];
-
-          alreadyChecked.add(randomNumbersList[currentItem]);
-        }
-
-        if (randomNumbersList.length == 10) {
-          if (profit < bet) {
-            GameStatisticController.updateGameStatistic(
-                gameName: 'keno',
-                gameStatisticModel: GameStatisticModel(
-                  maxLoss: bet,
-                  lossesMoneys: bet,
-                ));
+      if (numbers.length == 10) {
+        timer = Timer.periodic(const Duration(milliseconds: 40), (timer) {
+          if (currentItem + 1 < numbers.length) {
+            currentItem++;
           } else {
-            GameStatisticController.updateGameStatistic(
-                gameName: 'keno',
-                gameStatisticModel:
-                    GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+            timer.cancel();
+            isGameOn = false;
           }
 
-          Provider.of<Balance>(context, listen: false).cashout(profit);
-          AdService.showInterstitialAd(context: context, func: () {});
-        }
+          randomNumbersList.add(numbers[currentItem]);
 
-        notifyListeners();
-      });
+          if (userNumbersList.contains(randomNumbersList[currentItem]) &&
+              !alreadyChecked.contains(randomNumbersList[currentItem])) {
+            currentCoefficient++;
+            coefficient = coefficients[currentCoefficient - 1];
+            profit = bet * coefficients[currentCoefficient - 1];
+
+            alreadyChecked.add(randomNumbersList[currentItem]);
+          }
+
+          if (randomNumbersList.length == 10) {
+            if (profit < bet) {
+              GameStatisticController.updateGameStatistic(
+                  gameName: 'keno',
+                  gameStatisticModel: GameStatisticModel(
+                    maxLoss: bet,
+                    lossesMoneys: bet,
+                  ));
+            } else {
+              GameStatisticController.updateGameStatistic(
+                  gameName: 'keno',
+                  gameStatisticModel: GameStatisticModel(
+                      winningsMoneys: profit, maxWin: profit));
+            }
+
+            Provider.of<Balance>(context, listen: false).cashout(profit);
+            AdService.showInterstitialAd(context: context, func: () {});
+          }
+
+          notifyListeners();
+        });
+      }
+    } else {
+      AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
   }
 

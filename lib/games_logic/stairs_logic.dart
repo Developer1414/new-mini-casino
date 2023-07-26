@@ -5,6 +5,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:provider/provider.dart';
 
 class StairsLogic extends ChangeNotifier {
@@ -33,49 +34,53 @@ class StairsLogic extends ChangeNotifier {
   }
 
   void startGame({double bet = 0.0, required BuildContext context}) {
-    this.bet = bet;
-    this.context = context;
+    if (AutoclickerSecure.isCanPlay) {
+      this.bet = bet;
+      this.context = context;
 
-    isGameOn = true;
-    isGameOver = false;
+      isGameOn = true;
+      isGameOver = false;
 
-    stonesIndex.clear();
-    cellCount.clear();
-    openedColumnIndex.clear();
+      stonesIndex.clear();
+      cellCount.clear();
+      openedColumnIndex.clear();
 
-    currentIndex = 9;
-    currentCoefficient = 0;
-    profit = 0;
+      currentIndex = 9;
+      currentCoefficient = 0;
+      profit = 0;
 
-    List<List<int>> stones = List.generate(10, (_) => []);
+      List<List<int>> stones = List.generate(10, (_) => []);
 
-    for (int i = 0; i < 10; i++) {
-      int cells = Random.secure().nextInt(4) + 4;
-      cellCount.add(cells);
-    }
+      for (int i = 0; i < 10; i++) {
+        int cells = Random.secure().nextInt(4) + 4;
+        cellCount.add(cells);
+      }
 
-    for (var i = 0; i < 10; i++) {
-      while (stones[i].length != countStones) {
-        int rand = Random.secure().nextInt(cellCount[i]);
+      for (var i = 0; i < 10; i++) {
+        while (stones[i].length != countStones) {
+          int rand = Random.secure().nextInt(cellCount[i]);
 
-        if (!stones[i].contains(rand)) {
-          stones[i].add(rand);
+          if (!stones[i].contains(rand)) {
+            stones[i].add(rand);
+          }
         }
       }
+
+      for (int i = 0; i < 10; i++) {
+        stonesIndex.addAll({i: stones[i]});
+      }
+
+      GameStatisticController.updateGameStatistic(
+          gameName: 'stairs',
+          incrementTotalGames: true,
+          gameStatisticModel: GameStatisticModel());
+
+      Provider.of<Balance>(context, listen: false).placeBet(bet);
+
+      notifyListeners();
+    } else {
+      AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
-
-    for (int i = 0; i < 10; i++) {
-      stonesIndex.addAll({i: stones[i]});
-    }
-
-    GameStatisticController.updateGameStatistic(
-        gameName: 'stairs',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
-
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
-
-    notifyListeners();
   }
 
   void selectCell(int rowIndex, int columnIndex) {
@@ -130,6 +135,7 @@ class StairsLogic extends ChangeNotifier {
 
     notifyListeners();
 
+    AutoclickerSecure().checkAutoclicker();
     AdService.showInterstitialAd(context: context, func: () {});
   }
 

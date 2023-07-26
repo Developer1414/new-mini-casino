@@ -240,6 +240,11 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                     fontSize: 23.0,
                                     fontWeight: FontWeight.w900),
                               ),
+                              /* const SizedBox(width: 5.0),
+                              const Image(
+                                  image: AssetImage('assets/pins/4.jpg'),
+                                  width: 30.0,
+                                  height: 30.0),*/
                               const SizedBox(width: 10.0),
                               isShowRaiting
                                   ? snapshot.data?.docs[index].get('uid') !=

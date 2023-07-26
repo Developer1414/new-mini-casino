@@ -375,7 +375,13 @@ class _StairsState extends State<Stairs> {
                                                                 ? 1.0
                                                                 : 0.4),
                                                       )
-                                                    : Container()
+                                                    : FaIcon(
+                                                        FontAwesomeIcons
+                                                            .solidCircleQuestion,
+                                                        color: Colors
+                                                            .grey.shade300,
+                                                        size: 30.0,
+                                                      )
                                                 : stairsLogic
                                                         .openedColumnIndex.keys
                                                         .toList()

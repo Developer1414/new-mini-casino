@@ -12,6 +12,7 @@ class Payment extends ChangeNotifier {
   bool isLoading = false;
   bool isPremium = false;
   bool isOpenURL = false;
+  bool isYearSubscription = true;
 
   String loadingText = '';
   late Uri uri;
@@ -29,12 +30,18 @@ class Payment extends ChangeNotifier {
     notifyListeners();
   }
 
+  void chooseSubscriptionDuration(bool choosed) {
+    isYearSubscription = choosed;
+    notifyListeners();
+  }
+
   Future getPremium({
     required BuildContext context,
   }) async {
     var clientApplicationKey =
         "live_OTgyMTMyd3WgKx6U_t_xHzTFWmt93Qp1Anns6ZErqWM";
-    var amount = Amount(value: 99.0, currency: Currency.rub);
+    var amount = Amount(
+        value: isYearSubscription ? 999.0 : 99.0, currency: Currency.rub);
     var shopId = "982132";
     var moneyAuthClientId = "gganqqp7bvspn3g47ehqe2vtnut8hv59";
 

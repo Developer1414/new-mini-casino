@@ -14,6 +14,7 @@ import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
+import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
@@ -45,6 +46,9 @@ import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
 import 'package:new_mini_casino/screens/promocode.dart';
 import 'package:new_mini_casino/screens/raffle_info.dart';
+import 'package:new_mini_casino/screens/store.dart';
+import 'package:new_mini_casino/screens/store_items.dart';
+import 'package:new_mini_casino/screens/store_product_review.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
 import 'package:new_mini_casino/screens/user_games_history.dart';
 import 'package:new_mini_casino/screens/welcome.dart';
@@ -162,6 +166,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/welcome': (context, state, data) => const Welcome(),
         '/daily-bonus': (context, state, data) => const DailyBonus(),
         '/login': (context, state, data) => const Login(),
+        '/store-items': (context, state, data) => const StoreItems(),
         '/profile': (context, state, data) => const Profile(),
         '/raffle-info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
@@ -172,6 +177,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/jackpot': (context, state, data) => const Jackpot(),
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
+        '/product-review': (context, state, data) => const StoreProductReview(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/user-agreement': (context, state, data) => const UserAgreement(),
@@ -181,6 +187,24 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
           final userid = state.pathParameters['userid']!;
           return BeamPage(
             child: UserGamesHistory(userNickname: userNickname, userid: userid),
+          );
+        },
+        '/store/:storeName/:path/:imagesCount/:models': (context, state, data) {
+          final storeName = state.pathParameters['storeName']!;
+          final path = state.pathParameters['path']!;
+          int imagesCount = int.parse(state.pathParameters['imagesCount']!);
+          List<StoreItemModel> models =
+              (jsonDecode(state.pathParameters['models']!) as List)
+                  .map((modelMap) => StoreItemModel.fromJson(modelMap))
+                  .toList()
+                ..sort((a, b) => a.price.compareTo(b.price));
+
+          return BeamPage(
+            child: Store(
+                storeName: storeName,
+                path: path,
+                imagesCount: imagesCount,
+                models: models),
           );
         },
         '/game-statistic/:game': (context, state, data) {
@@ -213,6 +237,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => BonusManager()),
         ChangeNotifierProvider(create: (ctx) => OwnPromocodeManager()),
         ChangeNotifierProvider(create: (ctx) => CoinflipLogic()),
+        ChangeNotifierProvider(create: (ctx) => StoreManager()),
         ChangeNotifierProvider(create: (ctx) => CrashLogic()),
         ChangeNotifierProvider(create: (ctx) => KenoLogic()),
         ChangeNotifierProvider(create: (ctx) => StairsLogic()),

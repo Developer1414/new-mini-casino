@@ -67,12 +67,16 @@ class _MyPromocodesState extends State<MyPromocodes> {
       ),
       body: sortedMap.isEmpty
           ? Center(
-              child: AutoSizeText(
-                'У вас ещё нет промокодов',
-                style: GoogleFonts.roboto(
-                    color: Colors.black87.withOpacity(0.4),
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w700),
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                child: AutoSizeText(
+                  'У вас ещё нет промокодов.\nОни будут появляться здесь через каждые 350 ставок если у вас есть Premium подписка.',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                      color: Colors.black87.withOpacity(0.4),
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w700),
+                ),
               ),
             )
           : ListView.separated(
