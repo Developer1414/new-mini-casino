@@ -29,7 +29,7 @@ class BonusManager extends ChangeNotifier {
           getReward(
               context: context,
               rewardCount: double.parse(
-                  (Random().nextInt(AccountController.isPremium ? 900 : 200) +
+                  (Random().nextInt(AccountController.isPremium ? 4501 : 200) +
                           (AccountController.isPremium ? 500 : 100))
                       .toString()));
         }).whenComplete(() => showLoading(false));

@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
+import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
@@ -298,6 +299,9 @@ class AccountController extends ChangeNotifier {
             await LocalPromocodes().initializeMyPromocodes();
             // ignore: use_build_context_synchronously
             await Provider.of<Balance>(context, listen: false).loadBalance();
+            // ignore: use_build_context_synchronously
+            await Provider.of<MoneyStorageManager>(context, listen: false)
+                .loadBalance();
             await DailyBonusManager().checkDailyBonus().then((value) {
               if (value) {
                 newScreen = const DailyBonus();

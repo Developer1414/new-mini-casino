@@ -3,8 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/models/store/cars_model.dart';
+import 'package:new_mini_casino/models/store/houses_model.dart';
+import 'package:new_mini_casino/models/store/pins_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
@@ -45,7 +48,6 @@ class StoreItemButtonModel {
   IconData icon;
   Color buttonColor;
   bool isSoon;
-  int imagesCount;
   List<StoreItemModel> models;
 
   StoreItemButtonModel(
@@ -53,7 +55,6 @@ class StoreItemButtonModel {
       required this.pathTitle,
       required this.icon,
       required this.buttonColor,
-      required this.imagesCount,
       required this.models,
       this.isSoon = false});
 }
@@ -61,7 +62,7 @@ class StoreItemButtonModel {
 class StoreManager extends ChangeNotifier {
   bool isLoading = false;
 
-  static bool showOnlyMyItems = false;
+  static bool showOnlyBuyedItems = false;
 
   int selectedStore = 0;
   int selectedProduct = 0;
@@ -78,18 +79,21 @@ class StoreManager extends ChangeNotifier {
     StoreItemButtonModel(
         title: 'Автомобили',
         pathTitle: 'cars',
-        imagesCount: 20,
         models: carModels,
         icon: FontAwesomeIcons.car,
         buttonColor: Colors.blueAccent),
     StoreItemButtonModel(
-        title: 'Пины (скоро)',
+        title: 'Пины',
         pathTitle: 'pins',
-        imagesCount: 0,
-        models: [],
+        models: pinModels,
         icon: FontAwesomeIcons.icons,
-        buttonColor: Colors.purpleAccent,
-        isSoon: true),
+        buttonColor: Colors.purpleAccent),
+    StoreItemButtonModel(
+        title: 'Дома',
+        pathTitle: 'houses',
+        models: housesModels,
+        icon: FontAwesomeIcons.house,
+        buttonColor: Colors.brown),
   ];
 
   void selectStore({required int id, required String path}) {
@@ -101,12 +105,17 @@ class StoreManager extends ChangeNotifier {
 
   Future buyProduct(
       {required BuildContext context,
-      required String carName,
-      required int carId,
+      required String itemName,
+      required int itemid,
       required double price}) async {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    if (balance.currentBalance < price) {
+    double realPrice = AccountController.isPremium &&
+            stores[selectedStore].models[selectedProduct].premium
+        ? price - (price * 20 / 100)
+        : price;
+
+    if (balance.currentBalance < realPrice) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
@@ -123,32 +132,32 @@ class StoreManager extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) async {
-      if (value.data()!.containsKey('cars')) {
-        List list = value.get('cars') as List;
-        list.add(carId);
+      if (value.data()!.containsKey(selectedPath)) {
+        List list = value.get(selectedPath) as List;
+        list.add(itemid);
 
         await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser?.uid)
-            .update({'cars': list});
+            .update({selectedPath: list});
       } else {
         await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .update({
-          'cars': [carId]
+          selectedPath: [itemid]
         });
       }
     });
 
-    balance.placeBet(price);
+    balance.placeBet(realPrice);
 
     // ignore: use_build_context_synchronously
     alertDialogSuccess(
       context: context,
       title: 'Поздравляем',
       confirmBtnText: 'Спасибо!',
-      text: 'Вы успешно приобрели $carName!',
+      text: 'Вы успешно приобрели $itemName!',
     );
 
     // ignore: use_build_context_synchronously
@@ -159,8 +168,8 @@ class StoreManager extends ChangeNotifier {
 
   Future sellProduct(
       {required BuildContext context,
-      required String carName,
-      required int carId,
+      required String itemName,
+      required int itemId,
       required double price}) async {
     showLoading(true);
 
@@ -169,16 +178,31 @@ class StoreManager extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) async {
-      if (value.data()!.containsKey('cars')) {
-        List list = value.get('cars') as List;
-        list.remove(carId);
+      if (value.data()!.containsKey(selectedPath)) {
+        List list = value.get(selectedPath) as List;
+        list.remove(itemId);
 
         await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser?.uid)
-            .update({'cars': list}).whenComplete(() {
-          // ignore: use_build_context_synchronously
-          Provider.of<Balance>(context, listen: false).cashout(price / 2);
+            .update({selectedPath: list}).whenComplete(() {
+          Provider.of<Balance>(context, listen: false)
+              .cashout(price - (price * 20 / 100));
+        });
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .get()
+            .then((value) async {
+          if (value.data()!.containsKey('selected$selectedPath')) {
+            if (itemId == value.get('selected$selectedPath') as int) {
+              await FirebaseFirestore.instance
+                  .collection('users')
+                  .doc(FirebaseAuth.instance.currentUser?.uid)
+                  .update({'selected$selectedPath': FieldValue.delete()});
+            }
+          }
         });
       }
     });
@@ -188,7 +212,7 @@ class StoreManager extends ChangeNotifier {
       context: context,
       title: 'Поздравляем',
       confirmBtnText: 'Спасибо!',
-      text: 'Вы успешно продали $carName!',
+      text: 'Вы успешно продали $itemName!',
     );
 
     // ignore: use_build_context_synchronously
@@ -197,7 +221,8 @@ class StoreManager extends ChangeNotifier {
     showLoading(false);
   }
 
-  Future<bool> checkCarOnMine(int carId) async {
+  Future<bool> checkItemOnMine(
+      {required int itemId, required String path}) async {
     bool result = false;
 
     await FirebaseFirestore.instance
@@ -205,10 +230,10 @@ class StoreManager extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) async {
-      if (value.data()!.containsKey('cars')) {
-        List list = value.get('cars') as List;
+      if (value.data()!.containsKey(path)) {
+        List list = value.get(path) as List;
 
-        if (list.contains(carId)) {
+        if (list.contains(itemId)) {
           result = true;
         }
       } else {
@@ -217,6 +242,44 @@ class StoreManager extends ChangeNotifier {
     });
 
     return result;
+  }
+
+  Future<bool> checkItemOnSelected(
+      {required int itemId, required String path}) async {
+    bool result = false;
+
+    await checkItemOnMine(itemId: itemId, path: path).then((value) async {
+      if (!value) {
+        result = true;
+      } else {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser?.uid)
+            .get()
+            .then((value) async {
+          if (value.data()!.containsKey('selected$path')) {
+            if (itemId == value.get('selected$path') as int) {
+              result = true;
+            }
+          } else {
+            result = false;
+          }
+        });
+      }
+    });
+
+    return result;
+  }
+
+  Future selectItem({required int itemId, required String path}) async {
+    showLoading(true);
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .update({'selected$path': itemId});
+
+    showLoading(false);
   }
 
   Future<List<int>> loadMyItems(String path) async {

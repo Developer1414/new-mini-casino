@@ -99,7 +99,7 @@ class DailyBonus extends StatelessWidget {
                           : Padding(
                               padding: const EdgeInsets.only(bottom: 15.0),
                               child: AutoSizeText(
-                                'В Mini Casino Premium бонусы увеличены в 2 раза!',
+                                'В Mini Casino Premium бонусы увеличены в 3 раза!',
                                 maxLines: 1,
                                 style: GoogleFonts.roboto(
                                     color: Colors.black54,
@@ -151,7 +151,7 @@ class DailyBonus extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 10.0),
                                   AutoSizeText(
-                                    '+${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(value.bonuses[index] * (AccountController.isPremium ? 2 : 1))}',
+                                    '+${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(value.bonuses[index] * (AccountController.isPremium ? 3 : 1))}',
                                     maxLines: 1,
                                     style: GoogleFonts.roboto(
                                         color: index <

@@ -11,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
+import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
@@ -38,8 +39,10 @@ import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
+import 'package:new_mini_casino/screens/money_storage.dart';
 import 'package:new_mini_casino/screens/my_promocodes.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
+import 'package:new_mini_casino/screens/other_user_profile.dart';
 import 'package:new_mini_casino/screens/own_promocode.dart';
 import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
@@ -178,6 +181,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
         '/product-review': (context, state, data) => const StoreProductReview(),
+        '/money-storage': (context, state, data) => const MoneyStorage(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/user-agreement': (context, state, data) => const UserAgreement(),
@@ -189,10 +193,24 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             child: UserGamesHistory(userNickname: userNickname, userid: userid),
           );
         },
-        '/store/:storeName/:path/:imagesCount/:models': (context, state, data) {
+        '/other-user-profile/:userName/:userid/:totalGames/:balance':
+            (context, state, data) {
+          final userName = state.pathParameters['userName']!;
+          final userid = state.pathParameters['userid']!;
+          final totalGames = state.pathParameters['totalGames']!;
+          final balance = state.pathParameters['balance']!;
+
+          return BeamPage(
+            child: OtherUserProfile(
+                userName: userName,
+                userid: userid,
+                totalGames: int.parse(totalGames),
+                balance: double.parse(balance)),
+          );
+        },
+        '/store/:storeName/:path/:models': (context, state, data) {
           final storeName = state.pathParameters['storeName']!;
           final path = state.pathParameters['path']!;
-          int imagesCount = int.parse(state.pathParameters['imagesCount']!);
           List<StoreItemModel> models =
               (jsonDecode(state.pathParameters['models']!) as List)
                   .map((modelMap) => StoreItemModel.fromJson(modelMap))
@@ -200,11 +218,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 ..sort((a, b) => a.price.compareTo(b.price));
 
           return BeamPage(
-            child: Store(
-                storeName: storeName,
-                path: path,
-                imagesCount: imagesCount,
-                models: models),
+            child: Store(storeName: storeName, path: path, models: models),
           );
         },
         '/game-statistic/:game': (context, state, data) {
@@ -231,6 +245,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
+        ChangeNotifierProvider(create: (ctx) => MoneyStorageManager()),
         ChangeNotifierProvider(create: (ctx) => RaffleManager()),
         ChangeNotifierProvider(create: (ctx) => DailyBonusManager()),
         ChangeNotifierProvider(create: (ctx) => PromocodeManager()),

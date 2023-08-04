@@ -44,22 +44,8 @@ class AdService {
 
     Appodeal.setInterstitialCallbacks(
         onInterstitialLoaded: (isPrecache) => {},
-        onInterstitialFailedToLoad: () => {
-              alertDialogError(
-                context: context,
-                title: 'Ошибка',
-                text:
-                    'Не удалось загрузить рекламу. Пожалуйста, попробуйте позже!',
-              )
-            },
-        onInterstitialShowFailed: () => {
-              alertDialogError(
-                context: context,
-                title: 'Ошибка',
-                text:
-                    'Не удалось показать рекламу. Пожалуйста, попробуйте позже!',
-              )
-            },
+        onInterstitialFailedToLoad: () => {},
+        onInterstitialShowFailed: () => {},
         onInterstitialClosed: () {
           func.call();
           countBet = 0;

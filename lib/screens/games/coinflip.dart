@@ -91,7 +91,9 @@ class _CoinflipState extends State<Coinflip>
 
     return WillPopScope(
         onWillPop: () async {
-          return !context.read<CoinflipLogic>().isGameOn;
+          return !context.read<CoinflipLogic>().isGameOn &&
+              !Provider.of<CoinflipLogic>(context, listen: false)
+                  .isContinueGame;
         },
         child: GestureDetector(
           onTap: () {
@@ -398,7 +400,8 @@ class _CoinflipState extends State<Coinflip>
                   child: IconButton(
                       splashRadius: 25.0,
                       padding: EdgeInsets.zero,
-                      onPressed: context.watch<CoinflipLogic>().isGameOn
+                      onPressed: context.watch<CoinflipLogic>().isGameOn ||
+                              context.watch<CoinflipLogic>().isContinueGame
                           ? null
                           : () {
                               Beamer.of(context).beamBack();
@@ -439,7 +442,8 @@ class _CoinflipState extends State<Coinflip>
                     child: IconButton(
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
-                        onPressed: context.watch<CoinflipLogic>().isGameOn
+                        onPressed: context.watch<CoinflipLogic>().isGameOn ||
+                                context.watch<CoinflipLogic>().isContinueGame
                             ? null
                             : () =>
                                 context.beamToNamed('/game-statistic/coinflip'),

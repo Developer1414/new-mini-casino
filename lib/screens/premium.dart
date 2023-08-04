@@ -256,7 +256,7 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15.0),
+                            const SizedBox(height: 30.0),
                             Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
@@ -396,7 +396,7 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                      '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)}\n• Ежедневные бонусы увеличены в 2 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000)} через каждые 350 ставок\n• Создание промокодов без комиссии.',
+                                      '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой.',
                                       style: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                         color: Colors.black87,

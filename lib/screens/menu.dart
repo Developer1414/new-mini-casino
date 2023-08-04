@@ -82,7 +82,7 @@ class _AllGamesState extends State<AllGames> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          StoreManager.showOnlyMyItems = false;
+                          StoreManager.showOnlyBuyedItems = false;
                           context.beamToNamed('/store-items');
                         },
                         style: ElevatedButton.styleFrom(

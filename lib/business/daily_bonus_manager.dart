@@ -53,9 +53,9 @@ class DailyBonusManager extends ChangeNotifier {
       }
 
       currentBonus =
-          bonuses[currentBonusIndex] * (AccountController.isPremium ? 2 : 1);
+          bonuses[currentBonusIndex] * (AccountController.isPremium ? 3 : 1);
     } else {
-      currentBonus = bonuses[0] * (AccountController.isPremium ? 2 : 1);
+      currentBonus = bonuses[0] * (AccountController.isPremium ? 3 : 1);
     }
 
     if (dateTimeNow.day != lastBonusDate.day ||

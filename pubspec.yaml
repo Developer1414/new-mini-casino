@@ -53,6 +53,7 @@ dependencies:
   appmetrica_plugin: ^1.2.0
   ntp: ^2.0.0
   flutter_fortune_wheel: ^1.2.1
+  modal_bottom_sheet: ^2.1.2
 
 dev_dependencies:
   flutter_test:
@@ -73,6 +74,7 @@ flutter:
    - assets/
    - assets/mines/
    - assets/cars/
+   - assets/houses/
    - assets/pins/
    - assets/stairs/
    - assets/animations/

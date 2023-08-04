@@ -16,54 +16,52 @@ class Store extends StatelessWidget {
       {super.key,
       required this.storeName,
       required this.path,
-      required this.imagesCount,
       required this.models});
 
   final String storeName;
   final String path;
-  final int imagesCount;
   final List<StoreItemModel> models;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Consumer<StoreManager>(
-        builder: (context, storeManager, _) {
-          return storeManager.isLoading
-              ? loading()
-              : Scaffold(
-                  appBar: AppBar(
-                    toolbarHeight: 76.0,
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: IconButton(
-                          splashRadius: 25.0,
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            Beamer.of(context).beamBack();
-                          },
-                          icon: const FaIcon(
-                            FontAwesomeIcons.arrowLeft,
-                            color: Colors.black87,
-                            size: 30.0,
-                          )),
-                    ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AutoSizeText(
-                          storeName,
-                          style: GoogleFonts.roboto(
+    return WillPopScope(
+      onWillPop: () async => Beamer.of(context).beamBack(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Consumer<StoreManager>(
+          builder: (context, storeManager, _) {
+            return storeManager.isLoading
+                ? loading()
+                : Scaffold(
+                    appBar: AppBar(
+                      toolbarHeight: 76.0,
+                      elevation: 0,
+                      backgroundColor: Colors.transparent,
+                      leading: Padding(
+                        padding: const EdgeInsets.only(left: 15.0),
+                        child: IconButton(
+                            splashRadius: 25.0,
+                            padding: EdgeInsets.zero,
+                            onPressed: () {
+                              Beamer.of(context).beamBack();
+                            },
+                            icon: const FaIcon(
+                              FontAwesomeIcons.arrowLeft,
                               color: Colors.black87,
-                              fontSize: 30.0,
-                              fontWeight: FontWeight.w900),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 0.0),
-                          child: Consumer<Balance>(builder: (ctx, balance, _) {
+                              size: 30.0,
+                            )),
+                      ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          AutoSizeText(
+                            storeName,
+                            style: GoogleFonts.roboto(
+                                color: Colors.black87,
+                                fontSize: 30.0,
+                                fontWeight: FontWeight.w900),
+                          ),
+                          Consumer<Balance>(builder: (ctx, balance, _) {
                             return AutoSizeText(
                               balance.currentBalanceString,
                               style: GoogleFonts.roboto(
@@ -72,42 +70,42 @@ class Store extends StatelessWidget {
                                   fontWeight: FontWeight.w900),
                             );
                           }),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  body: StoreManager.showOnlyMyItems
-                      ? FutureBuilder(
-                          future: storeManager.loadMyItems(path),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return loading();
-                            }
-                            return snapshot.data!.isEmpty
-                                ? Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 15.0, right: 15.0),
-                                      child: AutoSizeText(
-                                        'У вас ещё нет имущества «$storeName».',
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                            color:
-                                                Colors.black87.withOpacity(0.4),
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.w700),
+                    body: StoreManager.showOnlyBuyedItems
+                        ? FutureBuilder(
+                            future: storeManager.loadMyItems(path),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return loading();
+                              }
+                              return snapshot.data!.isEmpty
+                                  ? Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 15.0, right: 15.0),
+                                        child: AutoSizeText(
+                                          'У вас ещё нет имущества «$storeName».',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                              color: Colors.black87
+                                                  .withOpacity(0.4),
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.w700),
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                : loadItems(
-                                    storeManager: storeManager,
-                                    list: snapshot.data ?? [],
-                                    onlyMyItems: true);
-                          })
-                      : loadItems(storeManager: storeManager),
-                );
-        },
+                                    )
+                                  : loadItems(
+                                      storeManager: storeManager,
+                                      list: snapshot.data ?? [],
+                                      onlyMyItems: true);
+                            })
+                        : loadItems(storeManager: storeManager),
+                  );
+          },
+        ),
       ),
     );
   }
@@ -161,41 +159,13 @@ class Store extends StatelessWidget {
                       image: AssetImage(
                         'assets/$path/${storeItemModel.imageId}.png',
                       ),
+                      width: path != 'pins' ? null : 100.0,
+                      height: path != 'pins' ? null : 100.0,
                     ),
                   ),
                   onlyMyItems
                       ? Container()
-                      : /*models
-                              .where(
-                                  (element) => element.imageId == currentIndex)
-                              .first
-                              .premium
-                          ? Container(
-                              margin: const EdgeInsets.only(left: 10.0),
-                              decoration: BoxDecoration(
-                                  color: Colors.redAccent,
-                                  borderRadius: BorderRadius.circular(8.0),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color:
-                                            Colors.redAccent.withOpacity(0.5),
-                                        blurRadius: 3.0,
-                                        spreadRadius: 0.5)
-                                  ]),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: AutoSizeText(
-                                  'Premium',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 12.0,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                              ),
-                            )
-                          :*/
-                      AutoSizeText(
+                      : AutoSizeText(
                           NumberFormat.simpleCurrency(
                                   locale: ui.Platform.localeName)
                               .format(AccountController.isPremium &&

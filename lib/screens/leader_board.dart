@@ -185,17 +185,24 @@ class _LeaderBoardState extends State<LeaderBoard> {
       bool isShowRaiting = true}) {
     return ListView.separated(
         itemBuilder: (context, index) {
-          double moneys = double.parse(
+          double balance = double.parse(
               snapshot.data?.docs[index].get('balance').toString() ?? '0');
 
           int totalGames = int.parse(
               snapshot.data?.docs[index].get('totalGames').toString() ?? '0');
 
+          int pinId = -1;
+
+          if (snapshot.data!.docs[index].data().containsKey('selectedpins')) {
+            pinId = int.parse(
+                snapshot.data!.docs[index].get('selectedpins').toString());
+          }
+
           return GestureDetector(
             onTap: () {
-              /*context.beamToNamed(
-                '/user-history/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}',
-              );*/
+              context.beamToNamed(
+                '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$totalGames/$balance',
+              );
             },
             child: Container(
               width: double.infinity,
@@ -222,45 +229,104 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                 : Colors.black.withOpacity(0.3),
                         blurRadius: 10.0)
                   ]),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Stack(
+                alignment: AlignmentDirectional.bottomEnd,
                 children: [
-                  Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              AutoSizeText(
-                                snapshot.data?.docs[index].get('name') ?? '',
-                                style: GoogleFonts.roboto(
-                                    color: Colors.black87,
-                                    fontSize: 23.0,
-                                    fontWeight: FontWeight.w900),
-                              ),
-                              /* const SizedBox(width: 5.0),
-                              const Image(
-                                  image: AssetImage('assets/pins/4.jpg'),
-                                  width: 30.0,
-                                  height: 30.0),*/
-                              const SizedBox(width: 10.0),
-                              isShowRaiting
-                                  ? snapshot.data?.docs[index].get('uid') !=
-                                          FirebaseAuth.instance.currentUser!.uid
-                                      ? index == 0
-                                          ? Container(
+                              Row(
+                                children: [
+                                  AutoSizeText(
+                                    snapshot.data?.docs[index].get('name') ??
+                                        '',
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.black87,
+                                        fontSize: 23.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  pinId != -1
+                                      ? Image(
+                                          image: AssetImage(
+                                              'assets/pins/$pinId.png'),
+                                          width: 25.0,
+                                          height: 25.0)
+                                      : Container(),
+                                  const SizedBox(width: 6.0),
+                                  isShowRaiting
+                                      ? snapshot.data?.docs[index].get('uid') !=
+                                              FirebaseAuth
+                                                  .instance.currentUser!.uid
+                                          ? index == 0
+                                              ? Container(
+                                                  margin: const EdgeInsets.only(
+                                                      right: 10.0),
+                                                  decoration: BoxDecoration(
+                                                      color: LeaderBoard
+                                                                  .selectedValue ==
+                                                              LeaderBoard
+                                                                  .items[1]
+                                                          ? Colors.blueAccent
+                                                          : Colors.orange,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              12.0),
+                                                      boxShadow: [
+                                                        BoxShadow(
+                                                            color: LeaderBoard
+                                                                        .selectedValue ==
+                                                                    LeaderBoard
+                                                                            .items[
+                                                                        1]
+                                                                ? Colors
+                                                                    .blueAccent
+                                                                    .withOpacity(
+                                                                        0.5)
+                                                                : Colors.orange
+                                                                    .withOpacity(
+                                                                        0.5),
+                                                            blurRadius: 8.0,
+                                                            spreadRadius: 1.5)
+                                                      ]),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            8.0),
+                                                    child: AutoSizeText(
+                                                      LeaderBoard.selectedValue ==
+                                                              LeaderBoard
+                                                                  .items[1]
+                                                          ? 'Самый активный'
+                                                          : 'Самый богатый',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: GoogleFonts.roboto(
+                                                          color: Colors.white,
+                                                          fontSize: 12.0,
+                                                          fontWeight:
+                                                              FontWeight.w700),
+                                                    ),
+                                                  ),
+                                                )
+                                              : Container()
+                                          : Container(
                                               margin: const EdgeInsets.only(
                                                   right: 10.0),
                                               decoration: BoxDecoration(
-                                                  color: Colors.orange,
+                                                  color: Colors.redAccent,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           12.0),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                        color: Colors.orange
+                                                        color: Colors.redAccent
                                                             .withOpacity(0.5),
                                                         blurRadius: 8.0,
                                                         spreadRadius: 1.5)
@@ -269,100 +335,72 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                                 padding:
                                                     const EdgeInsets.all(8.0),
                                                 child: AutoSizeText(
-                                                  LeaderBoard.selectedValue ==
-                                                          LeaderBoard.items[1]
-                                                      ? 'Самый активный'
-                                                      : 'Самый богатый',
+                                                  'Вы',
                                                   textAlign: TextAlign.center,
                                                   style: GoogleFonts.roboto(
                                                       color: Colors.white,
                                                       fontSize: 12.0,
                                                       fontWeight:
-                                                          FontWeight.w700),
+                                                          FontWeight.w900),
                                                 ),
                                               ),
                                             )
-                                          : Container()
-                                      : Container(
-                                          margin: const EdgeInsets.only(
-                                              right: 10.0),
-                                          decoration: BoxDecoration(
-                                              color: Colors.redAccent,
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0),
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.redAccent
-                                                        .withOpacity(0.5),
-                                                    blurRadius: 8.0,
-                                                    spreadRadius: 1.5)
-                                              ]),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: AutoSizeText(
-                                              'Вы',
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.roboto(
-                                                  color: Colors.white,
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.w900),
-                                            ),
-                                          ),
-                                        )
-                                  : Container(),
-                            ],
-                          ),
-                          const SizedBox(height: 5.0),
-                          Row(
-                            children: [
-                              const FaIcon(
-                                FontAwesomeIcons.sackDollar,
-                                color: Colors.green,
-                                size: 18.0,
+                                      : Container(),
+                                ],
                               ),
-                              const SizedBox(width: 5.0),
-                              AutoSizeText(
-                                'Баланс: ${moneys < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(moneys) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(moneys)}',
+                              const SizedBox(height: 5.0),
+                              Row(
+                                children: [
+                                  const FaIcon(
+                                    FontAwesomeIcons.sackDollar,
+                                    color: Colors.green,
+                                    size: 18.0,
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  AutoSizeText(
+                                    'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance)}',
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.black87.withOpacity(0.8),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 5.0),
+                              Row(
+                                children: [
+                                  const FaIcon(
+                                    FontAwesomeIcons.gamepad,
+                                    color: Colors.blueGrey,
+                                    size: 18.0,
+                                  ),
+                                  const SizedBox(width: 5.0),
+                                  AutoSizeText(
+                                    'Всего игр: ${totalGames < 1000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.black87.withOpacity(0.8),
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )),
+                      !isShowRaiting
+                          ? Container()
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.only(right: 15.0, top: 15.0),
+                              child: AutoSizeText(
+                                '#${(index + 1)}',
                                 style: GoogleFonts.roboto(
-                                    color: Colors.black87.withOpacity(0.8),
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.w700),
+                                    color: Colors.black87,
+                                    fontSize: 25.0,
+                                    fontWeight: FontWeight.w900),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 5.0),
-                          Row(
-                            children: [
-                              const FaIcon(
-                                FontAwesomeIcons.gamepad,
-                                color: Colors.blueGrey,
-                                size: 18.0,
-                              ),
-                              const SizedBox(width: 5.0),
-                              AutoSizeText(
-                                'Всего игр: ${totalGames < 1000000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
-                                style: GoogleFonts.roboto(
-                                    color: Colors.black87.withOpacity(0.8),
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.w700),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )),
-                  !isShowRaiting
-                      ? Container()
-                      : Padding(
-                          padding:
-                              const EdgeInsets.only(right: 15.0, top: 15.0),
-                          child: AutoSizeText(
-                            '#${(index + 1)}',
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87,
-                                fontSize: 25.0,
-                                fontWeight: FontWeight.w900),
-                          ),
-                        ),
+                            ),
+                    ],
+                  ),
                 ],
               ),
             ),

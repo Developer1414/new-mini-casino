@@ -9,19 +9,13 @@ import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:provider/provider.dart';
 
-class StoreItems extends StatefulWidget {
+class StoreItems extends StatelessWidget {
   const StoreItems({super.key});
 
   @override
-  State<StoreItems> createState() => _StoreItemsState();
-}
-
-class _StoreItemsState extends State<StoreItems> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Consumer<StoreManager>(
+    return Scaffold(
+      body: Consumer<StoreManager>(
         builder: (context, storeManager, _) {
           return storeManager.isLoading
               ? loading()
@@ -45,7 +39,7 @@ class _StoreItemsState extends State<StoreItems> {
                           )),
                     ),
                     title: AutoSizeText(
-                      StoreManager.showOnlyMyItems ? 'Имущество' : 'Магазин',
+                      StoreManager.showOnlyBuyedItems ? 'Имущество' : 'Магазин',
                       style: GoogleFonts.roboto(
                           color: Colors.black87,
                           fontSize: 30.0,
@@ -75,7 +69,7 @@ class _StoreItemsState extends State<StoreItems> {
                                           storeManager.stores[index].pathTitle);
 
                                   Beamer.of(context).beamToNamed(
-                                      '/store/${storeManager.stores[index].title}/${storeManager.stores[index].pathTitle}/${storeManager.stores[index].imagesCount}/${jsonEncode(storeManager.stores[index].models)}');
+                                      '/store/${storeManager.stores[index].title}/${storeManager.stores[index].pathTitle}/${jsonEncode(storeManager.stores[index].models)}');
                                 },
                           style: ElevatedButton.styleFrom(
                             elevation: 5,
