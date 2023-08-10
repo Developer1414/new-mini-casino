@@ -19,25 +19,26 @@ class FreeraspService {
     );
 
     ThreatCallback callback = ThreatCallback(
-        onHooks: () => errorDetected(context, 'Hooks detected'),
-        onAppIntegrity: () => errorDetected(context, 'onAppIntegrity'),
-        onObfuscationIssues: () => errorDetected(context, 'Obfuscation issues'),
-        onDebug: () {
-          if (kDebugMode) {
-            print("Debugging");
-          }
-        },
-        onDeviceBinding: () => errorDetected(context, 'Device binding'),
-        onPrivilegedAccess: () => errorDetected(context,
-            'На вашем устройстве были обнаружены повышенные права. Возможно, у вас установлены Root-права и т.д. Если это так, пожалуйста, удалите их, иначе вы не сможете использовать это приложение.'),
-        /* onSecureHardwareNotAvailable: () =>
+      onHooks: () => errorDetected(context, 'Hooks detected'),
+      onAppIntegrity: () => errorDetected(context, 'onAppIntegrity'),
+      onUnofficialStore: () => errorDetected(context, 'Unofficial store'),
+      onObfuscationIssues: () => errorDetected(context, 'Obfuscation issues'),
+      onDebug: () {
+        if (kDebugMode) {
+          print("Debugging");
+        }
+      },
+      onDeviceBinding: () => errorDetected(context, 'Device binding'),
+      onPrivilegedAccess: () => errorDetected(context,
+          'На вашем устройстве были обнаружены повышенные права. Возможно, у вас установлены Root-права и т.д. Если это так, пожалуйста, удалите их, иначе вы не сможете использовать это приложение.'),
+      /* onSecureHardwareNotAvailable: () =>
             print("Secure hardware not available"),*/
-        onSimulator: () {
-          if (kDebugMode) {
-            print("Simulator detected");
-          }
-        },
-        onUnofficialStore: () => errorDetected(context, 'Unofficial store'));
+      onSimulator: () {
+        if (kDebugMode) {
+          print("Simulator detected");
+        }
+      },
+    );
 
     Talsec.instance.attachListener(callback);
     await Talsec.instance.start(config);

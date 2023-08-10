@@ -112,7 +112,7 @@ class _CoinflipState extends State<Coinflip>
                     borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(25.0),
                         topRight: Radius.circular(25.0)),
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     boxShadow: [
                       BoxShadow(
                           color: Colors.black.withOpacity(0.3),
@@ -123,6 +123,7 @@ class _CoinflipState extends State<Coinflip>
                     return Padding(
                         padding: const EdgeInsets.only(left: 15.0),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(
@@ -133,11 +134,10 @@ class _CoinflipState extends State<Coinflip>
                                 children: [
                                   AutoSizeText(
                                       'Прибыль (${coinflipLogic.currentCoefficient == -1 ? 0 : coinflipLogic.coefficients[coinflipLogic.currentCoefficient]}x):',
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 20,
-                                      )),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(fontSize: 20.0)),
                                   Padding(
                                     padding: const EdgeInsets.only(right: 15.0),
                                     child: AutoSizeText(
@@ -151,11 +151,10 @@ class _CoinflipState extends State<Coinflip>
                                                         locale: ui.Platform
                                                             .localeName)
                                                 .format(coinflipLogic.profit),
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 20,
-                                        )),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 20.0)),
                                   ),
                                 ],
                               ),
@@ -181,7 +180,10 @@ class _CoinflipState extends State<Coinflip>
                                                       width: 2.0,
                                                       color: Colors.green)
                                                   : null,
-                                              color: Colors.white,
+                                              color: Theme.of(context)
+                                                  .buttonTheme
+                                                  .colorScheme!
+                                                  .background,
                                               boxShadow: [
                                                 BoxShadow(
                                                     color: Colors.black
@@ -196,11 +198,9 @@ class _CoinflipState extends State<Coinflip>
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
                                                 '${coinflipLogic.coefficients[index]}x',
-                                                style: GoogleFonts.roboto(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 15,
-                                                )),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall),
                                           ),
                                         ),
                                       );
@@ -214,35 +214,48 @@ class _CoinflipState extends State<Coinflip>
                                 children: [
                                   Expanded(
                                     flex: 2,
-                                    child: ElevatedButton(
-                                      onPressed:
-                                          coinflipLogic.randomCoinflipStatus !=
-                                                      coinflipLogic
-                                                          .userCoinflipStatus ||
-                                                  _controller.status ==
-                                                      AnimationStatus.forward
-                                              ? null
-                                              : () {
-                                                  coinflipLogic.cashout();
-                                                },
-                                      style: ElevatedButton.styleFrom(
-                                        elevation: 5,
-                                        backgroundColor: Colors.blueAccent,
-                                        shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(25.0),
-                                              topRight: Radius.circular(25.0)),
+                                    child: SizedBox(
+                                      height: 64.0,
+                                      child: ElevatedButton(
+                                        onPressed: coinflipLogic
+                                                        .randomCoinflipStatus !=
+                                                    coinflipLogic
+                                                        .userCoinflipStatus ||
+                                                _controller.status ==
+                                                    AnimationStatus.forward
+                                            ? null
+                                            : () {
+                                                coinflipLogic.cashout();
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: Colors.blueAccent,
+                                          shape: const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(25.0),
+                                                topRight:
+                                                    Radius.circular(25.0)),
+                                          ),
                                         ),
-                                      ),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(18.0),
-                                        child: AutoSizeText(
-                                          'ЗАБРАТЬ',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 24.0,
-                                              fontWeight: FontWeight.w900),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(18.0),
+                                          child: AutoSizeText(
+                                            'ЗАБРАТЬ',
+                                            maxLines: 1,
+                                            style: GoogleFonts.roboto(
+                                                color: coinflipLogic
+                                                                .randomCoinflipStatus !=
+                                                            coinflipLogic
+                                                                .userCoinflipStatus ||
+                                                        _controller.status ==
+                                                            AnimationStatus
+                                                                .forward
+                                                    ? Colors.white
+                                                        .withOpacity(0.4)
+                                                    : Colors.white,
+                                                fontSize: 24.0,
+                                                fontWeight: FontWeight.w900),
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -357,7 +370,7 @@ class _CoinflipState extends State<Coinflip>
                                         style: ElevatedButton.styleFrom(
                                           elevation: 5,
                                           backgroundColor: const Color.fromARGB(
-                                              255, 255, 128, 128),
+                                              255, 255, 102, 102),
                                           shape: const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.only(
                                                 topLeft: Radius.circular(25.0),
@@ -406,10 +419,10 @@ class _CoinflipState extends State<Coinflip>
                           : () {
                               Beamer.of(context).beamBack();
                             },
-                      icon: const FaIcon(
+                      icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
-                        color: Colors.black87,
-                        size: 30.0,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        size: Theme.of(context).appBarTheme.iconTheme!.size,
                       )),
                 ),
                 title: Column(
@@ -417,20 +430,14 @@ class _CoinflipState extends State<Coinflip>
                   children: [
                     AutoSizeText(
                       'Coinflip',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                     Consumer<Balance>(
                       builder: (context, value, _) {
                         return AutoSizeText(
                           value.currentBalanceString,
                           maxLines: 1,
-                          style: GoogleFonts.roboto(
-                              color: Colors.black87,
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w900),
+                          style: Theme.of(context).textTheme.displaySmall,
                         );
                       },
                     )
@@ -447,10 +454,10 @@ class _CoinflipState extends State<Coinflip>
                             ? null
                             : () =>
                                 context.beamToNamed('/game-statistic/coinflip'),
-                        icon: const FaIcon(
+                        icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
-                          color: Colors.black87,
-                          size: 30.0,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
                         )),
                   ),
                 ],
@@ -466,7 +473,8 @@ class _CoinflipState extends State<Coinflip>
                           textInputFormatter: Coinflip.betFormatter,
                           context: context,
                           keyboardType: TextInputType.number,
-                          readOnly: coinflipLogic.isGameOn,
+                          readOnly: coinflipLogic.isGameOn ||
+                              coinflipLogic.isContinueGame,
                           isBetInput: true,
                           controller: Coinflip.betController,
                           hintText: 'Ставка...'),
@@ -508,7 +516,7 @@ class _CoinflipState extends State<Coinflip>
                       height: 40.0,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           boxShadow: [
                             BoxShadow(
                                 color: Colors.black.withOpacity(0.3),
@@ -516,38 +524,46 @@ class _CoinflipState extends State<Coinflip>
                           ]),
                       child: coinflipLogic.lastGames.isEmpty
                           ? Center(
-                              child: AutoSizeText(
-                                'Ставок ещё нет',
-                                style: GoogleFonts.roboto(
-                                    color: Colors.black87.withOpacity(0.4),
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700),
-                              ),
+                              child: AutoSizeText('Ставок ещё нет',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color!
+                                              .withOpacity(0.4))),
                             )
-                          : ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, index) {
-                                List<bool> value =
-                                    coinflipLogic.lastGames.reversed.toList();
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(15.0),
+                              child: ListView.separated(
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    List<bool> value = coinflipLogic
+                                        .lastGames.reversed
+                                        .toList();
 
-                                return Container(
-                                  margin: EdgeInsets.only(
-                                      top: 5.0,
-                                      bottom: 5.0,
-                                      left: index == 0 ? 5.0 : 0.0,
-                                      right: index + 1 ==
-                                              coinflipLogic.lastGames.length
-                                          ? 5.0
-                                          : 0.0),
-                                  child: Center(
-                                    child: Image.asset(
-                                        value[index] ? frontCoin : backCoint),
-                                  ),
-                                );
-                              },
-                              separatorBuilder: (context, index) =>
-                                  const SizedBox(width: 5.0),
-                              itemCount: coinflipLogic.lastGames.length),
+                                    return Container(
+                                      margin: EdgeInsets.only(
+                                          top: 5.0,
+                                          bottom: 5.0,
+                                          left: index == 0 ? 5.0 : 0.0,
+                                          right: index + 1 ==
+                                                  coinflipLogic.lastGames.length
+                                              ? 5.0
+                                              : 0.0),
+                                      child: Center(
+                                        child: Image.asset(value[index]
+                                            ? frontCoin
+                                            : backCoint),
+                                      ),
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(width: 5.0),
+                                  itemCount: coinflipLogic.lastGames.length),
+                            ),
                     )
                   ],
                 );

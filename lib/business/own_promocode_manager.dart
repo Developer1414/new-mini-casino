@@ -39,7 +39,7 @@ class OwnPromocodeManager extends ChangeNotifier {
   }
 
   void create({required BuildContext context, required String name}) async {
-    if (prize > 5000000) {
+    /*if (prize > 5000000) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
@@ -49,7 +49,7 @@ class OwnPromocodeManager extends ChangeNotifier {
       );
 
       return;
-    }
+    }*/
 
     if (prize < 1000) {
       alertDialogError(

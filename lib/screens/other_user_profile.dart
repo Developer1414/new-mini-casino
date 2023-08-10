@@ -37,18 +37,15 @@ class OtherUserProfile extends StatelessWidget {
               onPressed: () {
                 Beamer.of(context).beamBack();
               },
-              icon: const FaIcon(
+              icon: FaIcon(
                 FontAwesomeIcons.arrowLeft,
-                color: Colors.black87,
-                size: 30.0,
+                color: Theme.of(context).appBarTheme.iconTheme!.color,
+                size: Theme.of(context).appBarTheme.iconTheme!.size,
               )),
         ),
         title: AutoSizeText(
           userName,
-          style: GoogleFonts.roboto(
-              color: Colors.black87,
-              fontSize: 30.0,
-              fontWeight: FontWeight.w900),
+          style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
       ),
       body: SingleChildScrollView(
@@ -180,11 +177,12 @@ class OtherUserProfile extends StatelessWidget {
                     .get(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: SizedBox(
+                    return Center(
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 15.0),
                         width: 26.0,
                         height: 26.0,
-                        child: CircularProgressIndicator(
+                        child: const CircularProgressIndicator(
                           strokeWidth: 5.0,
                           color: Colors.blueAccent,
                         ),
@@ -195,29 +193,20 @@ class OtherUserProfile extends StatelessWidget {
                   return Column(
                     children: [
                       panelModel(
-                          title: 'Автомобиль',
-                          itemsCount: snapshot.data!.data()!.containsKey('cars')
-                              ? (snapshot.data!.get('cars') as List).length
-                              : 0,
+                          context: context,
+                          title: 'Автомобили',
+                          items: snapshot.data!.data()!.containsKey('cars')
+                              ? List<int>.from(snapshot.data!.get('cars'))
+                              : [],
                           icon: FontAwesomeIcons.car,
-                          imageId:
-                              snapshot.data!.data()!.containsKey('selectedcars')
-                                  ? snapshot.data!.get('selectedcars') as int
-                                  : null,
                           storeId: 0),
                       panelModel(
-                          title: 'Дом',
-                          itemsCount: snapshot.data!
-                                  .data()!
-                                  .containsKey('houses')
-                              ? (snapshot.data!.get('houses') as List).length
-                              : 0,
+                          context: context,
+                          title: 'Дома',
+                          items: snapshot.data!.data()!.containsKey('houses')
+                              ? List<int>.from(snapshot.data!.get('houses'))
+                              : [],
                           icon: FontAwesomeIcons.house,
-                          imageId: snapshot.data!
-                                  .data()!
-                                  .containsKey('selectedhouses')
-                              ? snapshot.data!.get('selectedhouses') as int
-                              : null,
                           storeId: 2),
                       const SizedBox(height: 15.0)
                     ],
@@ -231,8 +220,8 @@ class OtherUserProfile extends StatelessWidget {
 
   Widget panelModel(
       {required String title,
-      int? imageId,
-      int? itemsCount,
+      List<int>? items,
+      required BuildContext context,
       required IconData icon,
       required int storeId}) {
     return Padding(
@@ -240,20 +229,19 @@ class OtherUserProfile extends StatelessWidget {
       child: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-            color: imageId != null
-                ? storeId == 2
-                    ? Colors.lightGreen
-                    : StoreManager()
-                        .stores[storeId]
-                        .models
-                        .where((element) => element.imageId == imageId)
-                        .first
-                        .color
+            boxShadow: items == null
+                ? null
+                : [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.5), blurRadius: 10.0)
+                  ],
+            color: items != null
+                ? Theme.of(context).cardColor
                 : Colors.grey.shade400.withOpacity(0.8),
             borderRadius: BorderRadius.circular(15.0)),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: imageId == null
+          child: items == null
               ? Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -263,16 +251,12 @@ class OtherUserProfile extends StatelessWidget {
                       size: 22.0,
                     ),
                     const SizedBox(height: 5.0),
-                    AutoSizeText(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontSize: 22.0,
-                        letterSpacing: 0.5,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
+                    AutoSizeText(title,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(fontSize: 22.0)),
                     const SizedBox(height: 5.0),
                     AutoSizeText(
                       'Игрок еще не приобрёл',
@@ -289,30 +273,36 @@ class OtherUserProfile extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AutoSizeText(
-                      title,
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    AutoSizeText(
-                      'Всего: $itemsCount',
-                      textAlign: TextAlign.left,
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Image(
-                        image: AssetImage(
-                          'assets/${StoreManager().stores[storeId].pathTitle}/$imageId.png',
-                        ),
+                    AutoSizeText(title,
+                        textAlign: TextAlign.left,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(fontSize: 22.0)),
+                    AutoSizeText('Всего: ${items.length}',
+                        textAlign: TextAlign.left,
+                        style: Theme.of(context)
+                            .textTheme
+                            .displaySmall!
+                            .copyWith(fontSize: 18.0)),
+                    const SizedBox(height: 15.0),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0; i < items.length; i++)
+                            Padding(
+                              padding: EdgeInsets.only(
+                                  right: i + 1 < items.length ? 15.0 : 0.0),
+                              child: Image(
+                                fit: BoxFit.cover,
+                                height: 150,
+                                image: AssetImage(
+                                  'assets/${StoreManager().stores[storeId].pathTitle}/${items[i]}.png',
+                                ),
+                              ),
+                            )
+                        ],
                       ),
                     ),
                   ],

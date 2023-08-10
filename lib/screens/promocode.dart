@@ -34,50 +34,54 @@ class _PromocodeState extends State<Promocode> {
       child: Consumer<PromocodeManager>(
         builder: (context, value, child) {
           return value.isLoading
-              ? loading()
+              ? loading(context: context)
               : Scaffold(
-                  bottomSheet: Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    child: SizedBox(
-                      height: 60.0,
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          unfocus();
+                  bottomSheet: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                      child: SizedBox(
+                        height: 60.0,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            unfocus();
 
-                          if (Promocode.promocodeController.text.isEmpty) {
-                            return;
-                          }
+                            if (Promocode.promocodeController.text.isEmpty) {
+                              return;
+                            }
 
-                          await value.usePromocode(
-                              context: context,
-                              myPromocode: Promocode.promocodeController.text);
+                            await value.usePromocode(
+                                context: context,
+                                myPromocode:
+                                    Promocode.promocodeController.text);
 
-                          Promocode.promocodeController.clear();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor:
-                              const Color.fromARGB(255, 100, 34, 255),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0)),
+                            Promocode.promocodeController.clear();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 5,
+                            backgroundColor:
+                                const Color.fromARGB(255, 100, 34, 255),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(25.0),
+                                  topRight: Radius.circular(25.0)),
+                            ),
                           ),
-                        ),
-                        child: AutoSizeText(
-                          'Использовать',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.w700,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 20.0,
-                              )
-                            ],
+                          child: AutoSizeText(
+                            'Использовать',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.roboto(
+                              color: Colors.white,
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.w700,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 20.0,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -95,18 +99,16 @@ class _PromocodeState extends State<Promocode> {
                           onPressed: () {
                             Beamer.of(context).beamBack();
                           },
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
-                            color: Colors.black87,
-                            size: 30.0,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),
                     title: AutoSizeText(
                       'Промокод',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                     actions: [
                       Padding(
@@ -116,10 +118,17 @@ class _PromocodeState extends State<Promocode> {
                             padding: EdgeInsets.zero,
                             onPressed: () =>
                                 context.beamToNamed('/own-promocode'),
-                            icon: const FaIcon(
+                            icon: FaIcon(
                               FontAwesomeIcons.plus,
-                              color: Colors.black87,
-                              size: 28.0,
+                              color: Theme.of(context)
+                                  .appBarTheme
+                                  .iconTheme!
+                                  .color,
+                              size: Theme.of(context)
+                                  .appBarTheme
+                                  .iconTheme!
+                                  .copyWith(size: 28.0)
+                                  .size,
                             )),
                       ),
                       Padding(
@@ -129,10 +138,15 @@ class _PromocodeState extends State<Promocode> {
                           padding: EdgeInsets.zero,
                           onPressed: () =>
                               context.beamToNamed('/my-promocodes'),
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.bars,
-                            color: Colors.black87,
-                            size: 28.0,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: Theme.of(context)
+                                .appBarTheme
+                                .iconTheme!
+                                .copyWith(size: 28.0)
+                                .size,
                           ),
                         ),
                       ),
@@ -153,10 +167,16 @@ class _PromocodeState extends State<Promocode> {
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                                 hintText: 'Ваш промокод...',
-                                hintStyle: GoogleFonts.roboto(
-                                    color: Colors.black87.withOpacity(0.5),
-                                    fontSize: 30.0,
-                                    fontWeight: FontWeight.w700),
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                        fontSize: 30.0,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .color!
+                                            .withOpacity(0.5)),
                                 enabledBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(
                                         width: 2.5, color: Colors.transparent)),
@@ -164,10 +184,10 @@ class _PromocodeState extends State<Promocode> {
                                     borderSide: BorderSide(
                                         width: 2.5,
                                         color: Colors.transparent))),
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87,
-                                fontSize: 30,
-                                fontWeight: FontWeight.w900),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontSize: 30.0),
                           ),
                         ),
                         Padding(
@@ -177,14 +197,11 @@ class _PromocodeState extends State<Promocode> {
                               textAlign: TextAlign.center,
                               text: TextSpan(children: [
                                 TextSpan(
-                                  text: 'Промокоды можно найти в нашем ',
-                                  style: GoogleFonts.roboto(
-                                      textStyle: const TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                                ),
+                                    text: 'Промокоды можно найти в нашем ',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 12.0)),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () async {

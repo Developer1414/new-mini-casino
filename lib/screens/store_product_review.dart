@@ -23,7 +23,7 @@ class StoreProductReview extends StatelessWidget {
             .first;
 
         return storeManager.isLoading
-            ? loading()
+            ? loading(context: context)
             : Scaffold(
                 bottomNavigationBar: Container(
                   color: storeItemModel.color,
@@ -36,92 +36,95 @@ class StoreProductReview extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              FutureBuilder<bool>(
-                                  future: storeManager.checkItemOnSelected(
-                                      itemId: storeItemModel.imageId,
-                                      path: storeManager.selectedPath),
-                                  builder: (ctx, snapshot) {
-                                    return snapshot.data ?? false
-                                        ? Container()
-                                        : Expanded(
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  right: 15.0),
-                                              child: SizedBox(
-                                                height: 60.0,
-                                                child: ElevatedButton(
-                                                  onPressed: () async {
-                                                    storeManager.selectItem(
-                                                        itemId: storeItemModel
-                                                            .imageId,
-                                                        path: storeManager
-                                                            .selectedPath);
-                                                  },
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    elevation: 5,
-                                                    backgroundColor:
-                                                        snapshot.data ?? false
-                                                            ? Colors.redAccent
-                                                            : Colors.blueAccent,
-                                                    shape:
-                                                        const RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.only(
-                                                              topLeft: Radius
-                                                                  .circular(
-                                                                      25.0),
-                                                              topRight: Radius
-                                                                  .circular(
-                                                                      25.0)),
+                              storeManager.selectedPath != 'pins'
+                                  ? Container()
+                                  : FutureBuilder<bool>(
+                                      future: storeManager.checkItemOnSelected(
+                                          itemId: storeItemModel.imageId,
+                                          path: storeManager.selectedPath),
+                                      builder: (ctx, snapshot) {
+                                        return snapshot.data ?? false
+                                            ? Container()
+                                            : Expanded(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          right: 15.0),
+                                                  child: SizedBox(
+                                                    height: 60.0,
+                                                    child: ElevatedButton(
+                                                      onPressed: () async {
+                                                        storeManager.selectItem(
+                                                            itemId:
+                                                                storeItemModel
+                                                                    .imageId,
+                                                            path: storeManager
+                                                                .selectedPath);
+                                                      },
+                                                      style: ElevatedButton
+                                                          .styleFrom(
+                                                        elevation: 5,
+                                                        backgroundColor:
+                                                            snapshot
+                                                                        .data ??
+                                                                    false
+                                                                ? Colors
+                                                                    .redAccent
+                                                                : Colors
+                                                                    .blueAccent,
+                                                        shape:
+                                                            const RoundedRectangleBorder(
+                                                          borderRadius:
+                                                              BorderRadius.only(
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          25.0),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          25.0)),
+                                                        ),
+                                                      ),
+                                                      child: snapshot
+                                                                  .connectionState ==
+                                                              ConnectionState
+                                                                  .waiting
+                                                          ? const Padding(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .all(
+                                                                          18.0),
+                                                              child: SizedBox(
+                                                                width: 26.0,
+                                                                height: 26.0,
+                                                                child:
+                                                                    CircularProgressIndicator(
+                                                                  strokeWidth:
+                                                                      5.0,
+                                                                  color: Colors
+                                                                      .white,
+                                                                ),
+                                                              ),
+                                                            )
+                                                          : AutoSizeText(
+                                                              'Выбрать',
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .center,
+                                                              style: GoogleFonts
+                                                                  .roboto(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 22.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                              ),
+                                                            ),
                                                     ),
                                                   ),
-                                                  child: snapshot
-                                                              .connectionState ==
-                                                          ConnectionState
-                                                              .waiting
-                                                      ? const Padding(
-                                                          padding:
-                                                              EdgeInsets.all(
-                                                                  18.0),
-                                                          child: SizedBox(
-                                                            width: 26.0,
-                                                            height: 26.0,
-                                                            child:
-                                                                CircularProgressIndicator(
-                                                              strokeWidth: 5.0,
-                                                              color:
-                                                                  Colors.white,
-                                                            ),
-                                                          ),
-                                                        )
-                                                      : AutoSizeText(
-                                                          'Выбрать',
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: GoogleFonts
-                                                              .roboto(
-                                                            color: Colors.white,
-                                                            fontSize: 22.0,
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            shadows: [
-                                                              Shadow(
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.3),
-                                                                blurRadius:
-                                                                    20.0,
-                                                              )
-                                                            ],
-                                                          ),
-                                                        ),
                                                 ),
-                                              ),
-                                            ),
-                                          );
-                                  }),
+                                              );
+                                      }),
                               Expanded(
                                 child: SizedBox(
                                   height: 60.0,
@@ -183,8 +186,7 @@ class StoreProductReview extends StatelessWidget {
                                                       MainAxisAlignment.center,
                                                   children: [
                                                     AutoSizeText(
-                                                      snapshot.data ??
-                                                              false
+                                                      snapshot.data ?? false
                                                           ? 'Продать'
                                                           : 'Купить',
                                                       textAlign:
@@ -194,14 +196,6 @@ class StoreProductReview extends StatelessWidget {
                                                         fontSize: 22.0,
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                        shadows: [
-                                                          Shadow(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.3),
-                                                            blurRadius: 20.0,
-                                                          )
-                                                        ],
                                                       ),
                                                     ),
                                                     AutoSizeText(
@@ -232,14 +226,6 @@ class StoreProductReview extends StatelessWidget {
                                                         fontSize: 15.0,
                                                         fontWeight:
                                                             FontWeight.w700,
-                                                        shadows: [
-                                                          Shadow(
-                                                            color: Colors.black
-                                                                .withOpacity(
-                                                                    0.3),
-                                                            blurRadius: 20.0,
-                                                          )
-                                                        ],
                                                       ),
                                                     ),
                                                   ],
@@ -267,18 +253,15 @@ class StoreProductReview extends StatelessWidget {
                         onPressed: () {
                           Beamer.of(context).beamBack();
                         },
-                        icon: const FaIcon(
+                        icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
-                          color: Colors.black87,
-                          size: 30.0,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
                         )),
                   ),
                   title: AutoSizeText(
                     storeItemModel.title,
-                    style: GoogleFonts.roboto(
-                        color: Colors.black87,
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.w900),
+                    style: Theme.of(context).appBarTheme.titleTextStyle,
                   ),
                 ),
                 body: Column(
@@ -291,7 +274,7 @@ class StoreProductReview extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.grey.shade50,
+                            Theme.of(context).scaffoldBackgroundColor,
                             storeItemModel.color,
                           ],
                         )),

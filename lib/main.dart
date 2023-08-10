@@ -53,8 +53,10 @@ import 'package:new_mini_casino/screens/store.dart';
 import 'package:new_mini_casino/screens/store_items.dart';
 import 'package:new_mini_casino/screens/store_product_review.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
-import 'package:new_mini_casino/screens/user_games_history.dart';
 import 'package:new_mini_casino/screens/welcome.dart';
+import 'package:new_mini_casino/themes/dark_theme.dart';
+import 'package:new_mini_casino/themes/dark_theme_provider.dart';
+import 'package:new_mini_casino/themes/light_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'firebase_options.dart';
@@ -110,6 +112,8 @@ class MainApp extends StatefulWidget {
 
 class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   AppUpdateInfo? _updateInfo;
+
+  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
 
   Future<void> checkForUpdate() async {
     InAppUpdate.checkForUpdate().then((info) {
@@ -186,13 +190,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/user-agreement': (context, state, data) => const UserAgreement(),
         '/leader-board': (context, state, data) => const LeaderBoard(),
-        '/user-history/:userNickname/:userid': (context, state, data) {
-          final userNickname = state.pathParameters['userNickname']!;
-          final userid = state.pathParameters['userid']!;
-          return BeamPage(
-            child: UserGamesHistory(userNickname: userNickname, userid: userid),
-          );
-        },
         '/other-user-profile/:userName/:userid/:totalGames/:balance':
             (context, state, data) {
           final userName = state.pathParameters['userName']!;
@@ -236,13 +233,20 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
 
+    getCurrentAppTheme();
     checkForUpdate();
+  }
+
+  void getCurrentAppTheme() async {
+    themeChangeProvider.darkTheme =
+        await themeChangeProvider.darkThemePreference.getTheme();
   }
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (ctx) => DarkThemeProvider()),
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
         ChangeNotifierProvider(create: (ctx) => MoneyStorageManager()),
@@ -263,17 +267,19 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => AccountController()),
         ChangeNotifierProvider(create: (ctx) => GameStatisticController()),
       ],
-      child: MaterialApp.router(
-        routeInformationParser: BeamerParser(),
-        routerDelegate: routerDelegate,
-        backButtonDispatcher:
-            BeamerBackButtonDispatcher(delegate: routerDelegate),
-        theme: ThemeData(
-          pageTransitionsTheme: const PageTransitionsTheme(builders: {
-            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
-          }),
-        ),
-        debugShowCheckedModeBanner: false,
+      child: Consumer<DarkThemeProvider>(
+        builder: (context, value, child) {
+          return MaterialApp.router(
+            routeInformationParser: BeamerParser(),
+            routerDelegate: routerDelegate,
+            backButtonDispatcher:
+                BeamerBackButtonDispatcher(delegate: routerDelegate),
+            theme: value.darkTheme
+                ? darkThemeData(context)
+                : lightThemeData(context),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

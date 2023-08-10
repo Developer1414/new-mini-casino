@@ -18,7 +18,7 @@ class DailyBonus extends StatelessWidget {
       onWillPop: () async => false,
       child: Consumer<DailyBonusManager>(builder: (context, value, child) {
         return value.isLoading
-            ? loading()
+            ? loading(context: context)
             : Scaffold(
                 appBar: AppBar(
                   elevation: 0,
@@ -29,12 +29,7 @@ class DailyBonus extends StatelessWidget {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'Ежедневный\n',
-                      style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 50,
-                        fontWeight: FontWeight.w900,
-                      )),
+                      style: Theme.of(context).textTheme.displayLarge,
                       children: [
                         TextSpan(
                             text: 'бонус',
@@ -122,7 +117,7 @@ class DailyBonus extends StatelessWidget {
                                 color:
                                     DailyBonusManager.currentBonusIndex == index
                                         ? Colors.green.withOpacity(0.1)
-                                        : Colors.grey.shade100,
+                                        : Theme.of(context).cardColor,
                                 borderRadius: BorderRadius.circular(15.0),
                                 border: Border.all(
                                     color:
@@ -132,9 +127,15 @@ class DailyBonus extends StatelessWidget {
                                             : index <
                                                     DailyBonusManager
                                                         .currentBonusIndex
-                                                ? Colors.grey.shade300
+                                                ? Theme.of(context)
+                                                    .buttonTheme
+                                                    .colorScheme!
+                                                    .background
                                                     .withOpacity(0.8)
-                                                : Colors.grey.shade300,
+                                                : Theme.of(context)
+                                                    .buttonTheme
+                                                    .colorScheme!
+                                                    .background,
                                     width: 2.0)),
                             child: Padding(
                               padding: const EdgeInsets.all(5.0),
@@ -178,14 +179,23 @@ class DailyBonus extends StatelessWidget {
                                                       .add(Duration(
                                                           days: index))),
                                       maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: index <
-                                                  DailyBonusManager
-                                                      .currentBonusIndex
-                                              ? Colors.black54.withOpacity(0.3)
-                                              : Colors.black54,
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.w700),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              color: index <
+                                                      DailyBonusManager
+                                                          .currentBonusIndex
+                                                  ? Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color!
+                                                      .withOpacity(0.3)
+                                                  : Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color!,
+                                              fontSize: 12.0),
                                     ),
                                   ),
                                 ],

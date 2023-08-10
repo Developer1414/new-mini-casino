@@ -14,6 +14,23 @@ class JackpotLogic extends ChangeNotifier {
 
   int currentTimerBeforePlaying = 0;
 
+  List<String> names = [
+    'Jacob',
+    'Emily',
+    'Michael',
+    'Emma',
+    'Joshua',
+    'Madison',
+    'Matthew',
+    'Olivia',
+    'Ethan',
+    'Hannah',
+    'Andrew',
+    'Abigail',
+    'Daniel',
+    'Isabella'
+  ];
+
   late BuildContext context;
   late Timer timer = Timer(const Duration(seconds: 1), () {});
 

@@ -38,7 +38,7 @@ class MoneyStorage extends StatelessWidget {
         }
       },
       child: storageManager.isLoading
-          ? loading()
+          ? loading(context: context)
           : Scaffold(
               appBar: AppBar(
                 toolbarHeight: 76.0,
@@ -52,10 +52,10 @@ class MoneyStorage extends StatelessWidget {
                       onPressed: () {
                         Beamer.of(context).beamBack();
                       },
-                      icon: const FaIcon(
+                      icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
-                        color: Colors.black87,
-                        size: 30.0,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        size: Theme.of(context).appBarTheme.iconTheme!.size,
                       )),
                 ),
                 title: Column(
@@ -63,18 +63,12 @@ class MoneyStorage extends StatelessWidget {
                   children: [
                     AutoSizeText(
                       'Хранилище',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                     Consumer<Balance>(builder: (ctx, balance, _) {
                       return AutoSizeText(
                         balance.currentBalanceString,
-                        style: GoogleFonts.roboto(
-                            color: Colors.black87,
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w900),
+                        style: Theme.of(context).textTheme.displaySmall,
                       );
                     }),
                   ],

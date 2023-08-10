@@ -20,7 +20,7 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
     return WillPopScope(
       onWillPop: () async => false,
       child: isLoading
-          ? loading()
+          ? loading(context: context)
           : Scaffold(
               bottomNavigationBar: Padding(
                 padding: const EdgeInsets.only(right: 15.0, left: 15.0),
@@ -71,21 +71,15 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.wifi_off_rounded,
-                      color: Colors.black87,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
                       size: 80.0,
                     ),
                     const SizedBox(height: 15.0),
                     Text('Проблемы с подключением к интернету!',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.roboto(
-                            textStyle: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 25.0,
-                          height: 1.3,
-                          fontWeight: FontWeight.w700,
-                        ))),
+                        style: Theme.of(context).textTheme.titleMedium),
                   ],
                 ),
               )),

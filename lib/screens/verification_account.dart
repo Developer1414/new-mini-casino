@@ -34,7 +34,7 @@ class _VerificationAcountState extends State<VerificationAcount> {
         }
       },
       child: isLoading
-          ? loading()
+          ? loading(context: context)
           : Scaffold(
               body: Padding(
                 padding: const EdgeInsets.only(left: 15.0, right: 15.0),

@@ -1,8 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
-Widget loading({String text = ''}) {
+Widget loading({required BuildContext context, String text = ''}) {
   return WillPopScope(
     onWillPop: () async => false,
     child: Scaffold(
@@ -21,15 +20,13 @@ Widget loading({String text = ''}) {
             const SizedBox(height: 10.0),
             Padding(
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-              child: AutoSizeText(
-                text.isEmpty ? 'Пожалуйста, подождите...' : text,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.roboto(
-                  color: Colors.black87.withOpacity(0.7),
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              child:
+                  AutoSizeText(text.isEmpty ? 'Пожалуйста, подождите...' : text,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            fontSize: 20.0,
+                            fontWeight: FontWeight.w700,
+                          )),
             ),
           ],
         ),

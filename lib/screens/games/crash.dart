@@ -86,7 +86,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25.0),
                     topRight: Radius.circular(25.0)),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -96,6 +96,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                 return Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding:
@@ -105,11 +106,10 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                             children: [
                               AutoSizeText(
                                   'Прибыль (${crashLogic.winCoefficient.toStringAsFixed(2)}x):',
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 20,
-                                  )),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20.0)),
                               Padding(
                                 padding: const EdgeInsets.only(right: 15.0),
                                 child: AutoSizeText(
@@ -120,11 +120,10 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                         : NumberFormat.compactSimpleCurrency(
                                                 locale: ui.Platform.localeName)
                                             .format(crashLogic.profit),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
                               ),
                             ],
                           ),
@@ -238,10 +237,10 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                       : () {
                           Beamer.of(context).beamBack();
                         },
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
-                    color: Colors.black87,
-                    size: 30.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
                   )),
             ),
             title: Column(
@@ -249,20 +248,14 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
               children: [
                 AutoSizeText(
                   'Crash',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w900),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
                     return AutoSizeText(
                       value.currentBalanceString,
                       maxLines: 1,
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.displaySmall,
                     );
                   },
                 )
@@ -277,10 +270,10 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                     onPressed: context.watch<CrashLogic>().isGameOn
                         ? null
                         : () => context.beamToNamed('/game-statistic/crash'),
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.circleInfo,
-                      color: Colors.black87,
-                      size: 30.0,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
                     )),
               ),
             ],
@@ -295,7 +288,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                     child: Row(
                       children: [
                         Expanded(
-                          flex: 3,
+                          flex: 4,
                           child: customTextField(
                               currencyTextInputFormatter: Crash.betFormatter,
                               textInputFormatter: Crash.betFormatter,
@@ -326,28 +319,25 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                             },
                             decoration: InputDecoration(
                                 hintText: 'Коэффициент...',
-                                hintStyle: GoogleFonts.roboto(
-                                    color: Colors.black87.withOpacity(0.5),
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15.0)),
-                                    borderSide: BorderSide(
-                                        width: 2.5,
-                                        color:
-                                            Colors.black87.withOpacity(0.3))),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15.0)),
-                                    borderSide: BorderSide(
-                                        width: 2.5,
-                                        color:
-                                            Colors.black87.withOpacity(0.5)))),
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w900),
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .color!
+                                            .withOpacity(0.5)),
+                                enabledBorder: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .enabledBorder,
+                                focusedBorder: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .focusedBorder),
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall!
+                                .copyWith(fontSize: 20.0),
                           ),
                         ),
                       ],
@@ -369,14 +359,17 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                         style: GoogleFonts.roboto(
                             shadows: [
                               Shadow(
-                                  color: Colors.white.withOpacity(0.5),
-                                  blurRadius: 15.0)
+                                  color: Colors.white.withOpacity(0.2),
+                                  blurRadius: 5.0)
                             ],
                             color: crashLogic.crashStatus == CrashStatus.win
                                 ? Colors.green
                                 : crashLogic.crashStatus == CrashStatus.loss
                                     ? Colors.redAccent
-                                    : Colors.black87,
+                                    : Theme.of(context)
+                                        .textTheme
+                                        .displayLarge!
+                                        .color,
                             fontSize: 60.0,
                             fontWeight: FontWeight.w900),
                       ),
@@ -387,7 +380,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                     height: 40.0,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15.0),
-                        color: Colors.white,
+                        color: Theme.of(context).cardColor,
                         boxShadow: [
                           BoxShadow(
                               color: Colors.black.withOpacity(0.3),
@@ -395,51 +388,60 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                         ]),
                     child: crashLogic.lastCoefficients.isEmpty
                         ? Center(
-                            child: AutoSizeText(
-                              'Ставок ещё нет',
-                              style: GoogleFonts.roboto(
-                                  color: Colors.black87.withOpacity(0.4),
-                                  fontSize: 15.0,
-                                  fontWeight: FontWeight.w700),
-                            ),
+                            child: AutoSizeText('Ставок ещё нет',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .color!
+                                            .withOpacity(0.4))),
                           )
-                        : ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              List<CrashRound> value =
-                                  crashLogic.lastCoefficients.reversed.toList();
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  List<CrashRound> value = crashLogic
+                                      .lastCoefficients.reversed
+                                      .toList();
 
-                              return Container(
-                                margin: EdgeInsets.only(
-                                    top: 5.0,
-                                    bottom: 5.0,
-                                    left: index == 0 ? 5.0 : 0.0,
-                                    right: index + 1 ==
-                                            crashLogic.lastCoefficients.length
-                                        ? 5.0
-                                        : 0.0),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: value[index].isWin
-                                        ? Colors.green
-                                        : Colors.redAccent),
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: AutoSizeText(
-                                      '${value[index].coefficient}x',
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.w700),
+                                  return Container(
+                                    margin: EdgeInsets.only(
+                                        top: 5.0,
+                                        bottom: 5.0,
+                                        left: index == 0 ? 5.0 : 0.0,
+                                        right: index + 1 ==
+                                                crashLogic
+                                                    .lastCoefficients.length
+                                            ? 5.0
+                                            : 0.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: value[index].isWin
+                                            ? Colors.green
+                                            : Colors.redAccent),
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: AutoSizeText(
+                                          '${value[index].coefficient}x',
+                                          style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 15.0,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 5.0),
-                            itemCount: crashLogic.lastCoefficients.length),
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(width: 5.0),
+                                itemCount: crashLogic.lastCoefficients.length),
+                          ),
                   )
                 ],
               );

@@ -174,7 +174,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25.0),
                     topRight: Radius.circular(25.0)),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -184,6 +184,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                 return Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding:
@@ -193,11 +194,10 @@ class _FortuneWheelState extends State<FortuneWheel>
                             children: [
                               AutoSizeText(
                                   'Прибыль (${fortuneWheelLogic.selectedNumber}x):',
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 20,
-                                  )),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20.0)),
                               Padding(
                                 padding: const EdgeInsets.only(right: 15.0),
                                 child: AutoSizeText(
@@ -208,11 +208,10 @@ class _FortuneWheelState extends State<FortuneWheel>
                                         : NumberFormat.compactSimpleCurrency(
                                                 locale: ui.Platform.localeName)
                                             .format(fortuneWheelLogic.profit),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
                               ),
                             ],
                           ),
@@ -280,7 +279,9 @@ class _FortuneWheelState extends State<FortuneWheel>
                                   'СТАВКА',
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
-                                      color: Colors.white,
+                                      color: fortuneWheelLogic.isGameOn
+                                          ? Colors.white.withOpacity(0.4)
+                                          : Colors.white,
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -307,10 +308,10 @@ class _FortuneWheelState extends State<FortuneWheel>
                       : () {
                           Beamer.of(context).beamBack();
                         },
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
-                    color: Colors.black87,
-                    size: 30.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
                   )),
             ),
             title: Column(
@@ -318,20 +319,14 @@ class _FortuneWheelState extends State<FortuneWheel>
               children: [
                 AutoSizeText(
                   'Fortune Wheel',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w900),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
                     return AutoSizeText(
                       value.currentBalanceString,
                       maxLines: 1,
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.displaySmall,
                     );
                   },
                 )
@@ -347,10 +342,10 @@ class _FortuneWheelState extends State<FortuneWheel>
                         ? null
                         : () =>
                             context.beamToNamed('/game-statistic/fortuneWheel'),
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.circleInfo,
-                      color: Colors.black87,
-                      size: 30.0,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
                     )),
               ),
             ],
@@ -394,7 +389,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                   height: 40.0,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15.0),
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                       boxShadow: [
                         BoxShadow(
                             color: Colors.black.withOpacity(0.3),
@@ -402,38 +397,46 @@ class _FortuneWheelState extends State<FortuneWheel>
                       ]),
                   child: fortuneWheelLogic.lastColors.isEmpty
                       ? Center(
-                          child: AutoSizeText(
-                            'Ставок ещё нет',
-                            style: GoogleFonts.roboto(
-                                color: Colors.black87.withOpacity(0.4),
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w700),
-                          ),
+                          child: AutoSizeText('Ставок ещё нет',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .color!
+                                          .withOpacity(0.4))),
                         )
-                      : ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (context, index) {
-                            List<Color> value =
-                                fortuneWheelLogic.lastColors.reversed.toList();
+                      : ClipRRect(
+                          borderRadius: BorderRadius.circular(15.0),
+                          child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                List<Color> value = fortuneWheelLogic
+                                    .lastColors.reversed
+                                    .toList();
 
-                            return Container(
-                              width: 15.0,
-                              margin: EdgeInsets.only(
-                                  top: 5.0,
-                                  bottom: 5.0,
-                                  left: index == 0 ? 5.0 : 0.0,
-                                  right: index + 1 ==
-                                          fortuneWheelLogic.lastColors.length
-                                      ? 5.0
-                                      : 0.0),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: value[index]),
-                            );
-                          },
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: 5.0),
-                          itemCount: fortuneWheelLogic.lastColors.length),
+                                return Container(
+                                  width: 15.0,
+                                  margin: EdgeInsets.only(
+                                      top: 5.0,
+                                      bottom: 5.0,
+                                      left: index == 0 ? 5.0 : 0.0,
+                                      right: index + 1 ==
+                                              fortuneWheelLogic
+                                                  .lastColors.length
+                                          ? 5.0
+                                          : 0.0),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: value[index]),
+                                );
+                              },
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(width: 5.0),
+                              itemCount: fortuneWheelLogic.lastColors.length),
+                        ),
                 )
               ],
             );
@@ -453,7 +456,7 @@ class _FortuneWheelState extends State<FortuneWheel>
           child: Material(
             borderRadius: BorderRadius.circular(15.0),
             clipBehavior: Clip.antiAlias,
-            color: Colors.grey.shade200,
+            color: Theme.of(context).buttonTheme.colorScheme!.background,
             child: InkWell(
               onTap: () {
                 if (!fortuneWheelLogic.isGameOn) {
@@ -474,13 +477,8 @@ class _FortuneWheelState extends State<FortuneWheel>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      AutoSizeText(
-                        '${number}x',
-                        style: GoogleFonts.roboto(
-                            color: Colors.black87,
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.w900),
-                      ),
+                      AutoSizeText('${number}x',
+                          style: Theme.of(context).textTheme.titleMedium),
                     ],
                   ),
                 ),

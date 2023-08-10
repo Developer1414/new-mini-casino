@@ -17,7 +17,7 @@ class RaffleInfo extends StatelessWidget {
     return Consumer<RaffleManager>(
       builder: (context, value, child) {
         return value.isLoading
-            ? loading()
+            ? loading(context: context)
             : Scaffold(
                 appBar: AppBar(
                   toolbarHeight: 76.0,

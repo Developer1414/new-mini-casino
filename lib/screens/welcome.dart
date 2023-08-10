@@ -71,12 +71,7 @@ class _WelcomeState extends State<Welcome> {
                     textAlign: TextAlign.center,
                     text: TextSpan(
                       text: 'Добро пожаловать в\n',
-                      style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 50,
-                        fontWeight: FontWeight.w900,
-                      )),
+                      style: Theme.of(context).textTheme.displayLarge,
                       children: [
                         TextSpan(
                             text: 'Mini Casino!',
@@ -99,9 +94,9 @@ class _WelcomeState extends State<Welcome> {
                               duration: const Duration(milliseconds: 500),
                               curve: Curves.linear);
                         },
-                        icon: const FaIcon(
+                        icon: FaIcon(
                           FontAwesomeIcons.arrowRight,
-                          color: Colors.black87,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
                           size: 30.0,
                         )),
                   ),
@@ -118,30 +113,22 @@ class _WelcomeState extends State<Welcome> {
                     text: TextSpan(
                       text:
                           'Здесь Вы можете играть в различные игры, такие как:\n',
-                      style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                      )),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(fontSize: 28.0),
                       children: [
                         TextSpan(
-                            text:
-                                '\n Mines \n Dice \n Coinflip \n Keno \n Fortune Wheel \n Crash\n\n',
-                            style: GoogleFonts.roboto(
-                                textStyle: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                            ))),
+                          text:
+                              '\n Mines \n Dice \n Coinflip \n Keno \n Fortune Wheel \n Crash\n\n',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 28.0),
+                        ),
                         TextSpan(
                             text: 'Игры будут пополняться с обновлениями.',
-                            style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                              color: Colors.black87.withOpacity(0.5),
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                            ))),
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
@@ -156,9 +143,9 @@ class _WelcomeState extends State<Welcome> {
                             duration: const Duration(milliseconds: 500),
                             curve: Curves.linear);
                       },
-                      icon: const FaIcon(
+                      icon: FaIcon(
                         FontAwesomeIcons.arrowRight,
-                        color: Colors.black87,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
                         size: 30.0,
                       )),
                 ),
@@ -180,23 +167,24 @@ class _WelcomeState extends State<Welcome> {
                       children: [
                         Text('ВНИМАНИЕ!',
                             textAlign: TextAlign.left,
-                            style: GoogleFonts.roboto(
-                                textStyle: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 22.0,
-                              fontWeight: FontWeight.w900,
-                            ))),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(fontSize: 22.0)),
                         Padding(
                           padding: const EdgeInsets.only(top: 5.0),
                           child: Text(
                               'Желаем Вам удачи в выигрышах в Mini Casino! Однако, мы также хотим напомнить, что игра в казино должна быть развлечением, а не способом заработка денег. Настоящие казино могут быть опасными, поэтому мы не рекомендуем играть на настоящие деньги в казино. В Mini Casino Вы можете получать удовольствие от игры, не рискуя своими финансами. Играйте ответственно и получайте удовольствие от игры в Mini Casino!',
                               textAlign: TextAlign.left,
-                              style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                color: Colors.black87.withOpacity(0.7),
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w700,
-                              ))),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall!
+                                  .copyWith(
+                                      color: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .color!
+                                          .withOpacity(0.7))),
                         ),
                       ],
                     ),
@@ -210,9 +198,9 @@ class _WelcomeState extends State<Welcome> {
                           duration: const Duration(milliseconds: 500),
                           curve: Curves.linear);
                     },
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.arrowRight,
-                      color: Colors.black87,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
                       size: 30.0,
                     )),
               ],

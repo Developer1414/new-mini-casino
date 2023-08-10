@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 
 class BannedUser extends StatelessWidget {
@@ -38,13 +36,10 @@ class BannedUser extends StatelessWidget {
                           ? 'Вы заблокированы до ${DateFormat.yMMMMd('ru_RU').format(date)}\nПричина: $reason'
                           : reason,
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.roboto(
-                          textStyle: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 22.0,
-                        height: 1.3,
-                        fontWeight: FontWeight.w700,
-                      ))),
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(height: 1.3, fontSize: 22.0)),
                 ],
               ),
             ),

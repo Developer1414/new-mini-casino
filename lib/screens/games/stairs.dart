@@ -61,7 +61,7 @@ class _StairsState extends State<Stairs> {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25.0),
                     topRight: Radius.circular(25.0)),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -69,6 +69,7 @@ class _StairsState extends State<Stairs> {
             child: Padding(
                 padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(bottom: 0.0),
@@ -86,11 +87,10 @@ class _StairsState extends State<Stairs> {
                                   children: [
                                     AutoSizeText(
                                         'Прибыль (${stairsLogic.currentCoefficient.isNaN ? '0.00' : stairsLogic.currentCoefficient.toStringAsFixed(2)}x):',
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 20,
-                                        )),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 20.0)),
                                     AutoSizeText(
                                         stairsLogic.profit < 1000000
                                             ? NumberFormat.simpleCurrency(
@@ -102,11 +102,10 @@ class _StairsState extends State<Stairs> {
                                                         locale: ui.Platform
                                                             .localeName)
                                                 .format(stairsLogic.profit),
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.black87,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 20,
-                                        )),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 20.0)),
                                   ],
                                 ),
                               ),
@@ -115,20 +114,17 @@ class _StairsState extends State<Stairs> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   AutoSizeText('Кол. камней:',
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 18,
-                                      )),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
                                   AutoSizeText(
                                       stairsLogic.sliderValue
                                           .round()
                                           .toString(),
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.black87,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 20,
-                                      )),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium!
+                                          .copyWith(fontSize: 20.0)),
                                 ],
                               ),
                               Slider(
@@ -171,7 +167,9 @@ class _StairsState extends State<Stairs> {
                                   'АВТО',
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
-                                      color: Colors.white,
+                                      color: !stairsLogic.isGameOn
+                                          ? Colors.white.withOpacity(0.4)
+                                          : Colors.white,
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -237,7 +235,12 @@ class _StairsState extends State<Stairs> {
                                   !stairsLogic.isGameOn ? 'СТАВКА' : 'ЗАБРАТЬ',
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
-                                      color: Colors.white,
+                                      color: !stairsLogic.isGameOn
+                                          ? Colors.white
+                                          : stairsLogic
+                                                  .openedColumnIndex.isNotEmpty
+                                              ? Colors.white
+                                              : Colors.white.withOpacity(0.4),
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -264,10 +267,10 @@ class _StairsState extends State<Stairs> {
                       : () {
                           Beamer.of(context).beamBack();
                         },
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
-                    color: Colors.black87,
-                    size: 30.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
                   )),
             ),
             title: Column(
@@ -275,20 +278,14 @@ class _StairsState extends State<Stairs> {
               children: [
                 AutoSizeText(
                   'Stairs',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w900),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
                     return AutoSizeText(
                       value.currentBalanceString,
                       maxLines: 1,
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.displaySmall,
                     );
                   },
                 )
@@ -305,10 +302,10 @@ class _StairsState extends State<Stairs> {
                         : () {
                             context.beamToNamed('/game-statistic/stairs');
                           },
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.circleInfo,
-                      color: Colors.black87,
-                      size: 30.0,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
                     )),
               ),
             ],
@@ -378,8 +375,8 @@ class _StairsState extends State<Stairs> {
                                                     : FaIcon(
                                                         FontAwesomeIcons
                                                             .solidCircleQuestion,
-                                                        color: Colors
-                                                            .grey.shade300,
+                                                        color: Theme.of(context)
+                                                            .canvasColor,
                                                         size: 30.0,
                                                       )
                                                 : stairsLogic
@@ -418,12 +415,13 @@ class _StairsState extends State<Stairs> {
                                                           shadowColor: stairsLogic
                                                                       .currentIndex !=
                                                                   columnIndex
-                                                              ? Colors
-                                                                  .grey.shade300
+                                                              ? Theme.of(
+                                                                      context)
+                                                                  .canvasColor
                                                               : Colors.brown,
                                                           backgroundColor:
-                                                              Colors.grey
-                                                                  .shade300,
+                                                              Theme.of(context)
+                                                                  .canvasColor,
                                                           shape:
                                                               RoundedRectangleBorder(
                                                             side: BorderSide(

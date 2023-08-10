@@ -96,7 +96,7 @@ class _HomeState extends State<Home> {
         future: AccountController().initUserData(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return loading();
+            return loading(context: context);
           }
 
           return snapshot.data!;

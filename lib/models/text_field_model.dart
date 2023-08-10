@@ -3,7 +3,6 @@ import 'dart:io' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +43,8 @@ Widget customTextField(
                   splashRadius: 18.0,
                   padding: EdgeInsets.zero,
                   onPressed: () {
+                    if (readOnly) return;
+
                     double num =
                         currencyTextInputFormatter.getUnformattedValue() * 2;
 
@@ -51,15 +52,20 @@ Widget customTextField(
                         .format((((num).toStringAsFixed(2))).toString());
                   },
                   icon: FaIcon(
-                    // ignore: deprecated_member_use
-                    FontAwesomeIcons.multiply,
-                    color: Colors.black87.withOpacity(0.8),
+                    FontAwesomeIcons.xmark,
+                    color: Theme.of(context)
+                        .appBarTheme
+                        .iconTheme!
+                        .color!
+                        .withOpacity(0.8),
                     size: 18.0,
                   )),
               IconButton(
                   splashRadius: 18.0,
                   padding: EdgeInsets.zero,
                   onPressed: () {
+                    if (readOnly) return;
+
                     double num =
                         currencyTextInputFormatter.getUnformattedValue() / 2;
 
@@ -68,13 +74,19 @@ Widget customTextField(
                   },
                   icon: FaIcon(
                     FontAwesomeIcons.divide,
-                    color: Colors.black87.withOpacity(0.8),
+                    color: Theme.of(context)
+                        .appBarTheme
+                        .iconTheme!
+                        .color!
+                        .withOpacity(0.8),
                     size: 18.0,
                   )),
               IconButton(
                 splashRadius: 20.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
+                  if (readOnly) return;
+
                   final balance = context.read<Balance>();
 
                   controller.text = currencyTextInputFormatter.format(
@@ -82,30 +94,25 @@ Widget customTextField(
                               locale: ui.Platform.localeName)
                           .format(balance.currentBalance - 0.01));
                 },
-                icon: Text(
-                  'max',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87.withOpacity(0.8),
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w700),
-                ),
+                icon: Text('max',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodyMedium!
+                            .color!
+                            .withOpacity(0.8))),
               ),
             ],
           ),
         ),
-        hintStyle: GoogleFonts.roboto(
-            color: Colors.black87.withOpacity(0.5),
-            fontSize: 18,
-            fontWeight: FontWeight.w700),
-        enabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-            borderSide:
-                BorderSide(width: 2.5, color: Colors.black87.withOpacity(0.3))),
-        focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-            borderSide: BorderSide(
-                width: 2.5, color: Colors.black87.withOpacity(0.5)))),
-    style: GoogleFonts.roboto(
-        color: Colors.black87, fontSize: 20, fontWeight: FontWeight.w900),
+        hintStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
+            color: Theme.of(context)
+                .textTheme
+                .displaySmall!
+                .color!
+                .withOpacity(0.5)),
+        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
+    style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 20.0),
   );
 }

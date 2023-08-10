@@ -18,7 +18,7 @@ class StoreItems extends StatelessWidget {
       body: Consumer<StoreManager>(
         builder: (context, storeManager, _) {
           return storeManager.isLoading
-              ? loading()
+              ? loading(context: context)
               : Scaffold(
                   appBar: AppBar(
                     toolbarHeight: 76.0,
@@ -32,18 +32,16 @@ class StoreItems extends StatelessWidget {
                           onPressed: () {
                             Beamer.of(context).beamBack();
                           },
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
-                            color: Colors.black87,
-                            size: 30.0,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),
                     title: AutoSizeText(
                       StoreManager.showOnlyBuyedItems ? 'Имущество' : 'Магазин',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                   ),
                   body: Padding(

@@ -24,124 +24,127 @@ class GameStatistic extends StatelessWidget {
         context.beamBack();
         return false;
       },
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-            appBar: AppBar(
-              toolbarHeight: 76.0,
-              elevation: 0,
-              backgroundColor: Colors.transparent,
-              leading: Padding(
-                padding: const EdgeInsets.only(left: 15.0),
-                child: IconButton(
-                    splashRadius: 25.0,
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      context.beamBack();
-                      //Beamer.of(context).beamBack();
-                    },
-                    icon: const FaIcon(
-                      FontAwesomeIcons.arrowLeft,
-                      color: Colors.black87,
-                      size: 30.0,
-                    )),
-              ),
-              title: AutoSizeText(
-                'Статистика',
-                style: GoogleFonts.roboto(
-                    color: Colors.black87,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.w900),
-              ),
+      child: Scaffold(
+          appBar: AppBar(
+            toolbarHeight: 76.0,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: IconButton(
+                  splashRadius: 25.0,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    context.beamBack();
+                    //Beamer.of(context).beamBack();
+                  },
+                  icon: FaIcon(
+                    FontAwesomeIcons.arrowLeft,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
+                  )),
             ),
-            body: FutureBuilder(
-              future: Provider.of<GameStatisticController>(context)
-                  .loadStatistic(game),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return loading();
-                }
+            title: AutoSizeText(
+              'Статистика',
+              style: Theme.of(context).appBarTheme.titleTextStyle,
+            ),
+          ),
+          body: FutureBuilder(
+            future: Provider.of<GameStatisticController>(context)
+                .loadStatistic(game),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return loading(context: context);
+              }
 
-                return statistic.gameStatisticModel == null
-                    ? Center(
-                        child: AutoSizeText(
-                          'Статистики пока нет',
-                          style: GoogleFonts.roboto(
-                              color: Colors.black87.withOpacity(0.4),
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w700),
-                        ),
-                      )
-                    : SingleChildScrollView(
-                        physics: const BouncingScrollPhysics(),
-                        child: Column(
-                          children: [
-                            GridView.count(
-                              shrinkWrap: true,
-                              physics: const BouncingScrollPhysics(),
-                              crossAxisCount: 1,
-                              childAspectRatio: 3.0,
-                              children: [
-                                gridItem(
-                                    title: 'Ставок',
-                                    isMoneys: false,
-                                    number: double.parse(statistic
-                                        .gameStatisticModel!.totalGames
-                                        .toString())),
-                                gridItem(
-                                    title: 'Побед',
-                                    isMoneys: false,
-                                    isPercent: true,
-                                    number: (double.parse(statistic
-                                                .gameStatisticModel!
-                                                .winGamesCount
-                                                .toString()) /
-                                            double.parse(statistic
-                                                .gameStatisticModel!.totalGames
-                                                .toString())) *
-                                        100),
-                                gridItem(
-                                    title: 'Выигрыш',
-                                    number: statistic
-                                        .gameStatisticModel!.winningsMoneys),
-                                gridItem(
-                                    title: 'Проигрыш',
-                                    number: statistic
-                                        .gameStatisticModel!.lossesMoneys),
-                                gridItem(
-                                    title: 'Макс. выигрыш за ставку',
-                                    number:
-                                        statistic.gameStatisticModel!.maxWin),
-                                gridItem(
-                                    title: 'Макс. проигрыш за ставку',
-                                    number:
-                                        statistic.gameStatisticModel!.maxLoss),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0, bottom: 15.0),
-                              child: AutoSizeText(
+              return statistic.gameStatisticModel == null
+                  ? Center(
+                      child: AutoSizeText(
+                        'Статистики пока нет',
+                        style: GoogleFonts.roboto(
+                            color: Colors.black87.withOpacity(0.4),
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    )
+                  : SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
+                        children: [
+                          GridView.count(
+                            shrinkWrap: true,
+                            physics: const BouncingScrollPhysics(),
+                            crossAxisCount: 1,
+                            childAspectRatio: 3.0,
+                            children: [
+                              gridItem(
+                                  context: context,
+                                  title: 'Ставок',
+                                  isMoneys: false,
+                                  number: double.parse(statistic
+                                      .gameStatisticModel!.totalGames
+                                      .toString())),
+                              gridItem(
+                                  context: context,
+                                  title: 'Побед',
+                                  isMoneys: false,
+                                  isPercent: true,
+                                  number: (double.parse(statistic
+                                              .gameStatisticModel!.winGamesCount
+                                              .toString()) /
+                                          double.parse(statistic
+                                              .gameStatisticModel!.totalGames
+                                              .toString())) *
+                                      100),
+                              gridItem(
+                                  context: context,
+                                  title: 'Выигрыш',
+                                  number: statistic
+                                      .gameStatisticModel!.winningsMoneys),
+                              gridItem(
+                                  context: context,
+                                  title: 'Проигрыш',
+                                  number: statistic
+                                      .gameStatisticModel!.lossesMoneys),
+                              gridItem(
+                                  context: context,
+                                  title: 'Макс. выигрыш за ставку',
+                                  number: statistic.gameStatisticModel!.maxWin),
+                              gridItem(
+                                  context: context,
+                                  title: 'Макс. проигрыш за ставку',
+                                  number:
+                                      statistic.gameStatisticModel!.maxLoss),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                                left: 15.0, right: 15.0, bottom: 15.0),
+                            child: AutoSizeText(
                                 'Вся статистика хранится на вашем устройстве. Если вы удалите игру или очистите кеш, данные будут удалены.',
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                  color: Colors.black87.withOpacity(0.4),
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-              },
-            )),
-      ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        fontSize: 12.0,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .color!
+                                            .withOpacity(0.4))),
+                          ),
+                        ],
+                      ),
+                    );
+            },
+          )),
     );
   }
 
   Widget gridItem(
       {required String title,
+      required BuildContext context,
       required double number,
       bool isMoneys = true,
       bool isPercent = false}) {
@@ -152,7 +155,7 @@ class GameStatistic extends StatelessWidget {
           bottom: 15.0,
           top: !isMoneys && !isPercent ? 15.0 : 0.0),
       decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(25.0),
           boxShadow: [
             BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -177,22 +180,15 @@ class GameStatistic extends StatelessWidget {
                           .format(number),
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: GoogleFonts.roboto(
-                color: Colors.black87,
-                fontSize: 35.0,
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(context)
+                  .appBarTheme
+                  .titleTextStyle!
+                  .copyWith(fontSize: 35.0),
             ),
           ),
-          AutoSizeText(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-              color: Colors.black87,
-              fontSize: 15.0,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          AutoSizeText(title,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
     );

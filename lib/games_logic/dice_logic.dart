@@ -66,12 +66,12 @@ class DiceLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectNumber({required int number, required double coefficient}) {
+  void selectNumber({required int number}) {
     evenOrOddType = EvenOrOddButtonType.empty;
     numberFromToType = NumberFromToButtonType.empty;
 
     selectedNumber = number;
-    this.coefficient = coefficient;
+    coefficient = 2.0;
 
     notifyListeners();
   }

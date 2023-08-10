@@ -8,6 +8,7 @@ import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -36,7 +37,7 @@ class _ProfileState extends State<Profile> {
     return Consumer<AccountController>(
       builder: (context, accountController, _) {
         return accountController.isLoading
-            ? loading()
+            ? loading(context: context)
             : Scaffold(
                 appBar: AppBar(
                   toolbarHeight: 76.0,
@@ -50,20 +51,36 @@ class _ProfileState extends State<Profile> {
                         onPressed: () {
                           Beamer.of(context).beamBack();
                         },
-                        icon: const FaIcon(
+                        icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
-                          color: Colors.black87,
-                          size: 30.0,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
                         )),
                   ),
                   title: AutoSizeText(
                     'Профиль',
-                    style: GoogleFonts.roboto(
-                        color: Colors.black87,
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.w900),
+                    style: Theme.of(context).appBarTheme.titleTextStyle,
                   ),
                   actions: [
+                    /*Consumer<DarkThemeProvider>(
+                        builder: (context, themeChange, _) {
+                      return IconButton(
+                          splashRadius: 25.0,
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            themeChange.darkTheme = !themeChange.darkTheme;
+                          },
+                          icon: Icon(
+                            themeChange.darkTheme
+                                ? Icons.light_mode
+                                : Icons.dark_mode,
+                            color: themeChange.darkTheme
+                                ? Colors.white
+                                : Colors.black87,
+                            size: 30.0,
+                          ));
+                    }),
+                    const SizedBox(width: 5.0),*/
                     Padding(
                       padding: const EdgeInsets.only(right: 15.0),
                       child: IconButton(

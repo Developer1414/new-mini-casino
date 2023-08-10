@@ -49,7 +49,7 @@ class Keno extends StatelessWidget {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25.0),
                     topRight: Radius.circular(25.0)),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -59,6 +59,7 @@ class Keno extends StatelessWidget {
                 return Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding:
@@ -68,11 +69,10 @@ class Keno extends StatelessWidget {
                             children: [
                               AutoSizeText(
                                   'Прибыль (${kenoLogic.coefficient.toStringAsFixed(2)}x):',
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 20,
-                                  )),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20.0)),
                               Padding(
                                 padding: const EdgeInsets.only(right: 15.0),
                                 child: AutoSizeText(
@@ -83,11 +83,10 @@ class Keno extends StatelessWidget {
                                         : NumberFormat.compactSimpleCurrency(
                                                 locale: ui.Platform.localeName)
                                             .format(kenoLogic.profit),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
                               ),
                             ],
                           ),
@@ -100,11 +99,8 @@ class Keno extends StatelessWidget {
                                 ? Center(
                                     child: AutoSizeText(
                                       'Коэффициентов пока нет',
-                                      style: GoogleFonts.roboto(
-                                          color:
-                                              Colors.black87.withOpacity(0.4),
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.w700),
+                                      style:
+                                          Theme.of(context).textTheme.bodySmall,
                                     ),
                                   )
                                 : ListView.separated(
@@ -124,7 +120,10 @@ class Keno extends StatelessWidget {
                                                       width: 2.0,
                                                       color: Colors.green)
                                                   : null,
-                                              color: Colors.white,
+                                              color: Theme.of(context)
+                                                  .buttonTheme
+                                                  .colorScheme!
+                                                  .background,
                                               boxShadow: [
                                                 BoxShadow(
                                                     color: Colors.black
@@ -139,11 +138,9 @@ class Keno extends StatelessWidget {
                                             padding: const EdgeInsets.all(8.0),
                                             child: Text(
                                                 '${kenoLogic.coefficients[index]}x',
-                                                style: GoogleFonts.roboto(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: 15,
-                                                )),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall),
                                           ),
                                         ),
                                       );
@@ -253,7 +250,11 @@ class Keno extends StatelessWidget {
                                   'СТАВКА',
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
-                                      color: Colors.white,
+                                      color:
+                                          kenoLogic.userNumbersList.isEmpty ||
+                                                  kenoLogic.isGameOn
+                                              ? Colors.white.withOpacity(0.4)
+                                              : Colors.white,
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -280,10 +281,10 @@ class Keno extends StatelessWidget {
                       : () {
                           Beamer.of(context).beamBack();
                         },
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
-                    color: Colors.black87,
-                    size: 30.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
                   )),
             ),
             title: Column(
@@ -291,20 +292,14 @@ class Keno extends StatelessWidget {
               children: [
                 AutoSizeText(
                   'Keno',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w900),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
                     return AutoSizeText(
                       value.currentBalanceString,
                       maxLines: 1,
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.displaySmall,
                     );
                   },
                 )
@@ -319,10 +314,10 @@ class Keno extends StatelessWidget {
                     onPressed: context.watch<KenoLogic>().isGameOn
                         ? null
                         : () => context.beamToNamed('/game-statistic/keno'),
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.circleInfo,
-                      color: Colors.black87,
-                      size: 30.0,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
                     )),
               ),
             ],
@@ -372,7 +367,7 @@ class Keno extends StatelessWidget {
                             backgroundColor:
                                 kenoLogic.userNumbersList.contains(index)
                                     ? const Color.fromARGB(255, 164, 223, 96)
-                                    : Colors.grey.shade300,
+                                    : Theme.of(context).canvasColor,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20.0),
                                 side: BorderSide(
@@ -389,12 +384,18 @@ class Keno extends StatelessWidget {
                           child: AutoSizeText(
                             (index + 1).toString(),
                             maxLines: 1,
-                            style: GoogleFonts.roboto(
-                                color: kenoLogic.userNumbersList.contains(index)
-                                    ? Colors.black87
-                                    : Colors.black54,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w900),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .copyWith(
+                                    color: kenoLogic
+                                            .userNumbersList
+                                            .contains(index)
+                                        ? Colors.black87
+                                        : Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .color),
                           ),
                         ),
                       ),

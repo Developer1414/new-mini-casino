@@ -135,10 +135,14 @@ class _AllGamesState extends State<AllGames> {
                 onPressed: () {
                   context.beamToNamed('/profile');
                 },
-                icon: const FaIcon(
+                icon: FaIcon(
                   FontAwesomeIcons.solidUser,
-                  color: Colors.black87,
-                  size: 28.0,
+                  color: Theme.of(context).appBarTheme.iconTheme!.color,
+                  size: Theme.of(context)
+                      .appBarTheme
+                      .iconTheme!
+                      .copyWith(size: 28.0)
+                      .size,
                 )),
           ),
           title: Column(
@@ -146,20 +150,14 @@ class _AllGamesState extends State<AllGames> {
             children: [
               AutoSizeText(
                 'Игры',
-                style: GoogleFonts.roboto(
-                    color: Colors.black87,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.w900),
+                style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 0.0),
                 child: Consumer<Balance>(builder: (ctx, balance, _) {
                   return AutoSizeText(
                     balance.currentBalanceString,
-                    style: GoogleFonts.roboto(
-                        color: Colors.black87,
-                        fontSize: 18.0,
-                        fontWeight: FontWeight.w900),
+                    style: Theme.of(context).textTheme.displaySmall,
                   );
                 }),
               ),
@@ -185,10 +183,14 @@ class _AllGamesState extends State<AllGames> {
                   splashRadius: 25.0,
                   padding: EdgeInsets.zero,
                   onPressed: () => context.beamToNamed('/leader-board'),
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.rankingStar,
-                    color: Colors.black87,
-                    size: 25.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context)
+                        .appBarTheme
+                        .iconTheme!
+                        .copyWith(size: 25.0)
+                        .size,
                   )),
             ),
           ],
@@ -297,7 +299,7 @@ class _AllGamesState extends State<AllGames> {
                                       size: 30.0,
                                     ),
                                     const SizedBox(height: 10.0),
-                                    Text('Скоро здесь будет новая игра',
+                                    Text('Скоро здесь будет новая игра!',
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.roboto(
                                             textStyle: const TextStyle(
@@ -339,23 +341,16 @@ class _AllGamesState extends State<AllGames> {
                     children: [
                       Text('Telegram',
                           textAlign: TextAlign.left,
-                          style: GoogleFonts.roboto(
-                              textStyle: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.w900,
-                          ))),
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium!
+                              .copyWith(fontSize: 22.0)),
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0),
                         child: Text(
                             'Подписывайтесь на наш телеграм канал, чтобы не пропускать новости и обновления!',
                             textAlign: TextAlign.left,
-                            style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                              color: Colors.black87.withOpacity(0.7),
-                              fontSize: 15.0,
-                              fontWeight: FontWeight.w700,
-                            ))),
+                            style: Theme.of(context).textTheme.bodySmall),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 15.0),

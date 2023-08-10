@@ -36,26 +36,24 @@ class OwnPromocode extends StatelessWidget {
       child: Consumer<OwnPromocodeManager>(
         builder: (context, value, child) {
           return value.isLoading
-              ? loading()
+              ? loading(context: context)
               : Scaffold(
                   bottomNavigationBar: Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                     child: SizedBox(
                       height: 133.0,
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(children: [
                                 TextSpan(
-                                  text: 'Промокодами можно делиться в нашем ',
-                                  style: GoogleFonts.roboto(
-                                      textStyle: const TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w700,
-                                  )),
-                                ),
+                                    text: 'Промокодами можно делиться в нашем ',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 12.0)),
                                 TextSpan(
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () async {
@@ -84,22 +82,18 @@ class OwnPromocode extends StatelessWidget {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
+                                AutoSizeText('Итого',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
                                 AutoSizeText(
-                                  'Итого',
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontSize: 25.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                                AutoSizeText(
-                                  NumberFormat.simpleCurrency(
-                                          locale: ui.Platform.localeName)
-                                      .format(value.totalPrize),
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
+                                    NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(value.totalPrize),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(fontSize: 20.0)),
                               ],
                             ),
                           ),
@@ -162,18 +156,16 @@ class OwnPromocode extends StatelessWidget {
                           onPressed: () {
                             Beamer.of(context).beamBack();
                           },
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
-                            color: Colors.black87,
-                            size: 30.0,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),
                     title: AutoSizeText(
                       'Новый промокод',
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                   ),
                   body: Padding(
@@ -186,7 +178,7 @@ class OwnPromocode extends StatelessWidget {
                                 image: AssetImage(
                                     'assets/other_images/PromocodeLogo.png'),
                                 width: 300.0,
-                                height: 300.0),
+                                height: 200.0),
                             TextField(
                               controller: promocodeController,
                               keyboardType: TextInputType.text,
@@ -200,28 +192,25 @@ class OwnPromocode extends StatelessWidget {
                               textInputAction: TextInputAction.next,
                               decoration: InputDecoration(
                                   hintText: 'Название...',
-                                  hintStyle: GoogleFonts.roboto(
-                                      color: Colors.black87.withOpacity(0.5),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          width: 2.5,
-                                          color:
-                                              Colors.black87.withOpacity(0.3))),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          width: 2.5,
-                                          color: Colors.black87
-                                              .withOpacity(0.5)))),
-                              style: GoogleFonts.roboto(
-                                  color: Colors.black87.withOpacity(0.7),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .displaySmall!
+                                              .color!
+                                              .withOpacity(0.5)),
+                                  enabledBorder: Theme.of(context)
+                                      .inputDecorationTheme
+                                      .enabledBorder,
+                                  focusedBorder: Theme.of(context)
+                                      .inputDecorationTheme
+                                      .focusedBorder),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displaySmall!
+                                  .copyWith(fontSize: 20.0),
                             ),
                             const SizedBox(height: 15.0),
                             TextField(
@@ -233,52 +222,47 @@ class OwnPromocode extends StatelessWidget {
                                     double.parse(prize.isEmpty ? '0' : prize);
                                 value.onPromocodeChanged();
                               },
-                              inputFormatters: [
+                              /*inputFormatters: [
                                 LengthLimitingTextInputFormatter(7),
-                              ],
+                              ],*/
                               textInputAction: TextInputAction.done,
                               decoration: InputDecoration(
                                   hintText: 'Приз...',
-                                  hintStyle: GoogleFonts.roboto(
-                                      color: Colors.black87.withOpacity(0.5),
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          width: 2.5,
-                                          color:
-                                              Colors.black87.withOpacity(0.3))),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      borderSide: BorderSide(
-                                          width: 2.5,
-                                          color: Colors.black87
-                                              .withOpacity(0.5)))),
-                              style: GoogleFonts.roboto(
-                                  color: Colors.black87.withOpacity(0.7),
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700),
+                                  hintStyle: Theme.of(context)
+                                      .textTheme
+                                      .displaySmall!
+                                      .copyWith(
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .displaySmall!
+                                              .color!
+                                              .withOpacity(0.5)),
+                                  enabledBorder: Theme.of(context)
+                                      .inputDecorationTheme
+                                      .enabledBorder,
+                                  focusedBorder: Theme.of(context)
+                                      .inputDecorationTheme
+                                      .focusedBorder),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displaySmall!
+                                  .copyWith(fontSize: 20.0),
                             ),
                             const SizedBox(height: 15.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AutoSizeText('Кол. активаций:',
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 18,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 18.0)),
                                 AutoSizeText(
                                     value.countActivation.round().toString(),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 20.0)),
                               ],
                             ),
                             Slider(
@@ -295,18 +279,16 @@ class OwnPromocode extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AutoSizeText('Действителен (в часах):',
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 18,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 18.0)),
                                 AutoSizeText(
                                     value.existenceHours.round().toString(),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .copyWith(fontSize: 20.0)),
                               ],
                             ),
                             Slider(
@@ -323,26 +305,23 @@ class OwnPromocode extends StatelessWidget {
                                 : Padding(
                                     padding: const EdgeInsets.only(top: 15.0),
                                     child: AutoSizeText(
-                                      'Комиссия 60%.\nP.S. c Premium комиссии нет.',
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.black54,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.w700),
-                                    ),
+                                        'Комиссия 60%.\nP.S. c Premium комиссии нет.',
+                                        maxLines: 2,
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
                                   ),
                             Padding(
                               padding: const EdgeInsets.only(top: 15.0),
                               child: AutoSizeText(
-                                'Внимание:\nСвой промокод вы использовать не сможете!',
-                                maxLines: 3,
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.black54,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700),
-                              ),
+                                  'Внимание:\nСвой промокод вы использовать не сможете!',
+                                  maxLines: 3,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(fontSize: 12.0)),
                             ),
                           ],
                         ),

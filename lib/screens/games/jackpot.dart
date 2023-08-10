@@ -101,16 +101,16 @@ class _JackpotState extends State<Jackpot> {
         rand = Random().nextInt(9) + 1;
 
         int maxBalance =
-            Jackpot.myBet.round() <= 0 ? 100 : Jackpot.myBet.round();
+            Jackpot.myBet.round() <= 0 ? 500 : Jackpot.myBet.round();
 
         if (rand <= 4) {
           setState(() {
-            double balance = Random().nextInt(maxBalance) + 1;
+            double balance = Random().nextInt(maxBalance) + 100;
 
             Jackpot.currentBalance += balance;
 
-            String botName =
-                'Бот-${NumberFormat('000').format(int.parse(DateTime.now().millisecondsSinceEpoch.toString().substring(9, 12)))}';
+            String botName = JackpotLogic()
+                .names[Random().nextInt(JackpotLogic().names.length) + 0];
 
             Jackpot.items.add(fortuneItem(nickname: botName, bet: balance));
 
@@ -178,7 +178,7 @@ class _JackpotState extends State<Jackpot> {
                 borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(25.0),
                     topRight: Radius.circular(25.0)),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                       color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
@@ -188,6 +188,7 @@ class _JackpotState extends State<Jackpot> {
                 return Padding(
                     padding: const EdgeInsets.only(left: 15.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Padding(
                           padding:
@@ -197,11 +198,10 @@ class _JackpotState extends State<Jackpot> {
                             children: [
                               AutoSizeText(
                                   'Прибыль (${Jackpot.coefficient.toStringAsFixed(2)}x):',
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.black87,
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: 20,
-                                  )),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(fontSize: 20.0)),
                               Padding(
                                 padding: const EdgeInsets.only(right: 15.0),
                                 child: AutoSizeText(
@@ -212,11 +212,10 @@ class _JackpotState extends State<Jackpot> {
                                         : NumberFormat.compactSimpleCurrency(
                                                 locale: ui.Platform.localeName)
                                             .format(Jackpot.profit),
-                                    style: GoogleFonts.roboto(
-                                      color: Colors.black87,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 20,
-                                    )),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
                               ),
                             ],
                           ),
@@ -297,7 +296,10 @@ class _JackpotState extends State<Jackpot> {
                                   'СТАВКА',
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
-                                      color: Colors.white,
+                                      color: Jackpot.isBlockButton ||
+                                              jackpotLogic.isGameOn
+                                          ? Colors.white.withOpacity(0.4)
+                                          : Colors.white,
                                       fontSize: 24.0,
                                       fontWeight: FontWeight.w900),
                                 ),
@@ -324,10 +326,10 @@ class _JackpotState extends State<Jackpot> {
                       : () {
                           Beamer.of(context).beamBack();
                         },
-                  icon: const FaIcon(
+                  icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
-                    color: Colors.black87,
-                    size: 30.0,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
                   )),
             ),
             title: Column(
@@ -335,20 +337,14 @@ class _JackpotState extends State<Jackpot> {
               children: [
                 AutoSizeText(
                   'Jackpot',
-                  style: GoogleFonts.roboto(
-                      color: Colors.black87,
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.w900),
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
                     return AutoSizeText(
                       value.currentBalanceString,
                       maxLines: 1,
-                      style: GoogleFonts.roboto(
-                          color: Colors.black87,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.w900),
+                      style: Theme.of(context).textTheme.displaySmall,
                     );
                   },
                 )
@@ -363,10 +359,10 @@ class _JackpotState extends State<Jackpot> {
                     onPressed: context.watch<JackpotLogic>().isGameOn
                         ? null
                         : () => context.beamToNamed('/game-statistic/jackpot'),
-                    icon: const FaIcon(
+                    icon: FaIcon(
                       FontAwesomeIcons.circleInfo,
-                      color: Colors.black87,
-                      size: 30.0,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
                     )),
               ),
             ],
@@ -405,7 +401,7 @@ class _JackpotState extends State<Jackpot> {
                       height: 40.0,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15.0),
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           boxShadow: [
                             BoxShadow(
                                 color: Colors.black.withOpacity(0.3),
@@ -415,13 +411,9 @@ class _JackpotState extends State<Jackpot> {
                         padding: const EdgeInsets.all(15.0),
                         child: Jackpot.items.isEmpty
                             ? Center(
-                                child: AutoSizeText(
-                                  'Игроков ещё нет',
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.black87.withOpacity(0.4),
-                                      fontSize: 15.0,
-                                      fontWeight: FontWeight.w700),
-                                ),
+                                child: AutoSizeText('Игроков ещё нет',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall),
                               )
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -432,20 +424,16 @@ class _JackpotState extends State<Jackpot> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       AutoSizeText(
-                                        'Игроков: ${Jackpot.playersCount}',
-                                        style: GoogleFonts.roboto(
-                                            color: Colors.black87,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.w700),
-                                      ),
+                                          'Игроков: ${Jackpot.playersCount}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
                                       const SizedBox(height: 5.0),
                                       AutoSizeText(
-                                        'Баланс: ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(Jackpot.currentBalance)}',
-                                        style: GoogleFonts.roboto(
-                                            color: Colors.black87,
-                                            fontSize: 15.0,
-                                            fontWeight: FontWeight.w700),
-                                      ),
+                                          'Баланс: ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(Jackpot.currentBalance)}',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
                                     ],
                                   ),
                                   Expanded(child: Container()),
@@ -508,21 +496,19 @@ class _JackpotState extends State<Jackpot> {
                                       ? Container()
                                       : Center(
                                           child: AutoSizeText(
-                                            'Старт через ${Jackpot.currentTimeBeforePlaying} сек.',
-                                            style: GoogleFonts.roboto(
-                                                color: Colors.black87,
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.w700),
-                                          ),
+                                              'Старт через ${Jackpot.currentTimeBeforePlaying} сек.',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 20.0)),
                                         ),
                                   Expanded(child: Container()),
                                   AutoSizeText(
-                                    'Чем больше ваша ставка, тем больше ставка ботов',
-                                    style: GoogleFonts.roboto(
-                                        color: Colors.black87.withOpacity(0.4),
-                                        fontSize: 12.0,
-                                        fontWeight: FontWeight.w700),
-                                  ),
+                                      'Чем больше ваша ставка, тем больше ставка ботов',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(fontSize: 12.0)),
                                 ],
                               ),
                       ));

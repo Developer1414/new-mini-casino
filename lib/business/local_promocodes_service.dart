@@ -15,7 +15,7 @@ class LocalPromocodes {
       return characters.codeUnitAt(index);
     });
 
-    double prize = Random().nextInt(9501) + 500;
+    double prize = Random().nextInt(9001) + 1000;
 
     promocodes.addAll({utf8.decode(code): prize});
 
@@ -55,6 +55,8 @@ class LocalPromocodes {
     prefs.setInt('betCountLocalPromocodes', betCount);
 
     if (betCount < 350) return;
+
+    promocodes.addAll(generatePromocode());
 
     betCount = 0;
 

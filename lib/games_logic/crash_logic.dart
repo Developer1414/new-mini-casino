@@ -147,7 +147,7 @@ class CrashLogic extends ChangeNotifier {
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (winCoefficient < maxCoefficient) {
-        winCoefficient += 0.01;
+        winCoefficient += 0.005;
         profit = bet * winCoefficient;
       } else {
         timer.cancel();
@@ -155,9 +155,9 @@ class CrashLogic extends ChangeNotifier {
 
       if (!timer.isActive) {
         if (winCoefficient < targetCoefficient) {
-          crashStatus = CrashStatus.loss;
           lastCoefficients.add(CrashRound(
-              coefficient: maxCoefficient.toStringAsFixed(2), isWin: false));
+              coefficient: maxCoefficient.toStringAsFixed(2),
+              isWin: crashStatus == CrashStatus.win ? true : false));
           notifyListeners();
           loss();
         } else if (winCoefficient >= targetCoefficient) {
