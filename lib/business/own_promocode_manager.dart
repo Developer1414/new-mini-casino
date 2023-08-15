@@ -39,17 +39,17 @@ class OwnPromocodeManager extends ChangeNotifier {
   }
 
   void create({required BuildContext context, required String name}) async {
-    /*if (prize > 5000000) {
+    if (prize > 100000) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Промокод не может быть больше ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(5000000)}!',
+            'Промокод не может быть больше ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}!',
       );
 
       return;
-    }*/
+    }
 
     if (prize < 1000) {
       alertDialogError(
@@ -70,7 +70,7 @@ class OwnPromocodeManager extends ChangeNotifier {
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
-        text: 'Недостаточно средст на балансе!',
+        text: 'Недостаточно средств на балансе!',
       );
 
       return;

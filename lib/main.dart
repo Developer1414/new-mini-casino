@@ -18,6 +18,7 @@ import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
@@ -27,6 +28,7 @@ import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
+import 'package:new_mini_casino/screens/games/blackjack.dart';
 import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/crash.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
@@ -178,6 +180,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/raffle-info': (context, state, data) => const RaffleInfo(),
         '/mines': (context, state, data) => const Mines(),
         '/dice': (context, state, data) => const Dice(),
+        '/blackjack': (context, state, data) => const Blackjack(),
         '/promocode': (context, state, data) => const Promocode(),
         '/crash': (context, state, data) => const Crash(),
         '/stairs': (context, state, data) => const Stairs(),
@@ -248,6 +251,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       providers: [
         ChangeNotifierProvider(create: (ctx) => DarkThemeProvider()),
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
+        ChangeNotifierProvider(create: (ctx) => BlackjackLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
         ChangeNotifierProvider(create: (ctx) => MoneyStorageManager()),
         ChangeNotifierProvider(create: (ctx) => RaffleManager()),

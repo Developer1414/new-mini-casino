@@ -287,26 +287,30 @@ class _AllGamesState extends State<AllGames> {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
                                   border: Border.all(
-                                      color: Colors.black87, width: 2.0)),
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .iconTheme!
+                                          .color!,
+                                      width: 2.0)),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const FaIcon(
+                                    FaIcon(
                                       FontAwesomeIcons.lock,
-                                      color: Colors.black87,
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .iconTheme!
+                                          .color,
                                       size: 30.0,
                                     ),
                                     const SizedBox(height: 10.0),
                                     Text('Скоро здесь будет новая игра!',
                                         textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                            textStyle: const TextStyle(
-                                          color: Colors.black87,
-                                          fontSize: 15.0,
-                                          fontWeight: FontWeight.w700,
-                                        ))),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
                                   ],
                                 ),
                               ),

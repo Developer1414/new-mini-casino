@@ -4,6 +4,11 @@ import 'package:new_mini_casino/models/game_button_details.dart';
 class GamesController {
   static List<GameButtonDetails> games = [
     GameButtonDetails(
+        title: 'Blackjack',
+        gameLogo: 'Blackjack',
+        buttonColor: Colors.blueGrey.shade800,
+        nextScreen: '/blackjack'),
+    GameButtonDetails(
         title: 'Stairs',
         gameLogo: 'Stairs',
         buttonColor: const Color.fromARGB(255, 221, 163, 75),

@@ -45,8 +45,20 @@ Widget customTextField(
                   onPressed: () {
                     if (readOnly) return;
 
-                    double num =
-                        currencyTextInputFormatter.getUnformattedValue() * 2;
+                    double num = currencyTextInputFormatter
+                                .getUnformattedValue()
+                                .toDouble() >=
+                            1000000
+                        ? currencyTextInputFormatter
+                            .getUnformattedValue()
+                            .toDouble()
+                        : currencyTextInputFormatter.getUnformattedValue() * 2 >
+                                1000000
+                            ? currencyTextInputFormatter
+                                .getUnformattedValue()
+                                .toDouble()
+                            : currencyTextInputFormatter.getUnformattedValue() *
+                                2;
 
                     controller.text = currencyTextInputFormatter
                         .format((((num).toStringAsFixed(2))).toString());
@@ -88,11 +100,18 @@ Widget customTextField(
                   if (readOnly) return;
 
                   final balance = context.read<Balance>();
+                  double result = 0.0;
+
+                  if (balance.currentBalance > 1000000) {
+                    result = 1000000;
+                  } else {
+                    result = balance.currentBalance;
+                  }
 
                   controller.text = currencyTextInputFormatter.format(
                       NumberFormat.simpleCurrency(
                               locale: ui.Platform.localeName)
-                          .format(balance.currentBalance - 0.01));
+                          .format(result));
                 },
                 icon: Text('max',
                     style: Theme.of(context).textTheme.bodyMedium!.copyWith(

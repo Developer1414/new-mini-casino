@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,8 +10,6 @@ import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
-
-import 'package:url_launcher/url_launcher.dart';
 
 class OwnPromocode extends StatelessWidget {
   const OwnPromocode({super.key});
@@ -45,40 +42,9 @@ class OwnPromocode extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(children: [
-                                TextSpan(
-                                    text: 'Промокодами можно делиться в нашем ',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(fontSize: 12.0)),
-                                TextSpan(
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () async {
-                                      if (!await launchUrl(
-                                          Uri.parse(
-                                              'https://t.me/+e1W_PR8E789lODgy'),
-                                          mode: LaunchMode
-                                              .externalNonBrowserApplication)) {
-                                        throw Exception(
-                                            'Could not launch ${Uri.parse('https://t.me/+e1W_PR8E789lODgy')}');
-                                      }
-                                    },
-                                  text: 'телеграм чате',
-                                  style: GoogleFonts.roboto(
-                                      textStyle: const TextStyle(
-                                    letterSpacing: 0.5,
-                                    fontSize: 12,
-                                    decoration: TextDecoration.underline,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.blue,
-                                  )),
-                                )
-                              ])),
                           Padding(
-                            padding: const EdgeInsets.all(15.0),
+                            padding: const EdgeInsets.only(
+                                left: 15.0, right: 15.0, bottom: 15.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [

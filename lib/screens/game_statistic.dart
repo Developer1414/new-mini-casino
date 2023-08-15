@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
@@ -61,10 +60,7 @@ class GameStatistic extends StatelessWidget {
                   ? Center(
                       child: AutoSizeText(
                         'Статистики пока нет',
-                        style: GoogleFonts.roboto(
-                            color: Colors.black87.withOpacity(0.4),
-                            fontSize: 18.0,
-                            fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.displayMedium,
                       ),
                     )
                   : SingleChildScrollView(
