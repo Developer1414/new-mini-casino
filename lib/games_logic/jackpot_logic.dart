@@ -5,6 +5,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 class JackpotLogic extends ChangeNotifier {
@@ -44,12 +45,7 @@ class JackpotLogic extends ChangeNotifier {
 
     this.context = context;
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'jackpot',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
-
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
+    CommonFunctions.call(context: context, bet: bet, gameName: 'jackpot');
 
     notifyListeners();
   }

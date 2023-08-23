@@ -6,6 +6,8 @@ import 'package:new_mini_casino/models/profile_model.dart';
 class ProfileController extends ChangeNotifier {
   bool isLoading = false;
 
+  static ProfileModel profileModel = ProfileModel();
+
   static Future<ProfileModel> getUserProfile() async {
     if (FirebaseAuth.instance.currentUser == null) {
       return ProfileModel(nickname: 'null', totalGame: 0);
@@ -16,9 +18,10 @@ class ProfileController extends ChangeNotifier {
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
         .then((value) {
-      return ProfileModel(
+      profileModel = ProfileModel(
           nickname: value.get('name'),
           totalGame: int.parse(value.get('totalGames').toString()));
+      return profileModel;
     });
   }
 }

@@ -6,6 +6,7 @@ import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 class StairsLogic extends ChangeNotifier {
@@ -70,12 +71,7 @@ class StairsLogic extends ChangeNotifier {
         stonesIndex.addAll({i: stones[i]});
       }
 
-      GameStatisticController.updateGameStatistic(
-          gameName: 'stairs',
-          incrementTotalGames: true,
-          gameStatisticModel: GameStatisticModel());
-
-      Provider.of<Balance>(context, listen: false).placeBet(bet);
+      CommonFunctions.call(context: context, bet: bet, gameName: 'stairs');
 
       notifyListeners();
     } else {

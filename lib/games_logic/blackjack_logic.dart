@@ -5,6 +5,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 enum BlackjackType { init, idle, win, loss, draft, start, blackjack }
@@ -71,12 +72,7 @@ class BlackjackLogic extends ChangeNotifier {
     isGameOn = true;
     isLoadingMove = false;
 
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
-
-    GameStatisticController.updateGameStatistic(
-        gameName: 'blackjack',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
+    CommonFunctions.call(context: context, bet: bet, gameName: 'blackjack');
 
     startDrawingCards();
 
@@ -102,31 +98,39 @@ class BlackjackLogic extends ChangeNotifier {
             gameWithInsurance) {
           timer.cancel();
 
-          alertDialogConfirm(
-              context: context,
-              title: 'Страховка',
-              text: 'Хотите получить страховку?',
-              barrierDismissible: false,
-              confirmBtnText: 'Да',
-              cancelBtnText: 'Нет',
-              onConfirmBtnTap: () {
-                Provider.of<Balance>(context, listen: false).placeBet(bet / 2);
+          final balance = Provider.of<Balance>(context, listen: false);
 
-                insurance = bet / 2;
+          if (balance.currentBalance >= bet / 2) {
+            alertDialogConfirm(
+                context: context,
+                title: 'Страховка',
+                text: 'Хотите получить страховку?',
+                barrierDismissible: false,
+                confirmBtnText: 'Да',
+                cancelBtnText: 'Нет',
+                onConfirmBtnTap: () {
+                  Provider.of<Balance>(context, listen: false)
+                      .placeBet(bet / 2);
 
-                insuranceType = Insurance.yes;
+                  insurance = bet / 2;
 
-                Navigator.of(context, rootNavigator: true).pop();
+                  insuranceType = Insurance.yes;
 
-                startDrawingCards(count: countCards);
-              },
-              onCancelBtnTap: () {
-                Navigator.of(context, rootNavigator: true).pop();
+                  Navigator.of(context, rootNavigator: true).pop();
 
-                insuranceType = Insurance.no;
+                  startDrawingCards(count: countCards);
+                },
+                onCancelBtnTap: () {
+                  Navigator.of(context, rootNavigator: true).pop();
 
-                startDrawingCards(count: countCards);
-              });
+                  insuranceType = Insurance.no;
+
+                  startDrawingCards(count: countCards);
+                });
+          } else {
+            insuranceType = Insurance.no;
+            startDrawingCards(count: countCards);
+          }
         } else {
           if (countCards == 4) {
             timer.cancel();
@@ -229,7 +233,7 @@ class BlackjackLogic extends ChangeNotifier {
         }
       }
     } else {
-      if (lastPlayerMoves.isNotEmpty && lastPlayerMoves.last == 'A') {
+      if (lastDealerMoves.isNotEmpty && lastDealerMoves.last == 'A') {
         while (value.isEmpty) {
           String temp =
               cards.keys.toList()[Random.secure().nextInt(cards.length)];

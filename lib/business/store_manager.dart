@@ -68,6 +68,7 @@ class StoreManager extends ChangeNotifier {
   int selectedProduct = 0;
   String selectedPath = '';
 
+  double storeScrollOffset = 0.0;
   static double scrollOffset = 0.0;
 
   void showLoading(bool isActive) {

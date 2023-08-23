@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalPromocodes {
@@ -48,6 +49,10 @@ class LocalPromocodes {
   }
 
   Future getPromocode(BuildContext context) async {
+    if (!AccountController.isPremium) {
+      return;
+    }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     betCount++;

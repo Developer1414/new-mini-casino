@@ -17,6 +17,8 @@ class LeaderBoard extends StatefulWidget {
 
   static final List<String> items = ['Баланс', 'Кол. игр'];
 
+  static double scrollOffset = 0.0;
+
   static String? selectedValue = items.first;
 
   @override
@@ -26,6 +28,9 @@ class LeaderBoard extends StatefulWidget {
 class _LeaderBoardState extends State<LeaderBoard> {
   @override
   Widget build(BuildContext context) {
+    ScrollController controller =
+        ScrollController(initialScrollOffset: LeaderBoard.scrollOffset);
+
     return Scaffold(
       extendBody: true,
       bottomNavigationBar: LeaderBoard.selectedValue == LeaderBoard.items.first
@@ -67,6 +72,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
               splashRadius: 25.0,
               padding: EdgeInsets.zero,
               onPressed: () async {
+                LeaderBoard.scrollOffset = 0.0;
                 Beamer.of(context).beamBack();
               },
               icon: FaIcon(
@@ -128,14 +134,12 @@ class _LeaderBoardState extends State<LeaderBoard> {
                 ),
                 dropdownStyleData: DropdownStyleData(
                     maxHeight: 200,
-                    width: 200,
                     padding: null,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(14),
                       color: Theme.of(context).cardColor,
                     ),
                     elevation: 8,
-                    offset: const Offset(-20, 0),
                     scrollbarTheme: ScrollbarThemeData(
                       radius: const Radius.circular(40),
                       thickness: MaterialStateProperty.all(6),
@@ -165,15 +169,17 @@ class _LeaderBoardState extends State<LeaderBoard> {
               return loading(context: context);
             }
 
-            return list(snapshot: snapshot);
+            return list(snapshot: snapshot, controller: controller);
           }),
     );
   }
 
   Widget list(
       {required AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
+      required ScrollController controller,
       bool isShowRaiting = true}) {
     return ListView.separated(
+        controller: controller,
         itemBuilder: (context, index) {
           double balance = double.parse(
               snapshot.data?.docs[index].get('balance').toString() ?? '0');
@@ -190,6 +196,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
 
           return GestureDetector(
             onTap: () {
+              LeaderBoard.scrollOffset = controller.offset;
               context.beamToNamed(
                 '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$totalGames/$balance',
               );

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
-import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 
@@ -20,15 +19,11 @@ class AdService {
       {required BuildContext context,
       required Function func,
       bool isBet = true}) async {
-    if (AccountController.isPremium) {
-      if (isBet) {
-        LocalPromocodes().getPromocode(context);
-      }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    if (AccountController.isPremium) {
       return;
     }
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (isBet) {
       countBet++;

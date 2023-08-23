@@ -9,7 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
+import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
@@ -18,6 +20,7 @@ import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:new_mini_casino/services/freerasp_service.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -38,6 +41,8 @@ class AccountController extends ChangeNotifier {
   AuthorizationAction authorizationAction = AuthorizationAction.register;
 
   Future checkPremium() async {
+    DateTime dateTimeNow = await NTP.now();
+
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -46,9 +51,9 @@ class AccountController extends ChangeNotifier {
       if (value.data()!.containsKey('premium')) {
         expiredSubscriptionDate = (value.get('premium') as Timestamp).toDate();
 
-        if (expiredSubscriptionDate.difference(DateTime.now()).inDays <= 0 &&
-            expiredSubscriptionDate.difference(DateTime.now()).inHours <= 0 &&
-            expiredSubscriptionDate.difference(DateTime.now()).inMinutes <= 0) {
+        if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
+            expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
+            expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
           isPremium = false;
         } else {
           isPremium = true;
@@ -279,7 +284,8 @@ class AccountController extends ChangeNotifier {
   Future<Widget> initUserData(BuildContext context) async {
     Widget? newScreen;
 
-    if (FirebaseAuth.instance.currentUser != null) {
+    if (FirebaseAuth.instance.currentUser != null &&
+        FirebaseAuth.instance.currentUser!.emailVerified) {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
         AdService.loadCountBet();
 
@@ -302,6 +308,12 @@ class AccountController extends ChangeNotifier {
             // ignore: use_build_context_synchronously
             await Provider.of<MoneyStorageManager>(context, listen: false)
                 .loadBalance();
+
+            // ignore: use_build_context_synchronously
+            await Provider.of<TaxManager>(context, listen: false).getTax();
+
+            await ProfileController.getUserProfile();
+
             await DailyBonusManager().checkDailyBonus().then((value) {
               if (value) {
                 newScreen = const DailyBonus();
@@ -309,6 +321,16 @@ class AccountController extends ChangeNotifier {
                 newScreen = const AllGames();
               }
             });
+
+            /* await NotificationController().getNotifications().then((value) {
+              if (value) {
+                //Beamer.of(context).beamToNamed('/notifications');
+                newScreen = const AllGames();
+              } else {
+                //Beamer.of(context).beamToNamed('/notifications');
+                newScreen = const AllGames();
+              }
+            });*/
           }
         });
 

@@ -5,6 +5,7 @@ import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 import '../business/balance.dart';
@@ -93,12 +94,7 @@ class KenoLogic extends ChangeNotifier {
 
       timer.cancel();
 
-      GameStatisticController.updateGameStatistic(
-          gameName: 'keno',
-          incrementTotalGames: true,
-          gameStatisticModel: GameStatisticModel());
-
-      Provider.of<Balance>(context, listen: false).placeBet(bet);
+      CommonFunctions.call(context: context, bet: bet, gameName: 'keno');
 
       while (numbers.length < 10) {
         int rand = Random.secure().nextInt(40) + 0;

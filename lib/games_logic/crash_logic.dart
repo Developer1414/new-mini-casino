@@ -7,6 +7,7 @@ import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 enum CrashStatus { win, loss, idle }
@@ -58,14 +59,9 @@ class CrashLogic extends ChangeNotifier {
         ..reset()
         ..forward();
 
-      GameStatisticController.updateGameStatistic(
-          gameName: 'crash',
-          incrementTotalGames: true,
-          gameStatisticModel: GameStatisticModel());
-
-      Provider.of<Balance>(context, listen: false).placeBet(bet);
-
       incrementCoefficient();
+
+      CommonFunctions.call(context: context, bet: bet, gameName: 'crash');
 
       notifyListeners();
     } else {

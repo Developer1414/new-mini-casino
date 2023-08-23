@@ -6,6 +6,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 enum EvenOrOddButtonType { even, odd, empty }
@@ -92,12 +93,7 @@ class DiceLogic extends ChangeNotifier {
     randomNumber = Random.secure().nextInt(6) + 1;
     profit = 0.0;
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'dice',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
-
-    Provider.of<Balance>(context, listen: false).placeBet(bet);
+    CommonFunctions.call(context: context, bet: bet, gameName: 'dice');
 
     notifyListeners();
   }

@@ -5,6 +5,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
 
 enum CoinflipStatus { dollar, nothing, init }
@@ -57,10 +58,8 @@ class CoinflipLogic extends ChangeNotifier {
         ? CoinflipStatus.dollar
         : CoinflipStatus.nothing;
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'coinflip',
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
+    CommonFunctions.call(
+        context: context, bet: bet, gameName: 'coinflip', isPlaceBet: false);
 
     notifyListeners();
   }

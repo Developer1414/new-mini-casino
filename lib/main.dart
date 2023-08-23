@@ -8,16 +8,21 @@ import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:new_mini_casino/business/bank_manager.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
+import 'package:new_mini_casino/business/loan_moneys_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
+import 'package:new_mini_casino/business/tax_manager.dart';
+import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/notification_controller.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
@@ -26,6 +31,10 @@ import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
+import 'package:new_mini_casino/screens/bank/bank.dart';
+import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
+import 'package:new_mini_casino/screens/bank/tax.dart';
+import 'package:new_mini_casino/screens/bank/transfer_moneys.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/blackjack.dart';
@@ -44,6 +53,7 @@ import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/money_storage.dart';
 import 'package:new_mini_casino/screens/my_promocodes.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
+import 'package:new_mini_casino/screens/notifications.dart';
 import 'package:new_mini_casino/screens/other_user_profile.dart';
 import 'package:new_mini_casino/screens/own_promocode.dart';
 import 'package:new_mini_casino/screens/premium.dart';
@@ -51,9 +61,9 @@ import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
 import 'package:new_mini_casino/screens/promocode.dart';
 import 'package:new_mini_casino/screens/raffle_info.dart';
-import 'package:new_mini_casino/screens/store.dart';
-import 'package:new_mini_casino/screens/store_items.dart';
-import 'package:new_mini_casino/screens/store_product_review.dart';
+import 'package:new_mini_casino/screens/store/store.dart';
+import 'package:new_mini_casino/screens/store/store_items.dart';
+import 'package:new_mini_casino/screens/store/store_product_review.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
 import 'package:new_mini_casino/screens/welcome.dart';
 import 'package:new_mini_casino/themes/dark_theme.dart';
@@ -79,6 +89,8 @@ void main() async {
       prefs.remove('dailyBonus');
     }
   }
+
+  prefs.remove('notificationsId');
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -168,6 +180,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       routes: {
         '/': (context, state, data) => const Home(),
         '/games': (context, state, data) => const AllGames(),
+        '/notifications': (context, state, data) => const Notifications(),
+        '/transfer-moneys': (context, state, data) => const TransferMoneys(),
+        '/tax': (context, state, data) => const Tax(),
+        '/loan-moneys': (context, state, data) => const LoanMoneys(),
         '/no-internet': (context, state, data) => const NoInternetConnection(),
         '/premium': (context, state, data) => const PremiumInfo(),
         '/my-promocodes': (context, state, data) => const MyPromocodes(),
@@ -175,6 +191,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/welcome': (context, state, data) => const Welcome(),
         '/daily-bonus': (context, state, data) => const DailyBonus(),
         '/login': (context, state, data) => const Login(),
+        '/bank': (context, state, data) => const Bank(),
         '/store-items': (context, state, data) => const StoreItems(),
         '/profile': (context, state, data) => const Profile(),
         '/raffle-info': (context, state, data) => const RaffleInfo(),
@@ -250,7 +267,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => DarkThemeProvider()),
+        ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
+        ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
+        ChangeNotifierProvider(create: (ctx) => NotificationController()),
+        ChangeNotifierProvider(create: (ctx) => TaxManager()),
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
+        ChangeNotifierProvider(create: (ctx) => BankManager()),
         ChangeNotifierProvider(create: (ctx) => BlackjackLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
         ChangeNotifierProvider(create: (ctx) => MoneyStorageManager()),

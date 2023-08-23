@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/models/text_field_model.dart';
 import 'package:provider/provider.dart';
 
 class MoneyStorage extends StatelessWidget {
@@ -187,38 +188,14 @@ class MoneyStorage extends StatelessWidget {
                                 const SizedBox(height: 30.0),
                                 Column(
                                   children: [
-                                    TextField(
-                                      inputFormatters: [betFormatter],
-                                      controller: betController,
-                                      keyboardType: TextInputType.number,
-                                      textAlign: TextAlign.center,
-                                      textInputAction: TextInputAction.done,
-                                      decoration: InputDecoration(
-                                          hintText: 'Количество...',
-                                          hintStyle: GoogleFonts.roboto(
-                                              color:
-                                                  Colors.white.withOpacity(0.5),
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w700),
-                                          enabledBorder: OutlineInputBorder(
-                                              borderRadius: const BorderRadius.all(
-                                                  Radius.circular(15.0)),
-                                              borderSide: BorderSide(
-                                                  width: 2.5,
-                                                  color: Colors.white
-                                                      .withOpacity(0.5))),
-                                          focusedBorder: OutlineInputBorder(
-                                              borderRadius: const BorderRadius.all(
-                                                  Radius.circular(15.0)),
-                                              borderSide: BorderSide(
-                                                  width: 2.5,
-                                                  color: Colors.white
-                                                      .withOpacity(0.8)))),
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white.withOpacity(0.9),
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.w900),
-                                    ),
+                                    customTextField(
+                                        currencyTextInputFormatter:
+                                            betFormatter,
+                                        textInputFormatter: betFormatter,
+                                        keyboardType: TextInputType.number,
+                                        controller: betController,
+                                        context: context,
+                                        hintText: 'Количество...'),
                                     const SizedBox(height: 20.0),
                                     buttonModel(
                                         buttonName: 'В хранилище',
@@ -241,7 +218,7 @@ class MoneyStorage extends StatelessWidget {
                                                         .toString()),
                                                 context: context),
                                         color: Colors.blueAccent),
-                                    const SizedBox(height: 20.0),
+                                    const SizedBox(height: 15.0),
                                     AutoSizeText(
                                       'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}',
                                       style: GoogleFonts.roboto(

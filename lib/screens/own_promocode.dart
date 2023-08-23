@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,6 +18,13 @@ class OwnPromocode extends StatelessWidget {
   static TextEditingController promocodeController = TextEditingController();
   static TextEditingController prizeController = TextEditingController();
   static TextEditingController countController = TextEditingController();
+
+  static CurrencyTextInputFormatter prizeFormatter = CurrencyTextInputFormatter(
+    locale: ui.Platform.localeName,
+    enableNegative: false,
+    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
+        .currencySymbol,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -184,13 +192,12 @@ class OwnPromocode extends StatelessWidget {
                               keyboardType: TextInputType.number,
                               textAlign: TextAlign.center,
                               onChanged: (prize) {
-                                value.prize =
-                                    double.parse(prize.isEmpty ? '0' : prize);
+                                value.prize = prizeFormatter
+                                    .getUnformattedValue()
+                                    .toDouble();
                                 value.onPromocodeChanged();
                               },
-                              /*inputFormatters: [
-                                LengthLimitingTextInputFormatter(7),
-                              ],*/
+                              inputFormatters: [prizeFormatter],
                               textInputAction: TextInputAction.done,
                               decoration: InputDecoration(
                                   hintText: 'Приз...',

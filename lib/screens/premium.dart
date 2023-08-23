@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/models/loading.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -35,19 +36,23 @@ class PremiumInfo extends StatelessWidget {
                             child: Center(
                               child: Padding(
                                 padding: const EdgeInsets.all(25.0),
-                                child: Text(
-                                  'Подписка активна до ${DateFormat.yMMMMd('ru_RU').format(AccountController.expiredSubscriptionDate)}\nОсталось дней: ${AccountController.expiredSubscriptionDate.difference(DateTime.now()).inDays}',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayMedium!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .displayMedium!
-                                              .color!
-                                              .withOpacity(0.8)),
-                                ),
+                                child: FutureBuilder(
+                                    future: NTP.now(),
+                                    builder: (context, snapshot) {
+                                      return Text(
+                                        'Подписка активна до ${DateFormat.yMMMMd(ui.Platform.localeName).format(AccountController.expiredSubscriptionDate)}\nОсталось дней: ${AccountController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays}',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displayMedium!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .displayMedium!
+                                                    .color!
+                                                    .withOpacity(0.8)),
+                                      );
+                                    }),
                               ),
                             ),
                           )
@@ -87,7 +92,7 @@ class PremiumInfo extends StatelessWidget {
                                                         Radius.circular(5.0))),
                                           ),
                                           child: AutoSizeText(
-                                            'Год (выгодно)',
+                                            'Год',
                                             maxLines: 1,
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.roboto(
@@ -248,7 +253,7 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 15.0),
                                 Text(
-                                  'Попробуйте Mini Casino Premium всего за 99 руб. в месяц или 999 руб. в год!',
+                                  'Попробуйте Mini Casino Premium всего за 149 руб. в месяц или 1499 руб. в год!',
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
@@ -321,7 +326,7 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                        '• Есть реклама\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}\n• Создание промокодов с 60% комиссии.',
+                                        '• Есть реклама\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 10% от ставки.',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),
@@ -390,7 +395,7 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                        '• Нет рекламы\n• Выигрыш в «Бесплатном бонусе» до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой.',
+                                        '• Нет рекламы\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• Погашение кредита на 5% больше\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Каждая ставка облагается налогом в размере 5% от ставки.',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),

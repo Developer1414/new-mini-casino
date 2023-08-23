@@ -19,7 +19,8 @@ Widget loading({required BuildContext context, String text = ''}) {
             ),
             const SizedBox(height: 10.0),
             Padding(
-              padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+              padding:
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
               child:
                   AutoSizeText(text.isEmpty ? 'Пожалуйста, подождите...' : text,
                       textAlign: TextAlign.center,
@@ -28,6 +29,15 @@ Widget loading({required BuildContext context, String text = ''}) {
                             fontWeight: FontWeight.w700,
                           )),
             ),
+            AutoSizeText('Иногда загрузка может быть дольше обычного',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    fontSize: 12.0,
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .color!
+                        .withOpacity(0.4))),
           ],
         ),
       ),

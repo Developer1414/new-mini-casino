@@ -350,8 +350,12 @@ class _StairsState extends State<Stairs> {
                                                   .cellCount[columnIndex];
                                           rowIndex++)
                                         Padding(
-                                          padding: const EdgeInsets.only(
-                                              right: 10.0),
+                                          padding: EdgeInsets.only(
+                                              right: rowIndex + 1 <
+                                                      stairsLogic.cellCount[
+                                                          columnIndex]
+                                                  ? 10.0
+                                                  : 0.0),
                                           child: SizedBox(
                                             width: MediaQuery.of(context)
                                                     .size

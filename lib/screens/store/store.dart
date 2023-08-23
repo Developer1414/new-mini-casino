@@ -24,6 +24,9 @@ class Store extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    ScrollController controller =
+        ScrollController(initialScrollOffset: StoreManager.scrollOffset);
+
     return WillPopScope(
       onWillPop: () async => Beamer.of(context).beamBack(),
       child: Consumer<StoreManager>(
@@ -41,6 +44,7 @@ class Store extends StatelessWidget {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
+                            StoreManager.scrollOffset = 0.0;
                             Beamer.of(context).beamBack();
                           },
                           icon: FaIcon(
@@ -89,11 +93,13 @@ class Store extends StatelessWidget {
                                     ),
                                   )
                                 : loadItems(
+                                    controller: controller,
                                     storeManager: storeManager,
                                     list: snapshot.data ?? [],
                                     onlyMyItems: true);
                           })
-                      : loadItems(storeManager: storeManager),
+                      : loadItems(
+                          storeManager: storeManager, controller: controller),
                 );
         },
       ),
@@ -102,9 +108,11 @@ class Store extends StatelessWidget {
 
   Widget loadItems(
       {required StoreManager storeManager,
+      required ScrollController controller,
       List<int>? list,
       bool onlyMyItems = false}) {
     return GridView.custom(
+      controller: controller,
       padding: const EdgeInsets.only(bottom: 15.0, left: 15.0, right: 15.0),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
@@ -127,6 +135,7 @@ class Store extends StatelessWidget {
             shadowColor: storeItemModel.color,
             child: InkWell(
               onTap: () {
+                StoreManager.scrollOffset = controller.offset;
                 storeManager.selectStoreProduct(storeItemModel.imageId);
                 Beamer.of(context).beamToNamed('/product-review');
               },
