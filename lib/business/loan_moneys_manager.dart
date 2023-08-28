@@ -53,8 +53,7 @@ class LoanMoneysManager extends ChangeNotifier {
   void takeLoan({required double amount, required BuildContext context}) async {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    if (amount >
-        10000 * (ProfileController.profileModel.totalGame / 1000).round()) {
+    if (amount > maxLoan) {
       alertDialogError(
         context: context,
         title: 'Ошибка',

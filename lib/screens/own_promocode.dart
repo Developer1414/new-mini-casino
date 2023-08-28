@@ -46,7 +46,7 @@ class OwnPromocode extends StatelessWidget {
                   bottomNavigationBar: Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                     child: SizedBox(
-                      height: 133.0,
+                      height: 104.0,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -143,7 +143,7 @@ class OwnPromocode extends StatelessWidget {
                     ),
                   ),
                   body: Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.symmetric(vertical: 15.0),
                     child: Center(
                       child: SingleChildScrollView(
                         child: Column(
@@ -153,125 +153,152 @@ class OwnPromocode extends StatelessWidget {
                                     'assets/other_images/PromocodeLogo.png'),
                                 width: 300.0,
                                 height: 200.0),
-                            TextField(
-                              controller: promocodeController,
-                              keyboardType: TextInputType.text,
-                              textAlign: TextAlign.center,
-                              inputFormatters: [
-                                LengthLimitingTextInputFormatter(12),
-                                FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                                FilteringTextInputFormatter.allow(
-                                    RegExp('[a-z 0-9]'))
-                              ],
-                              textInputAction: TextInputAction.next,
-                              decoration: InputDecoration(
-                                  hintText: 'Название...',
-                                  hintStyle: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .displaySmall!
-                                              .color!
-                                              .withOpacity(0.5)),
-                                  enabledBorder: Theme.of(context)
-                                      .inputDecorationTheme
-                                      .enabledBorder,
-                                  focusedBorder: Theme.of(context)
-                                      .inputDecorationTheme
-                                      .focusedBorder),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displaySmall!
-                                  .copyWith(fontSize: 20.0),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: TextField(
+                                controller: promocodeController,
+                                keyboardType: TextInputType.text,
+                                textAlign: TextAlign.center,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(12),
+                                  FilteringTextInputFormatter.deny(
+                                      RegExp(r'\s')),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp('[a-z 0-9]'))
+                                ],
+                                textInputAction: TextInputAction.next,
+                                decoration: InputDecoration(
+                                    hintText: 'Название...',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .displaySmall!
+                                                .color!
+                                                .withOpacity(0.5)),
+                                    enabledBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .enabledBorder,
+                                    focusedBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .focusedBorder),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall!
+                                    .copyWith(fontSize: 20.0),
+                              ),
                             ),
                             const SizedBox(height: 15.0),
-                            TextField(
-                              controller: prizeController,
-                              keyboardType: TextInputType.number,
-                              textAlign: TextAlign.center,
-                              onChanged: (prize) {
-                                value.prize = prizeFormatter
-                                    .getUnformattedValue()
-                                    .toDouble();
-                                value.onPromocodeChanged();
-                              },
-                              inputFormatters: [prizeFormatter],
-                              textInputAction: TextInputAction.done,
-                              decoration: InputDecoration(
-                                  hintText: 'Приз...',
-                                  hintStyle: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .displaySmall!
-                                              .color!
-                                              .withOpacity(0.5)),
-                                  enabledBorder: Theme.of(context)
-                                      .inputDecorationTheme
-                                      .enabledBorder,
-                                  focusedBorder: Theme.of(context)
-                                      .inputDecorationTheme
-                                      .focusedBorder),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .displaySmall!
-                                  .copyWith(fontSize: 20.0),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: TextField(
+                                controller: prizeController,
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                onChanged: (prize) {
+                                  value.prize = prizeFormatter
+                                      .getUnformattedValue()
+                                      .toDouble();
+                                  value.onPromocodeChanged();
+                                },
+                                inputFormatters: [prizeFormatter],
+                                textInputAction: TextInputAction.done,
+                                decoration: InputDecoration(
+                                    hintText: 'Приз...',
+                                    hintStyle: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!
+                                        .copyWith(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .displaySmall!
+                                                .color!
+                                                .withOpacity(0.5)),
+                                    enabledBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .enabledBorder,
+                                    focusedBorder: Theme.of(context)
+                                        .inputDecorationTheme
+                                        .focusedBorder),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall!
+                                    .copyWith(fontSize: 20.0),
+                              ),
                             ),
                             const SizedBox(height: 15.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                AutoSizeText('Кол. активаций:',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(fontSize: 18.0)),
-                                AutoSizeText(
-                                    value.countActivation.round().toString(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(fontSize: 20.0)),
-                              ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AutoSizeText('Кол. активаций:',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(fontSize: 18.0)),
+                                  AutoSizeText(
+                                      value.countActivation.round().toString(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(fontSize: 20.0)),
+                                ],
+                              ),
                             ),
-                            Slider(
-                              value: value.countActivation,
-                              max: 50,
-                              min: 1,
-                              divisions: 49,
-                              onChanged: (double v) {
-                                value.onCountActivationChanged(v);
-                              },
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Slider(
+                                value: value.countActivation,
+                                max: 50,
+                                min: 1,
+                                divisions: 49,
+                                onChanged: (double v) {
+                                  value.onCountActivationChanged(v);
+                                },
+                              ),
                             ),
                             const SizedBox(height: 15.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                AutoSizeText('Действителен (в часах):',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(fontSize: 18.0)),
-                                AutoSizeText(
-                                    value.existenceHours.round().toString(),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .copyWith(fontSize: 20.0)),
-                              ],
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AutoSizeText('Действителен (в часах):',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(fontSize: 18.0)),
+                                  AutoSizeText(
+                                      value.existenceHours.round().toString(),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(fontSize: 20.0)),
+                                ],
+                              ),
                             ),
-                            Slider(
-                              value: value.existenceHours,
-                              max: 5,
-                              min: 1,
-                              divisions: 4,
-                              onChanged: (double v) {
-                                value.onExistenceHoursChanged(v);
-                              },
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
+                              child: Slider(
+                                value: value.existenceHours,
+                                max: 5,
+                                min: 1,
+                                divisions: 4,
+                                onChanged: (double v) {
+                                  value.onExistenceHoursChanged(v);
+                                },
+                              ),
                             ),
                             AccountController.isPremium
                                 ? Container()

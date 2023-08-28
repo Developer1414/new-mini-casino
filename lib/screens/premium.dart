@@ -29,7 +29,7 @@ class PremiumInfo extends StatelessWidget {
                 ? loading(context: context, text: paymentController.loadingText)
                 : Scaffold(
                     resizeToAvoidBottomInset: false,
-                    bottomSheet: AccountController.isPremium
+                    bottomNavigationBar: AccountController.isPremium
                         ? Container(
                             height: 100.0,
                             color: Theme.of(context).scaffoldBackgroundColor,
@@ -79,7 +79,7 @@ class PremiumInfo extends StatelessWidget {
                                             backgroundColor: paymentController
                                                     .isYearSubscription
                                                 ? Colors.green
-                                                : Colors.blueGrey,
+                                                : Theme.of(context).cardColor,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.only(
                                                     topLeft:
@@ -96,7 +96,11 @@ class PremiumInfo extends StatelessWidget {
                                             maxLines: 1,
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.roboto(
-                                              color: Colors.white,
+                                              color: paymentController
+                                                      .isYearSubscription
+                                                  ? Colors.white
+                                                  : Colors.white
+                                                      .withOpacity(0.4),
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.w700,
                                             ),
@@ -116,7 +120,7 @@ class PremiumInfo extends StatelessWidget {
                                             backgroundColor: !paymentController
                                                     .isYearSubscription
                                                 ? Colors.green
-                                                : Colors.blueGrey,
+                                                : Theme.of(context).cardColor,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.only(
                                                     topLeft:
@@ -133,7 +137,11 @@ class PremiumInfo extends StatelessWidget {
                                             maxLines: 1,
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.roboto(
-                                              color: Colors.white,
+                                              color: !paymentController
+                                                      .isYearSubscription
+                                                  ? Colors.white
+                                                  : Colors.white
+                                                      .withOpacity(0.4),
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.w700,
                                             ),
@@ -224,9 +232,10 @@ class PremiumInfo extends StatelessWidget {
                               ),
                       ],
                     ),
-                    body: Padding(
-                      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                      child: SingleChildScrollView(
+                    body: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15.0, right: 15.0, bottom: 15.0),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

@@ -104,7 +104,7 @@ class DailyBonusManager extends ChangeNotifier {
         text:
             'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(currentBonus)}!',
         onConfirmBtnTap: () {
-          context.beamToReplacementNamed('/games');
+          context.beamBack();
         });
 
     showLoading(false);

@@ -22,6 +22,7 @@ class DailyBonus extends StatelessWidget {
             : Scaffold(
                 appBar: AppBar(
                   elevation: 0,
+                  automaticallyImplyLeading: false,
                   backgroundColor: Colors.transparent,
                   toolbarHeight: 160.0,
                   centerTitle: true,
@@ -96,10 +97,10 @@ class DailyBonus extends StatelessWidget {
                               child: AutoSizeText(
                                 'В Mini Casino Premium бонусы увеличены в 3 раза!',
                                 maxLines: 1,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.black54,
-                                    fontSize: 15.0,
-                                    fontWeight: FontWeight.w700),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium!
+                                    .copyWith(fontSize: 15.0),
                               ),
                             ),
                       GridView.custom(

@@ -7,14 +7,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
-import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
@@ -314,13 +312,7 @@ class AccountController extends ChangeNotifier {
 
             await ProfileController.getUserProfile();
 
-            await DailyBonusManager().checkDailyBonus().then((value) {
-              if (value) {
-                newScreen = const DailyBonus();
-              } else {
-                newScreen = const AllGames();
-              }
-            });
+            newScreen = const AllGames();
 
             /* await NotificationController().getNotifications().then((value) {
               if (value) {

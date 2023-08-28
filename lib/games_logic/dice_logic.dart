@@ -17,7 +17,7 @@ class DiceLogic extends ChangeNotifier {
   bool isGameOn = false;
 
   double profit = 0.0;
-  double coefficient = 0.0;
+  double coefficient = 2.0;
   double bet = 0.0;
 
   EvenOrOddButtonType evenOrOddType = EvenOrOddButtonType.empty;
