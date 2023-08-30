@@ -64,7 +64,7 @@ class _JackpotState extends State<Jackpot> {
   }
 
   void createGame() {
-    if (context.mounted) {
+    if (mounted) {
       setState(() {
         Jackpot.items.clear();
         Jackpot.players.clear();

@@ -95,7 +95,7 @@ class _HomeState extends State<Home> {
     super.initState();
     showPremiumSubscription();
     initConnectivity();
-    checkDailyBonus();
+    //checkDailyBonus();
   }
 
   @override

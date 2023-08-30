@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
@@ -32,109 +31,90 @@ class _AllGamesState extends State<AllGames> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: Consumer<BonusManager>(
-          builder: (ctx, value, _) {
-            return Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // async => value.getFreeBonus(context)
-                          context.beamToNamed('/bank');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: Colors.blue.shade700,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0)),
-                          ),
-                        ),
-                        child: value.isLoadingBonus
-                            ? const Padding(
-                                padding: EdgeInsets.all(18.0),
-                                child: SizedBox(
-                                  width: 26.0,
-                                  height: 26.0,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 5.0,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 18.0, bottom: 18.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const FaIcon(
-                                      FontAwesomeIcons.buildingColumns,
-                                      color: Colors.white,
-                                      size: 22.0,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    AutoSizeText(
-                                      'Банк',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 22.0,
-                                          fontWeight: FontWeight.w800),
-                                    )
-                                  ],
-                                ),
-                              ),
+        bottomNavigationBar: Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      context.beamToNamed('/bank');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: Colors.blue.shade700,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25.0),
+                            topRight: Radius.circular(25.0)),
                       ),
                     ),
-                    const SizedBox(width: 15.0),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          StoreManager.showOnlyBuyedItems = false;
-                          context.beamToNamed('/store-items');
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: Colors.green,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const FaIcon(
+                            FontAwesomeIcons.buildingColumns,
+                            color: Colors.white,
+                            size: 22.0,
                           ),
-                        ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.only(top: 18.0, bottom: 18.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const FaIcon(
-                                FontAwesomeIcons.store,
+                          const SizedBox(width: 10.0),
+                          AutoSizeText(
+                            'Банк',
+                            maxLines: 1,
+                            style: GoogleFonts.roboto(
                                 color: Colors.white,
-                                size: 22.0,
-                              ),
-                              const SizedBox(width: 10.0),
-                              AutoSizeText(
-                                'Магазин',
-                                maxLines: 1,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 22.0,
-                                    fontWeight: FontWeight.w800),
-                              )
-                            ],
-                          ),
-                        ),
+                                fontSize: 22.0,
+                                fontWeight: FontWeight.w800),
+                          )
+                        ],
                       ),
                     ),
-                  ],
-                ));
-          },
-        ),
+                  ),
+                ),
+                const SizedBox(width: 15.0),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      StoreManager.showOnlyBuyedItems = false;
+                      context.beamToNamed('/store-items');
+                    },
+                    style: ElevatedButton.styleFrom(
+                      elevation: 5,
+                      backgroundColor: Colors.green,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(25.0),
+                            topRight: Radius.circular(25.0)),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const FaIcon(
+                            FontAwesomeIcons.store,
+                            color: Colors.white,
+                            size: 22.0,
+                          ),
+                          const SizedBox(width: 10.0),
+                          AutoSizeText(
+                            'Магазин',
+                            maxLines: 1,
+                            style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 22.0,
+                                fontWeight: FontWeight.w800),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )),
         appBar: AppBar(
           toolbarHeight: 76.0,
           elevation: 0,

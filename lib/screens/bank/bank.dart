@@ -3,7 +3,9 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/models/button_model.dart';
+import 'package:provider/provider.dart';
 
 class Bank extends StatelessWidget {
   const Bank({super.key});
@@ -105,6 +107,46 @@ class Bank extends StatelessWidget {
                       onPressed: () {
                         context.beamToNamed('/transfer-moneys');
                       }),
+                  const SizedBox(height: 15.0),
+                  Consumer<BonusManager>(
+                    builder: (context, value, child) {
+                      return value.isLoadingBonus
+                          ? Container(
+                              height: 60.0,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                  color: Colors.deepPurple,
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color:
+                                            Colors.deepPurple.withOpacity(0.8),
+                                        blurRadius: 5.0)
+                                  ]),
+                              child: const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.all(18.0),
+                                  child: SizedBox(
+                                    width: 26.0,
+                                    height: 26.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 4.0,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : buttonModel(
+                              context: context,
+                              icon: FontAwesomeIcons.rectangleAd,
+                              buttonName: 'Бесплатный бонус',
+                              color: Colors.deepPurple,
+                              onPressed: () {
+                                value.getFreeBonus(context);
+                              });
+                    },
+                  ),
                 ],
               ),
             ),

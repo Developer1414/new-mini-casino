@@ -35,6 +35,9 @@ class TransferMoneysManager extends ChangeNotifier {
       required amount}) async {
     final balance = Provider.of<Balance>(context, listen: false);
 
+    double amountWithComission =
+        AccountController.isPremium ? amount : amount + (amount * 5 / 100);
+
     if (username.isEmpty) {
       alertDialogError(
         context: context,
@@ -57,7 +60,7 @@ class TransferMoneysManager extends ChangeNotifier {
       return;
     }
 
-    if (balance.currentBalance < amount) {
+    if (balance.currentBalance < amountWithComission) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
@@ -107,8 +110,7 @@ class TransferMoneysManager extends ChangeNotifier {
           'date': dateTimeNow,
         }).whenComplete(() async {});
 
-        balance.placeBet(
-            AccountController.isPremium ? amount : amount + (amount * 5 / 100));
+        balance.placeBet(amountWithComission);
 
         showLoading(false);
 

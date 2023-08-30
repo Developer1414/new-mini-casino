@@ -90,7 +90,7 @@ void main() async {
     }
   }
 
-  prefs.remove('notificationsId');
+  //prefs.remove('notificationsId');
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,

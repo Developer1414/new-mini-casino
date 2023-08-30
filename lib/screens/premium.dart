@@ -335,7 +335,7 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                        '• Есть реклама\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 10% от ставки.',
+                                        '• Есть реклама\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 10% от ставки\n• Бесплатный бонус от ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100)} до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),
@@ -404,7 +404,7 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 5.0),
                                     Text(
-                                        '• Нет рекламы\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• Погашение кредита на 5% больше\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Каждая ставка облагается налогом в размере 5% от ставки.',
+                                        '• Нет рекламы\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• Погашение кредита на 5% больше\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Каждая ставка облагается налогом в размере 5% от ставки\n• Бесплатный бонус от ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(500)} до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .bodySmall),

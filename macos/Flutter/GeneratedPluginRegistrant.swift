@@ -7,7 +7,7 @@ import Foundation
 
 import cloud_firestore
 import connectivity_plus
-import device_info_plus_macos
+import device_info_plus
 import firebase_auth
 import firebase_core
 import firebase_storage
