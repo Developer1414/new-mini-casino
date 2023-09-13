@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 

@@ -5,9 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
@@ -82,20 +81,11 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future checkDailyBonus() async {
-    await DailyBonusManager().checkDailyBonus().then((value) {
-      if (value) {
-        Beamer.of(context).beamToNamed('/daily-bonus');
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     showPremiumSubscription();
     initConnectivity();
-    //checkDailyBonus();
   }
 
   @override

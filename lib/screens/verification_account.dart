@@ -2,7 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 
 class VerificationAcount extends StatefulWidget {
   const VerificationAcount(

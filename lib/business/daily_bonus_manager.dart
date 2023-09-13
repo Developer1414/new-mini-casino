@@ -1,11 +1,11 @@
-import 'dart:convert';
+import 'dart:async';
 import 'dart:io' as ui;
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,22 +13,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DailyBonusManager extends ChangeNotifier {
   bool isLoading = false;
   bool isClickableButton = true;
-  List<double> bonuses = [550, 720, 900, 1100, 1500, 2000, 2800, 3900, 5000];
+
   List<Color> colors = [
-    const Color.fromARGB(255, 29, 98, 216),
-    Colors.blue,
-    Colors.green,
-    Colors.teal,
-    Colors.purple,
-    const Color.fromARGB(255, 230, 213, 60),
-    Colors.pink,
-    Colors.orange,
-    Colors.red
+    Colors.redAccent,
+    Colors.purpleAccent,
+    Colors.lightGreen,
+    Colors.lightBlue,
   ];
 
-  static double currentBonus = 0.0;
-  static int currentBonusIndex = 0;
-  static DateTime firstBonusDate = DateTime.now();
+  List<int> coefficients = [5, 10, 2, 3];
+  //List<int> bonuses = List.filled(4, 0);
+
+  int dailyCountBets = 0;
 
   void showLoading(bool isActive) {
     isLoading = isActive;
@@ -44,18 +40,7 @@ class DailyBonusManager extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (prefs.containsKey('dailyBonus')) {
-      var data = jsonDecode(prefs.getString('dailyBonus').toString());
-      firstBonusDate = DateTime.parse(data[0]);
-      currentBonusIndex = int.parse(data[1].toString());
-
-      if ((data as List).length == 3) {
-        lastBonusDate = DateTime.parse(data[2]);
-      }
-
-      currentBonus =
-          bonuses[currentBonusIndex] * (AccountController.isPremium ? 3 : 1);
-    } else {
-      currentBonus = bonuses[0] * (AccountController.isPremium ? 3 : 1);
+      lastBonusDate = DateTime.parse(prefs.getString('dailyBonus').toString());
     }
 
     if (dateTimeNow.day != lastBonusDate.day ||
@@ -68,45 +53,58 @@ class DailyBonusManager extends ChangeNotifier {
     return result;
   }
 
-  Future getBonus(BuildContext context) async {
+  Future updateDailyBetsCount() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    int dailyCountBets = 0;
+
+    if (prefs.containsKey('dailyCountBets')) {
+      dailyCountBets = prefs.getInt('dailyCountBets')! + 1;
+      prefs.setInt('dailyCountBets', dailyCountBets);
+    } else {
+      prefs.setInt('dailyCountBets', 1);
+    }
+  }
+
+  Future getBonus(
+      {required BuildContext context, required int bonusIndex}) async {
     if (!isClickableButton) return;
+
+    DateTime dateTimeNow = await NTP.now();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    dailyCountBets = prefs.getInt('dailyCountBets') ?? 500;
+
+    coefficients.shuffle();
+    notifyListeners();
 
     isClickableButton = false;
 
-    showLoading(true);
+    int resultBonus = dailyCountBets *
+        coefficients[bonusIndex] *
+        (AccountController.isPremium ? 2 : 1);
 
-    Provider.of<Balance>(context, listen: false).cashout(currentBonus);
+    notifyListeners();
 
-    if (currentBonusIndex < 8) {
-      currentBonusIndex++;
-    } else {
-      currentBonusIndex = 0;
-    }
+    // ignore: use_build_context_synchronously
+    Provider.of<Balance>(context, listen: false)
+        .cashout(double.parse(resultBonus.toString()));
 
-    DateTime firstBonus =
-        currentBonusIndex == 0 ? await NTP.now() : firstBonusDate;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('dailyBonus', dateTimeNow.toString());
+    await prefs.remove('dailyCountBets');
 
-    await prefs.setString(
-        'dailyBonus',
-        jsonEncode([
-          firstBonus.toString(),
-          currentBonusIndex,
-          DateTime.now().toString()
-        ]));
+    await Future.delayed(const Duration(seconds: 1));
 
     // ignore: use_build_context_synchronously
     alertDialogSuccess(
         context: context,
         barrierDismissible: false,
         title: 'Поздравляем',
-        confirmBtnText: 'Спасибо!',
+        confirmBtnText: 'Спасибо',
         text:
-            'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(currentBonus)}!',
+            'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(resultBonus)}!',
         onConfirmBtnTap: () {
           context.beamBack();
         });
-
-    showLoading(false);
   }
 }

@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 

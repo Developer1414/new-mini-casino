@@ -19,8 +19,12 @@ class ProfileController extends ChangeNotifier {
         .get()
         .then((value) {
       profileModel = ProfileModel(
-          nickname: value.get('name'),
-          totalGame: int.parse(value.get('totalGames').toString()));
+        nickname: value.get('name'),
+        totalGame: int.parse(value.get('totalGames').toString()),
+        level: value.data()!.containsKey('level')
+            ? double.parse(value.get('level').toString())
+            : 1.0,
+      );
       return profileModel;
     });
   }

@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -31,7 +31,7 @@ class PremiumInfo extends StatelessWidget {
                     resizeToAvoidBottomInset: false,
                     bottomNavigationBar: AccountController.isPremium
                         ? Container(
-                            height: 100.0,
+                            height: 92.0,
                             color: Theme.of(context).scaffoldBackgroundColor,
                             child: Center(
                               child: Padding(
@@ -39,18 +39,37 @@ class PremiumInfo extends StatelessWidget {
                                 child: FutureBuilder(
                                     future: NTP.now(),
                                     builder: (context, snapshot) {
-                                      return Text(
-                                        'Подписка активна до ${DateFormat.yMMMMd(ui.Platform.localeName).format(AccountController.expiredSubscriptionDate)}\nОсталось дней: ${AccountController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays}',
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .displayMedium!
-                                            .copyWith(
-                                                color: Theme.of(context)
-                                                    .textTheme
-                                                    .displayMedium!
-                                                    .color!
-                                                    .withOpacity(0.8)),
+                                      return Column(
+                                        children: [
+                                          AutoSizeText(
+                                            'Подписка активна до ${DateFormat.yMMMMd(ui.Platform.localeName).format(AccountController.expiredSubscriptionDate)}',
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displayMedium!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .displayMedium!
+                                                        .color!
+                                                        .withOpacity(0.8)),
+                                          ),
+                                          AutoSizeText(
+                                            'Осталось дней: ${AccountController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays}',
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .displayMedium!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .displayMedium!
+                                                        .color!
+                                                        .withOpacity(0.8)),
+                                          ),
+                                        ],
                                       );
                                     }),
                               ),
@@ -58,10 +77,13 @@ class PremiumInfo extends StatelessWidget {
                           )
                         : Container(
                             color: Theme.of(context).scaffoldBackgroundColor,
-                            height: 157.0,
+                            height: 167.0,
                             child: Padding(
                               padding: const EdgeInsets.only(
-                                  bottom: 15.0, left: 15.0, right: 15.0),
+                                  bottom: 15.0,
+                                  left: 15.0,
+                                  right: 15.0,
+                                  top: 10.0),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -78,7 +100,8 @@ class PremiumInfo extends StatelessWidget {
                                             elevation: 5,
                                             backgroundColor: paymentController
                                                     .isYearSubscription
-                                                ? Colors.green
+                                                ? const Color.fromARGB(
+                                                    255, 164, 231, 88)
                                                 : Theme.of(context).cardColor,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.only(
@@ -103,6 +126,13 @@ class PremiumInfo extends StatelessWidget {
                                                       .withOpacity(0.4),
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.w700,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.4),
+                                                  blurRadius: 15.0,
+                                                )
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -119,7 +149,8 @@ class PremiumInfo extends StatelessWidget {
                                             elevation: 5,
                                             backgroundColor: !paymentController
                                                     .isYearSubscription
-                                                ? Colors.green
+                                                ? const Color.fromARGB(
+                                                    255, 164, 231, 88)
                                                 : Theme.of(context).cardColor,
                                             shape: const RoundedRectangleBorder(
                                                 borderRadius: BorderRadius.only(
@@ -144,6 +175,13 @@ class PremiumInfo extends StatelessWidget {
                                                       .withOpacity(0.4),
                                               fontSize: 20.0,
                                               fontWeight: FontWeight.w700,
+                                              shadows: [
+                                                Shadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.4),
+                                                  blurRadius: 15.0,
+                                                )
+                                              ],
                                             ),
                                           ),
                                         ),
@@ -163,7 +201,8 @@ class PremiumInfo extends StatelessWidget {
                                         },
                                         style: ElevatedButton.styleFrom(
                                           elevation: 5,
-                                          backgroundColor: Colors.green,
+                                          backgroundColor: const Color.fromARGB(
+                                              255, 164, 231, 88),
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
                                                   BorderRadius.circular(15.0)),
@@ -175,6 +214,13 @@ class PremiumInfo extends StatelessWidget {
                                             color: Colors.white,
                                             fontSize: 25.0,
                                             fontWeight: FontWeight.w700,
+                                            shadows: [
+                                              Shadow(
+                                                color: Colors.black
+                                                    .withOpacity(0.4),
+                                                blurRadius: 15.0,
+                                              )
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -253,7 +299,8 @@ class PremiumInfo extends StatelessWidget {
                                           text: 'Premium',
                                           style: GoogleFonts.roboto(
                                               textStyle: const TextStyle(
-                                            color: Colors.redAccent,
+                                            color: Color.fromARGB(
+                                                255, 164, 231, 88),
                                             fontSize: 40,
                                             fontWeight: FontWeight.w900,
                                           ))),
@@ -282,6 +329,12 @@ class PremiumInfo extends StatelessWidget {
                               decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      color: Theme.of(context)
+                                          .buttonTheme
+                                          .colorScheme!
+                                          .background,
+                                      width: 3.0),
                                   boxShadow: [
                                     BoxShadow(
                                         color: Colors.black.withOpacity(0.3),
@@ -291,54 +344,54 @@ class PremiumInfo extends StatelessWidget {
                                   ]),
                               child: Padding(
                                 padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Stack(
+                                  alignment: AlignmentDirectional.topEnd,
                                   children: [
-                                    Row(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text('Бесплатный план',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium),
-                                        !AccountController.isPremium
-                                            ? Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 10.0),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.blueGrey,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.blueGrey
-                                                              .withOpacity(0.5),
-                                                          blurRadius: 3.0,
-                                                          spreadRadius: 0.5)
-                                                    ]),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: AutoSizeText(
-                                                    'Текущий',
-                                                    textAlign: TextAlign.center,
-                                                    style: GoogleFonts.roboto(
-                                                        color: Colors.white,
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container()
+                                        const SizedBox(height: 5.0),
+                                        Text(
+                                            '• Есть реклама\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 5% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
                                       ],
                                     ),
-                                    const SizedBox(height: 5.0),
-                                    Text(
-                                        '• Есть реклама\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 10% от ставки\n• Бесплатный бонус от ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100)} до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
+                                    AccountController.isPremium
+                                        ? Container()
+                                        : Container(
+                                            width: 80.0,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10.0,
+                                                horizontal: 10.0),
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .buttonTheme
+                                                    .colorScheme!
+                                                    .background,
+                                                borderRadius: const BorderRadius
+                                                    .only(
+                                                    bottomLeft:
+                                                        Radius.circular(15.0),
+                                                    topRight:
+                                                        Radius.circular(12.0))),
+                                            child: Center(
+                                              child: AutoSizeText(
+                                                'Текущий',
+                                                maxLines: 1,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium!
+                                                    .copyWith(fontSize: 12.0),
+                                              ),
+                                            ),
+                                          ),
                                   ],
                                 ),
                               ),
@@ -349,6 +402,10 @@ class PremiumInfo extends StatelessWidget {
                               decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 164, 231, 88),
+                                      width: 3.0),
                                   boxShadow: [
                                     BoxShadow(
                                         color: Colors.black.withOpacity(0.3),
@@ -358,56 +415,57 @@ class PremiumInfo extends StatelessWidget {
                                   ]),
                               child: Padding(
                                 padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                child: Stack(
+                                  alignment: AlignmentDirectional.topEnd,
                                   children: [
-                                    Row(
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text('Premium план',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium!
                                                 .copyWith(
-                                                    color: Colors.redAccent)),
-                                        AccountController.isPremium
-                                            ? Container(
-                                                margin: const EdgeInsets.only(
-                                                    left: 10.0),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.blueGrey,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            8.0),
-                                                    boxShadow: [
-                                                      BoxShadow(
-                                                          color: Colors.blueGrey
-                                                              .withOpacity(0.5),
-                                                          blurRadius: 3.0,
-                                                          spreadRadius: 0.5)
-                                                    ]),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: AutoSizeText(
-                                                    'Текущий',
-                                                    textAlign: TextAlign.center,
-                                                    style: GoogleFonts.roboto(
-                                                        color: Colors.white,
-                                                        fontSize: 12.0,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                ),
-                                              )
-                                            : Container()
+                                                    color: const Color.fromARGB(
+                                                        255, 164, 231, 88))),
+                                        const SizedBox(height: 5.0),
+                                        Text(
+                                            '• Нет рекламы\n• Нет налогов\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• -5% на погашение кредита\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
                                       ],
                                     ),
-                                    const SizedBox(height: 5.0),
-                                    Text(
-                                        '• Нет рекламы\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• Погашение кредита на 5% больше\n• Ежедневные бонусы увеличены в 3 раза.\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Каждая ставка облагается налогом в размере 5% от ставки\n• Бесплатный бонус от ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(500)} до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
+                                    !AccountController.isPremium
+                                        ? Container()
+                                        : Container(
+                                            width: 80.0,
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 10.0,
+                                                horizontal: 10.0),
+                                            decoration: BoxDecoration(
+                                                color: Theme.of(context)
+                                                    .buttonTheme
+                                                    .colorScheme!
+                                                    .background,
+                                                borderRadius: const BorderRadius
+                                                    .only(
+                                                    bottomLeft:
+                                                        Radius.circular(15.0),
+                                                    topRight:
+                                                        Radius.circular(12.0))),
+                                            child: Center(
+                                              child: AutoSizeText(
+                                                'Текущий',
+                                                maxLines: 1,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium!
+                                                    .copyWith(fontSize: 12.0),
+                                              ),
+                                            ),
+                                          ),
                                   ],
                                 ),
                               ),

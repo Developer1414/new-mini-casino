@@ -80,18 +80,6 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  if (prefs.containsKey('dailyBonus')) {
-    var data = jsonDecode(prefs.getString('dailyBonus').toString());
-
-    if ((data as List).length < 3) {
-      prefs.remove('dailyBonus');
-    }
-  }
-
-  //prefs.remove('notificationsId');
-
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );

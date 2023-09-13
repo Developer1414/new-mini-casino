@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:ntp/ntp.dart';

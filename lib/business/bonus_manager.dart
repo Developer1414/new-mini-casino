@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
 
 class BonusManager extends ChangeNotifier {

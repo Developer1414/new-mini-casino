@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/button_model.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 

@@ -9,13 +9,14 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'dart:io' as ui;
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 
 class LeaderBoard extends StatefulWidget {
   const LeaderBoard({super.key});
 
-  static final List<String> items = ['Баланс', 'Кол. игр'];
+  static final List<String> items = ['Уровень', 'Баланс', 'Кол. игр'];
 
   static double scrollOffset = 0.0;
 
@@ -33,35 +34,75 @@ class _LeaderBoardState extends State<LeaderBoard> {
 
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: LeaderBoard.selectedValue == LeaderBoard.items.first
-          ? Container(
-              height: 60.0,
-              margin: const EdgeInsets.only(top: 15.0),
-              decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black87.withOpacity(0.4), blurRadius: 5.0)
-                  ]),
-              child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('users')
-                      .where('balance',
-                          isGreaterThan: context.read<Balance>().currentBalance)
-                      .snapshots(),
-                  builder: (context, snapshot) {
-                    return Center(
-                      child: AutoSizeText(
-                        'Вы на ${(snapshot.data?.size ?? 0) + 1} месте',
-                        style: Theme.of(context)
-                            .appBarTheme
-                            .titleTextStyle!
-                            .copyWith(fontSize: 23.0),
+      bottomNavigationBar: Container(
+        height: 60.0,
+        margin: const EdgeInsets.only(top: 15.0),
+        decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            boxShadow: [
+              BoxShadow(color: Colors.black87.withOpacity(0.4), blurRadius: 5.0)
+            ]),
+        child: StreamBuilder(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .where(
+                  LeaderBoard.selectedValue == LeaderBoard.items.first
+                      ? 'level'
+                      : LeaderBoard.selectedValue == LeaderBoard.items[1]
+                          ? 'balance'
+                          : 'totalGames',
+                  isGreaterThan:
+                      LeaderBoard.selectedValue == LeaderBoard.items.first
+                          ? ProfileController.profileModel.level
+                          : LeaderBoard.selectedValue == LeaderBoard.items[1]
+                              ? context.read<Balance>().currentBalance
+                              : ProfileController.profileModel.totalGame,
+
+                  /*'level',
+                          isGreaterThan: context.read<Balance>().currentBalance*/
+                )
+                .snapshots(),
+            builder: (context, snapshot) {
+              return Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AutoSizeText(
+                      'Вы на ${(snapshot.data?.size ?? 0) < 3 ? (snapshot.data?.size ?? 0) + 1 : (snapshot.data?.size ?? 0) < 13 ? ((snapshot.data?.size ?? 0) + 1) - ((snapshot.data?.size ?? 0) - ((snapshot.data?.size ?? 0) - 3)) : ((snapshot.data?.size ?? 0) + 1) - ((snapshot.data?.size ?? 0) - ((snapshot.data?.size ?? 0) - 13))} месте',
+                      style: Theme.of(context)
+                          .appBarTheme
+                          .titleTextStyle!
+                          .copyWith(fontSize: 23.0),
+                    ),
+                    const SizedBox(width: 10.0),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: (snapshot.data?.size ?? 0) < 3
+                            ? Colors.lightGreen
+                            : (snapshot.data?.size ?? 0) < 13
+                                ? Colors.blue
+                                : (snapshot.data?.size ?? 0) < 100
+                                    ? Colors.deepPurple
+                                    : Colors.transparent,
+                        borderRadius: BorderRadius.circular(10.0),
                       ),
-                    );
-                  }),
-            )
-          : Container(height: 15.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: AutoSizeText(
+                          'ТОП-${(snapshot.data?.size ?? 0) < 3 ? 3 : (snapshot.data?.size ?? 0) < 13 ? 10 : (snapshot.data?.size ?? 0) < 100 ? 100 : 1000}',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.roboto(
+                              color: Colors.white,
+                              fontSize: 12.0,
+                              fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              );
+            }),
+      ),
       appBar: AppBar(
         toolbarHeight: 76.0,
         elevation: 0,
@@ -159,10 +200,12 @@ class _LeaderBoardState extends State<LeaderBoard> {
               .collection('users')
               .orderBy(
                   LeaderBoard.selectedValue == LeaderBoard.items.first
-                      ? 'balance'
-                      : 'totalGames',
+                      ? 'level'
+                      : LeaderBoard.selectedValue == LeaderBoard.items[1]
+                          ? 'balance'
+                          : 'totalGames',
                   descending: true)
-              .limit(100)
+              .limit(113)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -181,177 +224,279 @@ class _LeaderBoardState extends State<LeaderBoard> {
     return ListView.separated(
         controller: controller,
         itemBuilder: (context, index) {
-          double balance = double.parse(
-              snapshot.data?.docs[index].get('balance').toString() ?? '0');
+          double balance = 0.0;
 
-          int totalGames = int.parse(
-              snapshot.data?.docs[index].get('totalGames').toString() ?? '0');
+          int totalGames = 0;
+
+          int level = 1;
 
           int pinId = -1;
+
+          if (LeaderBoard.selectedValue == LeaderBoard.items.first) {
+            if (snapshot.data!.docs[index].data().containsKey('level')) {
+              level = double.parse(
+                      snapshot.data?.docs[index].get('level').toString() ?? '1')
+                  .floor();
+            }
+          } else if (LeaderBoard.selectedValue == LeaderBoard.items[1]) {
+            balance = double.parse(
+                snapshot.data?.docs[index].get('balance').toString() ?? '0');
+          } else if (LeaderBoard.selectedValue == LeaderBoard.items[2]) {
+            totalGames = int.parse(
+                snapshot.data?.docs[index].get('totalGames').toString() ?? '0');
+          }
 
           if (snapshot.data!.docs[index].data().containsKey('selectedpins')) {
             pinId = int.parse(
                 snapshot.data!.docs[index].get('selectedpins').toString());
           }
 
-          return GestureDetector(
-            onTap: () {
-              LeaderBoard.scrollOffset = controller.offset;
-              context.beamToNamed(
-                '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$totalGames/$balance',
-              );
-            },
-            child: Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(left: 15.0, right: 15.0),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: Theme.of(context).cardColor,
-                  border:
-                      (index + 1) == 1 || (index + 1) == 2 || (index + 1) == 3
-                          ? Border.all(color: Colors.orangeAccent, width: 2.0)
-                          : snapshot.data?.docs[index].get('uid') ==
-                                  FirebaseAuth.instance.currentUser!.uid
-                              ? Border.all(color: Colors.redAccent, width: 2.0)
-                              : null,
-                  boxShadow: [
-                    BoxShadow(
-                        color: (index + 1) == 1 ||
-                                (index + 1) == 2 ||
-                                (index + 1) == 3
-                            ? Colors.orangeAccent.withOpacity(0.5)
-                            : snapshot.data?.docs[index].get('uid') ==
-                                    FirebaseAuth.instance.currentUser!.uid
-                                ? Colors.redAccent.withOpacity(0.5)
-                                : Colors.black.withOpacity(0.3),
-                        blurRadius: 10.0)
-                  ]),
-              child: Stack(
-                alignment: AlignmentDirectional.bottomEnd,
+          return Container(
+            padding: EdgeInsets.only(
+              top: 15.0,
+              bottom: index == 2 || index == 12 ? 15.0 : 0.0,
+            ),
+            margin:
+                EdgeInsets.only(bottom: index == 2 || index == 12 ? 15.0 : 0.0),
+            decoration: BoxDecoration(
+                color: index < 3
+                    ? Colors.lightGreen
+                    : index < 13
+                        ? Colors.blue.withOpacity(1.0 - (index / 100))
+                        : index < 100
+                            ? Colors.deepPurple.withOpacity(1.0 - (index / 100))
+                            : Colors.transparent,
+                borderRadius: BorderRadius.only(
+                  topLeft: index == 0 || index == 3 || index == 13
+                      ? const Radius.circular(15.0)
+                      : const Radius.circular(0.0),
+                  topRight: index == 0 || index == 3 || index == 13
+                      ? const Radius.circular(15.0)
+                      : const Radius.circular(0.0),
+                  bottomLeft: index == 2 || index == 12
+                      ? const Radius.circular(15.0)
+                      : const Radius.circular(0.0),
+                  bottomRight: index == 2 || index == 12
+                      ? const Radius.circular(15.0)
+                      : const Radius.circular(0.0),
+                )),
+            child: GestureDetector(
+              onTap: () {
+                LeaderBoard.scrollOffset = controller.offset;
+                context.beamToNamed(
+                  '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$totalGames/$balance',
+                );
+              },
+              child: Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  AutoSizeText(
-                                      snapshot.data?.docs[index].get('name') ??
-                                          '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(fontSize: 23.0)),
-                                  const SizedBox(width: 5.0),
-                                  pinId != -1
-                                      ? Image(
-                                          image: AssetImage(
-                                              'assets/pins/$pinId.png'),
-                                          width: 25.0,
-                                          height: 25.0)
-                                      : Container(),
-                                  const SizedBox(width: 6.0),
-                                  isShowRaiting
-                                      ? snapshot.data?.docs[index].get('uid') !=
-                                              FirebaseAuth
-                                                  .instance.currentUser!.uid
-                                          ? Container()
-                                          : Container(
-                                              margin: const EdgeInsets.only(
-                                                  right: 10.0),
-                                              decoration: BoxDecoration(
-                                                  color: Colors.redAccent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          12.0),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                        color: Colors.redAccent
-                                                            .withOpacity(0.5),
-                                                        blurRadius: 8.0,
-                                                        spreadRadius: 1.5)
-                                                  ]),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                child: AutoSizeText(
-                                                  'Вы',
-                                                  textAlign: TextAlign.center,
-                                                  style: GoogleFonts.roboto(
-                                                      color: Colors.white,
-                                                      fontSize: 12.0,
-                                                      fontWeight:
-                                                          FontWeight.w900),
-                                                ),
+                  index == 0 || index == 3 || index == 13
+                      ? Padding(
+                          padding:
+                              const EdgeInsets.only(left: 15.0, bottom: 15.0),
+                          child: AutoSizeText(
+                            'ТОП-${index == 0 ? 3 : index == 3 ? 10 : 100}',
+                            maxLines: 1,
+                            style: Theme.of(context)
+                                .appBarTheme
+                                .titleTextStyle!
+                                .copyWith(fontSize: 25.0),
+                          ),
+                        )
+                      : Container(),
+                  Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        color: Theme.of(context).cardColor,
+                        border: snapshot.data?.docs[index].get('uid') ==
+                                FirebaseAuth.instance.currentUser!.uid
+                            ? Border.all(color: Colors.white, width: 2.0)
+                            : null,
+                        boxShadow: [
+                          BoxShadow(
+                              color: snapshot.data?.docs[index].get('uid') ==
+                                      FirebaseAuth.instance.currentUser!.uid
+                                  ? Colors.white.withOpacity(0.5)
+                                  : Colors.black.withOpacity(0.3),
+                              blurRadius: 10.0)
+                        ]),
+                    child: Stack(
+                      alignment: AlignmentDirectional.topEnd,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        AutoSizeText(
+                                            snapshot.data?.docs[index]
+                                                    .get('name') ??
+                                                '',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(fontSize: 23.0)),
+                                        const SizedBox(width: 5.0),
+                                        pinId != -1
+                                            ? Image(
+                                                image: AssetImage(
+                                                    'assets/pins/$pinId.png'),
+                                                width: 25.0,
+                                                height: 25.0)
+                                            : Container(),
+                                        const SizedBox(width: 6.0),
+                                        isShowRaiting
+                                            ? snapshot.data?.docs[index]
+                                                        .get('uid') !=
+                                                    FirebaseAuth.instance
+                                                        .currentUser!.uid
+                                                ? Container()
+                                                : Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            right: 10.0),
+                                                    decoration: BoxDecoration(
+                                                        color: Colors.redAccent,
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(12.0),
+                                                        boxShadow: [
+                                                          BoxShadow(
+                                                              color: Colors
+                                                                  .redAccent
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                              blurRadius: 8.0,
+                                                              spreadRadius: 1.5)
+                                                        ]),
+                                                    child: Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              8.0),
+                                                      child: AutoSizeText(
+                                                        'Вы',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style:
+                                                            GoogleFonts.roboto(
+                                                                color: Colors
+                                                                    .white,
+                                                                fontSize: 12.0,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w900),
+                                                      ),
+                                                    ),
+                                                  )
+                                            : Container(),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5.0),
+                                    LeaderBoard.selectedValue ==
+                                            LeaderBoard.items.first
+                                        ? Row(
+                                            children: [
+                                              const FaIcon(
+                                                FontAwesomeIcons.gamepad,
+                                                color: Colors.blueGrey,
+                                                size: 18.0,
                                               ),
-                                            )
-                                      : Container(),
-                                ],
-                              ),
-                              const SizedBox(height: 5.0),
-                              Row(
-                                children: [
-                                  const FaIcon(
-                                    FontAwesomeIcons.sackDollar,
-                                    color: Colors.green,
-                                    size: 18.0,
+                                              const SizedBox(width: 5.0),
+                                              AutoSizeText('$level LVL',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium),
+                                            ],
+                                          )
+                                        : LeaderBoard.selectedValue ==
+                                                LeaderBoard.items[1]
+                                            ? Row(
+                                                children: [
+                                                  const FaIcon(
+                                                    FontAwesomeIcons.sackDollar,
+                                                    color: Colors.green,
+                                                    size: 18.0,
+                                                  ),
+                                                  const SizedBox(width: 5.0),
+                                                  SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width /
+                                                            1.5,
+                                                    child: AutoSizeText(
+                                                        'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance)}',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium!
+                                                            .copyWith(
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis)),
+                                                  ),
+                                                ],
+                                              )
+                                            : Row(
+                                                children: [
+                                                  const FaIcon(
+                                                    FontAwesomeIcons.gamepad,
+                                                    color: Colors.blueGrey,
+                                                    size: 18.0,
+                                                  ),
+                                                  const SizedBox(width: 5.0),
+                                                  AutoSizeText(
+                                                      'Игр: ${NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium),
+                                                ],
+                                              )
+                                  ],
+                                )),
+                          ],
+                        ),
+                        !isShowRaiting
+                            ? Container()
+                            : Container(
+                                width: 50.0,
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 10.0),
+                                decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .buttonTheme
+                                        .colorScheme!
+                                        .background,
+                                    borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(15.0),
+                                        topRight: Radius.circular(12.0))),
+                                child: Center(
+                                  child: AutoSizeText(
+                                    '#${index < 3 ? index + 1 : index < 13 ? (index + 1) - (index - (index - 3)) : (index + 1) - (index - (index - 13))}',
+                                    maxLines: 1,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium!
+                                        .copyWith(fontSize: 18.0),
                                   ),
-                                  const SizedBox(width: 5.0),
-                                  SizedBox(
-                                    width:
-                                        MediaQuery.of(context).size.width / 1.5,
-                                    child: AutoSizeText(
-                                        'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance)}',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(
-                                                overflow:
-                                                    TextOverflow.ellipsis)),
-                                  ),
-                                ],
+                                ),
                               ),
-                              const SizedBox(height: 5.0),
-                              Row(
-                                children: [
-                                  const FaIcon(
-                                    FontAwesomeIcons.gamepad,
-                                    color: Colors.blueGrey,
-                                    size: 18.0,
-                                  ),
-                                  const SizedBox(width: 5.0),
-                                  AutoSizeText(
-                                      'Всего игр: ${totalGames < 1000 ? totalGames : NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                ],
-                              ),
-                            ],
-                          )),
-                      !isShowRaiting
-                          ? Container()
-                          : Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 15.0, top: 15.0),
-                              child: AutoSizeText(
-                                '#${(index + 1)}',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
           );
         },
-        separatorBuilder: (contex, index) => const SizedBox(height: 15.0),
+        separatorBuilder: (contex, index) =>
+            SizedBox(height: /* index == 0 || index == 1 ? 0.0 : 15.0*/ 0.0),
         itemCount: snapshot.data?.docs.length ?? 0);
   }
 }

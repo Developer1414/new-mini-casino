@@ -1,41 +1,58 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:circle_progress_bar/circle_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/models/profile_model.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
-  static String userNickname = '';
-
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
+  late ProfileModel profileModel;
+
+  bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
+    loadUserInfo();
+  }
 
-    if (Profile.userNickname.isEmpty) {
-      ProfileController.getUserProfile()
-          .then((value) => Profile.userNickname = value.nickname);
-    }
+  Future loadUserInfo() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await ProfileController.getUserProfile().then((value) {
+      profileModel = value;
+    });
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final balance = Provider.of<Balance>(context, listen: false);
+
     return Consumer<AccountController>(
       builder: (context, accountController, _) {
-        return accountController.isLoading
+        return accountController.isLoading || isLoading
             ? loading(context: context)
             : Scaffold(
                 appBar: AppBar(
@@ -56,9 +73,15 @@ class _ProfileState extends State<Profile> {
                           size: Theme.of(context).appBarTheme.iconTheme!.size,
                         )),
                   ),
-                  title: AutoSizeText(
-                    'Профиль',
-                    style: Theme.of(context).appBarTheme.titleTextStyle,
+                  title: FutureBuilder(
+                    future: ProfileController.getUserProfile(),
+                    builder: (context, snapshot) {
+                      return AutoSizeText(
+                        profileModel.nickname,
+                        maxLines: 1,
+                        style: Theme.of(context).appBarTheme.titleTextStyle,
+                      );
+                    },
                   ),
                   actions: [
                     /*Consumer<DarkThemeProvider>(
@@ -122,228 +145,198 @@ class _ProfileState extends State<Profile> {
                 ),
                 body: Column(
                   children: [
-                    Container(
-                      width: double.infinity,
-                      height: 250.0,
-                      margin: const EdgeInsets.only(
-                          left: 15.0, right: 15.0, bottom: 15.0),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade900,
-                          borderRadius: BorderRadius.circular(15.0),
-                          gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                Colors.grey.shade900,
-                                Colors.grey.shade900.withOpacity(0.8)
-                              ]),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 10.0)
-                          ]),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(width: 15.0),
+                        Container(
+                          height: 180.0,
+                          decoration: ShapeDecoration(
+                            shape: const CircleBorder(),
+                            color: Theme.of(context).cardColor,
+                          ),
+                          child: CircleProgressBar(
+                            foregroundColor: Colors.green,
+                            backgroundColor: Theme.of(context)
+                                .buttonTheme
+                                .colorScheme!
+                                .background,
+                            strokeWidth: 10.0,
+                            value: profileModel.level -
+                                profileModel.level.truncate(),
+                            child: Center(
+                                child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 20.0,
-                                              right: 12.0,
-                                              top: 20.0),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100.0),
-                                            child: const Image(
-                                                image: AssetImage(
-                                                    'assets/other_images/logo.png'),
-                                                width: 45.0,
-                                                height: 45.0),
-                                          )),
-                                      Transform.translate(
-                                        offset: const Offset(0, 10),
-                                        child: AutoSizeText(
-                                          'MC Bank',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 30.0,
-                                              fontWeight: FontWeight.w900),
-                                        ),
-                                      ),
-                                    ],
+                                  AutoSizeText(
+                                    profileModel.level
+                                        .floor()
+                                        .toStringAsFixed(0),
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 40.0,
+                                        fontWeight: FontWeight.w800),
                                   ),
-                                  const Padding(
-                                    padding: EdgeInsets.only(right: 20.0),
-                                    child: Icon(Icons.wifi_rounded,
-                                        color: Colors.white, size: 35.0),
-                                  )
+                                  AutoSizeText('LVL',
+                                      maxLines: 1,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              fontSize: 12.0,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color!
+                                                  .withOpacity(0.7))),
                                 ],
                               ),
-                            ],
+                            )),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        ),
+                        const SizedBox(width: 15.0),
+                        Expanded(
+                          child: Column(
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20.0, right: 20.0, top: 20.0),
-                                child: Consumer<Balance>(
-                                    builder: (ctx, balance, _) {
-                                  return AutoSizeText(
-                                    'Баланс: ${balance.currentBalanceString}',
-                                    style: GoogleFonts.roboto(
-                                        color: Colors.grey.shade300,
-                                        fontSize: 20.0,
-                                        fontWeight: FontWeight.w800),
-                                  );
-                                }),
-                              ),
-                              const SizedBox(height: 5.0),
-                              Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 20.0, right: 20.0),
-                                  child: FutureBuilder(
-                                    future: ProfileController.getUserProfile(),
-                                    builder: (context, snapshot) {
-                                      return AutoSizeText(
-                                        'Игр: ${snapshot.data?.totalGame.toString() ?? '0'}',
-                                        style: GoogleFonts.roboto(
-                                            color: Colors.grey.shade300,
-                                            fontSize: 20.0,
-                                            fontWeight: FontWeight.w700),
-                                      );
-                                    },
-                                  )),
+                              importantUserInfo(
+                                  content: balance.currentBalanceString,
+                                  title: 'Баланс'),
+                              const SizedBox(height: 15.0),
+                              importantUserInfo(
+                                  content: NumberFormat.compact(locale: 'ru_RU')
+                                      .format(profileModel.totalGame),
+                                  title: 'Игр'),
                             ],
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20.0, right: 20.0, bottom: 20.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Profile.userNickname.isEmpty
-                                    ? FutureBuilder(
-                                        future:
-                                            ProfileController.getUserProfile(),
-                                        builder: (context, snapshot) {
-                                          return AutoSizeText(
-                                            snapshot.data?.nickname ?? '',
-                                            style: GoogleFonts.shareTechMono(
-                                                color: Colors.white,
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.w700),
-                                          );
-                                        },
-                                      )
-                                    : AutoSizeText(
-                                        Profile.userNickname,
-                                        style: GoogleFonts.shareTechMono(
-                                            color: Colors.white,
-                                            fontSize: 20.0,
-                                            fontWeight: FontWeight.w700),
-                                      ),
-                                AutoSizeText(
-                                  'VI\$A',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 30.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    buttonModel(
-                        buttonName: 'Хранилище',
-                        uri: '/money-storage',
-                        color: Colors.blue,
-                        icon: FontAwesomeIcons.coins),
                     const SizedBox(height: 15.0),
-                    buttonModel(
-                        buttonName: 'Имущество',
-                        uri: '/store-items',
-                        onPressed: () {
-                          StoreManager.showOnlyBuyedItems = true;
-                        },
-                        color: Colors.pink,
-                        icon: FontAwesomeIcons.car),
+                    Container(
+                      width: double.infinity,
+                      height: 2.0,
+                      margin: const EdgeInsets.symmetric(horizontal: 15.0),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Theme.of(context).cardColor,
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 10.0)
+                          ]),
+                    ),
+                    const SizedBox(height: 15.0),
+                    Padding(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: profileButton(
+                                icon: FontAwesomeIcons.coins,
+                                text: 'Хранилище',
+                                onPressed: () => Beamer.of(context)
+                                    .beamToNamed('/money-storage'),
+                              ),
+                            ),
+                            const SizedBox(width: 15.0),
+                            Expanded(
+                              child: profileButton(
+                                  icon: FontAwesomeIcons.car,
+                                  text: 'Имущество',
+                                  onPressed: () {
+                                    StoreManager.showOnlyBuyedItems = true;
+                                    Beamer.of(context)
+                                        .beamToNamed('/store-items');
+                                  }),
+                            ),
+                          ],
+                        )),
                   ],
-                ),
-              );
+                ));
       },
     );
   }
 
-  Widget buttonModel(
-      {required String buttonName,
-      required String uri,
-      required Color color,
-      Function()? onPressed,
-      required IconData icon}) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-      child: SizedBox(
-        height: 60.0,
-        child: ElevatedButton(
-          onPressed: () {
-            onPressed?.call();
-            context.beamToNamed(uri);
-          },
-          style: ElevatedButton.styleFrom(
-            elevation: 5,
-            shadowColor: color.withOpacity(0.8),
-            backgroundColor: color,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15.0),
-            ),
+  Widget importantUserInfo({required String content, required String title}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      margin: const EdgeInsets.only(right: 15.0),
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          color: Theme.of(context).cardColor,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
+          ]),
+      child: Column(
+        children: [
+          AutoSizeText(
+            content,
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            style: Theme.of(context)
+                .appBarTheme
+                .titleTextStyle!
+                .copyWith(fontSize: 25.0),
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 10.0, right: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FaIcon(
-                  icon,
-                  color: Colors.white,
-                  size: 22.0,
-                ),
-                const SizedBox(width: 10.0),
-                AutoSizeText(
-                  buttonName,
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.roboto(
+          const SizedBox(height: 5.0),
+          AutoSizeText(title,
+              maxLines: 1,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  fontSize: 12.0,
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .color!
+                      .withOpacity(0.7))),
+        ],
+      ),
+    );
+  }
+
+  Widget profileButton(
+      {required IconData icon,
+      required String text,
+      required Function() onPressed}) {
+    return SizedBox(
+      height: 112.0,
+      child: ElevatedButton(
+        onPressed: () {
+          onPressed.call();
+        },
+        style: ElevatedButton.styleFrom(
+          elevation: 5,
+          backgroundColor:
+              Theme.of(context).buttonTheme.colorScheme!.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15.0),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(18.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(
+                icon,
+                color: Colors.white,
+                size: 35.0,
+              ),
+              const SizedBox(height: 10.0),
+              AutoSizeText(
+                text,
+                maxLines: 1,
+                style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: 22.0,
-                    letterSpacing: 0.5,
-                    fontWeight: FontWeight.w800,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withOpacity(0.3),
-                        blurRadius: 20.0,
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w800),
+              )
+            ],
           ),
         ),
       ),

@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
-import 'package:new_mini_casino/models/text_field_model.dart';
+import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -447,7 +447,7 @@ class _StairsState extends State<Stairs> {
                                                         child: Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .only(
+                                                                    .only(
                                                                     left: 5.0,
                                                                     right: 5.0),
                                                             child:

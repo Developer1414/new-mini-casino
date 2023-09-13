@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -59,7 +59,7 @@ class LoanMoneysManager extends ChangeNotifier {
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Ваш максимально допустимый кредит - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(10000 * (ProfileController.profileModel.totalGame / 1000).round())}',
+            'Ваш максимально допустимый кредит - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(maxLoan)}',
       );
 
       return;

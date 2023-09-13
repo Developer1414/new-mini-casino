@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 
 class AutoclickerSecure extends ChangeNotifier {
   static bool isCanPlay = true;

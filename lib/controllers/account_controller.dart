@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,7 +12,7 @@ import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
@@ -121,6 +122,10 @@ class AccountController extends ChangeNotifier {
         }
       });
     } on FirebaseAuthException catch (e) {
+      isLoading = false;
+      notifyListeners();
+
+      // ignore: use_build_context_synchronously
       AccountExceptionController.showException(context: context, code: e.code);
     }
 
@@ -157,6 +162,18 @@ class AccountController extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  Future upLevel() async {
+    double value = ProfileController.profileModel.level +
+        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 5);
+
+    ProfileController.profileModel.level = value;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'level': value});
   }
 
   Future setDataToDatabase(String name, String signedCode) async {
@@ -240,6 +257,9 @@ class AccountController extends ChangeNotifier {
       await sendLinkToEmailToVerifyAccount(
           name: name, referalCode: referalCode);
     } on FirebaseAuthException catch (e) {
+      isLoading = false;
+      notifyListeners();
+
       // ignore: use_build_context_synchronously
       AccountExceptionController.showException(context: context, code: e.code);
     }
@@ -313,16 +333,6 @@ class AccountController extends ChangeNotifier {
             await ProfileController.getUserProfile();
 
             newScreen = const AllGames();
-
-            /* await NotificationController().getNotifications().then((value) {
-              if (value) {
-                //Beamer.of(context).beamToNamed('/notifications');
-                newScreen = const AllGames();
-              } else {
-                //Beamer.of(context).beamToNamed('/notifications');
-                newScreen = const AllGames();
-              }
-            });*/
           }
         });
 

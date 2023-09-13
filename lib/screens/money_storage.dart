@@ -8,8 +8,8 @@ import 'dart:io' as ui;
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
-import 'package:new_mini_casino/models/loading.dart';
-import 'package:new_mini_casino/models/text_field_model.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 
 class MoneyStorage extends StatelessWidget {
@@ -77,88 +77,55 @@ class MoneyStorage extends StatelessWidget {
               ),
               body: Column(
                 children: [
-                  Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, bottom: 15.0),
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade900,
-                        borderRadius: BorderRadius.circular(15.0),
-                        gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              Colors.grey.shade900,
-                              Colors.grey.shade900.withOpacity(0.8)
-                            ]),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.5),
-                              blurRadius: 10.0)
-                        ]),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 20.0, right: 12.0, top: 20.0),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(100.0),
-                                  child: const Image(
-                                      image: AssetImage(
-                                          'assets/other_images/logo.png'),
-                                      width: 45.0,
-                                      height: 45.0),
-                                )),
-                            Transform.translate(
-                              offset: const Offset(0, 10),
-                              child: AutoSizeText(
-                                'MC Bank',
-                                maxLines: 1,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 30.0,
-                                    fontWeight: FontWeight.w900),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                            padding: const EdgeInsets.all(20.0),
-                            child: Consumer<MoneyStorageManager>(
-                                builder: (ctx, balance, _) {
-                              return AutoSizeText(
+                  Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Consumer<MoneyStorageManager>(
+                          builder: (ctx, balance, _) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          margin: const EdgeInsets.only(right: 15.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0),
+                              color: Theme.of(context).cardColor,
+                              boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.3),
+                                    blurRadius: 10.0)
+                              ]),
+                          child: Column(
+                            children: [
+                              AutoSizeText(
                                 balance.currentBalanceString,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.grey.shade300,
-                                    fontSize: 25.0,
-                                    fontWeight: FontWeight.w800),
-                              );
-                            })),
-                      ],
-                    ),
-                  ),
+                                maxLines: 1,
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context)
+                                    .appBarTheme
+                                    .titleTextStyle!
+                                    .copyWith(fontSize: 25.0),
+                              ),
+                              const SizedBox(height: 5.0),
+                              AutoSizeText('Баланс',
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall!
+                                      .copyWith(
+                                          fontSize: 12.0,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .color!
+                                              .withOpacity(0.7))),
+                            ],
+                          ),
+                        );
+                      })),
                   Expanded(
                     child: Container(
                       margin: const EdgeInsets.only(
                           left: 15.0, right: 15.0, bottom: 15.0),
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade900,
-                          borderRadius: BorderRadius.circular(15.0),
-                          gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                Colors.grey.shade900,
-                                Colors.grey.shade900.withOpacity(0.8)
-                              ]),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.5),
-                                blurRadius: 10.0)
-                          ]),
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
                         child: Center(

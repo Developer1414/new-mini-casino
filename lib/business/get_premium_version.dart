@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:yookassa_payments_flutter/yookassa_payments_flutter.dart';
 
 class Payment extends ChangeNotifier {

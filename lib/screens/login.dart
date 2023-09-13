@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
@@ -89,6 +89,7 @@ class Login extends StatelessWidget {
                     appBar: AppBar(
                       elevation: 0,
                       backgroundColor: Colors.transparent,
+                      automaticallyImplyLeading: false,
                       title: TabBar(
                         onTap: (index) {
                           accountController.changeAuthorizationAction(index);

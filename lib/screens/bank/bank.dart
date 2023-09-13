@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
-import 'package:new_mini_casino/models/button_model.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:provider/provider.dart';
 
 class Bank extends StatelessWidget {

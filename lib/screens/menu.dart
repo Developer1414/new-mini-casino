@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
-import 'package:new_mini_casino/models/menu_game_button.dart';
+import 'package:new_mini_casino/widgets/menu_game_button.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:badges/badges.dart' as badges;
@@ -28,6 +29,20 @@ class AllGames extends StatefulWidget {
 }
 
 class _AllGamesState extends State<AllGames> {
+  Future checkDailyBonus() async {
+    await DailyBonusManager().checkDailyBonus().then((value) {
+      if (value) {
+        Beamer.of(context).beamToNamed('/daily-bonus');
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkDailyBonus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -321,8 +336,10 @@ class _AllGamesState extends State<AllGames> {
                                   style: ElevatedButton.styleFrom(
                                     elevation: 5,
                                     shadowColor:
-                                        Colors.redAccent.withOpacity(0.8),
-                                    backgroundColor: Colors.redAccent,
+                                        const Color.fromARGB(255, 164, 231, 88)
+                                            .withOpacity(0.8),
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 164, 231, 88),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(15.0),
                                     ),
@@ -334,10 +351,19 @@ class _AllGamesState extends State<AllGames> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        const FaIcon(
-                                          FontAwesomeIcons.solidStar,
-                                          color: Colors.white,
-                                          size: 22.0,
+                                        Container(
+                                          decoration: BoxDecoration(boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              blurRadius: 15.0,
+                                            )
+                                          ]),
+                                          child: const FaIcon(
+                                            FontAwesomeIcons.solidStar,
+                                            color: Colors.white,
+                                            size: 22.0,
+                                          ),
                                         ),
                                         const SizedBox(width: 10.0),
                                         AutoSizeText(
@@ -351,8 +377,8 @@ class _AllGamesState extends State<AllGames> {
                                             shadows: [
                                               Shadow(
                                                 color: Colors.black
-                                                    .withOpacity(0.3),
-                                                blurRadius: 20.0,
+                                                    .withOpacity(0.4),
+                                                blurRadius: 15.0,
                                               )
                                             ],
                                           ),

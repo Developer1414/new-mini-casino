@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/models/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -69,6 +69,8 @@ class TaxManager extends ChangeNotifier {
   }
 
   void addTax(double bet) async {
+    if (AccountController.isPremium) return;
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime dateTimeNow = await NTP.now();
 
@@ -86,7 +88,7 @@ class TaxManager extends ChangeNotifier {
       dateTimeNow = dateTimeNow.add(const Duration(days: 8));
     }
 
-    tax += bet * (AccountController.isPremium ? 5 : 10) / 100;
+    tax += bet * 5 / 100;
 
     prefs.setString('tax', jsonEncode([tax, dateTimeNow.toString()]));
   }

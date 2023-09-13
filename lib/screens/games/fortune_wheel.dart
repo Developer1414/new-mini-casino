@@ -13,7 +13,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/board_view.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/model.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
-import 'package:new_mini_casino/models/text_field_model.dart';
+import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 
 class FortuneWheel extends StatefulWidget {

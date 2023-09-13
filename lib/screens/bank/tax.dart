@@ -7,8 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
-import 'package:new_mini_casino/models/button_model.dart';
-import 'package:new_mini_casino/models/loading.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
+import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -186,7 +186,7 @@ class Tax extends StatelessWidget {
                                                 color: Colors.blueAccent),
                                             const SizedBox(height: 20.0),
                                             AutoSizeText(
-                                              'Каждая ставка облагается налогом в размере 10% от ставки (или 5%, если у вас есть подписка Premium). Налог можно оплатить в любое время до истечения срока действия. Если вы не оплатите его вовремя, то не сможете продолжать играть в игры.',
+                                              'Каждая ставка облагается налогом в размере 5% от ставки. Налог можно оплатить в любое время до истечения срока действия. Если вы не оплатите его вовремя, то не сможете продолжать играть в игры.\nP.S. Если у вас есть Premium-подписка, то налог платить не нужно!',
                                               textAlign: TextAlign.center,
                                               style: GoogleFonts.roboto(
                                                   color: Colors.white
