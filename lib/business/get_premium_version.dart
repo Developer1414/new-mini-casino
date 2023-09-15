@@ -39,11 +39,11 @@ class Payment extends ChangeNotifier {
     required BuildContext context,
   }) async {
     var clientApplicationKey =
-        "live_OTgyMTMyd3WgKx6U_t_xHzTFWmt93Qp1Anns6ZErqWM";
+        "live_OTgyMTMyd3WgKx6U...";
     var amount = Amount(
         value: isYearSubscription ? 1499.0 : 149.0, currency: Currency.rub);
     var shopId = "982132";
-    var moneyAuthClientId = "gganqqp7bvspn3g47ehqe2vtnut8hv59";
+    var moneyAuthClientId = "n3g47ehqe2v59...";
 
     var tokenizationModuleInputData = TokenizationModuleInputData(
         clientApplicationKey: clientApplicationKey,
@@ -69,7 +69,7 @@ class Payment extends ChangeNotifier {
           Uri.parse('https://api.yookassa.ru/v3/payments'),
           headers: <String, String>{
             'Authorization':
-                'Basic ${base64Encode(utf8.encode('982132:live_qKe6dJ9dSnpPJTweNyvQLb5IjAi9PcPyDyKsVMslDHw'))}',
+                'Basic ${base64Encode(utf8.encode('982132:jakrvbeuIevebb...'))}',
             'Idempotence-Key': DateTime.now().microsecondsSinceEpoch.toString(),
             'Content-Type': 'application/json; charset=UTF-8',
           },
@@ -134,7 +134,7 @@ class Payment extends ChangeNotifier {
           Uri.parse('https://api.yookassa.ru/v3/payments/$paymentId'),
           headers: <String, String>{
             'Authorization':
-                'Basic ${base64Encode(utf8.encode('982132:live_qKe6dJ9dSnpPJTweNyvQLb5IjAi9PcPyDyKsVMslDHw'))}',
+                'Basic ${base64Encode(utf8.encode('982132:jakrvbeuIevebb...'))}',
           });
 
       if (response.statusCode == 201 || response.statusCode == 200) {
