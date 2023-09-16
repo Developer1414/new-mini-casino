@@ -84,7 +84,6 @@ class MoneyStorage extends StatelessWidget {
                         return Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          margin: const EdgeInsets.only(right: 15.0),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(15.0),
                             color: Theme.of(context).cardColor,
