@@ -10,7 +10,9 @@ import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/models/profile_model.dart';
+import 'package:new_mini_casino/widgets/imporant_user_profile_info_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/profile_button_model.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -198,36 +200,34 @@ class _ProfileState extends State<Profile> {
                             )),
                           ),
                         ),
-                        const SizedBox(width: 15.0),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              importantUserInfo(
-                                  content: balance.currentBalanceString,
-                                  title: 'Баланс'),
-                              const SizedBox(height: 15.0),
-                              importantUserInfo(
-                                  content: NumberFormat.compact(locale: 'ru_RU')
-                                      .format(profileModel.totalGame),
-                                  title: 'Игр'),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
-                    const SizedBox(height: 15.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15.0, vertical: 15.0),
+                      child: Column(
+                        children: [
+                          importantUserProfileInfo(
+                              context: context,
+                              content: balance.currentBalanceString,
+                              title: 'Баланс'),
+                          const SizedBox(height: 15.0),
+                          importantUserProfileInfo(
+                              context: context,
+                              content: NumberFormat.compact(locale: 'ru_RU')
+                                  .format(profileModel.totalGame),
+                              title: 'Игр'),
+                        ],
+                      ),
+                    ),
                     Container(
                       width: double.infinity,
                       height: 2.0,
-                      margin: const EdgeInsets.symmetric(horizontal: 15.0),
+                      margin: const EdgeInsets.symmetric(horizontal: 25.0),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
-                          color: Theme.of(context).cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 10.0)
-                          ]),
+                        borderRadius: BorderRadius.circular(15.0),
+                        color: Theme.of(context).cardColor,
+                      ),
                     ),
                     const SizedBox(height: 15.0),
                     Padding(
@@ -236,6 +236,7 @@ class _ProfileState extends State<Profile> {
                           children: [
                             Expanded(
                               child: profileButton(
+                                context: context,
                                 icon: FontAwesomeIcons.coins,
                                 text: 'Хранилище',
                                 onPressed: () => Beamer.of(context)
@@ -245,10 +246,11 @@ class _ProfileState extends State<Profile> {
                             const SizedBox(width: 15.0),
                             Expanded(
                               child: profileButton(
+                                  context: context,
                                   icon: FontAwesomeIcons.car,
                                   text: 'Имущество',
                                   onPressed: () {
-                                    StoreManager.showOnlyBuyedItems = true;
+                                    StoreManager.storeViewer = StoreViewer.my;
                                     Beamer.of(context)
                                         .beamToNamed('/store-items');
                                   }),
@@ -258,88 +260,6 @@ class _ProfileState extends State<Profile> {
                   ],
                 ));
       },
-    );
-  }
-
-  Widget importantUserInfo({required String content, required String title}) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
-      margin: const EdgeInsets.only(right: 15.0),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15.0),
-          color: Theme.of(context).cardColor,
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-          ]),
-      child: Column(
-        children: [
-          AutoSizeText(
-            content,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .appBarTheme
-                .titleTextStyle!
-                .copyWith(fontSize: 25.0),
-          ),
-          const SizedBox(height: 5.0),
-          AutoSizeText(title,
-              maxLines: 1,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 12.0,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .color!
-                      .withOpacity(0.7))),
-        ],
-      ),
-    );
-  }
-
-  Widget profileButton(
-      {required IconData icon,
-      required String text,
-      required Function() onPressed}) {
-    return SizedBox(
-      height: 112.0,
-      child: ElevatedButton(
-        onPressed: () {
-          onPressed.call();
-        },
-        style: ElevatedButton.styleFrom(
-          elevation: 5,
-          backgroundColor:
-              Theme.of(context).buttonTheme.colorScheme!.background,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(18.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FaIcon(
-                icon,
-                color: Colors.white,
-                size: 35.0,
-              ),
-              const SizedBox(height: 10.0),
-              AutoSizeText(
-                text,
-                maxLines: 1,
-                style: GoogleFonts.roboto(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w800),
-              )
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

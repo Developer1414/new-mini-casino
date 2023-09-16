@@ -86,13 +86,15 @@ class MoneyStorage extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 15.0),
                           margin: const EdgeInsets.only(right: 15.0),
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              color: Theme.of(context).cardColor,
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black.withOpacity(0.3),
-                                    blurRadius: 10.0)
-                              ]),
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Theme.of(context).cardColor,
+                            border: Border.all(
+                                color: Theme.of(context)
+                                    .buttonTheme
+                                    .colorScheme!
+                                    .background,
+                                width: 3.0),
+                          ),
                           child: Column(
                             children: [
                               AutoSizeText(

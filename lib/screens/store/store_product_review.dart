@@ -25,7 +25,9 @@ class StoreProductReview extends StatelessWidget {
         return storeManager.isLoading
             ? loading(context: context)
             : Scaffold(
-                bottomNavigationBar: Container(
+                bottomNavigationBar:  StoreManager.storeViewer == StoreViewer.otherUser ? Container(
+                  height: 0.0,
+                ) : Container(
                   color: storeItemModel.color,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -289,7 +291,7 @@ class StoreProductReview extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 15.0),
-                              !StoreManager.showOnlyBuyedItems &&
+                              StoreManager.storeViewer == StoreViewer.deafult &&
                                       storeItemModel.premium &&
                                       !AccountController.isPremium
                                   ? Container(

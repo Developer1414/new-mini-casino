@@ -11,6 +11,8 @@ import 'package:new_mini_casino/models/store/pins_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart';
 
+enum StoreViewer { my, otherUser, deafult }
+
 class StoreItemModel {
   String title = '';
   double price = 0.0;
@@ -62,7 +64,9 @@ class StoreItemButtonModel {
 class StoreManager extends ChangeNotifier {
   bool isLoading = false;
 
-  static bool showOnlyBuyedItems = false;
+  static StoreViewer storeViewer = StoreViewer.deafult;
+
+  static String otherUserId = '';
 
   int selectedStore = 0;
   int selectedProduct = 0;
@@ -289,6 +293,27 @@ class StoreManager extends ChangeNotifier {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((value) async {
+      if (value.data()!.containsKey(path)) {
+        List<int> list = List<int>.from(value.get(path));
+
+        result = list;
+      } else {
+        result = [];
+      }
+    });
+
+    return result;
+  }
+
+  Future<List<int>> loadOtherUserItems(
+      {required String userId, required String path}) async {
+    List<int> result = [];
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
         .get()
         .then((value) async {
       if (value.data()!.containsKey(path)) {

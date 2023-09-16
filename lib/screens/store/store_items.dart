@@ -40,7 +40,10 @@ class StoreItems extends StatelessWidget {
                           )),
                     ),
                     title: AutoSizeText(
-                      StoreManager.showOnlyBuyedItems ? 'Имущество' : 'Магазин',
+                      StoreManager.storeViewer == StoreViewer.my ||
+                              StoreManager.storeViewer == StoreViewer.otherUser
+                          ? 'Имущество'
+                          : 'Магазин',
                       style: Theme.of(context).appBarTheme.titleTextStyle,
                     ),
                   ),

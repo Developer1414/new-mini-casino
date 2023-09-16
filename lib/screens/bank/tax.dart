@@ -114,16 +114,16 @@ class Tax extends StatelessWidget {
                                           margin: const EdgeInsets.only(
                                               left: 50.0, right: 50.0),
                                           decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.3),
-                                                    blurRadius: 10.0)
-                                              ]),
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            color: Theme.of(context).cardColor,
+                                            border: Border.all(
+                                                color: Theme.of(context)
+                                                    .buttonTheme
+                                                    .colorScheme!
+                                                    .background,
+                                                width: 3.0),
+                                          ),
                                           child: Padding(
                                             padding: const EdgeInsets.all(15.0),
                                             child: Column(

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:circle_progress_bar/circle_progress_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -228,15 +229,14 @@ class _LeaderBoardState extends State<LeaderBoard> {
 
           int totalGames = 0;
 
-          int level = 1;
+          double level = 1;
 
           int pinId = -1;
 
           if (LeaderBoard.selectedValue == LeaderBoard.items.first) {
             if (snapshot.data!.docs[index].data().containsKey('level')) {
               level = double.parse(
-                      snapshot.data?.docs[index].get('level').toString() ?? '1')
-                  .floor();
+                  snapshot.data?.docs[index].get('level').toString() ?? '1.0');
             }
           } else if (LeaderBoard.selectedValue == LeaderBoard.items[1]) {
             balance = double.parse(
@@ -284,7 +284,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
               onTap: () {
                 LeaderBoard.scrollOffset = controller.offset;
                 context.beamToNamed(
-                  '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$totalGames/$balance',
+                  '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$pinId',
                 );
               },
               child: Column(
@@ -325,9 +325,51 @@ class _LeaderBoardState extends State<LeaderBoard> {
                       alignment: AlignmentDirectional.topEnd,
                       children: [
                         Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            LeaderBoard.selectedValue != LeaderBoard.items.first
+                                ? Container()
+                                : Container(
+                                    height: 60.0,
+                                    margin: const EdgeInsets.only(
+                                        left: 12.0, top: 12.0, bottom: 12.0),
+                                    decoration: ShapeDecoration(
+                                      shape: const CircleBorder(),
+                                      color: Theme.of(context).cardColor,
+                                    ),
+                                    child: CircleProgressBar(
+                                      foregroundColor: Colors.green,
+                                      backgroundColor: Theme.of(context)
+                                          .buttonTheme
+                                          .colorScheme!
+                                          .background,
+                                      strokeWidth: 7.0,
+                                      value: level - level.truncate(),
+                                      child: Center(
+                                          child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 10.0),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            AutoSizeText(
+                                              NumberFormat.compact(
+                                                      locale: 'en_US')
+                                                  .format(level.floor()),
+                                              maxLines: 1,
+                                              minFontSize: 10.0,
+                                              style: GoogleFonts.roboto(
+                                                  color: Colors.white,
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.w800),
+                                            ),
+                                          ],
+                                        ),
+                                      )),
+                                    ),
+                                  ),
                             Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: Column(
@@ -401,20 +443,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                     const SizedBox(height: 5.0),
                                     LeaderBoard.selectedValue ==
                                             LeaderBoard.items.first
-                                        ? Row(
-                                            children: [
-                                              const FaIcon(
-                                                FontAwesomeIcons.gamepad,
-                                                color: Colors.blueGrey,
-                                                size: 18.0,
-                                              ),
-                                              const SizedBox(width: 5.0),
-                                              AutoSizeText('$level LVL',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium),
-                                            ],
-                                          )
+                                        ? Container()
                                         : LeaderBoard.selectedValue ==
                                                 LeaderBoard.items[1]
                                             ? Row(

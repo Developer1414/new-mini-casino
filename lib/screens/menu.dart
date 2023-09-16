@@ -92,7 +92,7 @@ class _AllGamesState extends State<AllGames> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      StoreManager.showOnlyBuyedItems = false;
+                      StoreManager.storeViewer = StoreViewer.deafult;
                       context.beamToNamed('/store-items');
                     },
                     style: ElevatedButton.styleFrom(
@@ -291,27 +291,40 @@ class _AllGamesState extends State<AllGames> {
             child: !Provider.of<TaxManager>(context, listen: true).isCanPlay
                 ? Center(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const FaIcon(
-                          FontAwesomeIcons.lock,
-                          color: Colors.white,
-                          size: 80.0,
+                        premiumButton(),
+                        Column(
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.lock,
+                              color: Colors.white,
+                              size: 80.0,
+                            ),
+                            const SizedBox(height: 10.0),
+                            AutoSizeText(
+                              'Заплатите налог',
+                              maxLines: 1,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 30.0,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 5.0),
+                            AutoSizeText(
+                              'Заплатите налог, чтобы продолжить играть',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white.withOpacity(0.5),
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 10.0),
                         AutoSizeText(
-                          'Заплатите налог',
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 5.0),
-                        AutoSizeText(
-                          'Заплатите налог, чтобы продолжить играть',
+                          'P.S. а с Premium платить налоги не нужно :)',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.roboto(
                               color: Colors.white.withOpacity(0.5),
@@ -325,69 +338,7 @@ class _AllGamesState extends State<AllGames> {
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                              padding: const EdgeInsets.only(bottom: 16.0),
-                              child: SizedBox(
-                                height: 60.0,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    context.beamToNamed('/premium');
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 5,
-                                    shadowColor:
-                                        const Color.fromARGB(255, 164, 231, 88)
-                                            .withOpacity(0.8),
-                                    backgroundColor:
-                                        const Color.fromARGB(255, 164, 231, 88),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10.0, right: 12.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(boxShadow: [
-                                            BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.2),
-                                              blurRadius: 15.0,
-                                            )
-                                          ]),
-                                          child: const FaIcon(
-                                            FontAwesomeIcons.solidStar,
-                                            color: Colors.white,
-                                            size: 22.0,
-                                          ),
-                                        ),
-                                        const SizedBox(width: 10.0),
-                                        AutoSizeText(
-                                          'Premium',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: Colors.white,
-                                            fontSize: 22.0,
-                                            letterSpacing: 0.5,
-                                            fontWeight: FontWeight.w900,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.4),
-                                                blurRadius: 15.0,
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )),
+                          premiumButton(),
                           GridView.custom(
                             shrinkWrap: true,
                             physics: const BouncingScrollPhysics(),
@@ -556,6 +507,66 @@ class _AllGamesState extends State<AllGames> {
                           ),
                         ]),
                   ),
+          ),
+        ));
+  }
+
+  Widget premiumButton() {
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 16.0),
+        child: SizedBox(
+          height: 60.0,
+          child: ElevatedButton(
+            onPressed: () {
+              context.beamToNamed('/premium');
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              shadowColor:
+                  const Color.fromARGB(255, 164, 231, 88).withOpacity(0.8),
+              backgroundColor: const Color.fromARGB(255, 164, 231, 88),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 10.0, right: 12.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 15.0,
+                      )
+                    ]),
+                    child: const FaIcon(
+                      FontAwesomeIcons.solidStar,
+                      color: Colors.white,
+                      size: 22.0,
+                    ),
+                  ),
+                  const SizedBox(width: 10.0),
+                  AutoSizeText(
+                    'Premium',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                      color: Colors.white,
+                      fontSize: 22.0,
+                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.w900,
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 15.0,
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ));
   }

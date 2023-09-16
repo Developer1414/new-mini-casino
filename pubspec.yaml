@@ -1,7 +1,7 @@
 name: new_mini_casino
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.2.1+34
+version: 1.2.2+35
 environment:
   sdk: '>=2.19.3 <3.0.0'
 

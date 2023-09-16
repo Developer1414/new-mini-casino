@@ -61,18 +61,26 @@ class Store extends StatelessWidget {
                           storeName,
                           style: Theme.of(context).appBarTheme.titleTextStyle,
                         ),
-                        Consumer<Balance>(builder: (ctx, balance, _) {
-                          return AutoSizeText(
-                            balance.currentBalanceString,
-                            style: Theme.of(context).textTheme.displaySmall,
-                          );
-                        }),
+                        StoreManager.storeViewer == StoreViewer.otherUser
+                            ? Container()
+                            : Consumer<Balance>(builder: (ctx, balance, _) {
+                                return AutoSizeText(
+                                  balance.currentBalanceString,
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                );
+                              }),
                       ],
                     ),
                   ),
-                  body: StoreManager.showOnlyBuyedItems
+                  body: StoreManager.storeViewer != StoreViewer.deafult
                       ? FutureBuilder(
-                          future: storeManager.loadMyItems(path),
+                          future:
+                              StoreManager.storeViewer == StoreViewer.otherUser
+                                  ? storeManager.loadOtherUserItems(
+                                      path: path,
+                                      userId: StoreManager.otherUserId)
+                                  : storeManager.loadMyItems(path),
                           builder: (context, snapshot) {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
@@ -84,7 +92,7 @@ class Store extends StatelessWidget {
                                       padding: const EdgeInsets.only(
                                           left: 15.0, right: 15.0),
                                       child: AutoSizeText(
-                                        'У вас ещё нет имущества «$storeName».',
+                                        'У ${StoreManager.storeViewer == StoreViewer.otherUser ? 'игрока' : 'вас'} ещё нет имущества «$storeName».',
                                         textAlign: TextAlign.center,
                                         style: Theme.of(context)
                                             .textTheme

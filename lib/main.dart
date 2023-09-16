@@ -198,19 +198,16 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
         '/user-agreement': (context, state, data) => const UserAgreement(),
         '/leader-board': (context, state, data) => const LeaderBoard(),
-        '/other-user-profile/:userName/:userid/:totalGames/:balance':
-            (context, state, data) {
+        '/other-user-profile/:userName/:userid/:pinId': (context, state, data) {
           final userName = state.pathParameters['userName']!;
           final userid = state.pathParameters['userid']!;
-          final totalGames = state.pathParameters['totalGames']!;
-          final balance = state.pathParameters['balance']!;
+          final pinId = state.pathParameters['pinId']!;
 
           return BeamPage(
             child: OtherUserProfile(
                 userName: userName,
-                userid: userid,
-                totalGames: int.parse(totalGames),
-                balance: double.parse(balance)),
+                userId: userid,
+                pinId: int.parse(pinId.toString())),
           );
         },
         '/store/:storeName/:path/:models': (context, state, data) {

@@ -166,7 +166,7 @@ class AccountController extends ChangeNotifier {
 
   Future upLevel() async {
     double value = ProfileController.profileModel.level +
-        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 5);
+        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 10);
 
     ProfileController.profileModel.level = value;
 
