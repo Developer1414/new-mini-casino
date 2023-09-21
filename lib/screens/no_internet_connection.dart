@@ -73,13 +73,32 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
                   children: [
                     Icon(
                       Icons.wifi_off_rounded,
-                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      color: Theme.of(context).appBarTheme.iconTheme?.color,
                       size: 80.0,
                     ),
-                    const SizedBox(height: 15.0),
-                    Text('Проблемы с подключением к интернету!',
+                    const SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, bottom: 5.0),
+                      child: AutoSizeText(
+                          'Проблемы с подключением к интернету!',
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w700,
+                                  )),
+                    ),
+                    AutoSizeText(
+                        'Проверьте подключение к Интернету и подключитесь повторно.',
                         textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleMedium),
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            fontSize: 12.0,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .color!
+                                .withOpacity(0.4))),
                   ],
                 ),
               )),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:new_mini_casino/models/store/cars_model.dart';
 import 'package:new_mini_casino/models/store/houses_model.dart';
 import 'package:new_mini_casino/models/store/pins_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/widgets/no_internet_connection_dialog.dart';
 import 'package:provider/provider.dart';
 
 enum StoreViewer { my, otherUser, deafult }
@@ -113,6 +115,13 @@ class StoreManager extends ChangeNotifier {
       required String itemName,
       required int itemid,
       required double price}) async {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        showBadInternetConnectionDialog(context);
+        return;
+      }
+    });
+
     final balance = Provider.of<Balance>(context, listen: false);
 
     double realPrice = AccountController.isPremium &&
@@ -131,6 +140,8 @@ class StoreManager extends ChangeNotifier {
     }
 
     showLoading(true);
+
+    balance.placeBet(realPrice);
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -155,18 +166,16 @@ class StoreManager extends ChangeNotifier {
       }
     });
 
-    balance.placeBet(realPrice);
+    if (context.mounted) {
+      alertDialogSuccess(
+        context: context,
+        title: 'Поздравляем',
+        confirmBtnText: 'Спасибо!',
+        text: 'Вы успешно приобрели $itemName!',
+      );
 
-    // ignore: use_build_context_synchronously
-    alertDialogSuccess(
-      context: context,
-      title: 'Поздравляем',
-      confirmBtnText: 'Спасибо!',
-      text: 'Вы успешно приобрели $itemName!',
-    );
-
-    // ignore: use_build_context_synchronously
-    AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+      AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    }
 
     showLoading(false);
   }
@@ -176,6 +185,13 @@ class StoreManager extends ChangeNotifier {
       required String itemName,
       required int itemId,
       required double price}) async {
+    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        showBadInternetConnectionDialog(context);
+        return;
+      }
+    });
+
     showLoading(true);
 
     await FirebaseFirestore.instance

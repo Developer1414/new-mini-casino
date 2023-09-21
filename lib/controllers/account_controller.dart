@@ -29,6 +29,7 @@ class AccountController extends ChangeNotifier {
   bool isLoading = false;
 
   static bool isPremium = false;
+  static bool isHaveInternetConnection = true;
   static DateTime expiredSubscriptionDate = DateTime.now();
 
   String loadingText = 'Пожалуйста, подождите...';
@@ -301,6 +302,16 @@ class AccountController extends ChangeNotifier {
 
   Future<Widget> initUserData(BuildContext context) async {
     Widget? newScreen;
+
+    /*Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      if (result == ConnectivityResult.none) {
+        hasInternetConnection = false;
+      }
+    });
+
+    if (!hasInternetConnection) {
+      return const NoInternetConnection();
+    }*/
 
     if (FirebaseAuth.instance.currentUser != null &&
         FirebaseAuth.instance.currentUser!.emailVerified) {

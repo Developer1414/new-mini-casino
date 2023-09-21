@@ -55,7 +55,7 @@ Widget gameButtonModel(
                   height: 30.0,
                   child: AutoSizeText(
                     buttonTitle,
-                    maxLines: 1,
+                    maxLines: 2,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
                         color: Colors.white,

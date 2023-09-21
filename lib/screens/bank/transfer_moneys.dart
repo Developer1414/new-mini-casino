@@ -205,20 +205,48 @@ class TransferMoneys extends StatelessWidget {
                                               ),
                                             ),
                                       const SizedBox(height: 20.0),
-                                      buttonModel(
-                                          context: context,
-                                          buttonName: 'Перевести',
-                                          onPressed: () =>
-                                              loanMoneysManager.transfer(
-                                                  amount: double.parse(
-                                                      betFormatter
-                                                          .getUnformattedValue()
-                                                          .toString()),
-                                                  context: context,
-                                                  username: usernameController
-                                                      .text
-                                                      .trim()),
-                                          color: Colors.blueAccent),
+                                      !AccountController.isPremium
+                                          ? Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.redAccent
+                                                      .withOpacity(0.4),
+                                                  border: Border.all(
+                                                      color: Colors.redAccent,
+                                                      width: 2.0),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          15.0)),
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.all(10.0),
+                                                child: Text(
+                                                  'Переводы доступны только Premium подписчикам!',
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts.roboto(
+                                                      textStyle:
+                                                          const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 18.0,
+                                                    fontWeight: FontWeight.w700,
+                                                  )),
+                                                ),
+                                              ),
+                                            )
+                                          : buttonModel(
+                                              context: context,
+                                              buttonName: 'Перевести',
+                                              onPressed: () =>
+                                                  loanMoneysManager.transfer(
+                                                      amount: double.parse(
+                                                          betFormatter
+                                                              .getUnformattedValue()
+                                                              .toString()),
+                                                      context: context,
+                                                      username:
+                                                          usernameController
+                                                              .text
+                                                              .trim()),
+                                              color: Colors.blueAccent),
                                       const SizedBox(height: 20.0),
                                       AccountController.isPremium
                                           ? Container()

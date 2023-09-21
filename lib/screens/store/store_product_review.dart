@@ -25,224 +25,256 @@ class StoreProductReview extends StatelessWidget {
         return storeManager.isLoading
             ? loading(context: context)
             : Scaffold(
-                bottomNavigationBar:  StoreManager.storeViewer == StoreViewer.otherUser ? Container(
-                  height: 0.0,
-                ) : Container(
-                  color: storeItemModel.color,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    child: SizedBox(
-                      height: 60.0,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Row(
-                            children: [
-                              storeManager.selectedPath != 'pins'
-                                  ? Container()
-                                  : FutureBuilder<bool>(
-                                      future: storeManager.checkItemOnSelected(
-                                          itemId: storeItemModel.imageId,
-                                          path: storeManager.selectedPath),
-                                      builder: (ctx, snapshot) {
-                                        return snapshot.data ?? false
-                                            ? Container()
-                                            : Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 15.0),
-                                                  child: SizedBox(
-                                                    height: 60.0,
-                                                    child: ElevatedButton(
-                                                      onPressed: () async {
-                                                        storeManager.selectItem(
-                                                            itemId:
-                                                                storeItemModel
-                                                                    .imageId,
-                                                            path: storeManager
-                                                                .selectedPath);
-                                                      },
-                                                      style: ElevatedButton
-                                                          .styleFrom(
-                                                        elevation: 5,
-                                                        backgroundColor:
-                                                            snapshot
-                                                                        .data ??
-                                                                    false
-                                                                ? Colors
-                                                                    .redAccent
-                                                                : Colors
-                                                                    .blueAccent,
-                                                        shape:
-                                                            const RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                                  topLeft: Radius
-                                                                      .circular(
-                                                                          25.0),
-                                                                  topRight: Radius
-                                                                      .circular(
-                                                                          25.0)),
-                                                        ),
-                                                      ),
-                                                      child: snapshot
-                                                                  .connectionState ==
-                                                              ConnectionState
-                                                                  .waiting
-                                                          ? const Padding(
-                                                              padding:
-                                                                  EdgeInsets
-                                                                      .all(
-                                                                          18.0),
-                                                              child: SizedBox(
-                                                                width: 26.0,
-                                                                height: 26.0,
-                                                                child:
-                                                                    CircularProgressIndicator(
-                                                                  strokeWidth:
-                                                                      5.0,
-                                                                  color: Colors
-                                                                      .white,
-                                                                ),
-                                                              ),
-                                                            )
-                                                          : AutoSizeText(
-                                                              'Выбрать',
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .center,
-                                                              style: GoogleFonts
-                                                                  .roboto(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 22.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w700,
+                bottomNavigationBar: StoreManager.storeViewer ==
+                        StoreViewer.otherUser
+                    ? Container(
+                        height: 0.0,
+                      )
+                    : Container(
+                        color: storeItemModel.color,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 15.0),
+                          child: SizedBox(
+                            height: 60.0,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Row(
+                                  children: [
+                                    storeManager.selectedPath != 'pins'
+                                        ? Container()
+                                        : FutureBuilder<bool>(
+                                            future: storeManager
+                                                .checkItemOnSelected(
+                                                    itemId:
+                                                        storeItemModel.imageId,
+                                                    path: storeManager
+                                                        .selectedPath),
+                                            builder: (ctx, snapshot) {
+                                              return snapshot.data ?? false
+                                                  ? Container()
+                                                  : Expanded(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                right: 15.0),
+                                                        child: SizedBox(
+                                                          height: 60.0,
+                                                          child: ElevatedButton(
+                                                            onPressed:
+                                                                () async {
+                                                              storeManager.selectItem(
+                                                                  itemId:
+                                                                      storeItemModel
+                                                                          .imageId,
+                                                                  path: storeManager
+                                                                      .selectedPath);
+                                                            },
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              elevation: 5,
+                                                              backgroundColor: snapshot
+                                                                          .data ??
+                                                                      false
+                                                                  ? Colors
+                                                                      .redAccent
+                                                                  : Colors
+                                                                      .blueAccent,
+                                                              shape:
+                                                                  const RoundedRectangleBorder(
+                                                                borderRadius: BorderRadius.only(
+                                                                    topLeft: Radius
+                                                                        .circular(
+                                                                            25.0),
+                                                                    topRight: Radius
+                                                                        .circular(
+                                                                            25.0)),
                                                               ),
                                                             ),
-                                                    ),
+                                                            child: snapshot
+                                                                        .connectionState ==
+                                                                    ConnectionState
+                                                                        .waiting
+                                                                ? const Padding(
+                                                                    padding:
+                                                                        EdgeInsets.all(
+                                                                            18.0),
+                                                                    child:
+                                                                        SizedBox(
+                                                                      width:
+                                                                          26.0,
+                                                                      height:
+                                                                          26.0,
+                                                                      child:
+                                                                          CircularProgressIndicator(
+                                                                        strokeWidth:
+                                                                            5.0,
+                                                                        color: Colors
+                                                                            .white,
+                                                                      ),
+                                                                    ),
+                                                                  )
+                                                                : AutoSizeText(
+                                                                    'Выбрать',
+                                                                    textAlign:
+                                                                        TextAlign
+                                                                            .center,
+                                                                    style: GoogleFonts
+                                                                        .roboto(
+                                                                      color: Colors
+                                                                          .white,
+                                                                      fontSize:
+                                                                          22.0,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                    ),
+                                                                  ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    );
+                                            }),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 60.0,
+                                        child: FutureBuilder<bool>(
+                                            future:
+                                                storeManager.checkItemOnMine(
+                                                    itemId:
+                                                        storeItemModel.imageId,
+                                                    path: storeManager
+                                                        .selectedPath),
+                                            builder: (ctx, snapshot) {
+                                              return ElevatedButton(
+                                                onPressed: () async {
+                                                  if (snapshot.data ?? false) {
+                                                    storeManager.sellProduct(
+                                                        context: context,
+                                                        itemName: storeItemModel
+                                                            .title,
+                                                        itemId: storeItemModel
+                                                            .imageId,
+                                                        price: storeItemModel
+                                                            .price);
+                                                  } else {
+                                                    storeManager.buyProduct(
+                                                        context: context,
+                                                        itemName: storeItemModel
+                                                            .title,
+                                                        itemid: storeItemModel
+                                                            .imageId,
+                                                        price: storeItemModel
+                                                            .price);
+                                                  }
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  elevation: 5,
+                                                  backgroundColor:
+                                                      snapshot.data ?? false
+                                                          ? Colors.redAccent
+                                                          : Colors.green,
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius
+                                                        .only(
+                                                            topLeft:
+                                                                Radius.circular(
+                                                                    25.0),
+                                                            topRight:
+                                                                Radius.circular(
+                                                                    25.0)),
                                                   ),
                                                 ),
+                                                child: snapshot
+                                                            .connectionState ==
+                                                        ConnectionState.waiting
+                                                    ? const Padding(
+                                                        padding: EdgeInsets.all(
+                                                            18.0),
+                                                        child: SizedBox(
+                                                          width: 26.0,
+                                                          height: 26.0,
+                                                          child:
+                                                              CircularProgressIndicator(
+                                                            strokeWidth: 5.0,
+                                                            color: Colors.white,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    : Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          AutoSizeText(
+                                                            snapshot.data ??
+                                                                    false
+                                                                ? 'Продать'
+                                                                : 'Купить',
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: GoogleFonts
+                                                                .roboto(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 22.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                            ),
+                                                          ),
+                                                          AutoSizeText(
+                                                            snapshot.data ??
+                                                                    false
+                                                                ? NumberFormat.simpleCurrency(
+                                                                        locale: ui
+                                                                            .Platform
+                                                                            .localeName)
+                                                                    .format(storeItemModel
+                                                                            .price -
+                                                                        (storeItemModel.price *
+                                                                            20 /
+                                                                            100))
+                                                                : NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(AccountController
+                                                                            .isPremium &&
+                                                                        storeItemModel
+                                                                            .premium
+                                                                    ? storeItemModel
+                                                                            .price -
+                                                                        (storeItemModel.price *
+                                                                            20 /
+                                                                            100)
+                                                                    : storeItemModel
+                                                                        .price),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            style: GoogleFonts
+                                                                .roboto(
+                                                              color:
+                                                                  Colors.white,
+                                                              fontSize: 15.0,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                               );
-                                      }),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 60.0,
-                                  child: FutureBuilder<bool>(
-                                      future: storeManager.checkItemOnMine(
-                                          itemId: storeItemModel.imageId,
-                                          path: storeManager.selectedPath),
-                                      builder: (ctx, snapshot) {
-                                        return ElevatedButton(
-                                          onPressed: () async {
-                                            if (snapshot.data!) {
-                                              storeManager.sellProduct(
-                                                  context: context,
-                                                  itemName:
-                                                      storeItemModel.title,
-                                                  itemId:
-                                                      storeItemModel.imageId,
-                                                  price: storeItemModel.price);
-                                            } else {
-                                              storeManager.buyProduct(
-                                                  context: context,
-                                                  itemName:
-                                                      storeItemModel.title,
-                                                  itemid:
-                                                      storeItemModel.imageId,
-                                                  price: storeItemModel.price);
-                                            }
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 5,
-                                            backgroundColor:
-                                                snapshot.data ?? false
-                                                    ? Colors.redAccent
-                                                    : Colors.green,
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                  topLeft:
-                                                      Radius.circular(25.0),
-                                                  topRight:
-                                                      Radius.circular(25.0)),
-                                            ),
-                                          ),
-                                          child: snapshot.connectionState ==
-                                                  ConnectionState.waiting
-                                              ? const Padding(
-                                                  padding: EdgeInsets.all(18.0),
-                                                  child: SizedBox(
-                                                    width: 26.0,
-                                                    height: 26.0,
-                                                    child:
-                                                        CircularProgressIndicator(
-                                                      strokeWidth: 5.0,
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                )
-                                              : Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    AutoSizeText(
-                                                      snapshot.data ?? false
-                                                          ? 'Продать'
-                                                          : 'Купить',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: GoogleFonts.roboto(
-                                                        color: Colors.white,
-                                                        fontSize: 22.0,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                      ),
-                                                    ),
-                                                    AutoSizeText(
-                                                      snapshot.data ?? false
-                                                          ? NumberFormat.simpleCurrency(
-                                                                  locale: ui
-                                                                      .Platform
-                                                                      .localeName)
-                                                              .format(storeItemModel.price -
-                                                                  (storeItemModel.price *
-                                                                      20 /
-                                                                      100))
-                                                          : NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(AccountController
-                                                                      .isPremium &&
-                                                                  storeItemModel
-                                                                      .premium
-                                                              ? storeItemModel.price -
-                                                                  (storeItemModel
-                                                                          .price *
-                                                                      20 /
-                                                                      100)
-                                                              : storeItemModel
-                                                                  .price),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: GoogleFonts.roboto(
-                                                        color: Colors.white,
-                                                        fontSize: 15.0,
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                        );
-                                      }),
+                                            }),
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                ),
                 appBar: AppBar(
                   toolbarHeight: 76.0,
                   elevation: 0,

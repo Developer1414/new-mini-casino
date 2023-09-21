@@ -71,6 +71,8 @@ class StairsLogic extends ChangeNotifier {
         stonesIndex.addAll({i: stones[i]});
       }
 
+      print(stonesIndex);
+
       CommonFunctions.call(context: context, bet: bet, gameName: 'stairs');
 
       notifyListeners();
@@ -88,7 +90,7 @@ class StairsLogic extends ChangeNotifier {
       currentIndex--;
 
       currentCoefficient =
-          (11 - double.parse(currentIndex.toString())) * countStones * 32 / 100;
+          (8 - double.parse(currentIndex.toString())) * countStones * 32 / 100;
 
       profit = bet * currentCoefficient;
 

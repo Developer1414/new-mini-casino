@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:beamer/beamer.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,15 +14,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  ConnectivityResult _connectionStatus = ConnectivityResult.none;
-  final Connectivity _connectivity = Connectivity();
-  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  String string = '';
 
   @override
   void dispose() {
     super.dispose();
-
-    _connectivitySubscription.cancel();
   }
 
   Future showPremiumSubscription() async {
@@ -53,39 +46,10 @@ class _HomeState extends State<Home> {
     }
   }
 
-  Future<void> initConnectivity() async {
-    late ConnectivityResult result;
-    try {
-      result = await _connectivity.checkConnectivity();
-    } on PlatformException catch (e) {
-      if (kDebugMode) {
-        print('Couldn\'t check connectivity status: ${e.message}');
-      }
-      return;
-    }
-
-    if (!mounted) {
-      return Future.value(null);
-    }
-
-    return _updateConnectionStatus(result);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() {
-      _connectionStatus = result;
-
-      if (_connectionStatus == ConnectivityResult.none) {
-        Beamer.of(context).beamToNamed('/no-internet');
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     showPremiumSubscription();
-    initConnectivity();
   }
 
   @override
