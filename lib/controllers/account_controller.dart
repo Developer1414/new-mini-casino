@@ -301,17 +301,11 @@ class AccountController extends ChangeNotifier {
   }
 
   Future<Widget> initUserData(BuildContext context) async {
+    if (!kDebugMode) {
+      await FreeraspService().initSecurityState(context);
+    }
+
     Widget? newScreen;
-
-    /*Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
-      if (result == ConnectivityResult.none) {
-        hasInternetConnection = false;
-      }
-    });
-
-    if (!hasInternetConnection) {
-      return const NoInternetConnection();
-    }*/
 
     if (FirebaseAuth.instance.currentUser != null &&
         FirebaseAuth.instance.currentUser!.emailVerified) {
@@ -325,11 +319,6 @@ class AccountController extends ChangeNotifier {
                 reason: value[0].toString(),
                 date: (value[1] as Timestamp).toDate());
           } else {
-            if (!kDebugMode) {
-              // ignore: use_build_context_synchronously
-              await FreeraspService().initSecurityState(context);
-            }
-
             await checkPremium();
             await LocalPromocodes().initializeMyPromocodes();
             // ignore: use_build_context_synchronously

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -83,6 +84,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseFirestore.instance.settings =
+      const Settings(persistenceEnabled: false);
 
   Appodeal.initialize(
       appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",

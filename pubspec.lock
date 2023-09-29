@@ -484,10 +484,10 @@ packages:
     dependency: "direct main"
     description:
       name: freerasp
-      sha256: b5cbc343e34929d953e2a8fdcb8fe58d9448ac17c8dd7b102a2ffe868442c4d7
+      sha256: "01b9584d2b5f1c55f6c97f766b33f4744bbfd62aee7d5e8210222ceb5e53f61e"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.0"
+    version: "6.3.0"
   get_ip_address:
     dependency: "direct main"
     description:

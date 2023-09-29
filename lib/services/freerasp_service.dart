@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freerasp/freerasp.dart';
@@ -26,13 +28,18 @@ class FreeraspService {
       onDebug: () {
         if (kDebugMode) {
           print("Debugging");
+        } else {
+          exit(0);
         }
       },
       onDeviceBinding: () => errorDetected(context, 'Device binding'),
       onPrivilegedAccess: () => errorDetected(context,
           'На вашем устройстве были обнаружены повышенные права. Возможно, у вас установлены Root-права и т.д. Если это так, пожалуйста, удалите их, иначе вы не сможете использовать это приложение.'),
-      /* onSecureHardwareNotAvailable: () =>
-            print("Secure hardware not available"),*/
+      onSecureHardwareNotAvailable: () {
+        if (kDebugMode) {
+          print("Secure hardware not available");
+        }
+      },
       onSimulator: () {
         if (kDebugMode) {
           print("Simulator detected");
