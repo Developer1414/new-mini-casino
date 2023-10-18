@@ -4,6 +4,11 @@ import 'package:new_mini_casino/models/game_button_details.dart';
 class GamesController {
   static List<GameButtonDetails> games = [
     GameButtonDetails(
+        title: 'Plinko',
+        gameLogo: 'PlinkoLogo',
+        buttonColor: Colors.deepPurple,
+        nextScreen: '/plinko'),
+    GameButtonDetails(
         title: 'Blackjack',
         gameLogo: 'Blackjack',
         buttonColor: Colors.blueGrey.shade800,

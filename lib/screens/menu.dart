@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,6 +10,8 @@ import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
+import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,10 +38,23 @@ class _AllGamesState extends State<AllGames> {
     });
   }
 
+  Future checkOnEngineeringWorks() async {
+    await FirebaseFirestore.instance
+        .collection('settings')
+        .doc('RQQnMQbuH5fEfxlS6yN8')
+        .get()
+        .then((value) {
+      if (value.get('engineeringWorks') as bool) {
+        showEngineeringWorksAlertDialog(context);
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     checkDailyBonus();
+    checkOnEngineeringWorks();
   }
 
   @override
@@ -182,9 +196,9 @@ class _AllGamesState extends State<AllGames> {
                     builder: (context, snapshot) {
                       int count = snapshot.data?.docs
                               .where((element) =>
-                                  element.get('uid') ==
-                                      FirebaseAuth.instance.currentUser!.uid ||
-                                  element.get('uid') == 'all')
+                                  element.get('to') ==
+                                      ProfileController.profileModel.nickname ||
+                                  element.get('to') == 'all')
                               .length ??
                           0;
 
@@ -517,55 +531,56 @@ class _AllGamesState extends State<AllGames> {
         child: SizedBox(
           height: 60.0,
           child: ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               context.beamToNamed('/premium');
+
+              /* showSimpleAlertDialog(
+                  context: context,
+                  text: 'Покупка Premium временно недоступна!');*/
             },
             style: ElevatedButton.styleFrom(
               elevation: 5,
               shadowColor:
-                  const Color.fromARGB(255, 164, 231, 88).withOpacity(0.8),
-              backgroundColor: const Color.fromARGB(255, 164, 231, 88),
+                  const Color.fromARGB(255, 179, 242, 31).withOpacity(0.8),
+              backgroundColor: const Color.fromARGB(255, 179, 242, 31),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15.0),
               ),
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(left: 10.0, right: 12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 15.0,
-                      )
-                    ]),
-                    child: const FaIcon(
-                      FontAwesomeIcons.solidStar,
-                      color: Colors.white,
-                      size: 22.0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AutoSizeText(
+                  'MINI CASINO',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    color: const Color.fromARGB(255, 5, 2, 1),
+                    fontSize: 22.0,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(width: 5.0),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.black87),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 10.0),
+                    child: AutoSizeText(
+                      'PREMIUM',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 22.0,
+                        letterSpacing: 0.5,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 10.0),
-                  AutoSizeText(
-                    'Premium',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.roboto(
-                      color: Colors.white,
-                      fontSize: 22.0,
-                      letterSpacing: 0.5,
-                      fontWeight: FontWeight.w900,
-                      shadows: [
-                        Shadow(
-                          color: Colors.black.withOpacity(0.4),
-                          blurRadius: 15.0,
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ));

@@ -88,7 +88,7 @@ class TaxManager extends ChangeNotifier {
       dateTimeNow = dateTimeNow.add(const Duration(days: 8));
     }
 
-    tax += bet * 5 / 100;
+    tax += bet * 1 / 100;
 
     prefs.setString('tax', jsonEncode([tax, dateTimeNow.toString()]));
   }

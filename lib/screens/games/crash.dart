@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
@@ -357,11 +359,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                       AutoSizeText(
                         '${crashLogic.winCoefficient.toStringAsFixed(2)}x',
                         style: GoogleFonts.roboto(
-                            shadows: [
-                              Shadow(
-                                  color: Colors.white.withOpacity(0.2),
-                                  blurRadius: 5.0)
-                            ],
                             color: crashLogic.crashStatus == CrashStatus.win
                                 ? Colors.green
                                 : crashLogic.crashStatus == CrashStatus.loss
@@ -500,32 +497,50 @@ class MyLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.orange.withOpacity(0.5)
-      ..style = PaintingStyle.fill;
-
-    Path path = Path();
-    final double x = size.width * value;
-    final double y = size.height * (1 - value);
-
-    path.moveTo(0, size.height);
-    path.lineTo(x, y);
-    path.lineTo(x, size.height);
-    path.lineTo(0, size.height);
-    path.close();
-
-    canvas.drawPath(path, paint);
-
-    paint = Paint()
-      ..color = Colors.orange
-      ..strokeWidth = 8.0
+    final Paint paint = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 10.0
       ..style = PaintingStyle.stroke;
 
-    path = Path();
-    path.moveTo(0, size.height);
-    path.lineTo(x, y);
+    final Paint paintShadow = Paint()
+      ..color = Colors.black.withOpacity(0.5)
+      ..strokeWidth = 10.0
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0)
+      ..style = PaintingStyle.stroke;
 
+    final Path path = Path();
+
+    final double maxLineLength = size.width * 1.8;
+    final double lineLength = maxLineLength * value;
+    final double angle = value * (pi / 3.2);
+    final double dx = lineLength * cos(angle);
+    final double dy = lineLength * sin(angle);
+
+    final double controlX = dx / 2;
+
+    final Paint fillPaint = Paint()
+      ..color = Colors.orange
+      ..style = PaintingStyle.fill;
+
+    final Path fillPath = Path();
+    fillPath.moveTo(0, size.height);
+    fillPath.quadraticBezierTo(
+        controlX, size.height, dx, size.height - dy / 1.45);
+    fillPath.lineTo(dx, size.height);
+    fillPath.lineTo(0, size.height);
+
+    canvas.drawPath(fillPath, fillPaint);
+
+    path.moveTo(0, size.height);
+    path.quadraticBezierTo(controlX, size.height, dx, size.height - dy / 1.45);
+
+    canvas.drawPath(path, paintShadow);
     canvas.drawPath(path, paint);
+
+    final Paint circlePaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.fill;
+    canvas.drawCircle(Offset(dx, size.height - dy / 1.45), 10.0, circlePaint);
   }
 
   @override

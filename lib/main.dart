@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +30,7 @@ import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
+import 'package:new_mini_casino/games_logic/plinko_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/screens/bank/bank.dart';
 import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
@@ -46,6 +46,7 @@ import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
 import 'package:new_mini_casino/screens/games/jackpot.dart';
 import 'package:new_mini_casino/screens/games/keno.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
+import 'package:new_mini_casino/screens/games/plinko.dart';
 import 'package:new_mini_casino/screens/games/stairs.dart';
 import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
@@ -85,9 +86,6 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  FirebaseFirestore.instance.settings =
-      const Settings(persistenceEnabled: false);
-
   Appodeal.initialize(
       appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
       adTypes: [
@@ -102,7 +100,7 @@ void main() async {
       const AppMetricaConfig("c7091f0c-996b-4764-a824-8b1570535fd6"));
   AppMetrica.reportEvent('My first AppMetrica event!');
 
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
     initializeDateFormatting('ru_RU', null)
         .then((value) => runApp(const MainApp()));
@@ -194,6 +192,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/crash': (context, state, data) => const Crash(),
         '/stairs': (context, state, data) => const Stairs(),
         '/jackpot': (context, state, data) => const Jackpot(),
+        '/plinko': (context, state, data) => const Plinko(),
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
         '/product-review': (context, state, data) => const StoreProductReview(),
@@ -260,6 +259,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
         ChangeNotifierProvider(create: (ctx) => NotificationController()),
         ChangeNotifierProvider(create: (ctx) => TaxManager()),
+        ChangeNotifierProvider(create: (ctx) => PlinkoLogic()),
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
         ChangeNotifierProvider(create: (ctx) => BankManager()),
         ChangeNotifierProvider(create: (ctx) => BlackjackLogic()),

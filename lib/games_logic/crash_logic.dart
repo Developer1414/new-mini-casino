@@ -106,6 +106,8 @@ class CrashLogic extends ChangeNotifier {
 
     timer.cancel();
 
+    crashStatus = CrashStatus.loss;
+
     animationController
       ..stop()
       ..reset();
@@ -122,31 +124,38 @@ class CrashLogic extends ChangeNotifier {
     notifyListeners();
   }
 
+  double generateDouble(double minValue, double maxValue) {
+    return minValue + (maxValue - minValue) * Random.secure().nextDouble();
+  }
+
   void incrementCoefficient() {
     int temp = Random.secure().nextInt(100);
-
     int time = 10;
 
-    if (temp < 50.0) {
-      maxCoefficient = Random.secure().nextDouble() * (1.5 - 1.0) + 1.0;
-    } else if (temp >= 50.0 && temp < 75) {
-      maxCoefficient = Random.secure().nextDouble() * (5.0 - 1.0) + 1.0;
-    } else if (temp >= 75.0 && temp < 85) {
-      maxCoefficient = Random.secure().nextDouble() * (10.0 - 1.0) + 1.0;
-    } else if (temp >= 85.0 && temp < 95) {
-      maxCoefficient = Random.secure().nextDouble() * (15.0 - 1.0) + 1.0;
-    } else if (temp >= 95.0 && temp < 99.5) {
-      maxCoefficient = Random.secure().nextDouble() * (35.0 - 1.0) + 1.0;
-    } else if (temp >= 99.5) {
-      maxCoefficient = Random.secure().nextDouble() * (100.0 - 1.0) + 1.0;
+    double speed = 0.005;
+
+    if (temp < 45.0) {
+      maxCoefficient = generateDouble(1.0, 1.5);
+    } else if (temp >= 45.0 && temp < 70) {
+      maxCoefficient = generateDouble(1.0, 10.0);
+    } else if (temp >= 70.0 && temp < 80) {
+      maxCoefficient = generateDouble(1.0, 15.0);
+    } else if (temp >= 80.0 && temp < 90) {
+      maxCoefficient = generateDouble(1.0, 20.0);
+    } else if (temp >= 90.0 && temp < 95.0) {
+      maxCoefficient = generateDouble(1.0, 40.0);
+    } else if (temp >= 95.0) {
+      maxCoefficient = generateDouble(1.0, 100.0);
     }
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (winCoefficient < maxCoefficient) {
-        winCoefficient += 0.005;
+        winCoefficient += speed;
         profit = bet * winCoefficient;
+        speed += 0.0001;
       } else {
         timer.cancel();
+        winCoefficient = maxCoefficient;
       }
 
       if (!timer.isActive) {

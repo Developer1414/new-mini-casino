@@ -341,61 +341,63 @@ class Keno extends StatelessWidget {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: GridView.custom(
-                      shrinkWrap: true,
-                      physics: const BouncingScrollPhysics(),
-                      gridDelegate: SliverWovenGridDelegate.count(
-                        crossAxisCount: 5,
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,
-                        pattern: const [
-                          WovenGridTile(2),
-                          WovenGridTile(
-                            2,
-                            crossAxisRatio: 1,
-                          ),
-                        ],
-                      ),
-                      childrenDelegate: SliverChildBuilderDelegate(
-                        childCount: 40,
-                        (context, index) => ElevatedButton(
-                          onPressed: () {
-                            kenoLogic.selectCustomNumber(index);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            elevation: 5,
-                            backgroundColor:
-                                kenoLogic.userNumbersList.contains(index)
-                                    ? const Color.fromARGB(255, 164, 223, 96)
-                                    : Theme.of(context).canvasColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
-                                side: BorderSide(
-                                    width: 3.0,
-                                    color: kenoLogic.randomNumbersList
-                                            .contains(index)
-                                        ? kenoLogic.userNumbersList
-                                                .contains(index)
-                                            ? Colors.deepPurpleAccent
-                                            : Colors.deepPurpleAccent
-                                                .withOpacity(0.5)
-                                        : Colors.transparent)),
-                          ),
-                          child: AutoSizeText(
-                            (index + 1).toString(),
-                            maxLines: 1,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(
-                                    color: kenoLogic
-                                            .userNumbersList
-                                            .contains(index)
-                                        ? Colors.black87
-                                        : Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .color),
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: GridView.custom(
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate: SliverWovenGridDelegate.count(
+                          crossAxisCount: 5,
+                          mainAxisSpacing: 10,
+                          crossAxisSpacing: 10,
+                          pattern: const [
+                            WovenGridTile(2),
+                            WovenGridTile(
+                              2,
+                              crossAxisRatio: 1,
+                            ),
+                          ],
+                        ),
+                        childrenDelegate: SliverChildBuilderDelegate(
+                          childCount: 40,
+                          (context, index) => ElevatedButton(
+                            onPressed: () {
+                              kenoLogic.selectCustomNumber(index);
+                            },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 5,
+                              backgroundColor:
+                                  kenoLogic.userNumbersList.contains(index)
+                                      ? const Color.fromARGB(255, 164, 223, 96)
+                                      : Theme.of(context).canvasColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  side: BorderSide(
+                                      width: 3.0,
+                                      color: kenoLogic.randomNumbersList
+                                              .contains(index)
+                                          ? kenoLogic.userNumbersList
+                                                  .contains(index)
+                                              ? Colors.deepPurpleAccent
+                                              : Colors.deepPurpleAccent
+                                                  .withOpacity(0.5)
+                                          : Colors.transparent)),
+                            ),
+                            child: AutoSizeText(
+                              (index + 1).toString(),
+                              maxLines: 1,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium!
+                                  .copyWith(
+                                      color: kenoLogic.userNumbersList
+                                              .contains(index)
+                                          ? Colors.black87
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .color),
+                            ),
                           ),
                         ),
                       ),

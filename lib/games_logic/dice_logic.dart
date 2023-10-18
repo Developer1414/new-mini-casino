@@ -26,8 +26,6 @@ class DiceLogic extends ChangeNotifier {
   int selectedNumber = 1;
   int randomNumber = 1;
 
-  List<double> buttonsCoefficient = [1.05, 1.4, 2.5, 3.6, 4.7, 5.8];
-
   List<int> oneToTheeList = [1, 2, 3];
   List<int> fourToSixList = [4, 5, 6];
 
@@ -55,7 +53,7 @@ class DiceLogic extends ChangeNotifier {
 
     selectedNumber = 0;
     evenOrOddType = type;
-    coefficient = 2;
+    coefficient = 2.0;
 
     notifyListeners();
   }
@@ -72,7 +70,7 @@ class DiceLogic extends ChangeNotifier {
     numberFromToType = NumberFromToButtonType.empty;
 
     selectedNumber = number;
-    coefficient = 2.0;
+    coefficient = 6.0;
 
     notifyListeners();
   }

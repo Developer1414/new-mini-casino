@@ -94,10 +94,10 @@ class LoanMoneysManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<UserLoan?> getLoan() async {
+  Future<UserLoan?> getLoan(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await ProfileController.getUserProfile();
+    await ProfileController.getUserProfile(context);
 
     maxLoan = ProfileController.profileModel.totalGame >= 1000
         ? (10000 * (ProfileController.profileModel.totalGame / 1000))

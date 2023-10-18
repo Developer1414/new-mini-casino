@@ -22,25 +22,27 @@ class BannedUser extends StatelessWidget {
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(15.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const FaIcon(
-                    FontAwesomeIcons.ban,
-                    color: Colors.redAccent,
-                    size: 80.0,
-                  ),
-                  const SizedBox(height: 15.0),
-                  Text(
-                      isBannedAccount
-                          ? 'Вы заблокированы до ${DateFormat.yMMMMd('ru_RU').format(date)}\nПричина: $reason'
-                          : reason,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium!
-                          .copyWith(height: 1.3, fontSize: 22.0)),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const FaIcon(
+                      FontAwesomeIcons.ban,
+                      color: Colors.redAccent,
+                      size: 80.0,
+                    ),
+                    const SizedBox(height: 15.0),
+                    Text(
+                        isBannedAccount
+                            ? 'Вы заблокированы до ${DateFormat.yMMMMd('ru_RU').format(date)}\nПричина: $reason'
+                            : reason,
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(height: 1.3, fontSize: 15.0)),
+                  ],
+                ),
               ),
             ),
           ),

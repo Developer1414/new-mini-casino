@@ -64,41 +64,53 @@ class _LeaderBoardState extends State<LeaderBoard> {
                 )
                 .snapshots(),
             builder: (context, snapshot) {
+              int myPlace = (snapshot.data?.size ?? 0) < 3
+                  ? (snapshot.data?.size ?? 0) + 1
+                  : (snapshot.data?.size ?? 0) < 13
+                      ? ((snapshot.data?.size ?? 0) + 1) -
+                          ((snapshot.data?.size ?? 0) -
+                              ((snapshot.data?.size ?? 0) - 3))
+                      : ((snapshot.data?.size ?? 0) + 1) -
+                          ((snapshot.data?.size ?? 0) -
+                              ((snapshot.data?.size ?? 0) - 13));
+
               return Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     AutoSizeText(
-                      'Вы на ${(snapshot.data?.size ?? 0) < 3 ? (snapshot.data?.size ?? 0) + 1 : (snapshot.data?.size ?? 0) < 13 ? ((snapshot.data?.size ?? 0) + 1) - ((snapshot.data?.size ?? 0) - ((snapshot.data?.size ?? 0) - 3)) : ((snapshot.data?.size ?? 0) + 1) - ((snapshot.data?.size ?? 0) - ((snapshot.data?.size ?? 0) - 13))} месте',
+                      'Вы на $myPlace месте',
                       style: Theme.of(context)
                           .appBarTheme
                           .titleTextStyle!
                           .copyWith(fontSize: 23.0),
                     ),
                     const SizedBox(width: 10.0),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: (snapshot.data?.size ?? 0) < 3
-                            ? Colors.lightGreen
-                            : (snapshot.data?.size ?? 0) < 13
-                                ? Colors.blue
-                                : (snapshot.data?.size ?? 0) < 100
-                                    ? Colors.deepPurple
-                                    : Colors.transparent,
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: AutoSizeText(
-                          'ТОП-${(snapshot.data?.size ?? 0) < 3 ? 3 : (snapshot.data?.size ?? 0) < 13 ? 10 : (snapshot.data?.size ?? 0) < 100 ? 100 : 1000}',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.roboto(
-                              color: Colors.white,
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w900),
-                        ),
-                      ),
-                    )
+                    myPlace > 100
+                        ? Container()
+                        : Container(
+                            decoration: BoxDecoration(
+                              color: (snapshot.data?.size ?? 0) < 3
+                                  ? Colors.lightGreen
+                                  : (snapshot.data?.size ?? 0) < 13
+                                      ? Colors.blue
+                                      : (snapshot.data?.size ?? 0) < 100
+                                          ? Colors.deepPurple
+                                          : Colors.transparent,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: AutoSizeText(
+                                'ТОП-${(snapshot.data?.size ?? 0) < 3 ? 3 : (snapshot.data?.size ?? 0) < 13 ? 10 : (snapshot.data?.size ?? 0) < 100 ? 100 : 1000}',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                    color: Colors.white,
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w900),
+                              ),
+                            ),
+                          )
                   ],
                 ),
               );
@@ -326,7 +338,6 @@ class _LeaderBoardState extends State<LeaderBoard> {
                       children: [
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             LeaderBoard.selectedValue != LeaderBoard.items.first
                                 ? Container()
@@ -339,7 +350,8 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                       color: Theme.of(context).cardColor,
                                     ),
                                     child: CircleProgressBar(
-                                      foregroundColor: Colors.green,
+                                      foregroundColor: const Color.fromARGB(
+                                          255, 179, 242, 31),
                                       backgroundColor: Theme.of(context)
                                           .buttonTheme
                                           .colorScheme!

@@ -19,7 +19,7 @@ class TransferMoneysManager extends ChangeNotifier {
   void changeAmount(double amount) {
     currentAmount = NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
         .format(
-            AccountController.isPremium ? amount : amount + (amount * 5 / 100));
+            AccountController.isPremium ? amount : amount + (amount * 6 / 100));
 
     notifyListeners();
   }
@@ -36,7 +36,7 @@ class TransferMoneysManager extends ChangeNotifier {
     final balance = Provider.of<Balance>(context, listen: false);
 
     double amountWithComission =
-        AccountController.isPremium ? amount : amount + (amount * 5 / 100);
+        !AccountController.isPremium ? amount : amount + (amount * 60 / 100);
 
     if (username.isEmpty) {
       alertDialogError(
@@ -105,7 +105,7 @@ class TransferMoneysManager extends ChangeNotifier {
         await FirebaseFirestore.instance.collection('notifications').doc().set({
           'amount': amount,
           'from': ProfileController.profileModel.nickname,
-          'uid': value.docs.first.get('uid'),
+          'to': username,
           'action': 'transfer_moneys',
           'date': dateTimeNow,
         }).whenComplete(() async {});

@@ -93,7 +93,7 @@ class BlackjackLogic extends ChangeNotifier {
         }
 
         if (countCards == 3 &&
-            cards[lastDealerMoves.first] == 10 &&
+            cards[lastDealerMoves.first] == 0 &&
             insuranceType == Insurance.none &&
             gameWithInsurance) {
           timer.cancel();

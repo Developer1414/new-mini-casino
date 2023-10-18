@@ -40,26 +40,36 @@ class AccountController extends ChangeNotifier {
 
   AuthorizationAction authorizationAction = AuthorizationAction.register;
 
-  Future checkPremium() async {
+  Future checkPremium(BuildContext context) async {
     DateTime dateTimeNow = await NTP.now();
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) async {
-      if (value.data()!.containsKey('premium')) {
-        expiredSubscriptionDate = (value.get('premium') as Timestamp).toDate();
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .get()
+          .then((value) async {
+        if (value.data()!.containsKey('premium')) {
+          expiredSubscriptionDate =
+              (value.get('premium') as Timestamp).toDate();
 
-        if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
-            expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
-            expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
-          isPremium = false;
-        } else {
-          isPremium = true;
+          if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
+              expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
+              expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
+            isPremium = false;
+          } else {
+            isPremium = true;
+          }
         }
-      }
-    });
+      });
+    } on Exception catch (e) {
+      // ignore: use_build_context_synchronously
+      alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: '[PremiumError]: ${e.toString()}');
+    }
 
     notifyListeners();
   }
@@ -109,7 +119,7 @@ class AccountController extends ChangeNotifier {
                       date: (value[1] as Timestamp).toDate())),
               (route) => false);
         } else {
-          await checkPremium();
+          await checkPremium(context);
 
           AdService.loadCountBet();
 
@@ -157,9 +167,9 @@ class AccountController extends ChangeNotifier {
     await FirebaseAuth.instance.currentUser?.reload();
 
     if (FirebaseAuth.instance.currentUser!.emailVerified) {
-      setDataToDatabase(name, referalCode);
-
       timer?.cancel();
+
+      await setDataToDatabase(name, referalCode);
     }
 
     notifyListeners();
@@ -179,7 +189,7 @@ class AccountController extends ChangeNotifier {
 
   Future setDataToDatabase(String name, String signedCode) async {
     loadingText = 'Пожалуйста, подождите...';
-    isLoading = false;
+    notifyListeners();
 
     await FirebaseFirestore.instance
         .collection('users')
@@ -188,7 +198,8 @@ class AccountController extends ChangeNotifier {
       'uid': FirebaseAuth.instance.currentUser!.uid,
       'name': name,
       'balance': 500,
-      'totalGames': 0
+      'totalGames': 0,
+      'level': 1.0,
     }).whenComplete(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setBool('isFirstGameStarted', true);
@@ -301,42 +312,34 @@ class AccountController extends ChangeNotifier {
   }
 
   Future<Widget> initUserData(BuildContext context) async {
+    Widget? newScreen;
+
     if (!kDebugMode) {
       await FreeraspService().initSecurityState(context);
     }
 
-    Widget? newScreen;
-
-    if (FirebaseAuth.instance.currentUser != null &&
-        FirebaseAuth.instance.currentUser!.emailVerified) {
+    if (FirebaseAuth.instance.currentUser != null) {
       if (FirebaseAuth.instance.currentUser!.emailVerified) {
         AdService.loadCountBet();
 
-        await checkBanAccount().then((value) async {
-          if (value.isNotEmpty) {
-            newScreen = BannedUser(
-                isBannedAccount: true,
-                reason: value[0].toString(),
-                date: (value[1] as Timestamp).toDate());
-          } else {
-            await checkPremium();
-            await LocalPromocodes().initializeMyPromocodes();
-            // ignore: use_build_context_synchronously
-            await Provider.of<Balance>(context, listen: false).loadBalance();
-            // ignore: use_build_context_synchronously
-            await Provider.of<MoneyStorageManager>(context, listen: false)
-                .loadBalance();
+        // ignore: use_build_context_synchronously
+        await checkPremium(context);
+        await LocalPromocodes().initializeMyPromocodes();
+        // ignore: use_build_context_synchronously
+        await Provider.of<Balance>(context, listen: false).loadBalance(context);
+        // ignore: use_build_context_synchronously
+        await Provider.of<MoneyStorageManager>(context, listen: false)
+            .loadBalance(context);
 
-            // ignore: use_build_context_synchronously
-            await Provider.of<TaxManager>(context, listen: false).getTax();
+        // ignore: use_build_context_synchronously
+        await Provider.of<TaxManager>(context, listen: false).getTax();
 
-            await ProfileController.getUserProfile();
+        // ignore: use_build_context_synchronously
+        await ProfileController.getUserProfile(context);
 
-            newScreen = const AllGames();
-          }
-        });
+        newScreen = const AllGames();
 
-        return newScreen!;
+        return newScreen;
       } else {
         FirebaseAuth.instance.signOut();
         return const Login();

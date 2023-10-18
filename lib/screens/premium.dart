@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -7,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/widgets/gift_premium_alert.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
@@ -77,7 +79,7 @@ class PremiumInfo extends StatelessWidget {
                           )
                         : Container(
                             color: Theme.of(context).scaffoldBackgroundColor,
-                            height: 167.0,
+                            height: 178.0,
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   bottom: 15.0,
@@ -89,141 +91,102 @@ class PremiumInfo extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            paymentController
-                                                .chooseSubscriptionDuration(
-                                                    true);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 5,
-                                            backgroundColor: paymentController
-                                                    .isYearSubscription
-                                                ? const Color.fromARGB(
-                                                    255, 164, 231, 88)
-                                                : Theme.of(context).cardColor,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(15.0),
-                                                    topRight:
-                                                        Radius.circular(15.0),
-                                                    bottomLeft:
-                                                        Radius.circular(5.0),
-                                                    bottomRight:
-                                                        Radius.circular(5.0))),
-                                          ),
-                                          child: AutoSizeText(
-                                            'Год',
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
-                                            style: GoogleFonts.roboto(
-                                              color: paymentController
-                                                      .isYearSubscription
-                                                  ? Colors.white
-                                                  : Colors.white
-                                                      .withOpacity(0.4),
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.w700,
-                                              shadows: [
-                                                Shadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.4),
-                                                  blurRadius: 15.0,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
+                                      AutoSizeText('Месяц',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!),
+                                      const SizedBox(width: 5.0),
+                                      CupertinoSwitch(
+                                        trackColor: Colors.blueAccent,
+                                        value: paymentController
+                                            .isYearSubscription,
+                                        onChanged: (value) {
+                                          paymentController
+                                              .chooseSubscriptionDuration(
+                                                  value);
+                                        },
                                       ),
-                                      const SizedBox(width: 10.0),
-                                      Expanded(
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            paymentController
-                                                .chooseSubscriptionDuration(
-                                                    false);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 5,
-                                            backgroundColor: !paymentController
-                                                    .isYearSubscription
-                                                ? const Color.fromARGB(
-                                                    255, 164, 231, 88)
-                                                : Theme.of(context).cardColor,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(15.0),
-                                                    topRight:
-                                                        Radius.circular(15.0),
-                                                    bottomLeft:
-                                                        Radius.circular(5.0),
-                                                    bottomRight:
-                                                        Radius.circular(5.0))),
-                                          ),
-                                          child: AutoSizeText(
-                                            'Месяц',
-                                            maxLines: 1,
-                                            textAlign: TextAlign.center,
-                                            style: GoogleFonts.roboto(
-                                              color: !paymentController
-                                                      .isYearSubscription
-                                                  ? Colors.white
-                                                  : Colors.white
-                                                      .withOpacity(0.4),
-                                              fontSize: 20.0,
-                                              fontWeight: FontWeight.w700,
-                                              shadows: [
-                                                Shadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.4),
-                                                  blurRadius: 15.0,
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
+                                      const SizedBox(width: 5.0),
+                                      AutoSizeText('Год',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!),
                                     ],
                                   ),
+                                  const SizedBox(height: 6.0),
                                   Padding(
                                     padding: const EdgeInsets.only(
                                         top: 5.0, bottom: 15.0),
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          paymentController.getPremium(
-                                              context: context);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          elevation: 5,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 164, 231, 88),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0)),
-                                        ),
-                                        child: AutoSizeText(
-                                          'Подключить',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: Colors.white,
-                                            fontSize: 25.0,
-                                            fontWeight: FontWeight.w700,
-                                            shadows: [
-                                              Shadow(
-                                                color: Colors.black
-                                                    .withOpacity(0.4),
-                                                blurRadius: 15.0,
-                                              )
-                                            ],
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          flex: 5,
+                                          child: SizedBox(
+                                            height: 60.0,
+                                            width: double.infinity,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                paymentController
+                                                    .premiumForGift('');
+
+                                                paymentController.getPremium(
+                                                    context: context);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 5,
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 179, 242, 31),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0)),
+                                              ),
+                                              child: AutoSizeText(
+                                                'Подключить',
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.roboto(
+                                                  color: const Color.fromARGB(
+                                                      255, 5, 2, 1),
+                                                  fontSize: 25.0,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
+                                        const SizedBox(width: 15.0),
+                                        SizedBox(
+                                          height: 60.0,
+                                          width: 80.0,
+                                          child: ElevatedButton(
+                                              onPressed: () {
+                                                giftPremiumAlert(
+                                                    mainContext: context,
+                                                    paymentController:
+                                                        paymentController);
+
+                                                /*paymentController.getPremium(
+                                                    context: context);*/
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 5,
+                                                backgroundColor:
+                                                    Colors.redAccent,
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0)),
+                                              ),
+                                              child: const FaIcon(
+                                                FontAwesomeIcons.gift,
+                                                color: Colors.white,
+                                                size: 30.0,
+                                              )),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   RichText(
@@ -287,29 +250,38 @@ class PremiumInfo extends StatelessWidget {
                           children: [
                             Column(
                               children: [
-                                RichText(
-                                  textAlign: TextAlign.center,
-                                  text: TextSpan(
-                                    text: 'Mini Casino\n',
+                                AutoSizeText('Mini Casino',
+                                    textAlign: TextAlign.center,
                                     style: Theme.of(context)
                                         .textTheme
-                                        .displayLarge,
-                                    children: [
-                                      TextSpan(
-                                          text: 'Premium',
-                                          style: GoogleFonts.roboto(
-                                              textStyle: const TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 164, 231, 88),
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.w900,
-                                          ))),
-                                    ],
+                                        .displayLarge!
+                                        .copyWith(
+                                          color: const Color.fromARGB(
+                                              255, 179, 242, 31),
+                                        )),
+                                const SizedBox(width: 5.0),
+                                Container(
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      color: Colors.black87),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 10.0),
+                                    child: AutoSizeText(
+                                      'PREMIUM',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 35.0,
+                                        letterSpacing: 0.5,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(height: 15.0),
                                 Text(
-                                  'Попробуйте Mini Casino Premium всего за 149 руб. в месяц или 1499 руб. в год!',
+                                  'Попробуйте Premium всего за 149 руб. в месяц или 1499 руб. в год!',
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
@@ -324,16 +296,15 @@ class PremiumInfo extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 30.0),
+
                             Container(
                               width: double.infinity,
                               decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(15.0),
                                   border: Border.all(
-                                      color: Theme.of(context)
-                                          .buttonTheme
-                                          .colorScheme!
-                                          .background,
+                                      color: const Color.fromARGB(
+                                          255, 179, 242, 31),
                                       width: 3.0),
                                   boxShadow: [
                                     BoxShadow(
@@ -351,19 +322,25 @@ class PremiumInfo extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Бесплатный план',
+                                        Text('Premium план',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleMedium),
+                                                .titleMedium!
+                                                .copyWith(
+                                                    color: const Color.fromARGB(
+                                                        255, 179, 242, 31))),
                                         const SizedBox(height: 5.0),
                                         Text(
-                                            '• Есть реклама\n• Переводы игрокам не доступны\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 5% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(300)}',
+                                            '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• -5% на погашение кредита\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .bodySmall),
+                                                .bodySmall!
+                                                .copyWith(
+                                                  height: 1.4,
+                                                )),
                                       ],
                                     ),
-                                    AccountController.isPremium
+                                    !AccountController.isPremium
                                         ? Container()
                                         : Container(
                                             width: 80.0,
@@ -403,8 +380,10 @@ class PremiumInfo extends StatelessWidget {
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(15.0),
                                   border: Border.all(
-                                      color: const Color.fromARGB(
-                                          255, 164, 231, 88),
+                                      color: Theme.of(context)
+                                          .buttonTheme
+                                          .colorScheme!
+                                          .background,
                                       width: 3.0),
                                   boxShadow: [
                                     BoxShadow(
@@ -422,22 +401,22 @@ class PremiumInfo extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text('Premium план',
+                                        Text('Бесплатный план',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .titleMedium!
-                                                .copyWith(
-                                                    color: const Color.fromARGB(
-                                                        255, 164, 231, 88))),
+                                                .titleMedium),
                                         const SizedBox(height: 5.0),
                                         Text(
-                                            '• Нет рекламы\n• Нет налогов\n• Доступны переводы игрокам\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• -5% на погашение кредита\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
+                                            '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 5% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}',
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .bodySmall),
+                                                .bodySmall!
+                                                .copyWith(
+                                                  height: 1.4,
+                                                )),
                                       ],
                                     ),
-                                    !AccountController.isPremium
+                                    AccountController.isPremium
                                         ? Container()
                                         : Container(
                                             width: 80.0,
@@ -470,6 +449,7 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                               ),
                             ),
+
                             //Expanded(child: Container())
                           ],
                         ),

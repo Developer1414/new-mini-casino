@@ -167,10 +167,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                               children: [
                                 for (int index = 0; index < 6; index++)
                                   itemNumber(
-                                      number: index + 1,
-                                      diceLogic: diceLogic,
-                                      coefficient:
-                                          diceLogic.buttonsCoefficient[index])
+                                      number: index + 1, diceLogic: diceLogic)
                               ],
                             ),
                             const SizedBox(height: 15.0),
@@ -389,10 +386,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
     );
   }
 
-  Widget itemNumber(
-      {int number = 1,
-      double coefficient = 0.0,
-      required DiceLogic diceLogic}) {
+  Widget itemNumber({int number = 1, required DiceLogic diceLogic}) {
     return SizedBox(
       width: 50.0,
       height: 50.0,
@@ -425,7 +419,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   AutoSizeText(
-                    'x2.0',
+                    'x6.0',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(

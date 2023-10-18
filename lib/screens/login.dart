@@ -85,20 +85,69 @@ class Login extends StatelessWidget {
                                     ),
                             ],
                           ),
-                        )),
+                        )), //accountController.changeAuthorizationAction(index);
                     appBar: AppBar(
                       elevation: 0,
+                      toolbarHeight: 76.0,
                       backgroundColor: Colors.transparent,
                       automaticallyImplyLeading: false,
-                      title: TabBar(
-                        onTap: (index) {
-                          accountController.changeAuthorizationAction(index);
-                        },
-                        tabs: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                            child: Row(
+                      title: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextButton.icon(
+                                onPressed: () => accountController
+                                    .changeAuthorizationAction(0),
+                                icon: FaIcon(
+                                  FontAwesomeIcons.userPlus,
+                                  color: Theme.of(context)
+                                      .appBarTheme
+                                      .iconTheme!
+                                      .color,
+                                  size: 18.0,
+                                ),
+                                label: AutoSizeText('Регистрация',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
+                              ),
+                            ),
+                            Expanded(
+                              child: TextButton.icon(
+                                onPressed: () => accountController
+                                    .changeAuthorizationAction(1),
+                                icon: FaIcon(
+                                  FontAwesomeIcons.rightToBracket,
+                                  color: Theme.of(context)
+                                      .appBarTheme
+                                      .iconTheme!
+                                      .color,
+                                  size: 18.0,
+                                ),
+                                label: AutoSizeText('Вход',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 20.0)),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    body: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            /*Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 FaIcon(
@@ -120,11 +169,7 @@ class Login extends StatelessWidget {
                                         .copyWith(fontSize: 20.0)),
                               ],
                             ),
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                            child: Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 FaIcon(
@@ -145,15 +190,7 @@ class Login extends StatelessWidget {
                                         .bodyMedium!
                                         .copyWith(fontSize: 20.0)),
                               ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    body: Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
+                            ),*/
                             Padding(
                                 padding: const EdgeInsets.only(
                                     left: 15.0, right: 15.0, top: 30.0),
@@ -188,7 +225,7 @@ class Login extends StatelessWidget {
                                   ),
                                   child: loginCustomTextField(
                                       context: context,
-                                      keyboardType: TextInputType.emailAddress,
+                                      keyboardType: TextInputType.text,
                                       controller: emailController,
                                       hintText: 'Почта...'),
                                 ),

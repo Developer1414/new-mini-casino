@@ -73,11 +73,8 @@ class LoanMoneys extends StatelessWidget {
         ),
         body: FutureBuilder(
             future: Provider.of<LoanMoneysManager>(context, listen: false)
-                .getLoan(),
+                .getLoan(context),
             builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return loading(context: context);
-              }
               return Consumer<LoanMoneysManager>(
                 builder: (context, loanMoneysManager, child) {
                   return loanMoneysManager.isLoading
@@ -212,7 +209,18 @@ class LoanMoneys extends StatelessWidget {
                                                     color: Colors.blueAccent),
                                                 const SizedBox(height: 20.0),
                                                 AutoSizeText(
-                                                  'Через каждую 1000 игр вы сможете брать кредит больше на ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(10000)}. Сейчас ваш максимально допустимый кредит - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(loanMoneysManager.maxLoan)}. После взятия кредита вам нужно будет погасить его в течение 7 дней на 10% больше (или на 5%, если у вас есть подписка Premium). Если не погасите его в срок, то каждый день он будет увеличиваться на 3%. Кстати, с подпиской Premium кредит можно взять в 2 раза больше!',
+                                                  'Ваш максимально допустимый кредит - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(loanMoneysManager.maxLoan)}.',
+                                                  textAlign: TextAlign.center,
+                                                  style: GoogleFonts.roboto(
+                                                      color: Colors.white
+                                                          .withOpacity(0.5),
+                                                      fontSize: 12.0,
+                                                      fontWeight:
+                                                          FontWeight.w600),
+                                                ),
+                                                const SizedBox(height: 10.0),
+                                                AutoSizeText(
+                                                  'После взятия кредита вам нужно будет погасить его в течение 7 дней на 10% больше (или на 5%, если у вас есть подписка Premium). Если не погасите его в срок, то каждый день он будет увеличиваться на 3%. Кстати, с подпиской Premium кредит можно взять в 2 раза больше!',
                                                   textAlign: TextAlign.center,
                                                   style: GoogleFonts.roboto(
                                                       color: Colors.white

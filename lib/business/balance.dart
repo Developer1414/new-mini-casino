@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:new_mini_casino/services/balance_secure.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 
 class Balance extends ChangeNotifier {
   double balance = 500.0;
@@ -29,19 +31,29 @@ class Balance extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future loadBalance() async {
+  Future loadBalance(BuildContext context) async {
     if (FirebaseAuth.instance.currentUser?.uid == null) {
       return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
           .format(0.0);
     }
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser?.uid)
-        .get()
-        .then((value) {
-      balance = double.parse(value.get('balance').toString());
-    });
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(FirebaseAuth.instance.currentUser?.uid)
+          .get()
+          .then((value) {
+        balance = double.parse(value.get('balance').toString());
+        BalanceSecure().setLastBalance(balance);
+      });
+    } on Exception catch (e) {
+      // ignore: use_build_context_synchronously
+      alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: '[LoadBalanceError]: ${e.toString()}');
+    }
   }
 
   void updateBalance() {
@@ -51,5 +63,7 @@ class Balance extends ChangeNotifier {
         .update({
       'balance': balance,
     });
+
+    BalanceSecure().setLastBalance(balance);
   }
 }
