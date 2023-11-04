@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -11,12 +10,12 @@ import 'package:new_mini_casino/widgets/button_model.dart';
 Widget transferMoneysModel(
     {required BuildContext context,
     required NotificationController notificationController,
-    required QueryDocumentSnapshot<Map<String, dynamic>> docs}) {
-  String from = docs.get('from');
+    required Map<dynamic, dynamic> docs}) {
+  String from = docs['from'];
 
-  DateTime date = docs.get('date').toDate();
+  DateTime date = DateTime.parse(docs['date']);
 
-  double moneysAmount = double.parse(docs.get('amount').toString());
+  double moneysAmount = double.parse(docs['amount'].toString());
 
   return Container(
     width: double.infinity,
@@ -72,7 +71,9 @@ Widget transferMoneysModel(
                 buttonName: 'Получить',
                 onPressed: () async {
                   await notificationController.getMoneys(
-                      context: context, amount: moneysAmount, docId: docs.id);
+                      context: context,
+                      amount: moneysAmount,
+                      docId: docs['id']);
                 },
                 color: Colors.green),
           )

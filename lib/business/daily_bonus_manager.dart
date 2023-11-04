@@ -4,7 +4,7 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,6 @@ class DailyBonusManager extends ChangeNotifier {
   ];
 
   List<int> coefficients = [5, 10, 2, 3];
-  //List<int> bonuses = List.filled(4, 0);
 
   int dailyCountBets = 0;
 
@@ -82,20 +81,20 @@ class DailyBonusManager extends ChangeNotifier {
 
     int resultBonus = dailyCountBets *
         coefficients[bonusIndex] *
-        (AccountController.isPremium ? 2 : 1);
+        (SupabaseController.isPremium ? 2 : 1);
 
     notifyListeners();
-
-    // ignore: use_build_context_synchronously
-    Provider.of<Balance>(context, listen: false)
-        .cashout(double.parse(resultBonus.toString()));
 
     await prefs.setString('dailyBonus', dateTimeNow.toString());
     await prefs.remove('dailyCountBets');
 
     await Future.delayed(const Duration(seconds: 1));
 
-    // ignore: use_build_context_synchronously
+    if (!context.mounted) return;
+
+    Provider.of<Balance>(context, listen: false)
+        .cashout(double.parse(resultBonus.toString()));
+
     alertDialogSuccess(
         context: context,
         barrierDismissible: false,

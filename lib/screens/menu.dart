@@ -1,21 +1,22 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
-import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
+import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:provider/provider.dart' as provider;
 
 class AllGames extends StatefulWidget {
   const AllGames({super.key});
@@ -39,12 +40,14 @@ class _AllGamesState extends State<AllGames> {
   }
 
   Future checkOnEngineeringWorks() async {
-    await FirebaseFirestore.instance
-        .collection('settings')
-        .doc('RQQnMQbuH5fEfxlS6yN8')
-        .get()
+    await SupabaseController.supabase!
+        .from('settings')
+        .select('*')
+        .eq('setting', 'engineeringWorks')
         .then((value) {
-      if (value.get('engineeringWorks') as bool) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      if (map['value'] as bool) {
         showEngineeringWorksAlertDialog(context);
       }
     });
@@ -106,8 +109,11 @@ class _AllGamesState extends State<AllGames> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      StoreManager.storeViewer = StoreViewer.deafult;
-                      context.beamToNamed('/store-items');
+                      /* StoreManager.storeViewer = StoreViewer.deafult;
+                      context.beamToNamed('/store-items');*/
+
+                      showSimpleAlertDialog(
+                          context: context, text: 'Магазин временно отключен!');
                     },
                     style: ElevatedButton.styleFrom(
                       elevation: 5,
@@ -190,17 +196,12 @@ class _AllGamesState extends State<AllGames> {
                 padding: EdgeInsets.zero,
                 onPressed: () => context.beamToNamed('/notifications'),
                 icon: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('notifications')
-                        .snapshots(),
+                    stream: SupabaseController.supabase
+                        ?.from('notifications')
+                        .stream(primaryKey: ['id']).eq(
+                            'to', ProfileController.profileModel.nickname),
                     builder: (context, snapshot) {
-                      int count = snapshot.data?.docs
-                              .where((element) =>
-                                  element.get('to') ==
-                                      ProfileController.profileModel.nickname ||
-                                  element.get('to') == 'all')
-                              .length ??
-                          0;
+                      int count = snapshot.data?.length ?? 0;
 
                       return count > 0
                           ? badges.Badge(
@@ -302,7 +303,9 @@ class _AllGamesState extends State<AllGames> {
           padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15.0),
-            child: !Provider.of<TaxManager>(context, listen: true).isCanPlay
+            child: !provider.Provider.of<TaxManager>(context, listen: true)
+                        .isCanPlay &&
+                    !SupabaseController.isPremium
                 ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

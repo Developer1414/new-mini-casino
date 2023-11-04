@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:circle_progress_bar/circle_progress_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,41 +28,41 @@ class OtherUserProfile extends StatelessWidget {
     return WillPopScope(
       onWillPop: () async => Beamer.of(context).beamBack(),
       child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 76.0,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: IconButton(
-                  splashRadius: 25.0,
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    Beamer.of(context).beamBack();
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.arrowLeft,
-                    color: Theme.of(context).appBarTheme.iconTheme!.color,
-                    size: Theme.of(context).appBarTheme.iconTheme!.size,
-                  )),
-            ),
-            title: Row(
-              children: [
-                AutoSizeText(
-                  userName,
-                  style: Theme.of(context).appBarTheme.titleTextStyle,
-                ),
-                const SizedBox(width: 10.0),
-                pinId != -1
-                    ? Image(
-                        image: AssetImage('assets/pins/$pinId.png'),
-                        width: 25.0,
-                        height: 25.0)
-                    : Container(),
-              ],
-            ),
+        appBar: AppBar(
+          toolbarHeight: 76.0,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 15.0),
+            child: IconButton(
+                splashRadius: 25.0,
+                padding: EdgeInsets.zero,
+                onPressed: () {
+                  Beamer.of(context).beamBack();
+                },
+                icon: FaIcon(
+                  FontAwesomeIcons.arrowLeft,
+                  color: Theme.of(context).appBarTheme.iconTheme!.color,
+                  size: Theme.of(context).appBarTheme.iconTheme!.size,
+                )),
           ),
-          body: FutureBuilder(
+          title: Row(
+            children: [
+              AutoSizeText(
+                userName,
+                style: Theme.of(context).appBarTheme.titleTextStyle,
+              ),
+              const SizedBox(width: 10.0),
+              pinId != -1
+                  ? Image(
+                      image: AssetImage('assets/pins/$pinId.png'),
+                      width: 25.0,
+                      height: 25.0)
+                  : Container(),
+            ],
+          ),
+        ),
+        /* body: FutureBuilder(
               future: FirebaseFirestore.instance
                   .collection('users')
                   .doc(userId)
@@ -190,9 +189,9 @@ class OtherUserProfile extends StatelessWidget {
                     ],
                   ),
                 );
-              })
+              })*/
 
-          /*SingleChildScrollView(
+        /*SingleChildScrollView(
           child: Column(
             children: [
               Container(
@@ -361,7 +360,7 @@ class OtherUserProfile extends StatelessWidget {
             ],
           ),
         ),*/
-          ),
+      ),
     );
   }
 }

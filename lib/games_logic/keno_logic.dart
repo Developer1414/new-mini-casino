@@ -220,7 +220,7 @@ class KenoLogic extends ChangeNotifier {
 
     for (int i = 0; i < selectedCellsCount; i++) {
       double t = i / (selectedCellsCount - 1);
-      num t65 = pow(t, 1.6);
+      num t65 = pow(t, 1.8);
       double coefficient =
           startCoefficient * (1 - t65) * (1 - t65) + endCoefficient * t65 * t65;
       coefficients.add(

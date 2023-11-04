@@ -3,11 +3,12 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  app_links
   connectivity_plus
-  firebase_core
   pdfx
   platform_device_id_windows
   sentry_flutter
+  smart_auth
   url_launcher_windows
 )
 

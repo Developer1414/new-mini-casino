@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
@@ -81,15 +81,15 @@ class LoanMoneysManager extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('loan', jsonEncode(userLoan));
 
-    // ignore: use_build_context_synchronously
-    alertDialogSuccess(
-        context: context,
-        title: 'Успех',
-        text:
-            'Вы успешно взяли кредит в ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)}!');
+    if (context.mounted) {
+      alertDialogSuccess(
+          context: context,
+          title: 'Успех',
+          text:
+              'Вы успешно взяли кредит в ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)}!');
 
-    // ignore: use_build_context_synchronously
-    AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+      AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    }
 
     notifyListeners();
   }
@@ -97,14 +97,16 @@ class LoanMoneysManager extends ChangeNotifier {
   Future<UserLoan?> getLoan(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    await ProfileController.getUserProfile(context);
+    if (context.mounted) {
+      await ProfileController.getUserProfile(context);
+    }
 
     maxLoan = ProfileController.profileModel.totalGame >= 1000
         ? (10000 * (ProfileController.profileModel.totalGame / 1000))
                 .floor()
                 .toDouble() *
-            (AccountController.isPremium ? 2 : 1)
-        : 10000 * (AccountController.isPremium ? 2 : 1);
+            (SupabaseController.isPremium ? 2 : 1)
+        : 10000 * (SupabaseController.isPremium ? 2 : 1);
 
     if (prefs.containsKey('loan')) {
       userLoan =
@@ -130,13 +132,14 @@ class LoanMoneysManager extends ChangeNotifier {
         userLoan!.amount + (userLoan!.amount * userLoan!.percent / 100);
 
     if (balance.currentBalance < loanAmount) {
-      // ignore: use_build_context_synchronously
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text: 'Недостаточно средств на балансе!',
-      );
+      if (context.mounted) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: 'Недостаточно средств на балансе!',
+        );
+      }
 
       return;
     }
@@ -144,17 +147,17 @@ class LoanMoneysManager extends ChangeNotifier {
     balance.placeBet(loanAmount);
     prefs.remove('loan');
 
-    // ignore: use_build_context_synchronously
-    alertDialogSuccess(
-        context: context,
-        title: 'Успех',
-        text:
-            'Вы успешно погасили кредит в ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(loanAmount)}!');
-
     userLoan = null;
 
-    // ignore: use_build_context_synchronously
-    AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    if (context.mounted) {
+      alertDialogSuccess(
+          context: context,
+          title: 'Успех',
+          text:
+              'Вы успешно погасили кредит в ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(loanAmount)}!');
+
+      AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    }
 
     notifyListeners();
   }

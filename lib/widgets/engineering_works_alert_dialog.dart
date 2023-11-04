@@ -8,7 +8,7 @@ void showEngineeringWorksAlertDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return WillPopScope(
-        onWillPop: () async => true,
+        onWillPop: () async => false,
         child: Scaffold(
           backgroundColor: Colors.black.withOpacity(0.2),
           body: Center(

@@ -1,14 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:ntp/ntp.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
+
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PromocodeManager extends ChangeNotifier {
   bool isLoading = false;
@@ -30,7 +34,7 @@ class PromocodeManager extends ChangeNotifier {
         .first
         .value;
 
-    Provider.of<Balance>(context, listen: false).cashout(prize);
+    provider.Provider.of<Balance>(context, listen: false).cashout(prize);
 
     alertDialogSuccess(
       context: context,
@@ -46,139 +50,153 @@ class PromocodeManager extends ChangeNotifier {
   }
 
   Future usePromocode(
-      {required BuildContext context, required String myPromocode}) async {
-    if (LocalPromocodes.promocodes.containsKey(myPromocode)) {
-      useLocalPromocode(myPromocode: myPromocode, context: context);
+      {required BuildContext context, required String title}) async {
+    if (LocalPromocodes.promocodes.containsKey(title)) {
+      useLocalPromocode(myPromocode: title, context: context);
+      return;
+    }
+
+    if (ProfileController.profileModel.totalGame < 2000) {
+      alertDialogError(
+        context: context,
+        title: 'Ошибка',
+        confirmBtnText: 'Окей',
+        text:
+            'Промокоды можно использовать от 2000 игр! У вас: ${ProfileController.profileModel.totalGame}',
+      );
+
       return;
     }
 
     showLoading(true);
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) async {
-      if (int.parse(value.get('totalGames').toString()) < 2000) {
+    DateTime dateTimeNow = await NTP.now();
+
+    final res = await SupabaseController.supabase!
+        .from('promocodes')
+        .select(
+          'title',
+          const FetchOptions(
+            count: CountOption.exact,
+          ),
+        )
+        .eq('title', title);
+
+    if (res.count == 0) {
+      if (context.mounted) {
         alertDialogError(
           context: context,
           title: 'Ошибка',
           confirmBtnText: 'Окей',
           text:
-              'Промокоды можно использовать от 2000 игр! У вас: ${int.parse(value.get('totalGames').toString())}',
+              'Промокод не существует или количество использований исчерпано!',
         );
-      } else {
-        await FirebaseFirestore.instance
-            .collection('promocodes')
-            .doc(myPromocode)
-            .get()
-            .then((value) async {
-          if (value.exists) {
-            int activationCount = int.parse(value.get('count').toString());
-            double prize = double.parse(value.get('prize').toString());
-            DateTime expiredDate =
-                (value.get('expiredDate') as Timestamp).toDate();
-
-            DateTime dateTimeNow = await NTP.now();
-
-            if (expiredDate.difference(dateTimeNow).inHours >= 5) {
-              await FirebaseFirestore.instance
-                  .collection('promocodes')
-                  .doc(myPromocode)
-                  .delete()
-                  .whenComplete(() {
-                alertDialogError(
-                  context: context,
-                  title: 'Ошибка',
-                  confirmBtnText: 'Окей',
-                  text: 'Время действия промокода исчерпано!',
-                );
-              });
-            } else {
-              if (activationCount <= 0) {
-                // ignore: use_build_context_synchronously
-                alertDialogError(
-                  context: context,
-                  title: 'Ошибка',
-                  confirmBtnText: 'Окей',
-                  text: 'Исчерпано количество использований!',
-                );
-              } else {
-                await FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(FirebaseAuth.instance.currentUser?.uid)
-                    .get()
-                    .then((value) async {
-                  if (value.data()!.containsKey('promocodes')) {
-                    List list = value.get('promocodes') as List;
-
-                    if (list.contains(myPromocode)) {
-                      alertDialogError(
-                        context: context,
-                        title: 'Ошибка',
-                        confirmBtnText: 'Окей',
-                        text: 'Вы уже использовали этот промокод!',
-                      );
-
-                      return;
-                    }
-
-                    list.add(myPromocode);
-
-                    await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser?.uid)
-                        .update({'promocodes': list});
-                  } else {
-                    await FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(FirebaseAuth.instance.currentUser?.uid)
-                        .update({
-                      'promocodes': [myPromocode]
-                    });
-                  }
-
-                  await FirebaseFirestore.instance
-                      .collection('promocodes')
-                      .doc(myPromocode)
-                      .update({'count': FieldValue.increment(-1)});
-
-                  // ignore: use_build_context_synchronously
-                  Provider.of<Balance>(context, listen: false).cashout(prize);
-
-                  if (activationCount <= 1) {
-                    await FirebaseFirestore.instance
-                        .collection('promocodes')
-                        .doc(myPromocode)
-                        .delete();
-                  }
-
-                  // ignore: use_build_context_synchronously
-                  alertDialogSuccess(
-                    context: context,
-                    title: 'Поздравляем',
-                    confirmBtnText: 'Спасибо!',
-                    text:
-                        'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(prize)}!',
-                  );
-
-                  // ignore: use_build_context_synchronously
-                  AdService.showInterstitialAd(
-                      context: context, func: () {}, isBet: false);
-                });
-              }
-            }
-          } else {
-            alertDialogError(
-              context: context,
-              title: 'Ошибка',
-              confirmBtnText: 'Окей',
-              text:
-                  'Промокод не существует или количество использований исчерпано!',
-            );
-          }
-        });
       }
+
+      showLoading(false);
+
+      return;
+    }
+
+    await SupabaseController.supabase!
+        .from('promocodes')
+        .select('*')
+        .eq('title', title)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      int activationCount = int.parse(map['count'].toString());
+      double prize = double.parse(map['prize'].toString());
+      DateTime expiredDate = DateTime.parse(map['expiredDate']);
+
+      if (expiredDate.difference(dateTimeNow).inHours >= 5) {
+        await SupabaseController.supabase!
+            .from('promocodes')
+            .delete()
+            .eq('title', title)
+            .whenComplete(() {
+          alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: 'Время действия промокода исчерпано!',
+          );
+        });
+
+        return;
+      }
+
+      if (activationCount <= 0) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: 'Исчерпано количество использований!',
+        );
+
+        return;
+      }
+
+      await SupabaseController.supabase!
+          .from('users')
+          .select('*')
+          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+          .then((value) async {
+        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+        Map<String, dynamic> promocodes = {};
+
+        if (map['promocodes'] != null) {
+          promocodes = jsonDecode(map['promocodes']);
+        }
+
+        if (promocodes.containsKey(title)) {
+          alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: 'Вы уже использовали этот промокод!',
+          );
+
+          return;
+        } else {
+          promocodes.addAll({title: prize});
+
+          await SupabaseController.supabase!
+              .from('users')
+              .update({'promocodes': jsonEncode(promocodes)}).eq(
+                  'uid', SupabaseController.supabase?.auth.currentUser!.id);
+
+          if (activationCount <= 1) {
+            await SupabaseController.supabase!
+                .from('promocodes')
+                .delete()
+                .eq('title', title);
+          } else {
+            activationCount -= 1;
+
+            await SupabaseController.supabase!
+                .from('promocodes')
+                .update({'count': activationCount}).eq('title', title);
+          }
+
+          if (context.mounted) {
+            provider.Provider.of<Balance>(context, listen: false)
+                .cashout(prize);
+
+            alertDialogSuccess(
+              context: context,
+              title: 'Поздравляем',
+              confirmBtnText: 'Спасибо!',
+              text:
+                  'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(prize)}!',
+            );
+
+            AdService.showInterstitialAd(
+                context: context, func: () {}, isBet: false);
+          }
+        }
+      });
     });
 
     showLoading(false);

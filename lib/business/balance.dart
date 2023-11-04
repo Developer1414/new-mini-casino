@@ -1,10 +1,8 @@
 import 'dart:io' as ui;
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/balance_secure.dart';
-import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 
 class Balance extends ChangeNotifier {
   double balance = 500.0;
@@ -27,43 +25,28 @@ class Balance extends ChangeNotifier {
   void cashout(double profit) {
     balance += profit;
     updateBalance();
-
     notifyListeners();
   }
 
   Future loadBalance(BuildContext context) async {
-    if (FirebaseAuth.instance.currentUser?.uid == null) {
-      return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-          .format(0.0);
-    }
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .get()
-          .then((value) {
-        balance = double.parse(value.get('balance').toString());
-        BalanceSecure().setLastBalance(balance);
-      });
-    } on Exception catch (e) {
-      // ignore: use_build_context_synchronously
-      alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: '[LoadBalanceError]: ${e.toString()}');
-    }
+      balance = double.parse(map['balance'].toString());
+      BalanceSecure().setLastBalance(balance);
+    });
   }
 
-  void updateBalance() {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({
-      'balance': balance,
-    });
-
+  void updateBalance() async {
     BalanceSecure().setLastBalance(balance);
+
+    await SupabaseController.supabase!
+        .from('users')
+        .update({'balance': balance}).eq(
+            'uid', SupabaseController.supabase?.auth.currentUser!.id);
   }
 }

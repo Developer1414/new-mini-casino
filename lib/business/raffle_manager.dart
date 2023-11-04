@@ -1,10 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
-import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:provider/provider.dart';
 
 class RaffleManager extends ChangeNotifier {
   bool isLoading = false;
@@ -15,7 +9,7 @@ class RaffleManager extends ChangeNotifier {
   }
 
   Future checkOnStartedRaffle() async {
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('developer')
         .doc('settings')
         .get()
@@ -26,13 +20,13 @@ class RaffleManager extends ChangeNotifier {
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .update({'participant': false});
       }
-    });
+    });*/
   }
 
   Future participate(BuildContext context) async {
     showLoading(true);
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .where('participant', isEqualTo: true)
         .get()
@@ -122,6 +116,6 @@ class RaffleManager extends ChangeNotifier {
           }
         });
       }
-    });
+    });*/
   }
 }

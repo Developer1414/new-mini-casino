@@ -1,14 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:ntp/ntp.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
+
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class TransferMoneysManager extends ChangeNotifier {
   bool isLoading = false;
@@ -18,8 +20,9 @@ class TransferMoneysManager extends ChangeNotifier {
 
   void changeAmount(double amount) {
     currentAmount = NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .format(
-            AccountController.isPremium ? amount : amount + (amount * 6 / 100));
+        .format(SupabaseController.isPremium
+            ? amount
+            : amount + (amount * 6 / 100));
 
     notifyListeners();
   }
@@ -33,10 +36,10 @@ class TransferMoneysManager extends ChangeNotifier {
       {required BuildContext context,
       required String username,
       required amount}) async {
-    final balance = Provider.of<Balance>(context, listen: false);
+    final balance = provider.Provider.of<Balance>(context, listen: false);
 
     double amountWithComission =
-        !AccountController.isPremium ? amount : amount + (amount * 60 / 100);
+        SupabaseController.isPremium ? amount : amount + (amount * 60 / 100);
 
     if (username.isEmpty) {
       alertDialogError(
@@ -85,48 +88,60 @@ class TransferMoneysManager extends ChangeNotifier {
 
     showLoading(true);
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('name', isEqualTo: username)
-        .get()
-        .then((value) async {
-      if (value.docs.isEmpty) {
-        alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: 'Игрок с таким никнеймом не найден!',
-        );
+    try {
+      SupabaseController()
+          .checkNameOnAvailability(name: username)
+          .then((isExist) async {
+        if (isExist) {
+          DateTime dateTimeNow = await NTP.now();
 
-        showLoading(false);
-      } else {
-        DateTime dateTimeNow = await NTP.now();
+          await SupabaseController.supabase!.from('notifications').insert({
+            'amount': amount,
+            'to': username,
+            'action': 'transfer_moneys',
+            'date': dateTimeNow.toIso8601String(),
+          });
 
-        await FirebaseFirestore.instance.collection('notifications').doc().set({
-          'amount': amount,
-          'from': ProfileController.profileModel.nickname,
-          'to': username,
-          'action': 'transfer_moneys',
-          'date': dateTimeNow,
-        }).whenComplete(() async {});
+          balance.placeBet(amountWithComission);
 
-        balance.placeBet(amountWithComission);
+          showLoading(false);
 
-        showLoading(false);
+          if (context.mounted) {
+            alertDialogSuccess(
+              context: context,
+              title: 'Успех',
+              confirmBtnText: 'Спасибо',
+              text:
+                  '${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} успешно переведены!',
+            );
 
-        // ignore: use_build_context_synchronously
-        alertDialogSuccess(
-          context: context,
-          title: 'Успех',
-          confirmBtnText: 'Спасибо',
-          text:
-              '${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} успешно переведены!',
-        );
+            AdService.showInterstitialAd(
+                context: context, func: () {}, isBet: false);
+          }
+        } else {
+          alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: 'Игрок с таким никнеймом не найден!',
+          );
 
-        // ignore: use_build_context_synchronously
-        AdService.showInterstitialAd(
-            context: context, func: () {}, isBet: false);
+          showLoading(false);
+        }
+      });
+    } on PostgrestException catch (e) {
+      showLoading(false);
+
+      alertDialogError(
+        context: context,
+        title: 'Ошибка',
+        confirmBtnText: 'Окей',
+        text: e.message,
+      );
+
+      if (kDebugMode) {
+        print('createUserDates: $e');
       }
-    });
+    }
   }
 }

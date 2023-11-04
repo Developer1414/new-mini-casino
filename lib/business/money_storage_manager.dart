@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:io' as ui;
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/balance_secure.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
@@ -27,23 +26,24 @@ class MoneyStorageManager extends ChangeNotifier {
 
   Future loadBalance(BuildContext context) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .get()
+      await SupabaseController.supabase!
+          .from('users')
+          .select('*')
+          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
           .then((value) {
-        if (value.data()!.containsKey('moneyStorage')) {
-          balance = double.parse(value.get('moneyStorage').toString());
-          BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
-        }
+        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+        balance = double.parse(map['moneyStorage'].toString());
+        BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
       });
     } on Exception catch (e) {
-      // ignore: use_build_context_synchronously
-      alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: '[MoneyStorageLoadError]: ${e.toString()}');
+      if (context.mounted) {
+        alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: '[MoneyStorageLoadError]: ${e.toString()}');
+      }
     }
   }
 
@@ -60,15 +60,13 @@ class MoneyStorageManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateStorageBalance() {
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({
-      'moneyStorage': balance,
-    });
-
+  void updateStorageBalance() async {
     BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
+
+    await SupabaseController.supabase!
+        .from('users')
+        .update({'moneyStorage': balance}).eq(
+            'uid', SupabaseController.supabase?.auth.currentUser!.id);
   }
 
   void transferToStorage(

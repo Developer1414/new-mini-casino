@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
@@ -20,12 +20,16 @@ class TaxManager extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime dateTimeNow = await NTP.now();
 
-    if (prefs.containsKey('tax')) {
+    if (prefs.containsKey('gamblingTax')) {
       taxPeriod = DateTime.parse(
-          (jsonDecode(prefs.getString('tax').toString()) as List)[1]);
+          (jsonDecode(prefs.getString('gamblingTax').toString()) as List)[1]);
 
       currentTax = double.parse(
-          jsonDecode(prefs.getString('tax').toString())[0].toString());
+          jsonDecode(prefs.getString('gamblingTax').toString())[0].toString());
+
+      if (currentTax <= 0.0) {
+        prefs.remove('gamblingTax');
+      }
 
       if (taxPeriod.difference(dateTimeNow).inHours <= 0) {
         isCanPlay = false;
@@ -43,23 +47,25 @@ class TaxManager extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (balance.currentBalance < currentTax) {
-      // ignore: use_build_context_synchronously
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text: 'Недостаточно средств на балансе!',
-      );
+      if (context.mounted) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: 'Недостаточно средств на балансе!',
+        );
+      }
 
       return;
     }
 
     balance.placeBet(currentTax);
-    prefs.remove('tax');
+    prefs.remove('gamblingTax');
 
-    // ignore: use_build_context_synchronously
-    alertDialogSuccess(
-        context: context, title: 'Успех', text: 'Налог успешно оплачен!');
+    if (context.mounted) {
+      alertDialogSuccess(
+          context: context, title: 'Успех', text: 'Налог успешно оплачен!');
+    }
 
     currentTax = 0.0;
     isCanPlay = true;
@@ -69,7 +75,7 @@ class TaxManager extends ChangeNotifier {
   }
 
   void addTax(double bet) async {
-    if (AccountController.isPremium) return;
+    if (SupabaseController.isPremium) return;
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     DateTime dateTimeNow = await NTP.now();
@@ -78,18 +84,18 @@ class TaxManager extends ChangeNotifier {
 
     double tax = 0.0;
 
-    if (prefs.containsKey('tax')) {
+    if (prefs.containsKey('gamblingTax')) {
       tax = double.parse(
-          jsonDecode(prefs.getString('tax').toString())[0].toString());
+          jsonDecode(prefs.getString('gamblingTax').toString())[0].toString());
 
       dateTimeNow = DateTime.parse(
-          (jsonDecode(prefs.getString('tax').toString()) as List)[1]);
+          (jsonDecode(prefs.getString('gamblingTax').toString()) as List)[1]);
     } else {
       dateTimeNow = dateTimeNow.add(const Duration(days: 8));
     }
 
     tax += bet * 1 / 100;
 
-    prefs.setString('tax', jsonEncode([tax, dateTimeNow.toString()]));
+    prefs.setString('gamblingTax', jsonEncode([tax, dateTimeNow.toString()]));
   }
 }

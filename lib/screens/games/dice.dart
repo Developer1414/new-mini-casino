@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
+import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -49,6 +50,29 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
+
+    void makeBet(DiceLogic diceLogic) {
+      if (balance.currentBalance <
+          double.parse(Dice.betFormatter.getUnformattedValue().toString())) {
+        return;
+      }
+
+      if (diceLogic.evenOrOddType == EvenOrOddButtonType.empty &&
+          diceLogic.numberFromToType == NumberFromToButtonType.empty &&
+          diceLogic.selectedNumber == 0) {
+        return;
+      }
+
+      diceLogic.startGame(
+          context: context,
+          bet:
+              double.parse(Dice.betFormatter.getUnformattedValue().toString()));
+
+      _gifController.reset();
+      _gifController.forward().whenComplete(() {
+        diceLogic.cashout();
+      });
+    }
 
     return WillPopScope(
       onWillPop: () async {
@@ -222,58 +246,46 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                         const SizedBox(height: 15.0),
                         SizedBox(
                           width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: diceLogic.isGameOn ||
-                                    !Dice.isFetchCompleted
-                                ? null
-                                : () {
-                                    if (balance.currentBalance <
-                                        double.parse(Dice.betFormatter
-                                            .getUnformattedValue()
-                                            .toString())) {
-                                      return;
-                                    }
-
-                                    if (diceLogic.evenOrOddType ==
-                                            EvenOrOddButtonType.empty &&
-                                        diceLogic.numberFromToType ==
-                                            NumberFromToButtonType.empty &&
-                                        diceLogic.selectedNumber == 0) {
-                                      return;
-                                    }
-
-                                    diceLogic.startGame(
-                                        context: context,
-                                        bet: double.parse(Dice.betFormatter
-                                            .getUnformattedValue()
-                                            .toString()));
-
-                                    _gifController.reset();
-                                    _gifController.forward().whenComplete(() {
-                                      diceLogic.cashout();
-                                    });
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 5,
-                              backgroundColor: Colors.green,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(25.0),
-                                    topRight: Radius.circular(25.0)),
+                          child: Consumer<AutoBetsController>(
+                            builder: (context, value, child) => ElevatedButton(
+                              onPressed: value.isAutoBetsEnabled
+                                  ? null
+                                  : diceLogic.isGameOn || !Dice.isFetchCompleted
+                                      ? null
+                                      : () => makeBet(diceLogic),
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: value.isAutoBetsEnabled
+                                    ? Colors.redAccent
+                                    : Colors.green,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(25.0),
+                                      topRight: Radius.circular(25.0)),
+                                ),
                               ),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: AutoSizeText(
-                                'СТАВКА',
-                                maxLines: 1,
-                                style: GoogleFonts.roboto(
-                                    color: diceLogic.isGameOn ||
-                                            !Dice.isFetchCompleted
-                                        ? Colors.white.withOpacity(0.4)
-                                        : Colors.white,
-                                    fontSize: 24.0,
-                                    fontWeight: FontWeight.w900),
+                              child: Padding(
+                                padding: const EdgeInsets.all(18.0),
+                                child: value.isAutoBetsEnabled
+                                    ? FaIcon(
+                                        FontAwesomeIcons.lock,
+                                        color: Theme.of(context)
+                                            .appBarTheme
+                                            .iconTheme!
+                                            .color,
+                                        size: 28.0,
+                                      )
+                                    : AutoSizeText(
+                                        'СТАВКА',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                            color: diceLogic.isGameOn ||
+                                                    !Dice.isFetchCompleted
+                                                ? Colors.white.withOpacity(0.4)
+                                                : Colors.white,
+                                            fontSize: 24.0,
+                                            fontWeight: FontWeight.w900),
+                                      ),
                               ),
                             ),
                           ),
@@ -322,6 +334,18 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
               ],
             ),
             actions: [
+              autoBetsModel(
+                  context: context,
+                  function: () {
+                    final diceLogic =
+                        Provider.of<DiceLogic>(context, listen: false);
+
+                    if (diceLogic.isGameOn || !Dice.isFetchCompleted) {
+                      return;
+                    } else {
+                      makeBet(diceLogic);
+                    }
+                  }),
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: IconButton(

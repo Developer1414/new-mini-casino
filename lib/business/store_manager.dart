@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/models/store/cars_model.dart';
 import 'package:new_mini_casino/models/store/houses_model.dart';
@@ -124,7 +122,7 @@ class StoreManager extends ChangeNotifier {
 
     final balance = Provider.of<Balance>(context, listen: false);
 
-    double realPrice = AccountController.isPremium &&
+    double realPrice = SupabaseController.isPremium &&
             stores[selectedStore].models[selectedProduct].premium
         ? price - (price * 20 / 100)
         : price;
@@ -143,7 +141,7 @@ class StoreManager extends ChangeNotifier {
 
     balance.placeBet(realPrice);
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
@@ -164,7 +162,7 @@ class StoreManager extends ChangeNotifier {
           selectedPath: [itemid]
         });
       }
-    });
+    });*/
 
     if (context.mounted) {
       alertDialogSuccess(
@@ -194,7 +192,7 @@ class StoreManager extends ChangeNotifier {
 
     showLoading(true);
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
@@ -226,7 +224,7 @@ class StoreManager extends ChangeNotifier {
           }
         });
       }
-    });
+    });*/
 
     // ignore: use_build_context_synchronously
     alertDialogSuccess(
@@ -246,7 +244,7 @@ class StoreManager extends ChangeNotifier {
       {required int itemId, required String path}) async {
     bool result = false;
 
-    await FirebaseFirestore.instance
+    /*await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
@@ -260,7 +258,7 @@ class StoreManager extends ChangeNotifier {
       } else {
         result = false;
       }
-    });
+    });*/
 
     return result;
   }
@@ -273,7 +271,7 @@ class StoreManager extends ChangeNotifier {
       if (!value) {
         result = true;
       } else {
-        await FirebaseFirestore.instance
+        /* await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser?.uid)
             .get()
@@ -285,7 +283,7 @@ class StoreManager extends ChangeNotifier {
           } else {
             result = false;
           }
-        });
+        });*/
       }
     });
 
@@ -295,10 +293,10 @@ class StoreManager extends ChangeNotifier {
   Future selectItem({required int itemId, required String path}) async {
     showLoading(true);
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
-        .update({'selected$path': itemId});
+        .update({'selected$path': itemId});*/
 
     showLoading(false);
   }
@@ -306,7 +304,7 @@ class StoreManager extends ChangeNotifier {
   Future<List<int>> loadMyItems(String path) async {
     List<int> result = [];
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser?.uid)
         .get()
@@ -318,7 +316,7 @@ class StoreManager extends ChangeNotifier {
       } else {
         result = [];
       }
-    });
+    });*/
 
     return result;
   }
@@ -327,7 +325,7 @@ class StoreManager extends ChangeNotifier {
       {required String userId, required String path}) async {
     List<int> result = [];
 
-    await FirebaseFirestore.instance
+    /* await FirebaseFirestore.instance
         .collection('users')
         .doc(userId)
         .get()
@@ -339,7 +337,7 @@ class StoreManager extends ChangeNotifier {
       } else {
         result = [];
       }
-    });
+    });*/
 
     return result;
   }

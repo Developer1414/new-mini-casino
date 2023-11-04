@@ -108,6 +108,15 @@ class Bank extends StatelessWidget {
                         context.beamToNamed('/transfer-moneys');
                       }),
                   const SizedBox(height: 15.0),
+                  buttonModel(
+                      context: context,
+                      icon: FontAwesomeIcons.moneyBill,
+                      buttonName: 'Покупка игровой валюты',
+                      color: Colors.blueAccent,
+                      onPressed: () {
+                        context.beamToNamed('/purchasing-game-currency');
+                      }),
+                  const SizedBox(height: 15.0),
                   Consumer<BonusManager>(
                     builder: (context, value, child) {
                       return value.isLoadingBonus

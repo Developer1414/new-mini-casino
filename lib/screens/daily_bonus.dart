@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'dart:io' as ui;
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +43,7 @@ class _DailyBonusState extends State<DailyBonus> {
                   padding: const EdgeInsets.only(
                       left: 15.0, right: 15.0, bottom: 15.0),
                   child: AutoSizeText(
-                      'Размер бонусов зависит от кол. ставок сделанных за день. Бонус рассчитывается так: кол. ставок за день * x2, x3, x5, x10${!AccountController.isPremium ? ' (с Premium в 2 раза больше).' : '.'}',
+                      'Размер бонусов зависит от кол. ставок сделанных за день. Бонус рассчитывается так: кол. ставок за день * x2, x3, x5, x10${!SupabaseController.isPremium ? ' (с Premium в 2 раза больше).' : '.'}',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodySmall!.copyWith(
                           fontSize: 12.0,
@@ -217,7 +217,7 @@ class _DailyBonusState extends State<DailyBonus> {
                     NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
                         .format(dailyBonusManager.dailyCountBets *
                             dailyBonusManager.coefficients[index] *
-                            (AccountController.isPremium ? 2 : 1)),
+                            (SupabaseController.isPremium ? 2 : 1)),
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
@@ -235,7 +235,7 @@ class _DailyBonusState extends State<DailyBonus> {
                 SizedBox(
                   height: 30.0,
                   child: AutoSizeText(
-                    'x${dailyBonusManager.coefficients[index] * (AccountController.isPremium ? 2 : 1)}',
+                    'x${dailyBonusManager.coefficients[index] * (SupabaseController.isPremium ? 2 : 1)}',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(

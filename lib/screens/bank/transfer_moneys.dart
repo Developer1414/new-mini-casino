@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -176,7 +176,7 @@ class TransferMoneys extends StatelessWidget {
                                             .displaySmall!
                                             .copyWith(fontSize: 20.0),
                                       ),
-                                      AccountController.isPremium
+                                      SupabaseController.isPremium
                                           ? Container()
                                           : Padding(
                                               padding: const EdgeInsets.only(
@@ -220,7 +220,7 @@ class TransferMoneys extends StatelessWidget {
                                                       .trim()),
                                           color: Colors.blueAccent),
                                       const SizedBox(height: 20.0),
-                                      AccountController.isPremium
+                                      SupabaseController.isPremium
                                           ? Container()
                                           : AutoSizeText(
                                               'Комиссия 60%.\nP.S. c Premium комиссии нет.',

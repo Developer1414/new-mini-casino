@@ -4,8 +4,8 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/balance_secure.dart';
 import 'package:new_mini_casino/widgets/no_internet_connection_dialog.dart';
@@ -40,7 +40,7 @@ class CommonFunctions {
       Provider.of<TaxManager>(context, listen: false).addTax(bet);
     }
 
-    AccountController().upLevel();
+    SupabaseController().levelUp();
     DailyBonusManager().updateDailyBetsCount();
 
     GameStatisticController.updateGameStatistic(

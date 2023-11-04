@@ -154,6 +154,50 @@ class _JackpotState extends State<Jackpot> {
     });
   }
 
+  void makeBet(
+      {required BuildContext context,
+      required JackpotLogic jackpotLogic,
+      required Balance balance}) {
+    if (!jackpotLogic.isGameOn || Jackpot.isBlockButton) {
+      if (balance.currentBalance <
+          double.parse(
+              Jackpot.betFormatter.getUnformattedValue().toStringAsFixed(2))) {
+        return;
+      }
+
+      if (double.parse(Jackpot.betFormatter.getUnformattedValue().toString()) <
+          100.0) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          text: 'В этой игре ставка не может быть меньше 100 рублей!',
+          confirmBtnText: 'Окей',
+        );
+
+        return;
+      }
+
+      Jackpot.playersCount++;
+      Jackpot.myBet =
+          double.parse(Jackpot.betFormatter.getUnformattedValue().toString());
+
+      Jackpot.players.add('user');
+
+      jackpotLogic.startGame(context: context, bet: Jackpot.myBet);
+
+      setState(() {
+        Jackpot.currentBalance +=
+            double.parse(Jackpot.betFormatter.getUnformattedValue().toString());
+
+        Jackpot.items.add(fortuneItem(
+            nickname: 'Вы',
+            isBot: false,
+            bet: double.parse(
+                Jackpot.betFormatter.getUnformattedValue().toString())));
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
@@ -225,62 +269,13 @@ class _JackpotState extends State<Jackpot> {
                           child: SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: Jackpot.isBlockButton ||
-                                      jackpotLogic.isGameOn
-                                  ? null
-                                  : () {
-                                      if (!jackpotLogic.isGameOn ||
-                                          Jackpot.isBlockButton) {
-                                        if (balance.currentBalance <
-                                            double.parse(Jackpot.betFormatter
-                                                .getUnformattedValue()
-                                                .toStringAsFixed(2))) {
-                                          return;
-                                        }
-
-                                        if (double.parse(Jackpot.betFormatter
-                                                .getUnformattedValue()
-                                                .toString()) <
-                                            100.0) {
-                                          alertDialogError(
-                                            context: context,
-                                            title: 'Ошибка',
-                                            text:
-                                                'В этой игре ставка не может быть меньше 100 рублей!',
-                                            confirmBtnText: 'Окей',
-                                          );
-
-                                          return;
-                                        }
-
-                                        Jackpot.playersCount++;
-                                        Jackpot.myBet = double.parse(Jackpot
-                                            .betFormatter
-                                            .getUnformattedValue()
-                                            .toString());
-
-                                        Jackpot.players.add('user');
-
-                                        jackpotLogic.startGame(
-                                            context: context,
-                                            bet: Jackpot.myBet);
-
-                                        setState(() {
-                                          Jackpot.currentBalance +=
-                                              double.parse(Jackpot.betFormatter
-                                                  .getUnformattedValue()
-                                                  .toString());
-
-                                          Jackpot.items.add(fortuneItem(
-                                              nickname: 'Вы',
-                                              isBot: false,
-                                              bet: double.parse(Jackpot
-                                                  .betFormatter
-                                                  .getUnformattedValue()
-                                                  .toString())));
-                                        });
-                                      }
-                                    },
+                              onPressed:
+                                  Jackpot.isBlockButton || jackpotLogic.isGameOn
+                                      ? null
+                                      : () => makeBet(
+                                          context: context,
+                                          jackpotLogic: jackpotLogic,
+                                          balance: balance),
                               style: ElevatedButton.styleFrom(
                                 elevation: 5,
                                 backgroundColor: Colors.green,

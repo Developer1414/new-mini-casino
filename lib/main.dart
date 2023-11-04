@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -16,13 +15,14 @@ import 'package:new_mini_casino/business/loan_moneys_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
+import 'package:new_mini_casino/business/purchasing_game_currency_controller.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/notification_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
@@ -34,6 +34,7 @@ import 'package:new_mini_casino/games_logic/plinko_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/screens/bank/bank.dart';
 import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
+import 'package:new_mini_casino/screens/bank/purchasing_game_currency.dart';
 import 'package:new_mini_casino/screens/bank/tax.dart';
 import 'package:new_mini_casino/screens/bank/transfer_moneys.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
@@ -67,13 +68,14 @@ import 'package:new_mini_casino/screens/store/store.dart';
 import 'package:new_mini_casino/screens/store/store_items.dart';
 import 'package:new_mini_casino/screens/store/store_product_review.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
+import 'package:new_mini_casino/screens/verify_number.dart';
 import 'package:new_mini_casino/screens/welcome.dart';
 import 'package:new_mini_casino/themes/dark_theme.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:new_mini_casino/themes/light_theme.dart';
+import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
-import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
@@ -82,9 +84,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await SupabaseController.initialize();
 
   Appodeal.initialize(
       appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
@@ -195,6 +195,8 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/plinko': (context, state, data) => const Plinko(),
         '/keno': (context, state, data) => const Keno(),
         '/coinflip': (context, state, data) => const Coinflip(),
+        '/purchasing-game-currency': (context, state, data) =>
+            const PurchasingGameCurrency(),
         '/product-review': (context, state, data) => const StoreProductReview(),
         '/money-storage': (context, state, data) => const MoneyStorage(),
         '/fortuneWheel': (context, state, data) => const FortuneWheel(),
@@ -232,6 +234,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             child: GameStatistic(game: game),
           );
         },
+        '/verify-email/:email': (context, state, data) {
+          final email = state.pathParameters['email']!;
+          return BeamPage(
+            child: VerifyPhoneNumber(email: email),
+          );
+        },
       },
     ),
   );
@@ -255,7 +263,11 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (ctx) => DarkThemeProvider()),
+        ChangeNotifierProvider(
+            create: (ctx) => PurchasingGameCurrencyController()),
+        ChangeNotifierProvider(create: (ctx) => SupabaseController()),
         ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
+        ChangeNotifierProvider(create: (ctx) => AutoBetsController()),
         ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
         ChangeNotifierProvider(create: (ctx) => NotificationController()),
         ChangeNotifierProvider(create: (ctx) => TaxManager()),
@@ -279,7 +291,6 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => DiceLogic()),
         ChangeNotifierProvider(create: (ctx) => JackpotLogic()),
         ChangeNotifierProvider(create: (ctx) => Balance()),
-        ChangeNotifierProvider(create: (ctx) => AccountController()),
         ChangeNotifierProvider(create: (ctx) => GameStatisticController()),
       ],
       child: Consumer<DarkThemeProvider>(

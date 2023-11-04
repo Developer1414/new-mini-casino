@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/models/profile_model.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 
@@ -10,31 +9,32 @@ class ProfileController extends ChangeNotifier {
   static ProfileModel profileModel = ProfileModel();
 
   static Future getUserProfile(BuildContext context) async {
-    if (FirebaseAuth.instance.currentUser == null) {
+    if (SupabaseController.supabase?.auth.currentUser == null) {
       return ProfileModel(nickname: 'null', totalGame: 0);
     }
 
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser?.uid)
-          .get()
+      await SupabaseController.supabase!
+          .from('users')
+          .select('*')
+          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
           .then((value) {
+        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
         profileModel = ProfileModel(
-          nickname: value.get('name') ?? '',
-          totalGame: int.parse(value.get('totalGames').toString()),
-          level: value.data()!.containsKey('level')
-              ? double.parse(value.get('level').toString())
-              : 1.0,
+          nickname: map['name'] ?? '',
+          totalGame: int.parse(map['totalGames'].toString()),
+          level: double.parse(map['level'].toString()),
         );
       });
     } on Exception catch (e) {
-      // ignore: use_build_context_synchronously
-      alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: '[LoadUserProfileError]: ${e.toString()}');
+      if (context.mounted) {
+        alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: '[LoadUserProfileError]: ${e.toString()}');
+      }
     }
   }
 }

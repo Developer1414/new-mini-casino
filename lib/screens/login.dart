@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    AccountController.context = context;
+    SupabaseController.context = context;
 
     return GestureDetector(
       onTap: () {
@@ -32,7 +32,7 @@ class Login extends StatelessWidget {
           currentFocus.unfocus();
         }
       },
-      child: Consumer<AccountController>(
+      child: Consumer<SupabaseController>(
         builder: (context, accountController, _) {
           return accountController.isLoading
               ? loading(text: accountController.loadingText, context: context)
@@ -147,50 +147,6 @@ class Login extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            /*Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FaIcon(
-                                  FontAwesomeIcons.userPlus,
-                                  color: Theme.of(context)
-                                      .appBarTheme
-                                      .iconTheme!
-                                      .color,
-                                  size: 18.0,
-                                ),
-                                const SizedBox(width: 10.0),
-                                AutoSizeText('Регистрация',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(fontSize: 20.0)),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                FaIcon(
-                                  FontAwesomeIcons.rightToBracket,
-                                  color: Theme.of(context)
-                                      .appBarTheme
-                                      .iconTheme!
-                                      .color,
-                                  size: 20.0,
-                                ),
-                                const SizedBox(width: 10.0),
-                                AutoSizeText('Вход',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(fontSize: 20.0)),
-                              ],
-                            ),*/
                             Padding(
                                 padding: const EdgeInsets.only(
                                     left: 15.0, right: 15.0, top: 30.0),
@@ -240,19 +196,6 @@ class Login extends StatelessWidget {
                                       isPassword: true,
                                       hintText: 'Пароль...'),
                                 ),
-                                /*accountController.authorizationAction ==
-                                          AuthorizationAction.register
-                                      ? Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 15.0,
-                                              right: 15.0,
-                                              top: 15.0),
-                                          child: loginCustomTextField(
-                                              keyboardType: TextInputType.text,
-                                              controller: referalCode,
-                                              hintText: 'Реферальный код...'),
-                                        )
-                                      : Container(),*/
                                 Padding(
                                   padding: const EdgeInsets.all(15.0),
                                   child: SizedBox(
@@ -271,22 +214,17 @@ class Login extends StatelessWidget {
                                         if (accountController
                                                 .authorizationAction ==
                                             AuthorizationAction.register) {
-                                          if (accountController
-                                                  .authorizationAction ==
-                                              AuthorizationAction.register) {
-                                            if (nameController.text.isEmpty) {
-                                              QuickAlert.show(
-                                                  context: context,
-                                                  type: QuickAlertType.error,
-                                                  title: 'Упс...',
-                                                  text:
-                                                      'Вы не вписали никнейм!',
-                                                  confirmBtnText: 'Окей',
-                                                  animType: QuickAlertAnimType
-                                                      .slideInDown);
+                                          if (nameController.text.isEmpty) {
+                                            QuickAlert.show(
+                                                context: context,
+                                                type: QuickAlertType.error,
+                                                title: 'Упс...',
+                                                text: 'Вы не вписали никнейм!',
+                                                confirmBtnText: 'Окей',
+                                                animType: QuickAlertAnimType
+                                                    .slideInDown);
 
-                                              return;
-                                            }
+                                            return;
                                           }
                                         }
 
@@ -341,36 +279,18 @@ class Login extends StatelessWidget {
 
                                             return;
                                           }
-
+                                          await accountController.signUp(
+                                              email:
+                                                  emailController.text.trim(),
+                                              password: passwordController.text,
+                                              name: nameController.text.trim());
+                                        } else {
                                           await accountController
-                                              .checkOnExistNickname(
-                                                  nameController.text.trim())
-                                              .then((value) async {
-                                            if (!value) {
-                                              AccountExceptionController
-                                                  .showException(
-                                                      context: context,
-                                                      code:
-                                                          'nickname_already_exist');
-                                              return;
-                                            } else {
-                                              await accountController.register(
+                                              .signInWithPassword(
                                                   email: emailController.text
                                                       .trim(),
                                                   password:
-                                                      passwordController.text,
-                                                  name: nameController.text
-                                                      .trim(),
-                                                  referalCode:
-                                                      referalCode.text);
-                                            }
-                                          });
-                                        } else {
-                                          await accountController.login(
-                                              email:
-                                                  emailController.text.trim(),
-                                              password:
-                                                  passwordController.text);
+                                                      passwordController.text);
                                         }
                                       },
                                       child: AutoSizeText(

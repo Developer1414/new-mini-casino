@@ -1,7 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:provider/provider.dart';
 
@@ -27,12 +26,8 @@ class BalanceSecure {
     Provider.of<Balance>(context, listen: false)
         .placeBet(Provider.of<Balance>(context, listen: false).currentBalance);
 
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .update({
-      'moneyStorage': 0,
-    });
+    SupabaseController.supabase!.from('users').update({'moneyStorage': 0}).eq(
+        'uid', SupabaseController.supabase?.auth.currentUser!.id);
 
     Navigator.push(
         context,

@@ -20,6 +20,7 @@ import 'package:new_mini_casino/games_logic/plinko_logic.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
+import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 
@@ -47,6 +48,22 @@ class Plinko extends StatelessWidget {
   static TextEditingController betController =
       TextEditingController(text: betFormatter.format('10000'));
 
+  void makeBet(BuildContext context) {
+    if (Provider.of<Balance>(context, listen: false).currentBalance <
+        double.parse(betFormatter.getUnformattedValue().toStringAsFixed(2))) {
+      return;
+    }
+
+    double bet = betFormatter.getUnformattedValue().toDouble();
+
+    CommonFunctions.call(context: context, bet: bet, gameName: 'plinko');
+
+    if (MyGame.instance != null) {
+      MyGame.instance!.createNewBall(context, bet);
+      AutoclickerSecure().checkAutoclicker();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,49 +87,48 @@ class Plinko extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 15.0),
                   child: SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        if (Provider.of<Balance>(context, listen: false)
-                                .currentBalance <
-                            double.parse(betFormatter
-                                .getUnformattedValue()
-                                .toStringAsFixed(2))) {
-                          return;
-                        }
+                    child: Consumer<AutoBetsController>(
+                      builder: (context, value, child) => ElevatedButton(
+                        onPressed: () {
+                          if (value.isAutoBetsEnabled) return;
 
-                        if (AutoclickerSecure.isCanPlay) {
-                          double bet =
-                              betFormatter.getUnformattedValue().toDouble();
-
-                          CommonFunctions.call(
-                              context: context, bet: bet, gameName: 'plinko');
-
-                          if (MyGame.instance != null) {
-                            MyGame.instance!.createNewBall(context, bet);
-                            AutoclickerSecure().checkAutoclicker();
+                          if (AutoclickerSecure.isCanPlay) {
+                            makeBet(context);
+                          } else {
+                            AutoclickerSecure()
+                                .checkClicksBeforeCanPlay(context);
                           }
-                        } else {
-                          AutoclickerSecure().checkClicksBeforeCanPlay(context);
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        elevation: 5,
-                        backgroundColor: Colors.green,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(25.0),
-                              topRight: Radius.circular(25.0)),
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 5,
+                          backgroundColor: value.isAutoBetsEnabled
+                              ? Colors.redAccent
+                              : Colors.green,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25.0),
+                                topRight: Radius.circular(25.0)),
+                          ),
                         ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(18.0),
-                        child: AutoSizeText(
-                          'СТАВКА',
-                          maxLines: 1,
-                          style: GoogleFonts.roboto(
-                              color: Colors.white,
-                              fontSize: 24.0,
-                              fontWeight: FontWeight.w900),
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: value.isAutoBetsEnabled
+                              ? FaIcon(
+                                  FontAwesomeIcons.lock,
+                                  color: Theme.of(context)
+                                      .appBarTheme
+                                      .iconTheme!
+                                      .color,
+                                  size: 28.0,
+                                )
+                              : AutoSizeText(
+                                  'СТАВКА',
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.w900),
+                                ),
                         ),
                       ),
                     ),
@@ -131,6 +147,11 @@ class Plinko extends StatelessWidget {
               splashRadius: 25.0,
               padding: EdgeInsets.zero,
               onPressed: () {
+                if (!Provider.of<AutoBetsController>(context, listen: false)
+                    .exitGame(context)) {
+                  return;
+                }
+
                 Beamer.of(context).beamBack();
               },
               icon: FaIcon(
@@ -158,12 +179,20 @@ class Plinko extends StatelessWidget {
           ],
         ),
         actions: [
+          autoBetsModel(context: context, function: () => makeBet(context)),
           Padding(
             padding: const EdgeInsets.only(right: 15.0),
             child: IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
-                onPressed: () => context.beamToNamed('/game-statistic/plinko'),
+                onPressed: () {
+                  if (!Provider.of<AutoBetsController>(context, listen: false)
+                      .exitGame(context)) {
+                    return;
+                  }
+
+                  context.beamToNamed('/game-statistic/plinko');
+                },
                 icon: FaIcon(
                   FontAwesomeIcons.circleInfo,
                   color: Theme.of(context).appBarTheme.iconTheme!.color,
@@ -180,7 +209,6 @@ class Plinko extends StatelessWidget {
                 currencyTextInputFormatter: betFormatter,
                 textInputFormatter: betFormatter,
                 keyboardType: TextInputType.number,
-                //readOnly: plinkoLogic.isGameOn,
                 isBetInput: true,
                 controller: betController,
                 context: context,
@@ -318,10 +346,22 @@ class MyGame extends FlameGame with HasCollisionDetection, HasGameRef {
   void createNewBall(BuildContext context, double bet) {
     double screenCenter = gameRef.size.x / 2;
 
-    add(Ball(
-        Vector2(Random().nextInt(60) + screenCenter - 30, gameRef.size.y / 7),
-        context,
-        bet));
+    int temp = Random.secure().nextInt(100);
+    bool isLeft = Random.secure().nextBool();
+
+    if (temp < 80.0) {
+      screenCenter = isLeft ? screenCenter - 20 : screenCenter + 20;
+    } else if (temp >= 80.0 && temp < 90) {
+      screenCenter = isLeft ? screenCenter - 25 : screenCenter + 25;
+    } else if (temp >= 90.0 && temp < 95) {
+      screenCenter = isLeft ? screenCenter - 30 : screenCenter + 30;
+    } else if (temp >= 95.0 && temp < 98) {
+      screenCenter = isLeft ? screenCenter - 15 : screenCenter + 15;
+    } else if (temp >= 98.0) {
+      screenCenter = isLeft ? screenCenter - 10 : screenCenter + 10;
+    }
+
+    add(Ball(Vector2(screenCenter, gameRef.size.y / 7), context, bet));
   }
 
   @override
@@ -365,6 +405,7 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
   double friction = 0.95;
 
   double bet = 0.0;
+  Vector2 startPos = Vector2.zero();
 
   BuildContext context;
 
@@ -379,6 +420,8 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
   @override
   FutureOr<void> onLoad() async {
     double screenWidth = gameRef.size.x;
+
+    startPos = position;
 
     size = Vector2.all(screenWidth * 0.035);
 
@@ -456,14 +499,14 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
       const Plinko().cashout(context, profit);
       const Plinko().addCoefficient(context, other.coefficient);
 
-      if (other.coefficient < 1.0) {
+      if (other.coefficient < 2.0) {
         GameStatisticController.updateGameStatistic(
             gameName: 'plinko',
             gameStatisticModel: GameStatisticModel(
               maxLoss: bet,
               lossesMoneys: bet,
             ));
-      } else if (other.coefficient >= 1.0) {
+      } else if (other.coefficient >= 2.0) {
         GameStatisticController.updateGameStatistic(
             gameName: 'plinko',
             gameStatisticModel:

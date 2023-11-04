@@ -1,7 +1,7 @@
 name: new_mini_casino
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.2.3+37
+version: 1.2.4+38
 environment:
   sdk: '>=2.19.3 <3.0.0'
 
@@ -10,11 +10,12 @@ dependencies:
     sdk: flutter
 
   animated_flip_counter: ^0.2.5
-  cloud_firestore: ^4.4.5
   cupertino_icons: ^1.0.2
-  firebase_auth: ^4.2.2
-  firebase_core: ^2.8.0
-  firebase_storage: ^11.0.16
+  supabase_flutter: ^1.10.23
+#  cloud_firestore: ^4.4.5 
+#  firebase_auth: ^4.2.2
+#  firebase_core: ^2.8.0
+#  firebase_storage: ^11.0.16
   font_awesome_flutter: ^10.1.0
   google_fonts: ^4.0.3
   google_nav_bar: ^5.0.6
@@ -59,6 +60,8 @@ dependencies:
   flame: ^1.9.1
   flame_forge2d: ^0.15.0+1
   sentry_flutter: ^7.10.1
+  pinput: ^3.0.1
+  restart_app: ^1.2.1
 
 dev_dependencies:
   flutter_test:

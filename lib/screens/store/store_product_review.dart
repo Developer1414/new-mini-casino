@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -239,7 +239,7 @@ class StoreProductReview extends StatelessWidget {
                                                                         (storeItemModel.price *
                                                                             20 /
                                                                             100))
-                                                                : NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(AccountController
+                                                                : NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(SupabaseController
                                                                             .isPremium &&
                                                                         storeItemModel
                                                                             .premium
@@ -325,7 +325,7 @@ class StoreProductReview extends StatelessWidget {
                               const SizedBox(height: 15.0),
                               StoreManager.storeViewer == StoreViewer.deafult &&
                                       storeItemModel.premium &&
-                                      !AccountController.isPremium
+                                      !SupabaseController.isPremium
                                   ? Container(
                                       decoration: BoxDecoration(
                                           color:

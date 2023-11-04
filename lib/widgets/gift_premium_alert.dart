@@ -1,18 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:ntp/ntp.dart';
 
 void giftPremiumAlert(
-    // +7 925 832-15-99
-    {required BuildContext mainContext,
-    required Payment paymentController}) {
+    {required BuildContext mainContext, required Payment paymentController}) {
   TextEditingController controller = TextEditingController();
 
   bool isLoading = false;
@@ -22,48 +20,21 @@ void giftPremiumAlert(
 
     DateTime dateTimeNow = await NTP.now();
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('name', isEqualTo: name)
-        .get()
-        .then((value) async {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(value.docs.first.get('uid'))
-          .get()
-          .then((value) async {
-        if (value.data()!.containsKey('premium')) {
-          DateTime expiredSubscriptionDate =
-              (value.get('premium') as Timestamp).toDate();
-
-          if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
-              expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
-              expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
-            result = false;
-          } else {
-            result = true;
-          }
-        } else {
-          result = false;
-        }
-      });
-    });
-
-    return result;
-  }
-
-  Future<bool> checkOnExistNickname(String name) async {
-    bool result = false;
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('name', isEqualTo: name)
-        .get()
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('name', name)
         .then((value) {
-      if (value.docs.isNotEmpty) {
-        result = true;
-      } else {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      DateTime expiredSubscriptionDate = DateTime.parse(map['premium']);
+
+      if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
+          expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
+          expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
         result = false;
+      } else {
+        result = true;
       }
     });
 
@@ -73,20 +44,13 @@ void giftPremiumAlert(
   Future<bool> checkOnExistGift(String name) async {
     bool result = false;
 
-    await FirebaseFirestore.instance
-        .collection('notifications')
-        .where('action', isEqualTo: 'premium_gift')
-        .get()
+    await SupabaseController.supabase!
+        .from('notifications')
+        .select('*')
+        .eq('action', 'premium_gift')
+        .eq('to', name)
         .then((value) {
-      List<QueryDocumentSnapshot<Map<String, dynamic>>> list = value.docs;
-
-      for (int i = 0; i < list.length; i++) {
-        if (list[i].get('to') == controller.text) {
-          result = true;
-        } else {
-          result = false;
-        }
-      }
+      result = value.isNotEmpty;
     });
 
     return result;
@@ -215,8 +179,9 @@ void giftPremiumAlert(
 
                                           setState(() => isLoading = true);
 
-                                          await checkOnExistNickname(
-                                                  controller.text)
+                                          await SupabaseController()
+                                              .checkNameOnAvailability(
+                                                  name: controller.text)
                                               .then((value) async {
                                             if (!value) {
                                               setState(() => isLoading = false);

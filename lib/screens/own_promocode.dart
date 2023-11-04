@@ -6,8 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -137,9 +138,20 @@ class OwnPromocode extends StatelessWidget {
                             size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),
-                    title: AutoSizeText(
-                      'Новый промокод',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AutoSizeText(
+                          'Новый промокод',
+                          style: Theme.of(context).appBarTheme.titleTextStyle,
+                        ),
+                        Consumer<Balance>(builder: (ctx, balance, _) {
+                          return AutoSizeText(
+                            balance.currentBalanceString,
+                            style: Theme.of(context).textTheme.displaySmall,
+                          );
+                        })
+                      ],
                     ),
                   ),
                   body: Padding(
@@ -300,7 +312,7 @@ class OwnPromocode extends StatelessWidget {
                                 },
                               ),
                             ),
-                            AccountController.isPremium
+                            SupabaseController.isPremium
                                 ? Container()
                                 : Padding(
                                     padding: const EdgeInsets.only(top: 15.0),

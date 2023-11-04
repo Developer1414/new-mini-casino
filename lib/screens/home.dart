@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:beamer/beamer.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/screens/login.dart';
+import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,21 +15,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String string = '';
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future showPremiumSubscription() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (AccountController.isPremium ||
-        FirebaseAuth.instance.currentUser?.uid == null) return;
+    if (!mounted) {
+      return;
+    }
+
+    if (SupabaseController.isPremium ||
+        SupabaseController.supabase?.auth.currentUser == null) return;
 
     if (!prefs.containsKey('premiumSubscription')) {
-      // ignore: use_build_context_synchronously
       context.beamToNamed('/premium');
 
       prefs.setString('premiumSubscription', DateTime.now().toString());
@@ -38,7 +35,6 @@ class _HomeState extends State<Home> {
                   DateTime.parse(prefs.getString('premiumSubscription')!))
               .inDays >=
           30) {
-        // ignore: use_build_context_synchronously
         context.beamToNamed('/premium');
 
         prefs.setString('premiumSubscription', DateTime.now().toString());
@@ -49,23 +45,40 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    showPremiumSubscription();
+    redirect();
+    //showPremiumSubscription();
+  }
+
+  Future<Widget> redirect() async {
+    await Future.delayed(Duration.zero);
+    if (!mounted) {
+      return const Login();
+    }
+
+    final session = SupabaseController.supabase?.auth.currentSession;
+
+    if (session != null) {
+      await SupabaseController().loadGameServices(context);
+
+      return const AllGames();
+    } else {
+      return const Login();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false,
-      child: FutureBuilder(
-        future: AccountController().initUserData(context),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return loading(context: context);
-          }
+        onWillPop: () async => false,
+        child: FutureBuilder(
+          future: redirect(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return loading(context: context);
+            }
 
-          return snapshot.data!;
-        },
-      ),
-    );
+            return snapshot.data!;
+          },
+        ));
   }
 }

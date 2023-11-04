@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,11 +10,11 @@ import 'package:new_mini_casino/widgets/button_model.dart';
 Widget premiumGiftModel(
     {required BuildContext context,
     required NotificationController notificationController,
-    required QueryDocumentSnapshot<Map<String, dynamic>> docs}) {
-  String from = docs.get('from');
+    required Map<dynamic, dynamic> docs}) {
+  String from = docs['from'];
 
-  DateTime expiredDate = (docs.get('expiredDate') as Timestamp).toDate();
-  DateTime date = docs.get('date').toDate();
+  DateTime expiredDate = DateTime.parse(docs['expiredDate']);
+  DateTime date = DateTime.parse(docs['date']);
 
   return Container(
     width: double.infinity,
@@ -73,7 +72,7 @@ Widget premiumGiftModel(
           ),
           const SizedBox(height: 8.0),
           AutoSizeText(
-              '$from подарил вам Premium-версию игры на ${DateTime.now().difference(expiredDate).inDays > 32 ? 'год' : 'месяц'}!',
+              '$from подарил вам Premium-версию игры на ${DateTime.now().difference(expiredDate).inDays.abs() > 32 ? 'год' : 'месяц'}!',
               style: Theme.of(context)
                   .textTheme
                   .bodySmall!
@@ -94,7 +93,7 @@ Widget premiumGiftModel(
                   await notificationController.connectGiftPremium(
                       context: context,
                       expiredDate: expiredDate,
-                      docId: docs.id);
+                      docId: docs['id']);
                 },
                 color: const Color.fromARGB(255, 5, 2, 1)),
           )

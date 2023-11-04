@@ -5,6 +5,7 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   platform_device_id_linux
   sentry_flutter
+  smart_auth
   url_launcher_linux
 )
 

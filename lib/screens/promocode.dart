@@ -53,8 +53,7 @@ class _PromocodeState extends State<Promocode> {
 
                             await value.usePromocode(
                                 context: context,
-                                myPromocode:
-                                    Promocode.promocodeController.text);
+                                title: Promocode.promocodeController.text);
 
                             Promocode.promocodeController.clear();
                           },

@@ -3,7 +3,7 @@ import 'dart:io' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +29,8 @@ class BonusManager extends ChangeNotifier {
           getReward(
               context: context,
               rewardCount: double.parse(
-                  (Random().nextInt(AccountController.isPremium ? 4501 : 701) +
-                          (AccountController.isPremium ? 500 : 100))
+                  (Random().nextInt(SupabaseController.isPremium ? 4501 : 701) +
+                          (SupabaseController.isPremium ? 500 : 100))
                       .toString()));
         }).whenComplete(() => showLoading(false));
   }

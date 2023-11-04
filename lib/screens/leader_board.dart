@@ -1,18 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:circle_progress_bar/circle_progress_bar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:new_mini_casino/business/balance.dart';
 import 'dart:io' as ui;
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
-import 'package:provider/provider.dart';
 
 class LeaderBoard extends StatefulWidget {
   const LeaderBoard({super.key});
@@ -44,57 +40,57 @@ class _LeaderBoardState extends State<LeaderBoard> {
               BoxShadow(color: Colors.black87.withOpacity(0.4), blurRadius: 5.0)
             ]),
         child: StreamBuilder(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .where(
-                  LeaderBoard.selectedValue == LeaderBoard.items.first
-                      ? 'level'
-                      : LeaderBoard.selectedValue == LeaderBoard.items[1]
-                          ? 'balance'
-                          : 'totalGames',
-                  isGreaterThan:
-                      LeaderBoard.selectedValue == LeaderBoard.items.first
-                          ? ProfileController.profileModel.level
-                          : LeaderBoard.selectedValue == LeaderBoard.items[1]
-                              ? context.read<Balance>().currentBalance
-                              : ProfileController.profileModel.totalGame,
-
-                  /*'level',
-                          isGreaterThan: context.read<Balance>().currentBalance*/
-                )
-                .snapshots(),
+            stream: SupabaseController.supabase
+                ?.from('users')
+                .select('*')
+                .order(
+                    LeaderBoard.selectedValue == LeaderBoard.items.first
+                        ? 'level'
+                        : LeaderBoard.selectedValue == LeaderBoard.items[1]
+                            ? 'balance'
+                            : 'totalGames',
+                    ascending: false)
+                .asStream(),
             builder: (context, snapshot) {
-              int myPlace = (snapshot.data?.size ?? 0) < 3
-                  ? (snapshot.data?.size ?? 0) + 1
-                  : (snapshot.data?.size ?? 0) < 13
-                      ? ((snapshot.data?.size ?? 0) + 1) -
-                          ((snapshot.data?.size ?? 0) -
-                              ((snapshot.data?.size ?? 0) - 3))
-                      : ((snapshot.data?.size ?? 0) + 1) -
-                          ((snapshot.data?.size ?? 0) -
-                              ((snapshot.data?.size ?? 0) - 13));
+              int userPlace = 0;
+              int realUserPlace = 0;
+
+              if (snapshot.data != null) {
+                userPlace = (snapshot.data as List<dynamic>).indexWhere(
+                    (element) =>
+                        element['uid'] ==
+                        SupabaseController.supabase?.auth.currentUser!.id);
+
+                realUserPlace = userPlace;
+
+                userPlace = userPlace < 3
+                    ? userPlace + 1
+                    : userPlace < 13
+                        ? (userPlace + 1) - (userPlace - (userPlace - 3))
+                        : (userPlace + 1) - (userPlace - (userPlace - 13));
+              }
 
               return Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     AutoSizeText(
-                      'Вы на $myPlace месте',
+                      'Вы на $userPlace месте',
                       style: Theme.of(context)
                           .appBarTheme
                           .titleTextStyle!
                           .copyWith(fontSize: 23.0),
                     ),
                     const SizedBox(width: 10.0),
-                    myPlace > 100
+                    userPlace > 100
                         ? Container()
                         : Container(
                             decoration: BoxDecoration(
-                              color: (snapshot.data?.size ?? 0) < 3
+                              color: realUserPlace < 3
                                   ? Colors.lightGreen
-                                  : (snapshot.data?.size ?? 0) < 13
+                                  : realUserPlace < 13
                                       ? Colors.blue
-                                      : (snapshot.data?.size ?? 0) < 100
+                                      : realUserPlace < 100
                                           ? Colors.deepPurple
                                           : Colors.transparent,
                               borderRadius: BorderRadius.circular(10.0),
@@ -102,7 +98,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: AutoSizeText(
-                                'ТОП-${(snapshot.data?.size ?? 0) < 3 ? 3 : (snapshot.data?.size ?? 0) < 13 ? 10 : (snapshot.data?.size ?? 0) < 100 ? 100 : 1000}',
+                                'ТОП-${realUserPlace < 3 ? 3 : realUserPlace < 13 ? 10 : realUserPlace < 100 ? 100 : 1000}',
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.roboto(
                                     color: Colors.white,
@@ -209,32 +205,35 @@ class _LeaderBoardState extends State<LeaderBoard> {
         ],
       ),
       body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .orderBy(
+          stream: SupabaseController.supabase
+              ?.from('users')
+              .select('*')
+              .order(
                   LeaderBoard.selectedValue == LeaderBoard.items.first
                       ? 'level'
                       : LeaderBoard.selectedValue == LeaderBoard.items[1]
                           ? 'balance'
                           : 'totalGames',
-                  descending: true)
+                  ascending: false)
               .limit(113)
-              .snapshots(),
+              .asStream(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return loading(context: context);
             }
 
-            return list(snapshot: snapshot, controller: controller);
+            return list(
+                map: (snapshot.data as List<dynamic>), controller: controller);
           }),
     );
   }
 
   Widget list(
-      {required AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot,
+      {required List<dynamic> map,
       required ScrollController controller,
       bool isShowRaiting = true}) {
     return ListView.separated(
+        itemCount: map.length,
         controller: controller,
         itemBuilder: (context, index) {
           double balance = 0.0;
@@ -246,22 +245,17 @@ class _LeaderBoardState extends State<LeaderBoard> {
           int pinId = -1;
 
           if (LeaderBoard.selectedValue == LeaderBoard.items.first) {
-            if (snapshot.data!.docs[index].data().containsKey('level')) {
-              level = double.parse(
-                  snapshot.data?.docs[index].get('level').toString() ?? '1.0');
-            }
+            level = double.parse(map[index]['level'].toString());
           } else if (LeaderBoard.selectedValue == LeaderBoard.items[1]) {
-            balance = double.parse(
-                snapshot.data?.docs[index].get('balance').toString() ?? '0');
+            balance = double.parse(map[index]['balance'].toString());
           } else if (LeaderBoard.selectedValue == LeaderBoard.items[2]) {
-            totalGames = int.parse(
-                snapshot.data?.docs[index].get('totalGames').toString() ?? '0');
+            totalGames = int.parse(map[index]['totalGames'].toString());
           }
 
-          if (snapshot.data!.docs[index].data().containsKey('selectedpins')) {
+          /*if (snapshot.data!.docs[index].data().containsKey('selectedpins')) {
             pinId = int.parse(
                 snapshot.data!.docs[index].get('selectedpins').toString());
-          }
+          }*/
 
           return Container(
             padding: EdgeInsets.only(
@@ -294,10 +288,10 @@ class _LeaderBoardState extends State<LeaderBoard> {
                 )),
             child: GestureDetector(
               onTap: () {
-                LeaderBoard.scrollOffset = controller.offset;
+                /* LeaderBoard.scrollOffset = controller.offset;
                 context.beamToNamed(
-                  '/other-user-profile/${snapshot.data?.docs[index].get('name')}/${snapshot.data?.docs[index].get('uid')}/$pinId',
-                );
+                  '/other-user-profile/${map[index]['name']}/${map[index]['uid']}/$pinId',
+                );*/
               },
               child: Column(
                 children: [
@@ -321,14 +315,16 @@ class _LeaderBoardState extends State<LeaderBoard> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15.0),
                         color: Theme.of(context).cardColor,
-                        border: snapshot.data?.docs[index].get('uid') ==
-                                FirebaseAuth.instance.currentUser!.uid
+                        border: map[index]['uid'] ==
+                                SupabaseController
+                                    .supabase?.auth.currentUser!.id
                             ? Border.all(color: Colors.white, width: 2.0)
                             : null,
                         boxShadow: [
                           BoxShadow(
-                              color: snapshot.data?.docs[index].get('uid') ==
-                                      FirebaseAuth.instance.currentUser!.uid
+                              color: map[index]['uid'] ==
+                                      SupabaseController
+                                          .supabase?.auth.currentUser!.id
                                   ? Colors.white.withOpacity(0.5)
                                   : Colors.black.withOpacity(0.3),
                               blurRadius: 10.0)
@@ -389,10 +385,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                   children: [
                                     Row(
                                       children: [
-                                        AutoSizeText(
-                                            snapshot.data?.docs[index]
-                                                    .get('name') ??
-                                                '',
+                                        AutoSizeText(map[index]['name'] ?? '',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium!
@@ -407,10 +400,9 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                             : Container(),
                                         const SizedBox(width: 6.0),
                                         isShowRaiting
-                                            ? snapshot.data?.docs[index]
-                                                        .get('uid') !=
-                                                    FirebaseAuth.instance
-                                                        .currentUser!.uid
+                                            ? map[index]['uid'] !=
+                                                    SupabaseController.supabase
+                                                        ?.auth.currentUser!.id
                                                 ? Container()
                                                 : Container(
                                                     margin:
@@ -536,8 +528,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
             ),
           );
         },
-        separatorBuilder: (contex, index) =>
-            SizedBox(height: /* index == 0 || index == 1 ? 0.0 : 15.0*/ 0.0),
-        itemCount: snapshot.data?.docs.length ?? 0);
+        separatorBuilder: (contex, index) => const SizedBox(
+            height: /* index == 0 || index == 1 ? 0.0 : 15.0*/ 0.0));
   }
 }

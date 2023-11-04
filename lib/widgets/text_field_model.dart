@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:provider/provider.dart';
 
 Widget customTextField(
@@ -32,7 +32,7 @@ Widget customTextField(
     },
     onChanged: (value) {
       if (isBetInput) {
-        if (!AccountController.isPremium) {
+        if (!SupabaseController.isPremium) {
           if (double.parse(
                   currencyTextInputFormatter.getUnformattedValue().toString()) >
               1000000) {
@@ -69,7 +69,7 @@ Widget customTextField(
 
                           double num = 0.0;
 
-                          if (!AccountController.isPremium) {
+                          if (!SupabaseController.isPremium) {
                             if (currencyTextInputFormatter
                                     .getUnformattedValue()
                                     .toDouble() >=
@@ -158,7 +158,7 @@ Widget customTextField(
                         final balance = context.read<Balance>();
                         double result = 0.0;
 
-                        if (!AccountController.isPremium) {
+                        if (!SupabaseController.isPremium) {
                           if (balance.currentBalance.truncate() > 1000000) {
                             result = 1000000;
                           } else {

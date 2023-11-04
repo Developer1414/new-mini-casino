@@ -1,16 +1,14 @@
 import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io' as ui;
+import 'package:provider/src/provider.dart' as provider;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NotificationController extends ChangeNotifier {
   bool isLoading = false;
@@ -25,20 +23,17 @@ class NotificationController extends ChangeNotifier {
   }
 
   Future<bool> getNotifications() async {
-    int notificationsCount = 0;
+    final res = await SupabaseController.supabase!
+        .from('notifications')
+        .select(
+          'id',
+          const FetchOptions(
+            count: CountOption.exact,
+          ),
+        )
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id);
 
-    await FirebaseFirestore.instance
-        .collection('notifications')
-        .get()
-        .then((value) {
-      notificationsCount = value.docs
-          .where((element) =>
-              element.get('uid') == FirebaseAuth.instance.currentUser!.uid ||
-              element.get('uid') == 'all')
-          .length;
-    });
-
-    return notificationsCount > 0;
+    return res.count > 0;
   }
 
   Future saveNotificationsId(String notificationId) async {
@@ -61,15 +56,15 @@ class NotificationController extends ChangeNotifier {
   Future getMoneys(
       {required BuildContext context,
       required double amount,
-      required String docId}) async {
+      required int docId}) async {
     showLoading(true);
 
-    Provider.of<Balance>(context, listen: false).cashout(amount);
+    provider.Provider.of<Balance>(context, listen: false).cashout(amount);
 
-    await FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(docId)
+    await SupabaseController.supabase!
+        .from('notifications')
         .delete()
+        .eq('id', docId)
         .whenComplete(() {
       alertDialogSuccess(
           context: mainContext,
@@ -86,29 +81,29 @@ class NotificationController extends ChangeNotifier {
 
   Future connectGiftPremium(
       {required BuildContext context,
-      required String docId,
+      required int docId,
       required DateTime expiredDate}) async {
     showLoading(true);
 
-    await FirebaseFirestore.instance
-        .collection('notifications')
-        .doc(docId)
+    SupabaseController.isPremium = true;
+    SupabaseController.expiredSubscriptionDate = expiredDate;
+
+    await SupabaseController.supabase!
+        .from('notifications')
         .delete()
+        .eq('id', docId)
         .whenComplete(() async {
-      AccountController.isPremium = true;
-      AccountController.expiredSubscriptionDate = expiredDate;
+      await SupabaseController.supabase!.from('users').update({
+        'premium': expiredDate.toIso8601String(),
+      }).eq('uid', SupabaseController.supabase?.auth.currentUser!.id);
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .update({'premium': expiredDate});
-
-      // ignore: use_build_context_synchronously
-      alertDialogSuccess(
-          context: mainContext,
-          title: 'Успех',
-          text:
-              'Вы успешно подключили Premium-версию Mini Casino на ${DateTime.now().difference(expiredDate).inDays > 32 ? 'год' : 'месяц'}!');
+      if (context.mounted) {
+        alertDialogSuccess(
+            context: mainContext,
+            title: 'Успех',
+            text:
+                'Вы успешно подключили Premium-версию Mini Casino на ${DateTime.now().difference(expiredDate).inDays > 32 ? 'год' : 'месяц'}!');
+      }
     });
 
     showLoading(false);

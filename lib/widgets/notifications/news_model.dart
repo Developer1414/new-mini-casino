@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -9,11 +8,11 @@ import 'dart:io' as ui;
 Widget newsModel(
     {required BuildContext context,
     required NotificationController notificationController,
-    required QueryDocumentSnapshot<Map<String, dynamic>> docs}) {
-  DateTime date = docs.get('date').toDate();
+    required Map<dynamic, dynamic> docs}) {
+  DateTime date = DateTime.parse(docs['date']);
 
-  String news = docs.get('news');
-  String title = docs.get('title');
+  String news = docs['news'];
+  String title = docs['title'];
 
   return Container(
     width: double.infinity,

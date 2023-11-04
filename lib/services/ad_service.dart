@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
@@ -21,7 +21,7 @@ class AdService {
       bool isBet = true}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if (AccountController.isPremium) {
+    if (SupabaseController.isPremium) {
       return;
     }
 

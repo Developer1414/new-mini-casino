@@ -1,14 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/controllers/account_controller.dart';
+import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:ntp/ntp.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
+
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OwnPromocodeManager extends ChangeNotifier {
   bool isLoading = false;
@@ -20,7 +24,7 @@ class OwnPromocodeManager extends ChangeNotifier {
 
   void onPromocodeChanged() {
     double temp =
-        AccountController.isPremium ? prize : (prize + (prize * 40 / 100));
+        SupabaseController.isPremium ? prize : (prize + (prize * 40 / 100));
 
     totalPrize = temp * countActivation + ((prize * 20 / 100) * existenceHours);
     notifyListeners();
@@ -35,6 +39,11 @@ class OwnPromocodeManager extends ChangeNotifier {
   void onExistenceHoursChanged(double value) {
     existenceHours = value;
     onPromocodeChanged();
+    notifyListeners();
+  }
+
+  void loading(bool value) {
+    isLoading = value;
     notifyListeners();
   }
 
@@ -63,7 +72,7 @@ class OwnPromocodeManager extends ChangeNotifier {
       return;
     }
 
-    final balance = Provider.of<Balance>(context, listen: false);
+    final balance = provider.Provider.of<Balance>(context, listen: false);
 
     if (balance.currentBalance < totalPrize) {
       alertDialogError(
@@ -76,91 +85,105 @@ class OwnPromocodeManager extends ChangeNotifier {
       return;
     }
 
-    isLoading = true;
-    notifyListeners();
+    if (ProfileController.profileModel.totalGame < 5000) {
+      alertDialogError(
+        context: context,
+        title: 'Ошибка',
+        confirmBtnText: 'Окей',
+        text:
+            'Промокод можно создать от 5000 игр! У вас: ${ProfileController.profileModel.totalGame}',
+      );
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get()
-        .then((value) async {
-      if (int.parse(value.get('totalGames').toString()) < 5000) {
-        alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text:
-              'Промокод можно создать от 5000 игр! У вас: ${int.parse(value.get('totalGames').toString())}',
-        );
-      } else {
-        await FirebaseFirestore.instance
-            .collection('promocodes')
-            .doc(name)
-            .get()
-            .then((value) async {
-          if (value.exists) {
-            alertDialogError(
-              context: context,
-              title: 'Ошибка',
-              confirmBtnText: 'Окей',
-              text: 'Такой промокод уже существует!',
-            );
-          } else {
-            DateTime dateTimeNow = await NTP.now();
+      return;
+    }
 
-            await FirebaseFirestore.instance
-                .collection('promocodes')
-                .doc(name)
-                .set({
-              'prize': prize,
-              'count': countActivation.round(),
-              'uid': FirebaseAuth.instance.currentUser!.uid,
-              'expiredDate':
-                  dateTimeNow.add(Duration(hours: existenceHours.round()))
-            }).whenComplete(() async {
-              await FirebaseFirestore.instance
-                  .collection('users')
-                  .doc(FirebaseAuth.instance.currentUser?.uid)
-                  .get()
-                  .then((value) async {
-                if (value.data()!.containsKey('promocodes')) {
-                  List list = value.get('promocodes') as List;
-                  list.add(name);
+    loading(true);
 
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .update({'promocodes': list});
-                } else {
-                  await FirebaseFirestore.instance
-                      .collection('users')
-                      .doc(FirebaseAuth.instance.currentUser?.uid)
-                      .update({
-                    'promocodes': [name]
-                  });
-                }
-              });
-            });
+    try {
+      final res = await SupabaseController.supabase!
+          .from('promocodes')
+          .select(
+            'title',
+            const FetchOptions(
+              count: CountOption.exact,
+            ),
+          )
+          .eq('title', name);
 
-            balance.placeBet(totalPrize);
+      if (res.count == 0) {
+        try {
+          DateTime ntpDate = await NTP.now();
 
-            // ignore: use_build_context_synchronously
+          await SupabaseController.supabase!.from('promocodes').insert({
+            'prize': prize,
+            'title': name,
+            'count': countActivation.round(),
+            'expiredDate': ntpDate
+                .add(Duration(hours: existenceHours.round()))
+                .toIso8601String(),
+          });
+
+          await SupabaseController.supabase!
+              .from('users')
+              .select('*')
+              .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+              .then((value) async {
+            Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+            Map<String, String> promocodes = {};
+
+            if (map['promocodes'] != null) {
+              promocodes = jsonDecode(map['promocodes']);
+            }
+
+            promocodes.addAll({name: prize.toString()});
+
+            await SupabaseController.supabase!
+                .from('users')
+                .update({'promocodes': jsonEncode(promocodes)}).eq(
+                    'uid', SupabaseController.supabase?.auth.currentUser!.id);
+          });
+
+          balance.placeBet(totalPrize);
+
+          loading(false);
+
+          if (context.mounted) {
             AdService.showInterstitialAd(
                 context: context, func: () {}, isBet: false);
 
-            // ignore: use_build_context_synchronously
             alertDialogSuccess(
               context: context,
-              title: 'Поздравляем!',
+              title: 'Успех',
               confirmBtnText: 'Спасибо!',
               text: 'Промокод успешно создан!',
             );
           }
-        });
-      }
-    });
+        } on PostgrestException catch (e) {
+          loading(false);
 
-    isLoading = false;
-    notifyListeners();
+          if (kDebugMode) {
+            print('createUserDates: $e');
+          }
+        }
+      } else {
+        loading(false);
+
+        if (context.mounted) {
+          alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: 'Такой промокод уже существует!',
+          );
+        }
+      }
+    } on PostgrestException catch (e) {
+      loading(false);
+
+      if (kDebugMode) {
+        print('checkPromocdeOnExist: $e');
+      }
+    }
   }
 }

@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 Widget buttonModel(
     {required BuildContext context,
-    required String buttonName,
+    String? buttonName,
     String? subtitle,
     required Color color,
     Function()? onPressed,
@@ -34,17 +34,23 @@ Widget buttonModel(
                   color: Colors.grey.shade300,
                   size: 22.0,
                 ),
-          icon == null ? Container() : const SizedBox(width: 10.0),
+          icon == null
+              ? Container()
+              : buttonName == null
+                  ? Container()
+                  : const SizedBox(width: 10.0),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AutoSizeText(buttonName,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: 22.0)),
+              buttonName == null
+                  ? Container()
+                  : AutoSizeText(buttonName,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium!
+                          .copyWith(fontSize: 22.0)),
               subtitle == null
                   ? Container()
                   : AutoSizeText(subtitle,

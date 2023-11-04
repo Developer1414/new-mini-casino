@@ -1,6 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -9,6 +7,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'dart:io' as ui;
 
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -17,24 +16,6 @@ void changeNicknameAlert({required BuildContext context}) {
   TextEditingController controller = TextEditingController();
 
   bool isLoading = false;
-
-  Future<bool> checkOnExistNickname(String name) async {
-    bool result = false;
-
-    await FirebaseFirestore.instance
-        .collection('users')
-        .where('name', isEqualTo: name)
-        .get()
-        .then((value) {
-      if (value.docs.isNotEmpty) {
-        result = false;
-      } else {
-        result = true;
-      }
-    });
-
-    return result;
-  }
 
   showDialog(
     context: context,
@@ -169,14 +150,13 @@ void changeNicknameAlert({required BuildContext context}) {
                                           return;
                                         }
 
-                                        balance.placeBet(100000);
-
                                         setState(() => isLoading = true);
 
-                                        await checkOnExistNickname(
-                                                controller.text.trim())
-                                            .then((value) async {
-                                          if (!value) {
+                                        await SupabaseController()
+                                            .checkNameOnAvailability(
+                                                name: controller.text.trim())
+                                            .then((isExist) async {
+                                          if (isExist) {
                                             setState(() => isLoading = false);
 
                                             AccountExceptionController
@@ -185,28 +165,33 @@ void changeNicknameAlert({required BuildContext context}) {
                                                     code:
                                                         'nickname_already_exist');
                                           } else {
-                                            await FirebaseFirestore.instance
-                                                .collection('users')
-                                                .doc(FirebaseAuth
-                                                    .instance.currentUser!.uid)
-                                                .update(
-                                                    {'name': controller.text});
+                                            await SupabaseController.supabase!
+                                                .from('users')
+                                                .update({
+                                              'name': controller.text.trim()
+                                            }).eq(
+                                                    'uid',
+                                                    SupabaseController.supabase
+                                                        ?.auth.currentUser!.id);
+
+                                            balance.placeBet(100000);
 
                                             setState(() {
                                               isLoading = false;
                                             });
 
-                                            // ignore: use_build_context_synchronously
-                                            alertDialogSuccess(
-                                                context: context,
-                                                title: 'Успех',
-                                                text:
-                                                    'Никнейм успешно изменён!',
-                                                onConfirmBtnTap: () {
-                                                  if (context.mounted) {
-                                                    Navigator.pop(context);
-                                                  }
-                                                });
+                                            if (context.mounted) {
+                                              alertDialogSuccess(
+                                                  context: context,
+                                                  title: 'Успех',
+                                                  text:
+                                                      'Никнейм успешно изменён!',
+                                                  onConfirmBtnTap: () {
+                                                    if (context.mounted) {
+                                                      Navigator.pop(context);
+                                                    }
+                                                  });
+                                            }
                                           }
                                         });
                                       },

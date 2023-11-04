@@ -1,10 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:new_mini_casino/controllers/notification_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/notifications/news_model.dart';
 import 'package:new_mini_casino/widgets/notifications/premium_gift_model.dart';
@@ -47,12 +47,11 @@ class Notifications extends StatelessWidget {
                     ),
                   ],
                 ),
-                body: FutureBuilder(
-                  future: FirebaseFirestore.instance
-                      .collection('notifications')
-                      /*.where('uid',
-                          isEqualTo: FirebaseAuth.instance.currentUser!.uid)*/
-                      .get(),
+                body: StreamBuilder(
+                  stream: SupabaseController.supabase
+                      ?.from('notifications')
+                      .stream(primaryKey: ['id']).eq(
+                          'to', ProfileController.profileModel.nickname),
                   builder: (context, snapshot) {
                     notificationController.mainContext = mainContext;
 
@@ -60,7 +59,10 @@ class Notifications extends StatelessWidget {
                       return loading(context: context);
                     }
 
-                    List<QueryDocumentSnapshot<Map<String, dynamic>>>? list =
+                    List<Map<dynamic, dynamic>> map =
+                        snapshot.data as List<Map<dynamic, dynamic>>;
+
+                    /*List<QueryDocumentSnapshot<Map<String, dynamic>>>? list =
                         snapshot.data?.docs
                             .where((element) =>
                                 element.get('to') ==
@@ -68,11 +70,11 @@ class Notifications extends StatelessWidget {
                                 element.get('to') == 'all')
                             .toList()
                             .reversed
-                            .toList();
+                            .toList();*/
 
                     //var reversedList = list!.reversed.toList();
 
-                    return list!.isEmpty
+                    return map.isEmpty
                         ? Center(
                             child: Padding(
                               padding: const EdgeInsets.only(
@@ -86,28 +88,28 @@ class Notifications extends StatelessWidget {
                             ),
                           )
                         : ListView.separated(
-                            itemCount: list.length,
+                            itemCount: map.length,
                             itemBuilder: (context, index) {
-                              String action = list[index].get('action');
+                              String action = map[index]['action'];
 
                               return action == 'transfer_moneys'
                                   ? transferMoneysModel(
                                       notificationController:
                                           notificationController,
                                       context: context,
-                                      docs: list[index])
+                                      docs: map[index])
                                   : action == 'news'
                                       ? newsModel(
                                           notificationController:
                                               notificationController,
                                           context: context,
-                                          docs: list[index])
+                                          docs: map[index])
                                       : action == 'premium_gift'
                                           ? premiumGiftModel(
                                               notificationController:
                                                   notificationController,
                                               context: context,
-                                              docs: list[index])
+                                              docs: map[index])
                                           : Container();
                             },
                             separatorBuilder: (context, index) =>
