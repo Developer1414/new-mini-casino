@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -139,6 +140,40 @@ void giftPremiumAlert(
                                             .textTheme
                                             .displaySmall!
                                             .copyWith(fontSize: 20.0),
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 30.0,
+                                          right: 30.0,
+                                          bottom: 10.0),
+                                      child: Row(
+                                        children: [
+                                          AutoSizeText('Месяц',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!),
+                                          const SizedBox(width: 5.0),
+                                          CupertinoSwitch(
+                                            trackColor: Colors.blueAccent,
+                                            value: paymentController
+                                                .isYearSubscription,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                paymentController
+                                                    .chooseSubscriptionDuration(
+                                                        value);
+                                              });
+                                            },
+                                          ),
+                                          const SizedBox(width: 5.0),
+                                          AutoSizeText('Год',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!),
+                                        ],
                                       ),
                                     ),
                                   ],

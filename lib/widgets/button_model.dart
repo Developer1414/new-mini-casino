@@ -8,6 +8,8 @@ Widget buttonModel(
     String? subtitle,
     required Color color,
     Function()? onPressed,
+    Color? textColor,
+    Color? iconColor,
     IconData? icon}) {
   return SizedBox(
     height: 60.0,
@@ -31,7 +33,7 @@ Widget buttonModel(
               ? Container()
               : FaIcon(
                   icon,
-                  color: Colors.grey.shade300,
+                  color: iconColor ?? Colors.grey.shade300,
                   size: 22.0,
                 ),
           icon == null
@@ -47,19 +49,19 @@ Widget buttonModel(
                   : AutoSizeText(buttonName,
                       maxLines: 1,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontSize: 22.0)),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 22.0,
+                          color: textColor ??
+                              Theme.of(context).textTheme.bodyMedium!.color)),
               subtitle == null
                   ? Container()
                   : AutoSizeText(subtitle,
                       maxLines: 1,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyMedium!
-                          .copyWith(fontSize: 15.0)),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 15.0,
+                          color: textColor ??
+                              Theme.of(context).textTheme.bodyMedium!.color)),
             ],
           ),
         ],

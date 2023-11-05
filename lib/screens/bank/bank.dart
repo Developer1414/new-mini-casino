@@ -108,15 +108,6 @@ class Bank extends StatelessWidget {
                         context.beamToNamed('/transfer-moneys');
                       }),
                   const SizedBox(height: 15.0),
-                  buttonModel(
-                      context: context,
-                      icon: FontAwesomeIcons.moneyBill,
-                      buttonName: 'Покупка игровой валюты',
-                      color: Colors.blueAccent,
-                      onPressed: () {
-                        context.beamToNamed('/purchasing-game-currency');
-                      }),
-                  const SizedBox(height: 15.0),
                   Consumer<BonusManager>(
                     builder: (context, value, child) {
                       return value.isLoadingBonus
@@ -124,7 +115,7 @@ class Bank extends StatelessWidget {
                               height: 60.0,
                               width: double.infinity,
                               decoration: BoxDecoration(
-                                  color: Colors.deepPurple,
+                                  color: const Color.fromRGBO(103, 58, 183, 1),
                                   borderRadius: BorderRadius.circular(15.0),
                                   boxShadow: [
                                     BoxShadow(
@@ -156,6 +147,15 @@ class Bank extends StatelessWidget {
                               });
                     },
                   ),
+                  const SizedBox(height: 15.0),
+                  buttonModel(
+                      context: context,
+                      buttonName: 'Покупка игровой валюты',
+                      color: const Color.fromARGB(255, 179, 242, 31),
+                      textColor: const Color.fromARGB(255, 5, 2, 1),
+                      onPressed: () {
+                        context.beamToNamed('/purchasing-game-currency');
+                      }),
                 ],
               ),
             ),

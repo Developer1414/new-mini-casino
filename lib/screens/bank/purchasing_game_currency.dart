@@ -219,8 +219,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                                             children: [
                                               AutoSizeText(
                                                 NumberFormat.simpleCurrency(
-                                                        locale: ui.Platform
-                                                            .localeName)
+                                                        locale: 'ru_RU')
                                                     .format(
                                                         purchasingGameCurrencyController
                                                             .amountRealCurrency),

@@ -50,8 +50,10 @@ class Notifications extends StatelessWidget {
                 body: StreamBuilder(
                   stream: SupabaseController.supabase
                       ?.from('notifications')
-                      .stream(primaryKey: ['id']).eq(
-                          'to', ProfileController.profileModel.nickname),
+                      .stream(primaryKey: ['id']).inFilter('to', [
+                    ProfileController.profileModel.nickname,
+                    'all'
+                  ]).order('date'),
                   builder: (context, snapshot) {
                     notificationController.mainContext = mainContext;
 
@@ -61,18 +63,6 @@ class Notifications extends StatelessWidget {
 
                     List<Map<dynamic, dynamic>> map =
                         snapshot.data as List<Map<dynamic, dynamic>>;
-
-                    /*List<QueryDocumentSnapshot<Map<String, dynamic>>>? list =
-                        snapshot.data?.docs
-                            .where((element) =>
-                                element.get('to') ==
-                                    ProfileController.profileModel.nickname ||
-                                element.get('to') == 'all')
-                            .toList()
-                            .reversed
-                            .toList();*/
-
-                    //var reversedList = list!.reversed.toList();
 
                     return map.isEmpty
                         ? Center(

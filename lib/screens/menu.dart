@@ -198,8 +198,8 @@ class _AllGamesState extends State<AllGames> {
                 icon: StreamBuilder(
                     stream: SupabaseController.supabase
                         ?.from('notifications')
-                        .stream(primaryKey: ['id']).eq(
-                            'to', ProfileController.profileModel.nickname),
+                        .stream(primaryKey: ['id']).inFilter('to',
+                            [ProfileController.profileModel.nickname, 'all']),
                     builder: (context, snapshot) {
                       int count = snapshot.data?.length ?? 0;
 

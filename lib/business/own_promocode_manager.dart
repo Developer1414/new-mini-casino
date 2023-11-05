@@ -8,7 +8,6 @@ import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
-import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
 
@@ -112,15 +111,10 @@ class OwnPromocodeManager extends ChangeNotifier {
 
       if (res.count == 0) {
         try {
-          DateTime ntpDate = await NTP.now();
-
           await SupabaseController.supabase!.from('promocodes').insert({
             'prize': prize,
             'title': name,
             'count': countActivation.round(),
-            'expiredDate': ntpDate
-                .add(Duration(hours: existenceHours.round()))
-                .toIso8601String(),
           });
 
           await SupabaseController.supabase!
@@ -130,7 +124,7 @@ class OwnPromocodeManager extends ChangeNotifier {
               .then((value) async {
             Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-            Map<String, String> promocodes = {};
+            Map<String, dynamic> promocodes = {};
 
             if (map['promocodes'] != null) {
               promocodes = jsonDecode(map['promocodes']);
@@ -161,6 +155,15 @@ class OwnPromocodeManager extends ChangeNotifier {
           }
         } on PostgrestException catch (e) {
           loading(false);
+
+          if (context.mounted) {
+            alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text: e.message,
+            );
+          }
 
           if (kDebugMode) {
             print('createUserDates: $e');

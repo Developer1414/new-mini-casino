@@ -292,6 +292,8 @@ class PremiumInfo extends StatelessWidget {
                                     splashRadius: 25.0,
                                     padding: EdgeInsets.zero,
                                     onPressed: () {
+                                      paymentController
+                                          .changeOffsetScrollController(0.0);
                                       Beamer.of(context).beamBack();
                                     },
                                     icon: const FaIcon(

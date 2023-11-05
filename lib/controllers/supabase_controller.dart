@@ -286,7 +286,7 @@ class SupabaseController extends ChangeNotifier {
 
   Future levelUp() async {
     double value = ProfileController.profileModel.level +
-        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 10);
+        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 20);
 
     ProfileController.profileModel.level = value;
 

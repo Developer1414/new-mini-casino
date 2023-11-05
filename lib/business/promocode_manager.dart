@@ -8,7 +8,6 @@ import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
-import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
 
@@ -70,8 +69,6 @@ class PromocodeManager extends ChangeNotifier {
 
     showLoading(true);
 
-    DateTime dateTimeNow = await NTP.now();
-
     final res = await SupabaseController.supabase!
         .from('promocodes')
         .select(
@@ -107,24 +104,6 @@ class PromocodeManager extends ChangeNotifier {
 
       int activationCount = int.parse(map['count'].toString());
       double prize = double.parse(map['prize'].toString());
-      DateTime expiredDate = DateTime.parse(map['expiredDate']);
-
-      if (expiredDate.difference(dateTimeNow).inHours >= 5) {
-        await SupabaseController.supabase!
-            .from('promocodes')
-            .delete()
-            .eq('title', title)
-            .whenComplete(() {
-          alertDialogError(
-            context: context,
-            title: 'Ошибка',
-            confirmBtnText: 'Окей',
-            text: 'Время действия промокода исчерпано!',
-          );
-        });
-
-        return;
-      }
 
       if (activationCount <= 0) {
         alertDialogError(

@@ -1,16 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:circle_progress_bar/circle_progress_bar.dart';
+//import 'package:circle_progress_bar/circle_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
+/*import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:io' as ui;
 
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/widgets/imporant_user_profile_info_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
-import 'package:new_mini_casino/widgets/profile_button_model.dart';
+import 'package:new_mini_casino/widgets/profile_button_model.dart';*/
 
 class OtherUserProfile extends StatelessWidget {
   const OtherUserProfile(

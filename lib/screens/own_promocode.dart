@@ -277,41 +277,6 @@ class OwnPromocode extends StatelessWidget {
                                 },
                               ),
                             ),
-                            const SizedBox(height: 15.0),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  AutoSizeText('Действителен (в часах):',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(fontSize: 18.0)),
-                                  AutoSizeText(
-                                      value.existenceHours.round().toString(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(fontSize: 20.0)),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Slider(
-                                value: value.existenceHours,
-                                max: 5,
-                                min: 1,
-                                divisions: 4,
-                                onChanged: (double v) {
-                                  value.onExistenceHoursChanged(v);
-                                },
-                              ),
-                            ),
                             SupabaseController.isPremium
                                 ? Container()
                                 : Padding(

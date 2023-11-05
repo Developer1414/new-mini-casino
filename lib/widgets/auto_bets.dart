@@ -49,7 +49,7 @@ Widget autoBetsModel(
               });
 
               if (isAutoBets) {
-                timer = Timer.periodic(const Duration(milliseconds: 200), (_) {
+                timer = Timer.periodic(const Duration(milliseconds: 400), (_) {
                   function.call();
                 });
               } else {
