@@ -59,9 +59,6 @@ class PremiumInfo extends StatelessWidget {
                             giftPremiumAlert(
                                 mainContext: context,
                                 paymentController: paymentController);
-
-                            /*paymentController.getPremium(
-                                                      context: context);*/
                           },
                           child: const FaIcon(
                             FontAwesomeIcons.gift,
@@ -107,22 +104,24 @@ class PremiumInfo extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(width: 5.0),
-                                  FutureBuilder(
-                                      future: NTP.now(),
-                                      builder: (context, snapshot) {
-                                        return AutoSizeText(
-                                          'АКТИВЕН ЕЩЁ ${getDaysString(SupabaseController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays)}',
-                                          maxLines: 1,
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: const Color.fromARGB(
-                                                255, 5, 2, 1),
-                                            fontSize: 22.0,
-                                            letterSpacing: 0.5,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        );
-                                      }),
+                                  Expanded(
+                                    child: FutureBuilder(
+                                        future: NTP.now(),
+                                        builder: (context, snapshot) {
+                                          return AutoSizeText(
+                                            'АКТИВЕН ЕЩЁ ${getDaysString(SupabaseController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays)}',
+                                            maxLines: 1,
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.roboto(
+                                              color: const Color.fromARGB(
+                                                  255, 5, 2, 1),
+                                              fontSize: 22.0,
+                                              letterSpacing: 0.5,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          );
+                                        }),
+                                  ),
                                 ],
                               ),
                             ),
@@ -403,7 +402,7 @@ class PremiumInfo extends StatelessWidget {
                                                               31))),
                                           const SizedBox(height: 5.0),
                                           Text(
-                                              '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000000)}\n• -5% на погашение кредита\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Покупка в магазине с 20% скидкой на некоторое товары\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}',
+                                              '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000000)}\n• -5% на погашение кредита\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация промокодов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Доступны игры с пометкой «Premium».',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!
@@ -482,7 +481,7 @@ class PremiumInfo extends StatelessWidget {
                                                   .titleMedium),
                                           const SizedBox(height: 5.0),
                                           Text(
-                                              '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}',
+                                              '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}\n• Игры с пометкой «Premium» не доступны.',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!

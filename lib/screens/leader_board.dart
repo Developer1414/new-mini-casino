@@ -208,6 +208,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
           stream: SupabaseController.supabase
               ?.from('users')
               .select('*')
+              .eq('freeze', false)
               .order(
                   LeaderBoard.selectedValue == LeaderBoard.items.first
                       ? 'level'
@@ -465,7 +466,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                                                 .width /
                                                             1.5,
                                                     child: AutoSizeText(
-                                                        'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance)}',
+                                                        'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : balance < 1000000000 ? NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance) : '> 1 млрд'}',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodyMedium!

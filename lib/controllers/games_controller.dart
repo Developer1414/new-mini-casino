@@ -4,8 +4,14 @@ import 'package:new_mini_casino/models/game_button_details.dart';
 class GamesController {
   static List<GameButtonDetails> games = [
     GameButtonDetails(
+        title: 'Slots',
+        gameLogo: 'Slots',
+        buttonColor: const Color.fromARGB(255, 221, 129, 75),
+        nextScreen: '/slots'),
+    GameButtonDetails(
         title: 'Plinko',
         gameLogo: 'PlinkoLogo',
+        forPremium: true,
         buttonColor: Colors.deepPurple,
         nextScreen: '/plinko'),
     GameButtonDetails(
@@ -45,7 +51,8 @@ class GamesController {
         nextScreen: '/fortuneWheel'),
     GameButtonDetails(
         title: 'Crash',
-        gameLogo: 'LimboLogo',
+        gameLogo: 'Crash',
+        forPremium: true,
         buttonColor: Colors.redAccent,
         nextScreen: '/crash'),
     GameButtonDetails(

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -146,10 +147,8 @@ class OwnPromocode extends StatelessWidget {
                           style: Theme.of(context).appBarTheme.titleTextStyle,
                         ),
                         Consumer<Balance>(builder: (ctx, balance, _) {
-                          return AutoSizeText(
-                            balance.currentBalanceString,
-                            style: Theme.of(context).textTheme.displaySmall,
-                          );
+                          return currencyNormalFormat(
+                              context: context, moneys: balance.currentBalance);
                         })
                       ],
                     ),
@@ -282,24 +281,14 @@ class OwnPromocode extends StatelessWidget {
                                 : Padding(
                                     padding: const EdgeInsets.only(top: 15.0),
                                     child: AutoSizeText(
-                                        'Комиссия 60%.\nP.S. c Premium комиссии нет.',
-                                        maxLines: 2,
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                  ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 15.0),
-                              child: AutoSizeText(
-                                  'Внимание:\nСвой промокод вы использовать не сможете!',
-                                  maxLines: 3,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(fontSize: 12.0)),
-                            ),
+                                      'Комиссия 60%.\nP.S. c Premium комиссии нет.',
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                          color: Colors.white.withOpacity(0.5),
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w600),
+                                    )),
                           ],
                         ),
                       ),

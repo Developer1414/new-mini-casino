@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/purchasing_game_currency_controller.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -26,6 +27,20 @@ class PurchasingGameCurrency extends StatelessWidget {
                   context: context,
                   text: purchasingGameCurrencyController.loadingText)
               : Scaffold(
+                  bottomNavigationBar: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15.0, bottom: 15.0),
+                    child: AutoSizeText(
+                        'Покупка и продажа игровой валюты вне игры запрещена!',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                            fontSize: 12.0,
+                            color: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .color!
+                                .withOpacity(0.4))),
+                  ),
                   appBar: AppBar(
                     toolbarHeight: 76.0,
                     elevation: 0,
@@ -53,10 +68,8 @@ class PurchasingGameCurrency extends StatelessWidget {
                           style: Theme.of(context).appBarTheme.titleTextStyle,
                         ),
                         Consumer<Balance>(builder: (ctx, balance, _) {
-                          return AutoSizeText(
-                            balance.currentBalanceString,
-                            style: Theme.of(context).textTheme.displaySmall,
-                          );
+                          return currencyNormalFormat(
+                              context: context, moneys: balance.currentBalance);
                         })
                       ],
                     ),
@@ -102,12 +115,12 @@ class PurchasingGameCurrency extends StatelessWidget {
                                             onPressed:
                                                 purchasingGameCurrencyController
                                                             .amountGameCurrency ==
-                                                        100000
+                                                        250000
                                                     ? null
                                                     : () {
                                                         purchasingGameCurrencyController
                                                             .changeCurrency(
-                                                                -10000);
+                                                                -50000);
                                                       },
                                             style: ElevatedButton.styleFrom(
                                               elevation: 5,
@@ -123,7 +136,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                                               FontAwesomeIcons.minus,
                                               color: purchasingGameCurrencyController
                                                           .amountGameCurrency ==
-                                                      100000
+                                                      250000
                                                   ? Colors.white38
                                                   : Colors.black,
                                               size: 25.0,
@@ -172,12 +185,12 @@ class PurchasingGameCurrency extends StatelessWidget {
                                             onPressed:
                                                 purchasingGameCurrencyController
                                                             .amountGameCurrency ==
-                                                        1000000
+                                                        10000000
                                                     ? null
                                                     : () {
                                                         purchasingGameCurrencyController
                                                             .changeCurrency(
-                                                                10000);
+                                                                50000);
                                                       },
                                             style: ElevatedButton.styleFrom(
                                               elevation: 5,
@@ -193,7 +206,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                                               FontAwesomeIcons.plus,
                                               color: purchasingGameCurrencyController
                                                           .amountGameCurrency ==
-                                                      1000000
+                                                      10000000
                                                   ? Colors.white38
                                                   : Colors.black,
                                               size: 25.0,

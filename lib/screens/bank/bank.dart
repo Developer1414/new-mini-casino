@@ -13,75 +13,70 @@ class Bank extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 76.0,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          leading: Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: IconButton(
-                splashRadius: 25.0,
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  Beamer.of(context).beamBack();
-                },
-                icon: FaIcon(
-                  FontAwesomeIcons.arrowLeft,
-                  color: Theme.of(context).appBarTheme.iconTheme!.color,
-                  size: Theme.of(context).appBarTheme.iconTheme!.size,
-                )),
-          ),
-          title: AutoSizeText(
-            'Банк',
-            style: Theme.of(context).appBarTheme.titleTextStyle,
-          ),
+        body: Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: Colors.blue.shade700,
+              gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Colors.blue.shade500, Colors.blue.shade900]),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withOpacity(0.5), blurRadius: 10.0)
+              ]),
         ),
-        body: Column(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                  color: Colors.blue.shade700,
-                  borderRadius: BorderRadius.circular(15.0),
-                  gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topCenter,
-                      colors: [Colors.blue.shade900, Colors.blue.shade700]),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black.withOpacity(0.5), blurRadius: 10.0)
-                  ]),
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  children: [
-                    const FaIcon(
-                      FontAwesomeIcons.buildingColumns,
-                      color: Colors.white,
-                      size: 80.0,
-                    ),
-                    const SizedBox(height: 10.0),
-                    AutoSizeText(
-                      'MC Bank',
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontSize: 30.0,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                  ],
-                ),
+            Padding(
+              padding: const EdgeInsets.only(left: 11.5, top: 38.0),
+              child: Row(
+                children: [
+                  IconButton(
+                      splashRadius: 25.0,
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        Beamer.of(context).beamBack();
+                      },
+                      icon: FaIcon(
+                        FontAwesomeIcons.arrowLeft,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        size: Theme.of(context).appBarTheme.iconTheme!.size,
+                      )),
+                ],
               ),
             ),
+            Center(
+              child: Column(
+                children: [
+                  const FaIcon(
+                    FontAwesomeIcons.buildingColumns,
+                    color: Colors.white,
+                    size: 80.0,
+                  ),
+                  const SizedBox(height: 10.0),
+                  AutoSizeText(
+                    'Банк',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.roboto(
+                      color: Colors.white,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 15.0),
             Padding(
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Column(
                 children: [
-                  buttonModel(
+                  /*buttonModel(
                       context: context,
                       icon: FontAwesomeIcons.moneyBill,
                       buttonName: 'Взять кредит',
@@ -89,7 +84,7 @@ class Bank extends StatelessWidget {
                       onPressed: () {
                         context.beamToNamed('/loan-moneys');
                       }),
-                  const SizedBox(height: 15.0),
+                  const SizedBox(height: 15.0),*/
                   buttonModel(
                       context: context,
                       icon: FontAwesomeIcons.landmark,
@@ -141,7 +136,7 @@ class Bank extends StatelessWidget {
                               context: context,
                               icon: FontAwesomeIcons.rectangleAd,
                               buttonName: 'Бесплатный бонус',
-                              color: Colors.deepPurple,
+                              color: const Color.fromARGB(255, 147, 31, 242),
                               onPressed: () {
                                 value.getFreeBonus(context);
                               });
@@ -160,6 +155,8 @@ class Bank extends StatelessWidget {
               ),
             ),
           ],
-        ));
+        ),
+      ],
+    ));
   }
 }

@@ -43,7 +43,7 @@ Widget customTextField(
         } else {
           if (double.parse(
                   currencyTextInputFormatter.getUnformattedValue().toString()) >
-              10000000) {
+              100000000) {
             controller.text = currencyTextInputFormatter.format('1000000000');
             controller.selection = TextSelection(
                 baseOffset: 0, extentOffset: controller.text.length);
@@ -95,7 +95,7 @@ Widget customTextField(
                             if (currencyTextInputFormatter
                                     .getUnformattedValue()
                                     .toDouble() >=
-                                10000000) {
+                                100000000) {
                               num = currencyTextInputFormatter
                                   .getUnformattedValue()
                                   .toDouble();
@@ -103,7 +103,7 @@ Widget customTextField(
                               if (currencyTextInputFormatter
                                           .getUnformattedValue() *
                                       2 >
-                                  10000000) {
+                                  100000000) {
                                 num = currencyTextInputFormatter
                                     .getUnformattedValue()
                                     .toDouble();
@@ -166,8 +166,8 @@ Widget customTextField(
                                 balance.currentBalance.truncate().toDouble();
                           }
                         } else {
-                          if (balance.currentBalance.truncate() > 10000000) {
-                            result = 10000000;
+                          if (balance.currentBalance.truncate() > 100000000) {
+                            result = 100000000;
                           } else {
                             result =
                                 balance.currentBalance.truncate().toDouble();

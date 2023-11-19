@@ -1,12 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 
 Widget gameButtonModel(
     {required String buttonTitle,
     required String gameLogo,
     required Function onTap,
-    bool isSoon = false,
+    required BuildContext context,
+    bool forPremium = false,
     bool isNew = false,
     required BorderRadiusGeometry borderRadius,
     required Color buttonColor}) {
@@ -16,12 +19,21 @@ Widget gameButtonModel(
     color: buttonColor,
     child: InkWell(
       onTap: () async {
-        if (!isSoon) {
+        if (!forPremium) {
           await onTap.call();
+        } else {
+          if (SupabaseController.isPremium) {
+            await onTap.call();
+          } else {
+            showSimpleAlertDialog(
+              context: context,
+              text: 'Эта игра доступна только для\nPremium-подписчиков!',
+            );
+          }
         }
       },
       child: Stack(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment.topLeft,
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 15.0, right: 15.0),
@@ -71,6 +83,32 @@ Widget gameButtonModel(
               ),
             ),
           ),
+          !forPremium
+              ? Container()
+              : Container(
+                  height: 30.0,
+                  margin: const EdgeInsets.only(left: 10.0, top: 10.0),
+                  decoration: BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.redAccent.withOpacity(0.5),
+                            blurRadius: 8.0,
+                            spreadRadius: 1.5)
+                      ]),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: AutoSizeText(
+                      'Premium',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.roboto(
+                          color: Colors.white,
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w900),
+                    ),
+                  ),
+                )
         ],
       ),
     ),

@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -62,10 +63,8 @@ class Tax extends StatelessWidget {
                 style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
               Consumer<Balance>(builder: (ctx, balance, _) {
-                return AutoSizeText(
-                  balance.currentBalanceString,
-                  style: Theme.of(context).textTheme.displaySmall,
-                );
+                return currencyNormalFormat(
+                    context: context, moneys: balance.currentBalance);
               })
             ],
           ),

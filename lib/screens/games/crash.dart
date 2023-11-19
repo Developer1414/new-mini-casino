@@ -9,6 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
@@ -254,11 +255,8 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
-                    return AutoSizeText(
-                      value.currentBalanceString,
-                      maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall,
-                    );
+                    return currencyNormalFormat(
+                        context: context, moneys: value.currentBalance);
                   },
                 )
               ],

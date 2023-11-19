@@ -17,13 +17,13 @@ class AdService {
 
   static Future showInterstitialAd(
       {required BuildContext context,
-      required Function func,
+      Function? func,
       bool isBet = true}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
     if (SupabaseController.isPremium) {
       return;
     }
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     if (isBet) {
       countBet++;
@@ -42,7 +42,7 @@ class AdService {
         onInterstitialFailedToLoad: () => {},
         onInterstitialShowFailed: () => {},
         onInterstitialClosed: () {
-          func.call();
+          func?.call();
           countBet = 0;
 
           if (isBet) {

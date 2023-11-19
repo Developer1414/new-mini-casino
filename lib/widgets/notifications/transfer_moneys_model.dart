@@ -11,9 +11,10 @@ Widget transferMoneysModel(
     {required BuildContext context,
     required NotificationController notificationController,
     required Map<dynamic, dynamic> docs}) {
-  String from = docs['from'];
+  String from = docs['from'] ?? '???';
 
   DateTime date = DateTime.parse(docs['date']);
+  DateTime expiredDate = DateTime.parse(docs['expiredDate']);
 
   double moneysAmount = double.parse(docs['amount'].toString());
 
@@ -63,19 +64,46 @@ Widget transferMoneysModel(
                       .bodySmall!
                       .color!
                       .withOpacity(0.5))),
+          const SizedBox(height: 8.0),
+          AutoSizeText(
+              'Получить можно до ${DateFormat.jm(ui.Platform.localeName).format(expiredDate)}',
+              style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                  color: Theme.of(context)
+                      .textTheme
+                      .bodySmall!
+                      .color!
+                      .withOpacity(0.5))),
           Padding(
             padding: const EdgeInsets.only(top: 15.0),
-            child: buttonModel(
-                context: context,
-                icon: FontAwesomeIcons.coins,
-                buttonName: 'Получить',
-                onPressed: () async {
-                  await notificationController.getMoneys(
+            child: Row(
+              children: [
+                Expanded(
+                  child: buttonModel(
                       context: context,
-                      amount: moneysAmount,
-                      docId: docs['id']);
-                },
-                color: Colors.green),
+                      icon: FontAwesomeIcons.coins,
+                      buttonName: 'Получить',
+                      onPressed: () async {
+                        await notificationController.getMoneys(
+                            expiredDate: expiredDate,
+                            context: context,
+                            amount: moneysAmount,
+                            docId: docs['id']);
+                      },
+                      color: Colors.green),
+                ),
+                const SizedBox(width: 15.0),
+                Expanded(
+                  child: buttonModel(
+                      context: context,
+                      icon: FontAwesomeIcons.coins,
+                      buttonName: 'Отмена',
+                      onPressed: () async {
+                        await notificationController.cancelMoneys(docs['id']);
+                      },
+                      color: Colors.redAccent),
+                ),
+              ],
+            ),
           )
         ],
       ),

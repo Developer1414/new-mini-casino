@@ -13,6 +13,7 @@ Widget newsModel(
 
   String news = docs['news'];
   String title = docs['title'];
+  String imageURL = docs['image'];
 
   return Container(
     width: double.infinity,
@@ -42,6 +43,10 @@ Widget newsModel(
               ),
             ],
           ),
+          const SizedBox(height: 8.0),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: Image.network(imageURL)),
           const SizedBox(height: 8.0),
           AutoSizeText(news.replaceAll('\\n', '\n'),
               style: Theme.of(context).textTheme.bodySmall!.copyWith(

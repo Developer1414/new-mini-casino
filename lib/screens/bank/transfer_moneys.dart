@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
@@ -63,10 +64,8 @@ class TransferMoneys extends StatelessWidget {
                   style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
                 Consumer<Balance>(builder: (ctx, balance, _) {
-                  return AutoSizeText(
-                    balance.currentBalanceString,
-                    style: Theme.of(context).textTheme.displaySmall,
-                  );
+                  return currencyNormalFormat(
+                      context: context, moneys: balance.currentBalance);
                 })
               ],
             ),
@@ -215,22 +214,56 @@ class TransferMoneys extends StatelessWidget {
                                                           .getUnformattedValue()
                                                           .toString()),
                                                   context: context,
-                                                  username: usernameController
-                                                      .text
+                                                  name: usernameController.text
                                                       .trim()),
                                           color: Colors.blueAccent),
                                       const SizedBox(height: 20.0),
                                       SupabaseController.isPremium
                                           ? Container()
-                                          : AutoSizeText(
-                                              'Комиссия 60%.\nP.S. c Premium комиссии нет.',
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.roboto(
-                                                  color: Colors.white
-                                                      .withOpacity(0.5),
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.w600),
+                                          : Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 15.0),
+                                              child: AutoSizeText(
+                                                'Комиссия 60%.\nP.S. c Premium комиссии нет.',
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.roboto(
+                                                    color: Colors.white
+                                                        .withOpacity(0.5),
+                                                    fontSize: 12.0,
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
                                             ),
+                                      AutoSizeText(
+                                        'Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.roboto(
+                                            color:
+                                                Colors.white.withOpacity(0.5),
+                                            fontSize: 12.0,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      const SizedBox(height: 20.0),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            color:
+                                                Colors.orange.withOpacity(0.2),
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            border: Border.all(
+                                                color: Colors.orangeAccent,
+                                                width: 2.0)),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(15.0),
+                                          child: Text(
+                                              'Прежде чем перевести деньги игроку, сообщите ему об этом, так как на их получение у него будет всего 5 минут!',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 12.0)),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ],

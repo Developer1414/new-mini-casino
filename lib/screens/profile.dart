@@ -6,13 +6,12 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/change_nickname_alert.dart';
 import 'package:new_mini_casino/widgets/imporant_user_profile_info_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
-import 'package:new_mini_casino/widgets/profile_button_model.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -74,26 +73,6 @@ class _ProfileState extends State<Profile> {
                     },
                   ),
                   actions: [
-                    /*Consumer<DarkThemeProvider>(
-                        builder: (context, themeChange, _) {
-                      return IconButton(
-                          splashRadius: 25.0,
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            themeChange.darkTheme = !themeChange.darkTheme;
-                          },
-                          icon: Icon(
-                            themeChange.darkTheme
-                                ? Icons.light_mode
-                                : Icons.dark_mode,
-                            color: themeChange.darkTheme
-                                ? Colors.white
-                                : Colors.black87,
-                            size: 30.0,
-                          ));
-                    }),
-                    const SizedBox(width: 5.0),*/
-
                     IconButton(
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
@@ -241,34 +220,19 @@ class _ProfileState extends State<Profile> {
                           ),
                           const SizedBox(height: 15.0),
                           Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: profileButton(
-                                      context: context,
-                                      icon: FontAwesomeIcons.coins,
-                                      text: 'Хранилище',
-                                      onPressed: () => Beamer.of(context)
-                                          .beamToNamed('/money-storage'),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 15.0),
-                                  Expanded(
-                                    child: profileButton(
-                                        context: context,
-                                        icon: FontAwesomeIcons.car,
-                                        text: 'Имущество',
-                                        onPressed: () {
-                                          StoreManager.storeViewer =
-                                              StoreViewer.my;
-                                          Beamer.of(context)
-                                              .beamToNamed('/store-items');
-                                        }),
-                                  ),
-                                ],
-                              )),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: buttonModel(
+                                context: context,
+                                icon: FontAwesomeIcons.coins,
+                                buttonName: 'Хранилище',
+                                color: Theme.of(context)
+                                    .buttonTheme
+                                    .colorScheme!
+                                    .background,
+                                onPressed: () =>
+                                    context.beamToNamed('/money-storage')),
+                          ),
                         ],
                       ));
       },

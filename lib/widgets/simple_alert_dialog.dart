@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 void showSimpleAlertDialog(
     {required BuildContext context,
     required String text,
+    String? sutitle,
     bool isCanPop = true}) {
   showDialog(
     context: context,
@@ -50,15 +51,19 @@ void showSimpleAlertDialog(
                                 fontWeight: FontWeight.w800,
                               ),
                             ),
-                            const SizedBox(height: 10.0),
-                            AutoSizeText(
-                              'Нажмите в любом месте чтоб закрыть это окно',
-                              textAlign: TextAlign.center,
-                              style: GoogleFonts.roboto(
-                                  color: Colors.white.withOpacity(0.5),
-                                  fontSize: 12.0,
-                                  fontWeight: FontWeight.w600),
-                            ),
+                            sutitle != null
+                                ? Padding(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    child: AutoSizeText(
+                                      sutitle,
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                          color: Colors.white.withOpacity(0.5),
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  )
+                                : Container(),
                           ],
                         ),
                       ),

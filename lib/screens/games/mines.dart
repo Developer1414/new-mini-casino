@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'dart:io' as ui;
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 
@@ -265,11 +266,8 @@ class Mines extends StatelessWidget {
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
-                    return AutoSizeText(
-                      value.currentBalanceString,
-                      maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall,
-                    );
+                    return currencyNormalFormat(
+                        context: context, moneys: value.currentBalance);
                   },
                 )
               ],

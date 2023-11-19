@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
@@ -324,17 +325,14 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                 ),
                 Consumer<Balance>(
                   builder: (context, value, _) {
-                    return AutoSizeText(
-                      value.currentBalanceString,
-                      maxLines: 1,
-                      style: Theme.of(context).textTheme.displaySmall,
-                    );
+                    return currencyNormalFormat(
+                        context: context, moneys: value.currentBalance);
                   },
                 )
               ],
             ),
             actions: [
-              autoBetsModel(
+              /*autoBetsModel(
                   context: context,
                   function: () {
                     final diceLogic =
@@ -345,7 +343,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                     } else {
                       makeBet(diceLogic);
                     }
-                  }),
+                  }),*/
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),
                 child: IconButton(

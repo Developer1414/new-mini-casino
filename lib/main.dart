@@ -48,6 +48,7 @@ import 'package:new_mini_casino/screens/games/jackpot.dart';
 import 'package:new_mini_casino/screens/games/keno.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
 import 'package:new_mini_casino/screens/games/plinko.dart';
+import 'package:new_mini_casino/screens/games/slots.dart';
 import 'package:new_mini_casino/screens/games/stairs.dart';
 import 'package:new_mini_casino/screens/home.dart';
 import 'package:new_mini_casino/screens/login.dart';
@@ -194,6 +195,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/jackpot': (context, state, data) => const Jackpot(),
         '/plinko': (context, state, data) => const Plinko(),
         '/keno': (context, state, data) => const Keno(),
+        '/slots': (context, state, data) => const Slots(),
         '/coinflip': (context, state, data) => const Coinflip(),
         '/purchasing-game-currency': (context, state, data) =>
             const PurchasingGameCurrency(),

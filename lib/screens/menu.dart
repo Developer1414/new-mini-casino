@@ -12,7 +12,6 @@ import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
-import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:badges/badges.dart' as badges;
@@ -94,49 +93,6 @@ class _AllGamesState extends State<AllGames> {
                           const SizedBox(width: 10.0),
                           AutoSizeText(
                             'Банк',
-                            maxLines: 1,
-                            style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 22.0,
-                                fontWeight: FontWeight.w800),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15.0),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      /* StoreManager.storeViewer = StoreViewer.deafult;
-                      context.beamToNamed('/store-items');*/
-
-                      showSimpleAlertDialog(
-                          context: context, text: 'Магазин временно отключен!');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 5,
-                      backgroundColor: Colors.green,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25.0),
-                            topRight: Radius.circular(25.0)),
-                      ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 18.0, bottom: 18.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const FaIcon(
-                            FontAwesomeIcons.store,
-                            color: Colors.white,
-                            size: 22.0,
-                          ),
-                          const SizedBox(width: 10.0),
-                          AutoSizeText(
-                            'Магазин',
                             maxLines: 1,
                             style: GoogleFonts.roboto(
                                 color: Colors.white,
@@ -371,10 +327,11 @@ class _AllGamesState extends State<AllGames> {
                               (context, index) => GamesController
                                       .games.length.isEven
                                   ? gameButtonModel(
+                                      context: context,
                                       gameLogo:
                                           GamesController.games[index].gameLogo,
-                                      isSoon:
-                                          GamesController.games[index].isSoon,
+                                      forPremium: GamesController
+                                          .games[index].forPremium,
                                       isNew: GamesController.games[index].isNew,
                                       buttonTitle:
                                           GamesController.games[index].title,
@@ -412,8 +369,7 @@ class _AllGamesState extends State<AllGames> {
                                                   size: 30.0,
                                                 ),
                                                 const SizedBox(height: 10.0),
-                                                Text(
-                                                    'Скоро здесь будет новая игра!',
+                                                Text('Здесь будет новая игра!',
                                                     textAlign: TextAlign.center,
                                                     style: Theme.of(context)
                                                         .textTheme
@@ -423,10 +379,11 @@ class _AllGamesState extends State<AllGames> {
                                           ),
                                         )
                                       : gameButtonModel(
+                                          context: context,
                                           gameLogo: GamesController
                                               .games[index].gameLogo,
-                                          isSoon: GamesController
-                                              .games[index].isSoon,
+                                          forPremium: GamesController
+                                              .games[index].forPremium,
                                           isNew: GamesController
                                               .games[index].isNew,
                                           buttonTitle: GamesController

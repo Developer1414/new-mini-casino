@@ -18,6 +18,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/plinko_logic.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
@@ -169,11 +170,8 @@ class Plinko extends StatelessWidget {
             ),
             Consumer<Balance>(
               builder: (context, value, _) {
-                return AutoSizeText(
-                  value.currentBalanceString,
-                  maxLines: 1,
-                  style: Theme.of(context).textTheme.displaySmall,
-                );
+                return currencyNormalFormat(
+                    context: context, moneys: value.currentBalance);
               },
             )
           ],
@@ -251,11 +249,11 @@ class Plinko extends StatelessWidget {
                                   .toList();
 
                               Map<double, Color> coefficientsColor = {
-                                10.0: const Color.fromRGBO(233, 30, 70, 70),
-                                5.0: const Color.fromRGBO(244, 67, 70, 70),
-                                2.0: const Color.fromRGBO(255, 87, 70, 70),
-                                0.6: const Color.fromRGBO(255, 152, 70, 70),
-                                0.2: const Color.fromRGBO(255, 193, 70, 70),
+                                5.0: const Color.fromRGBO(233, 30, 70, 70),
+                                3.0: const Color.fromRGBO(244, 67, 70, 70),
+                                1.5: const Color.fromRGBO(255, 87, 70, 70),
+                                0.2: const Color.fromRGBO(255, 152, 70, 70),
+                                0.0: const Color.fromRGBO(255, 193, 70, 70),
                               };
 
                               return Container(
@@ -309,16 +307,16 @@ class MyGame extends FlameGame with HasCollisionDetection, HasGameRef {
   double screenHeight = 0.0;
 
   List<double> coefficients = [
-    10.0,
     5.0,
-    2.0,
-    0.6,
+    3.0,
+    1.5,
     0.2,
+    0.0,
+    0.0,
     0.2,
-    0.6,
-    2.0,
-    5.0,
-    10.0
+    1.5,
+    3.0,
+    5.0
   ];
 
   List<Color> coefficientsColor = [
@@ -346,19 +344,31 @@ class MyGame extends FlameGame with HasCollisionDetection, HasGameRef {
   void createNewBall(BuildContext context, double bet) {
     double screenCenter = gameRef.size.x / 2;
 
-    int temp = Random.secure().nextInt(100);
+    double temp = Random.secure().nextDouble() * 100;
     bool isLeft = Random.secure().nextBool();
 
-    if (temp < 80.0) {
-      screenCenter = isLeft ? screenCenter - 20 : screenCenter + 20;
-    } else if (temp >= 80.0 && temp < 90) {
-      screenCenter = isLeft ? screenCenter - 25 : screenCenter + 25;
-    } else if (temp >= 90.0 && temp < 95) {
-      screenCenter = isLeft ? screenCenter - 30 : screenCenter + 30;
-    } else if (temp >= 95.0 && temp < 98) {
-      screenCenter = isLeft ? screenCenter - 15 : screenCenter + 15;
-    } else if (temp >= 98.0) {
-      screenCenter = isLeft ? screenCenter - 10 : screenCenter + 10;
+    if (temp < 0.2) {
+      // 20% шанс падения в центр
+      screenCenter = gameRef.size.x / 2;
+    } else {
+      // 80% шанс случайного отклонения влево или вправо
+      double deviation = 0.0;
+
+      if (temp < 0.4) {
+        // 20% шанс отклонения на 20 пикселей
+        deviation = isLeft ? -20 : 20;
+      } else if (temp < 0.7) {
+        // 30% шанс отклонения на 15 пикселей
+        deviation = isLeft ? -15 : 15;
+      } else if (temp < 0.9) {
+        // 20% шанс отклонения на 10 пикселей
+        deviation = isLeft ? -10 : 10;
+      } else {
+        // 10% шанс отклонения на 5 пикселей
+        deviation = isLeft ? -5 : 5;
+      }
+
+      screenCenter += deviation;
     }
 
     add(Ball(Vector2(screenCenter, gameRef.size.y / 7), context, bet));
@@ -381,7 +391,7 @@ class MyGame extends FlameGame with HasCollisionDetection, HasGameRef {
       for (int col = 0; col < staticBallCount; col++) {
         double x = startX + col * (ballSize + gap);
         final staticBall =
-            RectangleCollidable(Vector2(x + (screenWidth * 0.01), y));
+            RectangleCollidable(Vector2(x + (screenWidth * 0.01), y), row, col);
         add(staticBall);
         staticBalls.add(staticBall);
       }
@@ -419,11 +429,9 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
 
   @override
   FutureOr<void> onLoad() async {
-    double screenWidth = gameRef.size.x;
-
     startPos = position;
 
-    size = Vector2.all(screenWidth * 0.035);
+    size = Vector2.all(16);
 
     final defaultPaint = Paint()
       ..color = Colors.redAccent
@@ -450,6 +458,7 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
       // Проверяем, с какой стороны столкновение
       if (collisionPoint.y < ballCenterY) {
         // Сверху
+
         if (collisionPoint.x < ballCenterX) {
           // Слева
           velocityY = -velocityY / 2;
@@ -484,7 +493,7 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
         position.y = other.position.y - size.y / 2 - other.size.y / 2 - 1;
       }
 
-      //velocityY += 10.0; // Добавьте немного вертикального движения вниз
+      //velocityY = -velocityY / 2 - 10.0; // Увеличьте вертикальное движение вниз
     }
   }
 
@@ -538,10 +547,13 @@ class RectangleCollidable extends PositionComponent with CollisionCallbacks {
   final _defaultColor = Colors.lightBlue;
   late ShapeHitbox hitbox;
 
-  RectangleCollidable(Vector2 position)
+  int col = 0;
+  int row = 0;
+
+  RectangleCollidable(Vector2 position, this.col, this.row)
       : super(
           position: Vector2(position.x + 15, position.y),
-          size: Vector2.all(15.0),
+          size: Vector2.all(12.0),
           anchor: Anchor.center,
         );
 
