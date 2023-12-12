@@ -32,7 +32,7 @@ ThemeData darkThemeData(BuildContext context) {
                 textStyle: TextStyle(
               color: Colors.grey.shade100,
               fontSize: 15,
-              fontWeight: FontWeight.w700,
+              fontWeight: FontWeight.w500,
             )),
             bodyMedium: GoogleFonts.roboto(
                 color: Colors.grey.shade100,

@@ -252,7 +252,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     getCurrentAppTheme();
-    checkForUpdate();
+
+    if (!kDebugMode) {
+      checkForUpdate();
+    }
   }
 
   void getCurrentAppTheme() async {

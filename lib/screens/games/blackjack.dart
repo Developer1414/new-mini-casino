@@ -46,7 +46,7 @@ class Blackjack extends StatelessWidget {
             child: Scaffold(
               resizeToAvoidBottomInset: false,
               bottomNavigationBar: Container(
-                height: 117.0,
+                height: 123.0,
                 decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(
                         topLeft: Radius.circular(25.0),
@@ -226,18 +226,9 @@ class Blackjack extends StatelessWidget {
                                                               Radius.circular(
                                                                   25.0)),
                                                 ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
+                                                child: Column(
                                                   children: [
-                                                    AutoSizeText('Страховка:',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!),
-                                                    CupertinoSwitch(
+                                                    Switch(
                                                       value: blackjackLogic
                                                           .gameWithInsurance,
                                                       onChanged: (value) {
@@ -246,6 +237,21 @@ class Blackjack extends StatelessWidget {
                                                                 value);
                                                       },
                                                     ),
+                                                    AutoSizeText('Страховка',
+                                                        textAlign:
+                                                            TextAlign.center,
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodySmall!
+                                                            .copyWith(
+                                                                fontSize: 12.0,
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .textTheme
+                                                                    .bodySmall!
+                                                                    .color!
+                                                                    .withOpacity(
+                                                                        0.4))),
                                                   ],
                                                 ),
                                               ),

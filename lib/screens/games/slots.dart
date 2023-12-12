@@ -297,56 +297,55 @@ class _SlotsState extends State<Slots> {
                           color: Colors.black.withOpacity(0.3),
                           blurRadius: 10.0)
                     ]),
-                child: Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.only(right: 15.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  if (isAutoBets || isSpinning) return;
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      //height: 80.0,
+                      margin: const EdgeInsets.only(
+                          left: 15.0, right: 15.0, top: 15.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (isAutoBets || isSpinning) return;
 
-                                  makeBet(context);
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor: isAutoBets || isSpinning
-                                      ? Colors.redAccent
-                                      : Colors.green,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(25.0),
-                                        topRight: Radius.circular(25.0)),
-                                  ),
+                          makeBet(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 5,
+                          backgroundColor: isAutoBets || isSpinning
+                              ? Colors.redAccent
+                              : Colors.green,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(25.0),
+                                topRight: Radius.circular(25.0)),
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: isAutoBets || isSpinning
+                              ? FaIcon(
+                                  FontAwesomeIcons.lock,
+                                  color: Theme.of(context)
+                                      .appBarTheme
+                                      .iconTheme!
+                                      .color,
+                                  size: 28.0,
+                                )
+                              : AutoSizeText(
+                                  'СТАВКА',
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w900),
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(18.0),
-                                  child: isAutoBets || isSpinning
-                                      ? FaIcon(
-                                          FontAwesomeIcons.lock,
-                                          color: Theme.of(context)
-                                              .appBarTheme
-                                              .iconTheme!
-                                              .color,
-                                          size: 28.0,
-                                        )
-                                      : AutoSizeText(
-                                          'СТАВКА',
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 24.0,
-                                              fontWeight: FontWeight.w900),
-                                        ),
-                                ),
-                              ),
-                            )),
-                      ],
-                    )),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
               appBar: AppBar(
                 toolbarHeight: 76.0,
@@ -477,43 +476,48 @@ class _SlotsState extends State<Slots> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         for (int i = 0; i < 3; i++)
-                          Container(
-                            width: 120.0,
-                            height: 150.0,
-                            decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .cardColor
-                                    .withOpacity(0.4),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    color: Theme.of(context).cardColor,
-                                    width: 5.0)),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: isReelsSpinning[i] == false
-                                  ? Image.asset(
-                                      'assets/slots/${choosedReels[i]}.png',
-                                      color: choosedReels[i] == 'question'
-                                          ? Theme.of(context).cardColor
-                                          : null,
-                                    )
-                                  : AnimatedSwitcher(
-                                      duration:
-                                          const Duration(milliseconds: 100),
-                                      child: ListView.separated(
-                                        key: ValueKey<String>(choosedReels[i]),
-                                        itemCount: 100,
-                                        physics:
-                                            const NeverScrollableScrollPhysics(),
-                                        controller: controllers[i],
-                                        itemBuilder: (context, index) =>
-                                            Image.asset(
-                                          'assets/slots/${choosedReels[i]}.png',
-                                        ),
-                                        separatorBuilder: (context, index) =>
-                                            const SizedBox(height: 15.0),
-                                      )),
+                          Expanded(
+                            child: Container(
+                              //width: 120.0,
+                              height: 150.0,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .cardColor
+                                      .withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      color: Theme.of(context).cardColor,
+                                      width: 5.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0),
+                                child: isReelsSpinning[i] == false
+                                    ? Image.asset(
+                                        'assets/slots/${choosedReels[i]}.png',
+                                        color: choosedReels[i] == 'question'
+                                            ? Theme.of(context).cardColor
+                                            : null,
+                                      )
+                                    : AnimatedSwitcher(
+                                        duration:
+                                            const Duration(milliseconds: 100),
+                                        child: ListView.separated(
+                                          key:
+                                              ValueKey<String>(choosedReels[i]),
+                                          itemCount: 100,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          controller: controllers[i],
+                                          itemBuilder: (context, index) =>
+                                              Image.asset(
+                                            'assets/slots/${choosedReels[i]}.png',
+                                          ),
+                                          separatorBuilder: (context, index) =>
+                                              const SizedBox(height: 15.0),
+                                        )),
+                              ),
                             ),
                           ),
                       ],

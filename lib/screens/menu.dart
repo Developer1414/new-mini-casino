@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -30,6 +32,8 @@ class AllGames extends StatefulWidget {
 }
 
 class _AllGamesState extends State<AllGames> {
+  static bool show1xBanner = false;
+
   Future checkDailyBonus() async {
     await DailyBonusManager().checkDailyBonus().then((value) {
       if (value) {
@@ -52,11 +56,29 @@ class _AllGamesState extends State<AllGames> {
     });
   }
 
+  Future show1xBanners() async {
+    await SupabaseController.supabase!
+        .from('settings')
+        .select('*')
+        .eq('setting', '1xBannerShow')
+        .then((value) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+      show1xBanner = (map['value'] as bool);
+
+      if (show1xBanner) {
+        setState(() {
+          show1xBanner = Random().nextBool();
+        });
+      }
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     checkDailyBonus();
     checkOnEngineeringWorks();
+    show1xBanners();
   }
 
   @override
@@ -479,6 +501,51 @@ class _AllGamesState extends State<AllGames> {
                               ),
                             ),
                           ),
+                          !show1xBanner
+                              ? Container()
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 15.0),
+                                      child: Text('Реклама',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall!
+                                              .copyWith(
+                                                  fontSize: 12.0,
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodySmall!
+                                                      .color!
+                                                      .withOpacity(0.4))),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 5.0),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            if (!await launchUrl(
+                                                Uri.parse(
+                                                    'https://1woqny.top/#kkgy'),
+                                                mode: LaunchMode
+                                                    .externalNonBrowserApplication)) {
+                                              throw Exception(
+                                                  'Could not launch ${Uri.parse('https://1woqny.top/#kkgy')}');
+                                            }
+                                          },
+                                          child: Image(
+                                            image: AssetImage(
+                                                'assets/1x-banners/minicasino-${Random().nextInt(3) + 1}.jpg'),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                         ]),
                   ),
           ),

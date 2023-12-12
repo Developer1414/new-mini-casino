@@ -1,7 +1,7 @@
 name: new_mini_casino
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.2.6+42
+version: 1.2.7+44
 environment:
   sdk: '>=2.19.3 <3.0.0'
 
@@ -16,7 +16,7 @@ dependencies:
   google_fonts: ^4.0.3
   google_nav_bar: ^5.0.6
   google_sign_in: ^6.1.0
-  http: ^0.13.4
+  http: ^1.1.2
   intl: ^0.18.0
   shared_preferences: ^2.0.15
   url_launcher: ^6.1.5
@@ -25,7 +25,7 @@ dependencies:
   flutter_staggered_grid_view: ^0.6.2
   syncfusion_flutter_sliders: ^21.2.3
   in_app_review: ^2.0.6
-  pdfx: ^2.4.0
+#  pdfx: ^2.4.0
   in_app_update: ^4.0.1
   material_dialogs: ^1.1.4
   quickalert: ^1.0.1
@@ -34,7 +34,7 @@ dependencies:
   currency_text_input_formatter: ^2.1.9
   stack_appodeal_flutter: ^3.0.2
   flutter_gif: ^0.0.4
-  gif: ^2.2.0
+  gif: ^2.3.0
   shaky_animated_listview: ^0.0.5
   dropdown_button2: ^2.1.2
   freerasp: ^6.3.0
@@ -89,3 +89,4 @@ flutter:
    - assets/coinflip/
    - assets/games_logo/
    - assets/other_images/
+   - assets/1x-banners/

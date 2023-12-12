@@ -8,7 +8,6 @@
 
 #include <app_links/app_links_plugin_c_api.h>
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
-#include <pdfx/pdfx_plugin.h>
 #include <platform_device_id_windows/platform_device_id_windows_plugin.h>
 #include <sentry_flutter/sentry_flutter_plugin.h>
 #include <smart_auth/smart_auth_plugin.h>
@@ -19,8 +18,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("AppLinksPluginCApi"));
   ConnectivityPlusWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("ConnectivityPlusWindowsPlugin"));
-  PdfxPluginRegisterWithRegistrar(
-      registry->GetRegistrarForPlugin("PdfxPlugin"));
   PlatformDeviceIdWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PlatformDeviceIdWindowsPlugin"));
   SentryFlutterPluginRegisterWithRegistrar(
