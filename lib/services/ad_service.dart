@@ -18,8 +18,9 @@ class AdService {
   static Future showInterstitialAd(
       {required BuildContext context,
       Function? func,
+      bool isDailyBonus = false,
       bool isBet = true}) async {
-    if (isBet) {
+    if (!isDailyBonus) {
       if (SupabaseController.isPremium) {
         return;
       }

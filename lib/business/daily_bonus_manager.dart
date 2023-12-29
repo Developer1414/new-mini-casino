@@ -37,9 +37,8 @@ class DailyBonusManager extends ChangeNotifier {
   Future spinAgain(
       {required BuildContext context,
       required VoidCallback voidCallback}) async {
-    print('HGELO');
     await AdService.showInterstitialAd(
-        context: context, func: voidCallback, isBet: false);
+        context: context, func: voidCallback, isDailyBonus: true);
   }
 
   Future<bool> checkDailyBonus() async {
