@@ -77,11 +77,10 @@ class _ProfileState extends State<Profile> {
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
                         onPressed: () => changeNicknameAlert(context: context),
-                        icon: const FaIcon(
-                          FontAwesomeIcons.pen,
-                          color: Colors.white,
-                          size: 27.0,
-                        )),
+                        icon: FaIcon(FontAwesomeIcons.pen,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: 22.0)),
                     const SizedBox(width: 5.0),
                     Padding(
                       padding: const EdgeInsets.only(right: 15.0),
@@ -115,80 +114,80 @@ class _ProfileState extends State<Profile> {
                                       .pop();
                                 });
                           },
-                          icon: const FaIcon(
+                          icon: FaIcon(
                             FontAwesomeIcons.rightFromBracket,
                             color: Colors.redAccent,
-                            size: 30.0,
+                            size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),
                   ],
                 ),
                 body: isLoading
                     ? loading(context: context)
-                    : ListView(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const SizedBox(width: 15.0),
-                              Container(
-                                height: 180.0,
-                                decoration: ShapeDecoration(
-                                  shape: const CircleBorder(),
-                                  color: Theme.of(context).cardColor,
-                                ),
-                                child: CircleProgressBar(
-                                  foregroundColor:
-                                      const Color.fromARGB(255, 179, 242, 31),
-                                  backgroundColor: Theme.of(context)
-                                      .buttonTheme
-                                      .colorScheme!
-                                      .background,
-                                  strokeWidth: 10.0,
-                                  value: ProfileController.profileModel.level -
-                                      ProfileController.profileModel.level
-                                          .truncate(),
-                                  child: Center(
-                                      child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10.0),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        AutoSizeText(
-                                          ProfileController.profileModel.level
-                                              .floor()
-                                              .toStringAsFixed(0),
-                                          maxLines: 1,
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 40.0,
-                                              fontWeight: FontWeight.w800),
-                                        ),
-                                        AutoSizeText('LVL',
+                    : Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: ListView(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(width: 15.0),
+                                Container(
+                                  height: 180.0,
+                                  decoration: ShapeDecoration(
+                                    shape: const CircleBorder(),
+                                    color:
+                                        Colors.lightBlueAccent.withOpacity(0.1),
+                                  ),
+                                  child: CircleProgressBar(
+                                    foregroundColor:
+                                        const Color.fromARGB(255, 179, 242, 31),
+                                    backgroundColor:
+                                        Colors.lightBlueAccent.withOpacity(0.5),
+                                    strokeWidth: 10.0,
+                                    value:
+                                        ProfileController.profileModel.level -
+                                            ProfileController.profileModel.level
+                                                .truncate(),
+                                    child: Center(
+                                        child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 10.0),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          AutoSizeText(
+                                            ProfileController.profileModel.level
+                                                .floor()
+                                                .toStringAsFixed(0),
                                             maxLines: 1,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall!
-                                                .copyWith(
-                                                    fontSize: 12.0,
-                                                    color: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall!
-                                                        .color!
-                                                        .withOpacity(0.7))),
-                                      ],
-                                    ),
-                                  )),
+                                            style: GoogleFonts.roboto(
+                                                color: Colors.white,
+                                                fontSize: 40.0,
+                                                fontWeight: FontWeight.w800),
+                                          ),
+                                          AutoSizeText('LVL',
+                                              maxLines: 1,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                      fontSize: 12.0,
+                                                      color: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall!
+                                                          .color!
+                                                          .withOpacity(0.7))),
+                                        ],
+                                      ),
+                                    )),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15.0, vertical: 15.0),
-                            child: Column(
+                              ],
+                            ),
+                            const SizedBox(height: 15.0),
+                            Column(
                               children: [
                                 importantUserProfileInfo(
                                     context: context,
@@ -204,25 +203,22 @@ class _ProfileState extends State<Profile> {
                                     title: 'Игр'),
                               ],
                             ),
-                          ),
-                          Container(
-                            width: double.infinity,
-                            height: 2.0,
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 25.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15.0),
-                              color: Theme.of(context)
-                                  .buttonTheme
-                                  .colorScheme!
-                                  .background,
+                            const SizedBox(height: 15.0),
+                            Container(
+                              width: double.infinity,
+                              height: 2.0,
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 25.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15.0),
+                                color: Theme.of(context)
+                                    .buttonTheme
+                                    .colorScheme!
+                                    .background,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 15.0),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 15.0),
-                            child: buttonModel(
+                            const SizedBox(height: 15.0),
+                            buttonModel(
                                 context: context,
                                 icon: FontAwesomeIcons.coins,
                                 buttonName: 'Хранилище',
@@ -232,8 +228,9 @@ class _ProfileState extends State<Profile> {
                                     .background,
                                 onPressed: () =>
                                     context.beamToNamed('/money-storage')),
-                          ),
-                        ],
+                            const SizedBox(height: 15.0),
+                          ],
+                        ),
                       ));
       },
     );

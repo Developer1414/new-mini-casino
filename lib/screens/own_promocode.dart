@@ -48,7 +48,7 @@ class OwnPromocode extends StatelessWidget {
                   bottomNavigationBar: Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                     child: SizedBox(
-                      height: 104.0,
+                      height: 113.0,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -159,11 +159,6 @@ class OwnPromocode extends StatelessWidget {
                       child: SingleChildScrollView(
                         child: Column(
                           children: [
-                            const Image(
-                                image: AssetImage(
-                                    'assets/other_images/PromocodeLogo.png'),
-                                width: 300.0,
-                                height: 200.0),
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 15.0),

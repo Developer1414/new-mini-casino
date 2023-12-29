@@ -22,7 +22,7 @@ import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/bottom_game_navigation.dart';
 import 'package:provider/provider.dart';
 
 class Plinko extends StatelessWidget {
@@ -69,75 +69,14 @@ class Plinko extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      bottomNavigationBar: Container(
-        height: 80.0,
-        decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(25.0),
-                topRight: Radius.circular(25.0)),
-            color: Theme.of(context).cardColor,
-            boxShadow: [
-              BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-            ]),
-        child: Padding(
-            padding: const EdgeInsets.only(left: 15.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 15.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Consumer<AutoBetsController>(
-                      builder: (context, value, child) => ElevatedButton(
-                        onPressed: () {
-                          if (value.isAutoBetsEnabled) return;
-
-                          if (AutoclickerSecure.isCanPlay) {
-                            makeBet(context);
-                          } else {
-                            AutoclickerSecure()
-                                .checkClicksBeforeCanPlay(context);
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: value.isAutoBetsEnabled
-                              ? Colors.redAccent
-                              : Colors.green,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0)),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: value.isAutoBetsEnabled
-                              ? FaIcon(
-                                  FontAwesomeIcons.lock,
-                                  color: Theme.of(context)
-                                      .appBarTheme
-                                      .iconTheme!
-                                      .color,
-                                  size: 28.0,
-                                )
-                              : AutoSizeText(
-                                  'СТАВКА',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
-            )),
-      ),
+      bottomNavigationBar: bottomGameNavigation(
+          context: context,
+          betFormatter: Plinko.betFormatter,
+          betController: Plinko.betController,
+          isPlaying: !Provider.of<AutoBetsController>(context, listen: false)
+              .exitGame(context),
+          isCanSwitch: false,
+          onPressed: () => makeBet(context)),
       appBar: AppBar(
         toolbarHeight: 76.0,
         elevation: 0,
@@ -201,17 +140,6 @@ class Plinko extends StatelessWidget {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
-            child: customTextField(
-                currencyTextInputFormatter: betFormatter,
-                textInputFormatter: betFormatter,
-                keyboardType: TextInputType.number,
-                isBetInput: true,
-                controller: betController,
-                context: context,
-                hintText: 'Ставка...'),
-          ),
           Expanded(child: GameWidget(game: MyGame())),
           Consumer<PlinkoLogic>(
             builder: (context, plinkoLogic, child) {
@@ -219,13 +147,10 @@ class Plinko extends StatelessWidget {
                 margin: const EdgeInsets.all(15.0),
                 height: 40.0,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15.0),
-                    color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 10.0)
-                    ]),
+                  borderRadius: BorderRadius.circular(15.0),
+                  color: Colors.lightBlueAccent.withOpacity(0.1),
+                  border: Border.all(color: Colors.lightBlueAccent, width: 2.0),
+                ),
                 child: plinkoLogic.lastCoefficients.isEmpty
                     ? Center(
                         child: AutoSizeText('Ставок ещё нет',
@@ -271,14 +196,16 @@ class Plinko extends StatelessWidget {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10.0),
                                     color: coefficientsColor[value[index]]),
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  child: Center(
                                     child: AutoSizeText(
                                       '${value[index]}x',
+                                      textAlign: TextAlign.center,
                                       style: GoogleFonts.roboto(
                                           color: Colors.white,
-                                          fontSize: 15.0,
+                                          fontSize: 12.0,
                                           fontWeight: FontWeight.w700),
                                     ),
                                   ),
@@ -337,7 +264,8 @@ class MyGame extends FlameGame with HasCollisionDetection, HasGameRef {
   }
 
   @override
-  Color backgroundColor() => const Color.fromARGB(255, 35, 38, 51);
+  Color backgroundColor() =>
+      Colors.transparent; //const Color.fromARGB(255, 35, 38, 51);
 
   List<RectangleCollidable> staticBalls = [];
 
@@ -431,7 +359,7 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
   FutureOr<void> onLoad() async {
     startPos = position;
 
-    size = Vector2.all(16);
+    size = Vector2.all(12);
 
     final defaultPaint = Paint()
       ..color = Colors.redAccent

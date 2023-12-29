@@ -22,6 +22,7 @@ class CrashRound {
 class CrashLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isWin = false;
+  bool isShowInputBet = false;
 
   CrashStatus crashStatus = CrashStatus.idle;
 
@@ -38,6 +39,11 @@ class CrashLogic extends ChangeNotifier {
   late Timer timer = Timer(const Duration(seconds: 1), () {});
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void startGame(
       {required BuildContext context,

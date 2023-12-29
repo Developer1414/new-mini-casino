@@ -6,9 +6,11 @@ import 'package:new_mini_casino/controllers/notification_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/notifications/friend_code_moneys_model.dart';
 import 'package:new_mini_casino/widgets/notifications/news_model.dart';
 import 'package:new_mini_casino/widgets/notifications/premium_gift_model.dart';
 import 'package:new_mini_casino/widgets/notifications/transfer_moneys_model.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 
 class Notifications extends StatelessWidget {
@@ -69,11 +71,9 @@ class Notifications extends StatelessWidget {
                             child: Padding(
                               padding: const EdgeInsets.only(
                                   left: 15.0, right: 15.0),
-                              child: AutoSizeText(
-                                'Новых уведомлений нет',
-                                textAlign: TextAlign.center,
-                                style:
-                                    Theme.of(context).textTheme.displayMedium,
+                              child: smallHelperPanel(
+                                context: context,
+                                text: 'Новых уведомлений нет',
                               ),
                             ),
                           )
@@ -88,19 +88,25 @@ class Notifications extends StatelessWidget {
                                           notificationController,
                                       context: context,
                                       docs: map[index])
-                                  : action == 'news'
-                                      ? newsModel(
+                                  : action == 'friend_code_moneys'
+                                      ? friendCodeMoneysModel(
                                           notificationController:
                                               notificationController,
                                           context: context,
                                           docs: map[index])
-                                      : action == 'premium_gift'
-                                          ? premiumGiftModel(
+                                      : action == 'news'
+                                          ? newsModel(
                                               notificationController:
                                                   notificationController,
                                               context: context,
                                               docs: map[index])
-                                          : Container();
+                                          : action == 'premium_gift'
+                                              ? premiumGiftModel(
+                                                  notificationController:
+                                                      notificationController,
+                                                  context: context,
+                                                  docs: map[index])
+                                              : Container();
                             },
                             separatorBuilder: (context, index) =>
                                 const SizedBox(height: 15.0),

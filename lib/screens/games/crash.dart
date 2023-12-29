@@ -69,10 +69,8 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return !context.read<CrashLogic>().isGameOn;
-      },
+    return PopScope(
+      canPop: !context.read<CrashLogic>().isGameOn,
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -83,125 +81,279 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Container(
-            height: 117.0,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0)),
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-                ]),
-            child: Consumer<CrashLogic>(
-              builder: (ctx, crashLogic, _) {
-                return Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
+          bottomNavigationBar: Consumer<CrashLogic>(
+            builder: (context, crashLogic, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText(
+                                'Прибыль (${crashLogic.winCoefficient.toStringAsFixed(2)}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                crashLogic.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(crashLogic.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(crashLogic.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                        const SizedBox(height: 15.0),
+                        Container(
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Colors.lightBlueAccent.withOpacity(0.1),
+                            border: Border.all(
+                                color: Colors.lightBlueAccent, width: 2.0),
+                          ),
+                          child: crashLogic.lastCoefficients.isEmpty
+                              ? Center(
+                                  child: AutoSizeText('Ставок ещё нет',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color!
+                                                  .withOpacity(0.4))),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        List<CrashRound> value = crashLogic
+                                            .lastCoefficients.reversed
+                                            .toList();
+
+                                        return Container(
+                                          margin: EdgeInsets.only(
+                                              top: 5.0,
+                                              bottom: 5.0,
+                                              left: index == 0 ? 5.0 : 0.0,
+                                              right: index + 1 ==
+                                                      crashLogic
+                                                          .lastCoefficients
+                                                          .length
+                                                  ? 5.0
+                                                  : 0.0),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: value[index].isWin
+                                                  ? Colors.green
+                                                  : Colors.redAccent),
+                                          child: Center(
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5.0),
+                                              child: AutoSizeText(
+                                                '${value[index].coefficient}x',
+                                                style: GoogleFonts.roboto(
+                                                    color: Colors.white,
+                                                    fontSize: 10.0,
+                                                    fontWeight:
+                                                        FontWeight.w700),
+                                              ),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(width: 5.0),
+                                      itemCount:
+                                          crashLogic.lastCoefficients.length),
+                                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      crashLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () => crashLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  crashLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
+                                ),
+                              ),
+                            ),
+                      Visibility(
+                        visible: crashLogic.isShowInputBet,
+                        child: Expanded(
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              AutoSizeText(
-                                  'Прибыль (${crashLogic.winCoefficient.toStringAsFixed(2)}x):',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontSize: 20.0)),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 15.0),
-                                child: AutoSizeText(
-                                    crashLogic.profit < 1000000
-                                        ? NumberFormat.simpleCurrency(
-                                                locale: ui.Platform.localeName)
-                                            .format(crashLogic.profit)
-                                        : NumberFormat.compactSimpleCurrency(
-                                                locale: ui.Platform.localeName)
-                                            .format(crashLogic.profit),
+                              Expanded(
+                                flex: 3,
+                                child: SizedBox(
+                                  height: 60.0,
+                                  child: customTextField(
+                                      currencyTextInputFormatter:
+                                          Crash.betFormatter,
+                                      textInputFormatter: Crash.betFormatter,
+                                      keyboardType: TextInputType.number,
+                                      isBetInput: true,
+                                      controller: Crash.betController,
+                                      context: context,
+                                      hintText: 'Ставка...'),
+                                ),
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 60.0,
+                                  child: TextField(
+                                    controller: Crash.targetCoefficient,
+                                    readOnly: crashLogic.isGameOn,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    onTap: () {
+                                      Crash.targetCoefficient.selection =
+                                          TextSelection(
+                                              baseOffset: 0,
+                                              extentOffset: Crash
+                                                  .targetCoefficient
+                                                  .text
+                                                  .length);
+                                    },
+                                    onSubmitted: (value) {
+                                      if (double.parse(value) < 1.1) {
+                                        Crash.targetCoefficient.text = '1.1';
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                        hintText: 'Коэффициент...',
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .displaySmall!
+                                                    .color!
+                                                    .withOpacity(0.5)),
+                                        enabledBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder,
+                                        focusedBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .focusedBorder),
                                     style: Theme.of(context)
                                         .textTheme
-                                        .bodyMedium!
-                                        .copyWith(fontSize: 20.0)),
+                                        .displaySmall!
+                                        .copyWith(fontSize: 20.0),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
+                      ),
+                      Visibility(
+                        visible: !crashLogic.isShowInputBet,
+                        child: Expanded(
                           child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                if (!crashLogic.isGameOn) {
-                                  if (balance.currentBalance <
-                                      double.parse(Crash.betFormatter
-                                          .getUnformattedValue()
-                                          .toStringAsFixed(2))) {
-                                    return;
-                                  }
+                            height: 60.0,
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 5.0)
+                              ], color: Theme.of(context).cardColor),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (!crashLogic.isGameOn) {
+                                    if (balance.currentBalance <
+                                        double.parse(Crash.betFormatter
+                                            .getUnformattedValue()
+                                            .toStringAsFixed(2))) {
+                                      return;
+                                    }
 
-                                  if (Crash.targetCoefficient.text.isEmpty ||
-                                      double.parse(Crash.targetCoefficient.text)
-                                          .isNegative ||
-                                      double.parse(
-                                              Crash.targetCoefficient.text) <
-                                          1) {
-                                    return;
-                                  }
+                                    if (Crash.targetCoefficient.text.isEmpty ||
+                                        double.parse(
+                                                Crash.targetCoefficient.text)
+                                            .isNegative ||
+                                        double.parse(
+                                                Crash.targetCoefficient.text) <
+                                            1) {
+                                      return;
+                                    }
 
-                                  if (double.parse(
-                                          Crash.targetCoefficient.text) <
-                                      1.1) {
-                                    alertDialogError(
-                                      context: context,
-                                      title: 'Ошибка',
-                                      text: 'Минимальный коэффициент: 1.1',
-                                      confirmBtnText: 'Окей',
-                                    );
+                                    if (double.parse(
+                                            Crash.targetCoefficient.text) <
+                                        1.1) {
+                                      alertDialogError(
+                                        context: context,
+                                        title: 'Ошибка',
+                                        text: 'Минимальный коэффициент: 1.1',
+                                        confirmBtnText: 'Окей',
+                                      );
 
-                                    return;
-                                  }
+                                      return;
+                                    }
 
-                                  crashLogic.startGame(
-                                      context: context,
-                                      targetCoefficient: double.parse(
-                                          Crash.targetCoefficient.text),
-                                      bet: double.parse(Crash.betFormatter
-                                          .getUnformattedValue()
-                                          .toString()));
-                                } else {
-                                  if (crashLogic.crashStatus ==
-                                      CrashStatus.idle) {
-                                    crashLogic.cashout();
-                                  } else if (crashLogic.crashStatus ==
-                                      CrashStatus.win) {
-                                    crashLogic.stop();
+                                    crashLogic.startGame(
+                                        context: context,
+                                        targetCoefficient: double.parse(
+                                            Crash.targetCoefficient.text),
+                                        bet: double.parse(Crash.betFormatter
+                                            .getUnformattedValue()
+                                            .toString()));
+                                  } else {
+                                    if (crashLogic.crashStatus ==
+                                        CrashStatus.idle) {
+                                      crashLogic.cashout();
+                                    } else if (crashLogic.crashStatus ==
+                                        CrashStatus.win) {
+                                      crashLogic.stop();
+                                    }
                                   }
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: crashLogic.timer.isActive &&
-                                        crashLogic.crashStatus ==
-                                            CrashStatus.win
-                                    ? Colors.redAccent
-                                    : crashLogic.isGameOn &&
-                                            crashLogic.timer.isActive
-                                        ? Colors.blueAccent
-                                        : Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: crashLogic.timer.isActive &&
+                                          crashLogic.crashStatus ==
+                                              CrashStatus.win
+                                      ? Colors.redAccent
+                                      : crashLogic.isGameOn &&
+                                              crashLogic.timer.isActive
+                                          ? Colors.blueAccent
+                                          : Colors.green,
+                                  shape: const RoundedRectangleBorder(),
                                 ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
                                 child: AutoSizeText(
                                   crashLogic.timer.isActive &&
                                           crashLogic.crashStatus ==
@@ -214,17 +366,19 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                   maxLines: 1,
                                   style: GoogleFonts.roboto(
                                       color: Colors.white,
-                                      fontSize: 24.0,
+                                      fontSize: 20.0,
                                       fontWeight: FontWeight.w900),
                                 ),
                               ),
                             ),
                           ),
-                        )
-                      ],
-                    ));
-              },
-            ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           appBar: AppBar(
             toolbarHeight: 76.0,
@@ -282,67 +436,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
             builder: (ctx, crashLogic, _) {
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 4,
-                          child: customTextField(
-                              currencyTextInputFormatter: Crash.betFormatter,
-                              textInputFormatter: Crash.betFormatter,
-                              keyboardType: TextInputType.number,
-                              readOnly: crashLogic.isGameOn,
-                              isBetInput: true,
-                              controller: Crash.betController,
-                              context: context,
-                              hintText: 'Ставка...'),
-                        ),
-                        const SizedBox(width: 15.0),
-                        Expanded(
-                          child: TextField(
-                            controller: Crash.targetCoefficient,
-                            readOnly: crashLogic.isGameOn,
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            onTap: () {
-                              Crash.targetCoefficient.selection = TextSelection(
-                                  baseOffset: 0,
-                                  extentOffset:
-                                      Crash.targetCoefficient.text.length);
-                            },
-                            onSubmitted: (value) {
-                              if (double.parse(value) < 1.1) {
-                                Crash.targetCoefficient.text = '1.1';
-                              }
-                            },
-                            decoration: InputDecoration(
-                                hintText: 'Коэффициент...',
-                                hintStyle: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .displaySmall!
-                                            .color!
-                                            .withOpacity(0.5)),
-                                enabledBorder: Theme.of(context)
-                                    .inputDecorationTheme
-                                    .enabledBorder,
-                                focusedBorder: Theme.of(context)
-                                    .inputDecorationTheme
-                                    .focusedBorder),
-                            style: Theme.of(context)
-                                .textTheme
-                                .displaySmall!
-                                .copyWith(fontSize: 20.0),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                   Expanded(
                       child: Stack(
                     alignment: AlignmentDirectional.center,
@@ -370,74 +463,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                       ),
                     ],
                   )),
-                  Container(
-                    margin: const EdgeInsets.all(15.0),
-                    height: 40.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        color: Theme.of(context).cardColor,
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 10.0)
-                        ]),
-                    child: crashLogic.lastCoefficients.isEmpty
-                        ? Center(
-                            child: AutoSizeText('Ставок ещё нет',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall!
-                                    .copyWith(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall!
-                                            .color!
-                                            .withOpacity(0.4))),
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(15.0),
-                            child: ListView.separated(
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  List<CrashRound> value = crashLogic
-                                      .lastCoefficients.reversed
-                                      .toList();
-
-                                  return Container(
-                                    margin: EdgeInsets.only(
-                                        top: 5.0,
-                                        bottom: 5.0,
-                                        left: index == 0 ? 5.0 : 0.0,
-                                        right: index + 1 ==
-                                                crashLogic
-                                                    .lastCoefficients.length
-                                            ? 5.0
-                                            : 0.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                        color: value[index].isWin
-                                            ? Colors.green
-                                            : Colors.redAccent),
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: AutoSizeText(
-                                          '${value[index].coefficient}x',
-                                          style: GoogleFonts.roboto(
-                                              color: Colors.white,
-                                              fontSize: 15.0,
-                                              fontWeight: FontWeight.w700),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(width: 5.0),
-                                itemCount: crashLogic.lastCoefficients.length),
-                          ),
-                  )
                 ],
               );
             },

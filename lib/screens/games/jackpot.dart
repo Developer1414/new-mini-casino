@@ -50,18 +50,16 @@ class Jackpot extends StatefulWidget {
 }
 
 class _JackpotState extends State<Jackpot> {
-  @override
-  void initState() {
-    super.initState();
-    createGame();
+  void disposeGame() {
+    Jackpot.controller.close();
+    Jackpot.timer.cancel();
   }
 
   @override
   void dispose() {
     super.dispose();
-    Jackpot.controller.close();
+    disposeGame();
     Jackpot.controller = StreamController<int>.broadcast();
-    Jackpot.timer.cancel();
   }
 
   void createGame() {
@@ -177,6 +175,8 @@ class _JackpotState extends State<Jackpot> {
         return;
       }
 
+      createGame();
+
       Jackpot.playersCount++;
       Jackpot.myBet =
           double.parse(Jackpot.betFormatter.getUnformattedValue().toString());
@@ -202,10 +202,8 @@ class _JackpotState extends State<Jackpot> {
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return !context.read<JackpotLogic>().isGameOn;
-      },
+    return PopScope(
+      canPop: !context.read<JackpotLogic>().isGameOn,
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -216,77 +214,106 @@ class _JackpotState extends State<Jackpot> {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Container(
-            height: 117.0,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0)),
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-                ]),
-            child: Consumer<JackpotLogic>(
-              builder: (ctx, jackpotLogic, _) {
-                return Padding(
-                    padding: const EdgeInsets.only(left: 15.0),
+          bottomNavigationBar: Consumer<JackpotLogic>(
+            builder: (context, jackpotLogic, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(15.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              AutoSizeText(
-                                  'Прибыль (${Jackpot.coefficient.toStringAsFixed(2)}x):',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontSize: 20.0)),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 15.0),
-                                child: AutoSizeText(
-                                    Jackpot.profit < 1000000
-                                        ? NumberFormat.simpleCurrency(
-                                                locale: ui.Platform.localeName)
-                                            .format(Jackpot.profit)
-                                        : NumberFormat.compactSimpleCurrency(
-                                                locale: ui.Platform.localeName)
-                                            .format(Jackpot.profit),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodyMedium!
-                                        .copyWith(fontSize: 20.0)),
-                              ),
-                            ],
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText(
+                                'Прибыль (${Jackpot.coefficient.toStringAsFixed(2)}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                Jackpot.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(Jackpot.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(Jackpot.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 15.0),
-                          child: SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed:
-                                  Jackpot.isBlockButton || jackpotLogic.isGameOn
-                                      ? null
-                                      : () => makeBet(
-                                          context: context,
-                                          jackpotLogic: jackpotLogic,
-                                          balance: balance),
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
+                      ],
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      jackpotLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () => jackpotLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  jackpotLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
                                 ),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
+                            ),
+                      Visibility(
+                        visible: jackpotLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: customTextField(
+                                currencyTextInputFormatter:
+                                    Jackpot.betFormatter,
+                                textInputFormatter: Jackpot.betFormatter,
+                                keyboardType: TextInputType.number,
+                                isBetInput: true,
+                                controller: Jackpot.betController,
+                                context: context,
+                                hintText: 'Ставка...'),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !jackpotLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 5.0)
+                              ], color: Theme.of(context).cardColor),
+                              child: ElevatedButton(
+                                onPressed: Jackpot.isBlockButton ||
+                                        jackpotLogic.isGameOn
+                                    ? null
+                                    : () => makeBet(
+                                        context: context,
+                                        jackpotLogic: jackpotLogic,
+                                        balance: balance),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: Colors.green,
+                                  shape: const RoundedRectangleBorder(),
+                                ),
                                 child: AutoSizeText(
                                   'СТАВКА',
                                   maxLines: 1,
@@ -295,17 +322,19 @@ class _JackpotState extends State<Jackpot> {
                                               jackpotLogic.isGameOn
                                           ? Colors.white.withOpacity(0.4)
                                           : Colors.white,
-                                      fontSize: 24.0,
+                                      fontSize: 20.0,
                                       fontWeight: FontWeight.w900),
                                 ),
                               ),
                             ),
                           ),
-                        )
-                      ],
-                    ));
-              },
-            ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           appBar: AppBar(
             toolbarHeight: 76.0,
@@ -361,30 +390,6 @@ class _JackpotState extends State<Jackpot> {
           ),
           body: Column(
             children: [
-              Consumer<JackpotLogic>(
-                builder: (context, jackpotLogic, child) {
-                  return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: customTextField(
-                              currencyTextInputFormatter: Jackpot.betFormatter,
-                              textInputFormatter: Jackpot.betFormatter,
-                              keyboardType: TextInputType.number,
-                              readOnly: jackpotLogic.isGameOn,
-                              isBetInput: true,
-                              controller: Jackpot.betController,
-                              context: context,
-                              hintText: 'Ставка...'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
               Expanded(
                 child: Consumer<JackpotLogic>(
                     builder: (context, jackpotLogic, child) {
@@ -392,20 +397,37 @@ class _JackpotState extends State<Jackpot> {
                       margin: const EdgeInsets.all(15.0),
                       height: 40.0,
                       decoration: BoxDecoration(
+                          color: Colors.lightBlueAccent.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(15.0),
-                          color: Theme.of(context).cardColor,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.3),
-                                blurRadius: 10.0)
-                          ]),
+                          border: Border.all(
+                              color: Colors.lightBlueAccent.withOpacity(0.7),
+                              width: 2.0)),
                       child: Padding(
                         padding: const EdgeInsets.all(15.0),
                         child: Jackpot.items.isEmpty
                             ? Center(
-                                child: AutoSizeText('Игроков ещё нет',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    AutoSizeText('Сделайте ставку',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                    AutoSizeText(
+                                        'Чем больше ваша ставка, тем больше ставка ботов',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .copyWith(
+                                                fontSize: 12.0,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall!
+                                                    .color!
+                                                    .withOpacity(0.6))),
+                                  ],
+                                ),
                               )
                             : Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -428,60 +450,50 @@ class _JackpotState extends State<Jackpot> {
                                               .bodySmall),
                                     ],
                                   ),
-                                  Expanded(child: Container()),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: FortuneBar(
-                                      height: 250.0,
-                                      animateFirst: false,
-                                      onAnimationEnd: () async {
-                                        jackpotLogic.onAnimationStopped();
+                                  const SizedBox(height: 15.0),
+                                  FortuneBar(
+                                    height: 250.0,
+                                    animateFirst: false,
+                                    onAnimationEnd: () async {
+                                      jackpotLogic.onAnimationStopped();
 
-                                        if (context.mounted) {
-                                          setState(() {
-                                            if (Jackpot.players[Jackpot
-                                                    .winnedPlayerIndex] ==
-                                                'user') {
-                                              Jackpot.profit =
-                                                  Jackpot.currentBalance;
+                                      if (context.mounted) {
+                                        setState(() {
+                                          if (Jackpot.players[
+                                                  Jackpot.winnedPlayerIndex] ==
+                                              'user') {
+                                            Jackpot.profit =
+                                                Jackpot.currentBalance;
 
-                                              jackpotLogic.win(
-                                                  profit: Jackpot.profit);
-                                            } else {
-                                              jackpotLogic.loss(
-                                                  context: context,
-                                                  bet: double.parse(Jackpot
-                                                      .betFormatter
-                                                      .getUnformattedValue()
-                                                      .toString()));
-                                            }
-                                          });
-                                        }
+                                            jackpotLogic.win(
+                                                profit: Jackpot.profit);
+                                          } else {
+                                            jackpotLogic.loss(
+                                                context: context,
+                                                bet: double.parse(Jackpot
+                                                    .betFormatter
+                                                    .getUnformattedValue()
+                                                    .toString()));
+                                          }
+                                        });
+                                      }
 
-                                        await Future.delayed(
-                                            const Duration(seconds: 2));
+                                      if (context.mounted) {
+                                        setState(() {
+                                          Jackpot.isBlockButton = false;
+                                        });
+                                      }
 
-                                        if (context.mounted) {
-                                          setState(() {
-                                            Jackpot.isBlockButton = false;
-                                          });
-                                        }
-
-                                        Jackpot.controller.close();
-                                        Jackpot.controller =
-                                            StreamController<int>.broadcast();
-                                        Jackpot.timer.cancel();
-                                        jackpotLogic.onAnimationStopped();
-                                        createGame();
-                                      },
-                                      physics: NoPanPhysics(),
-                                      styleStrategy: UniformStyleStrategy(
-                                          borderColor: Colors.blueAccent,
-                                          color: Colors.grey.shade300,
-                                          borderWidth: 0.0),
-                                      selected: Jackpot.controller.stream,
-                                      items: Jackpot.items,
-                                    ),
+                                      jackpotLogic.onAnimationStopped();
+                                    },
+                                    physics: NoPanPhysics(),
+                                    styleStrategy: UniformStyleStrategy(
+                                        borderColor: Colors.blueAccent,
+                                        color: Colors.lightBlueAccent
+                                            .withOpacity(0.7),
+                                        borderWidth: 0.0),
+                                    selected: Jackpot.controller.stream,
+                                    items: Jackpot.items,
                                   ),
                                   const SizedBox(height: 15.0),
                                   Jackpot.currentTimeBeforePlaying == 0
@@ -494,13 +506,6 @@ class _JackpotState extends State<Jackpot> {
                                                   .bodyMedium!
                                                   .copyWith(fontSize: 20.0)),
                                         ),
-                                  Expanded(child: Container()),
-                                  AutoSizeText(
-                                      'Чем больше ваша ставка, тем больше ставка ботов',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(fontSize: 12.0)),
                                 ],
                               ),
                       ));

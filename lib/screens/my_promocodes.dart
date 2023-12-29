@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
 import 'package:new_mini_casino/business/local_promocodes_service.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:quickalert/models/quickalert_animtype.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'dart:io' as ui;
@@ -53,24 +54,23 @@ class _MyPromocodesState extends State<MyPromocodes> {
           ? Center(
               child: Padding(
                 padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: AutoSizeText(
-                  'У вас ещё нет промокодов.\nОни будут появляться здесь через каждые 350 ставок если у вас есть Premium подписка.',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.displayMedium,
-                ),
+                child: smallHelperPanel(
+                    context: context,
+                    text:
+                        'У вас ещё нет промокодов.\nОни будут появляться здесь через каждые 350 ставок если у вас есть Premium подписка.'),
               ),
             )
           : Column(
               children: [
                 Expanded(
                   child: ListView.separated(
-                      itemBuilder: (context, index) {
+                      itemBuilder: (ctx, index) {
                         return Padding(
                           padding:
                               const EdgeInsets.only(left: 15.0, right: 15.0),
                           child: Material(
                             clipBehavior: Clip.antiAlias,
-                            color: Theme.of(context).canvasColor,
+                            color: Theme.of(ctx).canvasColor,
                             borderRadius: BorderRadius.circular(15.0),
                             shadowColor: Colors.black.withOpacity(0.3),
                             elevation: 5.0,
@@ -109,7 +109,7 @@ class _MyPromocodesState extends State<MyPromocodes> {
                                     children: [
                                       AutoSizeText(
                                         sortedMap.toList()[index].key,
-                                        style: Theme.of(context)
+                                        style: Theme.of(ctx)
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(fontSize: 20.0),
@@ -120,7 +120,7 @@ class _MyPromocodesState extends State<MyPromocodes> {
                                             .format(sortedMap
                                                 .toList()[index]
                                                 .value),
-                                        style: Theme.of(context)
+                                        style: Theme.of(ctx)
                                             .textTheme
                                             .titleMedium!
                                             .copyWith(fontSize: 20.0),
@@ -139,16 +139,10 @@ class _MyPromocodesState extends State<MyPromocodes> {
                 ),
                 Padding(
                   padding: const EdgeInsets.all(15.0),
-                  child: AutoSizeText(
-                      'Промокоды хранятся на вашем устройстве. Если вы удалите игру или очистите кеш, данные будут удалены.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                          fontSize: 12.0,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodySmall!
-                              .color!
-                              .withOpacity(0.4))),
+                  child: smallHelperPanel(
+                      context: context,
+                      text:
+                          'Промокоды хранятся на вашем устройстве. Если вы удалите игру или очистите кеш, данные будут удалены.'),
                 ),
               ],
             ),

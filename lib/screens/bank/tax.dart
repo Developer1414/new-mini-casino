@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -69,6 +69,65 @@ class Tax extends StatelessWidget {
             ],
           ),
         ),
+        bottomNavigationBar: Consumer<TaxManager>(
+          builder: (context, taxManager, child) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () => taxManager.payTax(context),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 5,
+                              backgroundColor: Colors.green,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(25.0),
+                                    topRight: Radius.circular(25.0)),
+                              ),
+                            ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 15.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.moneyBill,
+                                    color: Theme.of(context)
+                                        .appBarTheme
+                                        .iconTheme!
+                                        .color,
+                                    size: Theme.of(context)
+                                        .appBarTheme
+                                        .iconTheme!
+                                        .size,
+                                  ),
+                                  const SizedBox(width: 10.0),
+                                  AutoSizeText(
+                                    'Оплатить',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 22.0,
+                                        fontWeight: FontWeight.w800),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )),
+              ],
+            );
+          },
+        ),
         body: FutureBuilder(
             future: Provider.of<TaxManager>(context, listen: false).getTax(),
             builder: (context, snapshot) {
@@ -87,31 +146,8 @@ class Tax extends StatelessWidget {
                                   child: SingleChildScrollView(
                                     child: Column(
                                       children: [
-                                        Column(
-                                          children: [
-                                            const FaIcon(
-                                              FontAwesomeIcons.landmark,
-                                              color: Colors.white,
-                                              size: 80.0,
-                                            ),
-                                            const SizedBox(height: 10.0),
-                                            AutoSizeText(
-                                              'Налог',
-                                              maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.roboto(
-                                                color: Colors.white,
-                                                fontSize: 30.0,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 30.0),
                                         Container(
                                           width: double.infinity,
-                                          margin: const EdgeInsets.only(
-                                              left: 50.0, right: 50.0),
                                           decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(15.0),
@@ -140,7 +176,6 @@ class Tax extends StatelessWidget {
                                                       .titleTextStyle!
                                                       .copyWith(fontSize: 25.0),
                                                 ),
-                                                const SizedBox(height: 5.0),
                                                 AutoSizeText(
                                                   'Текущий налог\n${taxManager.currentTax > 0 ? 'Оплатите его до ${DateFormat.MMMMd('ru_RU').format(taxManager.taxPeriod)}' : ''}',
                                                   maxLines: 1,
@@ -174,26 +209,11 @@ class Tax extends StatelessWidget {
                                             ),
                                           ),
                                         ),
-                                        const SizedBox(height: 20.0),
-                                        Column(
-                                          children: [
-                                            buttonModel(
-                                                context: context,
-                                                buttonName: 'Оплатить',
-                                                onPressed: () =>
-                                                    taxManager.payTax(context),
-                                                color: Colors.blueAccent),
-                                            const SizedBox(height: 20.0),
-                                            AutoSizeText(
+                                        const SizedBox(height: 15.0),
+                                        smallHelperPanel(
+                                          context: context,
+                                          text:
                                               'Каждая ставка облагается налогом в размере 1% от ставки. Налог можно оплатить в любое время до истечения срока действия. Если вы не оплатите его вовремя, то не сможете продолжать играть в игры.\n\nP.S. Если у вас есть Premium-подписка, то налог платить не нужно!',
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.roboto(
-                                                  color: Colors.white
-                                                      .withOpacity(0.5),
-                                                  fontSize: 12.0,
-                                                  fontWeight: FontWeight.w600),
-                                            ),
-                                          ],
                                         ),
                                       ],
                                     ),

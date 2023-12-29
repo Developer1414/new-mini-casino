@@ -8,6 +8,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/purchasing_game_currency_controller.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -27,20 +28,6 @@ class PurchasingGameCurrency extends StatelessWidget {
                   context: context,
                   text: purchasingGameCurrencyController.loadingText)
               : Scaffold(
-                  bottomNavigationBar: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, bottom: 15.0),
-                    child: AutoSizeText(
-                        'Покупка и продажа игровой валюты вне игры запрещена!',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                            fontSize: 12.0,
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .color!
-                                .withOpacity(0.4))),
-                  ),
                   appBar: AppBar(
                     toolbarHeight: 76.0,
                     elevation: 0,
@@ -74,6 +61,68 @@ class PurchasingGameCurrency extends StatelessWidget {
                       ],
                     ),
                   ),
+                  bottomNavigationBar: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15.0, right: 15.0, bottom: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText('Итого',
+                                style: Theme.of(context).textTheme.titleMedium),
+                            AutoSizeText(
+                                NumberFormat.simpleCurrency(locale: 'ru_RU')
+                                    .format(purchasingGameCurrencyController
+                                        .amountRealCurrency),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(fontSize: 20.0)),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                          padding:
+                              const EdgeInsets.only(left: 15.0, right: 15.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () =>
+                                      purchasingGameCurrencyController
+                                          .getGameCurrency(context: context),
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 5,
+                                    backgroundColor:
+                                        const Color.fromARGB(255, 179, 242, 31),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(25.0),
+                                          topRight: Radius.circular(25.0)),
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 15.0),
+                                    child: AutoSizeText(
+                                      'Купить',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                          color: const Color.fromARGB(
+                                              255, 5, 2, 1),
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.w800),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
                   body: Center(
                     child: SingleChildScrollView(
                       child: Column(
@@ -85,208 +134,104 @@ class PurchasingGameCurrency extends StatelessWidget {
                               children: [
                                 Column(
                                   children: [
-                                    const FaIcon(
-                                      FontAwesomeIcons.moneyBill,
-                                      color: Colors.white,
-                                      size: 80.0,
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    AutoSizeText(
-                                      'Сколько вы хотели бы купить?',
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 30.0,
-                                        fontWeight: FontWeight.w700,
+                                    SizedBox(
+                                      width: double.infinity,
+                                      child: smallHelperPanel(
+                                        context: context,
+                                        textStyle: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(fontSize: 20.0),
+                                        text: NumberFormat.simpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(
+                                                purchasingGameCurrencyController
+                                                    .amountGameCurrency),
                                       ),
                                     ),
-                                  ],
-                                ),
-                                const SizedBox(height: 30.0),
-                                Column(
-                                  children: [
+                                    const SizedBox(height: 15.0),
                                     Row(
                                       children: [
-                                        SizedBox(
-                                          height: 60.0,
-                                          width: 60.0,
-                                          child: ElevatedButton(
-                                            onPressed:
-                                                purchasingGameCurrencyController
+                                        Expanded(
+                                          child: SizedBox(
+                                            height: 50.0,
+                                            child: ElevatedButton(
+                                              onPressed:
+                                                  purchasingGameCurrencyController
+                                                              .amountGameCurrency ==
+                                                          250000
+                                                      ? null
+                                                      : () {
+                                                          purchasingGameCurrencyController
+                                                              .changeCurrency(
+                                                                  -50000);
+                                                        },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 5,
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 179, 242, 31),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0)),
+                                              ),
+                                              child: FaIcon(
+                                                FontAwesomeIcons.minus,
+                                                color: purchasingGameCurrencyController
                                                             .amountGameCurrency ==
                                                         250000
-                                                    ? null
-                                                    : () {
-                                                        purchasingGameCurrencyController
-                                                            .changeCurrency(
-                                                                -50000);
-                                                      },
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 5,
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 179, 242, 31),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15.0)),
-                                            ),
-                                            child: FaIcon(
-                                              FontAwesomeIcons.minus,
-                                              color: purchasingGameCurrencyController
-                                                          .amountGameCurrency ==
-                                                      250000
-                                                  ? Colors.white38
-                                                  : Colors.black,
-                                              size: 25.0,
+                                                    ? Colors.white38
+                                                    : Colors.black,
+                                                size: 25.0,
+                                              ),
                                             ),
                                           ),
                                         ),
                                         const SizedBox(width: 15.0),
                                         Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            children: [
-                                              AutoSizeText(
-                                                  NumberFormat.simpleCurrency(
-                                                          locale: ui.Platform
-                                                              .localeName)
-                                                      .format(
+                                          child: SizedBox(
+                                            height: 50.0,
+                                            child: ElevatedButton(
+                                              onPressed:
+                                                  purchasingGameCurrencyController
+                                                              .amountGameCurrency ==
+                                                          10000000
+                                                      ? null
+                                                      : () {
                                                           purchasingGameCurrencyController
-                                                              .amountGameCurrency),
-                                                  maxLines: 1,
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!
-                                                      .copyWith(
-                                                          fontSize: 20.0)),
-                                              const SizedBox(height: 5.0),
-                                              AutoSizeText(
-                                                '(Игровых)',
-                                                maxLines: 1,
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.roboto(
-                                                    color: Colors.white
-                                                        .withOpacity(0.5),
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                                              .changeCurrency(
+                                                                  50000);
+                                                        },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 5,
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 179, 242, 31),
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0)),
                                               ),
-                                            ],
-                                          ),
-                                        ),
-                                        const SizedBox(width: 15.0),
-                                        SizedBox(
-                                          height: 60.0,
-                                          width: 60.0,
-                                          child: ElevatedButton(
-                                            onPressed:
-                                                purchasingGameCurrencyController
+                                              child: FaIcon(
+                                                FontAwesomeIcons.plus,
+                                                color: purchasingGameCurrencyController
                                                             .amountGameCurrency ==
                                                         10000000
-                                                    ? null
-                                                    : () {
-                                                        purchasingGameCurrencyController
-                                                            .changeCurrency(
-                                                                50000);
-                                                      },
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 5,
-                                              backgroundColor:
-                                                  const Color.fromARGB(
-                                                      255, 179, 242, 31),
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          15.0)),
-                                            ),
-                                            child: FaIcon(
-                                              FontAwesomeIcons.plus,
-                                              color: purchasingGameCurrencyController
-                                                          .amountGameCurrency ==
-                                                      10000000
-                                                  ? Colors.white38
-                                                  : Colors.black,
-                                              size: 25.0,
+                                                    ? Colors.white38
+                                                    : Colors.black,
+                                                size: 25.0,
+                                              ),
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          AutoSizeText(
-                                            'Итого:',
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall,
-                                          ),
-                                          Row(
-                                            children: [
-                                              AutoSizeText(
-                                                NumberFormat.simpleCurrency(
-                                                        locale: 'ru_RU')
-                                                    .format(
-                                                        purchasingGameCurrencyController
-                                                            .amountRealCurrency),
-                                                textAlign: TextAlign.center,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall,
-                                              ),
-                                              const SizedBox(width: 5.0),
-                                              AutoSizeText(
-                                                '(Реальных)',
-                                                maxLines: 1,
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.roboto(
-                                                    color: Colors.white
-                                                        .withOpacity(0.5),
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: 20.0),
-                                    SizedBox(
-                                      height: 60.0,
-                                      width: double.infinity,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          purchasingGameCurrencyController
-                                              .getGameCurrency(
-                                                  context: context);
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          elevation: 5,
-                                          backgroundColor: const Color.fromARGB(
-                                              255, 179, 242, 31),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0)),
-                                        ),
-                                        child: AutoSizeText(
-                                          'Купить',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: const Color.fromARGB(
-                                                255, 5, 2, 1),
-                                            fontSize: 25.0,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ),
+                                    const SizedBox(height: 15.0),
+                                    smallHelperPanel(
+                                      context: context,
+                                      text:
+                                          'Покупка и продажа игровой валюты вне игры - запрещена!',
                                     ),
                                   ],
                                 ),

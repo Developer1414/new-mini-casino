@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 
 class JackpotLogic extends ChangeNotifier {
   bool isGameOn = false;
+  bool isShowInputBet = false;
 
   double coefficient = 0.0;
 
@@ -34,6 +35,11 @@ class JackpotLogic extends ChangeNotifier {
 
   late BuildContext context;
   late Timer timer = Timer(const Duration(seconds: 1), () {});
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void blockBetButton() {
     isGameOn = true;

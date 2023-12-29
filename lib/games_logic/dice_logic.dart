@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
@@ -15,6 +14,7 @@ enum NumberFromToButtonType { oneToThree, fourToSix, empty }
 
 class DiceLogic extends ChangeNotifier {
   bool isGameOn = false;
+  bool isShowInputBet = false;
 
   double profit = 0.0;
   double coefficient = 2.0;
@@ -30,6 +30,11 @@ class DiceLogic extends ChangeNotifier {
   List<int> fourToSixList = [4, 5, 6];
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void selectNumbersFromTo(NumberFromToButtonType type) {
     evenOrOddType = EvenOrOddButtonType.empty;

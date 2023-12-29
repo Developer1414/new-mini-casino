@@ -155,8 +155,7 @@ void giftPremiumAlert(
                                                   .textTheme
                                                   .bodyMedium!),
                                           const SizedBox(width: 5.0),
-                                          CupertinoSwitch(
-                                            trackColor: Colors.blueAccent,
+                                          Switch(
                                             value: paymentController
                                                 .isYearSubscription,
                                             onChanged: (value) {

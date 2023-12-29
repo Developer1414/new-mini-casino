@@ -50,7 +50,7 @@ Widget buttonModel(
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 22.0,
+                          fontSize: 20.0,
                           color: textColor ??
                               Theme.of(context).textTheme.bodyMedium!.color)),
               subtitle == null

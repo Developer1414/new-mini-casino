@@ -3,13 +3,14 @@ import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'dart:io' as ui;
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 
@@ -95,15 +96,12 @@ class MoneyStorage extends StatelessWidget {
                           ),
                           child: Column(
                             children: [
-                              AutoSizeText(
-                                balance.currentBalanceString,
-                                maxLines: 1,
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context)
-                                    .appBarTheme
-                                    .titleTextStyle!
-                                    .copyWith(fontSize: 25.0),
-                              ),
+                              AutoSizeText(balance.currentBalanceString,
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .appBarTheme
+                                      .titleTextStyle!),
                               const SizedBox(height: 5.0),
                               AutoSizeText('Баланс',
                                   maxLines: 1,
@@ -127,32 +125,11 @@ class MoneyStorage extends StatelessWidget {
                       margin: const EdgeInsets.only(
                           left: 15.0, right: 15.0, bottom: 15.0),
                       child: Padding(
-                        padding: const EdgeInsets.all(20.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: Center(
                           child: SingleChildScrollView(
                             child: Column(
                               children: [
-                                Column(
-                                  children: [
-                                    const FaIcon(
-                                      FontAwesomeIcons.moneyBillTransfer,
-                                      color: Colors.white,
-                                      size: 80.0,
-                                    ),
-                                    const SizedBox(height: 10.0),
-                                    AutoSizeText(
-                                      'Перевод',
-                                      maxLines: 1,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 30.0,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 30.0),
                                 Column(
                                   children: [
                                     customTextField(
@@ -165,7 +142,9 @@ class MoneyStorage extends StatelessWidget {
                                         hintText: 'Количество...'),
                                     const SizedBox(height: 20.0),
                                     buttonModel(
+                                        context: context,
                                         buttonName: 'В хранилище',
+                                        icon: FontAwesomeIcons.arrowUp,
                                         onPressed: () =>
                                             storageManager.transferToStorage(
                                                 amount: double.parse(
@@ -176,7 +155,9 @@ class MoneyStorage extends StatelessWidget {
                                         color: Colors.blueAccent),
                                     const SizedBox(height: 20.0),
                                     buttonModel(
+                                        context: context,
                                         buttonName: 'На основной счёт',
+                                        icon: FontAwesomeIcons.arrowDown,
                                         onPressed: () => storageManager
                                             .transferToMainAccount(
                                                 amount: double.parse(
@@ -186,13 +167,10 @@ class MoneyStorage extends StatelessWidget {
                                                 context: context),
                                         color: Colors.blueAccent),
                                     const SizedBox(height: 15.0),
-                                    AutoSizeText(
-                                      'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}',
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white.withOpacity(0.5),
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.w600),
-                                    ),
+                                    smallHelperPanel(
+                                        context: context,
+                                        text:
+                                            'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
                                   ],
                                 ),
                               ],
@@ -204,40 +182,6 @@ class MoneyStorage extends StatelessWidget {
                   ),
                 ],
               )),
-    );
-  }
-
-  Widget buttonModel(
-      {required String buttonName,
-      required Color color,
-      Function()? onPressed}) {
-    return SizedBox(
-      height: 60.0,
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          onPressed?.call();
-        },
-        style: ElevatedButton.styleFrom(
-          elevation: 5,
-          shadowColor: color.withOpacity(0.8),
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15.0),
-          ),
-        ),
-        child: AutoSizeText(
-          buttonName,
-          maxLines: 1,
-          textAlign: TextAlign.center,
-          style: GoogleFonts.roboto(
-            color: Colors.white,
-            fontSize: 22.0,
-            letterSpacing: 0.5,
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-      ),
     );
   }
 }

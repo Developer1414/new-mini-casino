@@ -30,10 +30,8 @@ class Mines extends StatelessWidget {
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    return WillPopScope(
-      onWillPop: () async {
-        return !context.read<MinesLogic>().isGameOn;
-      },
+    return PopScope(
+      canPop: !context.read<MinesLogic>().isGameOn,
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -44,198 +42,229 @@ class Mines extends StatelessWidget {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Container(
-            height: 188.0,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0)),
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-                ]),
-            child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 0.0),
-                      child: Consumer<MinesLogic>(
-                        builder: (ctx, minesLogic, _) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 15.0, bottom: 15.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AutoSizeText(
-                                        'Прибыль (${minesLogic.currentCoefficient.isNaN ? '0.00' : minesLogic.currentCoefficient.toStringAsFixed(2)}x):',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(fontSize: 20.0)),
-                                    AutoSizeText(
-                                        minesLogic.profit < 1000000
-                                            ? NumberFormat.simpleCurrency(
-                                                    locale:
-                                                        ui.Platform.localeName)
-                                                .format(minesLogic.profit)
-                                            : NumberFormat
-                                                    .compactSimpleCurrency(
-                                                        locale: ui.Platform
-                                                            .localeName)
-                                                .format(minesLogic.profit),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(fontSize: 20.0)),
-                                  ],
+          bottomNavigationBar: Consumer<MinesLogic>(
+            builder: (context, minesLogic, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText(
+                                'Прибыль (${minesLogic.currentCoefficient.isNaN ? '0.00' : minesLogic.currentCoefficient.toStringAsFixed(2)}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                minesLogic.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(minesLogic.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(minesLogic.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText('Кол. мин:',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                minesLogic.sliderValue.round().toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                        Slider(
+                          value: minesLogic.sliderValue,
+                          max: 24,
+                          min: 1,
+                          divisions: 23,
+                          onChanged: (double value) {
+                            if (minesLogic.isGameOn) return;
+                            minesLogic.changeSliderValue(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    children: [
+                      minesLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () => minesLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  minesLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  AutoSizeText('Кол. мин:',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                  AutoSizeText(
-                                      minesLogic.sliderValue.round().toString(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(fontSize: 20.0)),
-                                ],
-                              ),
-                              Slider(
-                                value: minesLogic.sliderValue,
-                                max: 24,
-                                min: 1,
-                                divisions: 23,
-                                onChanged: (double value) {
-                                  if (minesLogic.isGameOn) return;
-                                  minesLogic.changeSliderValue(value);
-                                },
+                            ),
+                      Visibility(
+                        visible: minesLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: customTextField(
+                                currencyTextInputFormatter: Mines.betFormatter,
+                                textInputFormatter: Mines.betFormatter,
+                                keyboardType: TextInputType.number,
+                                isBetInput: true,
+                                controller: Mines.betController,
+                                context: context,
+                                hintText: 'Ставка...'),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !minesLogic.isShowInputBet,
+                        child: Expanded(
+                          child: Row(
+                            children: [
+                              !minesLogic.isGameOn
+                                  ? Container()
+                                  : Expanded(
+                                      child: SizedBox(
+                                        height: 60.0,
+                                        child: Container(
+                                          color: Theme.of(context).cardColor,
+                                          child: ElevatedButton(
+                                            onPressed: !minesLogic.isGameOn
+                                                ? null
+                                                : () {
+                                                    minesLogic.autoMove();
+                                                  },
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 5,
+                                              backgroundColor:
+                                                  Colors.blueAccent,
+                                              shape:
+                                                  const RoundedRectangleBorder(),
+                                            ),
+                                            child: AutoSizeText(
+                                              'АВТО',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                  color: !minesLogic.isGameOn
+                                                      ? Colors.white
+                                                          .withOpacity(0.4)
+                                                      : Colors.white,
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.w900),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 60.0,
+                                  child: Container(
+                                    color: Theme.of(context).cardColor,
+                                    child: ElevatedButton(
+                                      onPressed: !minesLogic.isGameOn
+                                          ? () {
+                                              if (!minesLogic.isGameOn) {
+                                                if (balance.currentBalance <
+                                                    double.parse(betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString())) {
+                                                  return;
+                                                }
+
+                                                minesLogic.startGame(
+                                                    context: context,
+                                                    bet: double.parse(betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString()));
+                                              } else {
+                                                minesLogic.cashout();
+                                              }
+                                            }
+                                          : minesLogic.openedIndexes.isEmpty
+                                              ? null
+                                              : () {
+                                                  if (!minesLogic.isGameOn) {
+                                                    if (balance.currentBalance <
+                                                        double.parse(betFormatter
+                                                            .getUnformattedValue()
+                                                            .toString())) {
+                                                      return;
+                                                    }
+
+                                                    minesLogic.startGame(
+                                                        context: context,
+                                                        bet: double.parse(
+                                                            betFormatter
+                                                                .getUnformattedValue()
+                                                                .toString()));
+                                                  } else {
+                                                    minesLogic.cashout();
+                                                  }
+                                                },
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor: Colors.green,
+                                        shape: const RoundedRectangleBorder(),
+                                      ),
+                                      child: AutoSizeText(
+                                        !minesLogic.isGameOn
+                                            ? 'СТАВКА'
+                                            : 'ЗАБРАТЬ',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                            color: !minesLogic.isGameOn
+                                                ? Colors.white
+                                                : minesLogic.openedIndexes
+                                                        .isNotEmpty
+                                                    ? Colors.white
+                                                    : Colors.white
+                                                        .withOpacity(0.4),
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
-                          );
-                        },
-                      ),
-                    ),
-                    Consumer<MinesLogic>(builder: (ctx, minesLogic, _) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: !minesLogic.isGameOn
-                                  ? null
-                                  : () {
-                                      minesLogic.autoMove();
-                                    },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.blueAccent,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: AutoSizeText(
-                                  'АВТО',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: !minesLogic.isGameOn
-                                          ? Colors.white.withOpacity(0.4)
-                                          : Colors.white,
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              ),
-                            ),
                           ),
-                          const SizedBox(width: 15.0),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: !minesLogic.isGameOn
-                                  ? () {
-                                      if (!minesLogic.isGameOn) {
-                                        if (balance.currentBalance <
-                                            double.parse(betFormatter
-                                                .getUnformattedValue()
-                                                .toString())) {
-                                          return;
-                                        }
-
-                                        minesLogic.startGame(
-                                            context: context,
-                                            bet: double.parse(betFormatter
-                                                .getUnformattedValue()
-                                                .toString()));
-                                      } else {
-                                        minesLogic.cashout();
-                                      }
-                                    }
-                                  : minesLogic.openedIndexes.isEmpty
-                                      ? null
-                                      : () {
-                                          if (!minesLogic.isGameOn) {
-                                            if (balance.currentBalance <
-                                                double.parse(betFormatter
-                                                    .getUnformattedValue()
-                                                    .toString())) {
-                                              return;
-                                            }
-
-                                            minesLogic.startGame(
-                                                context: context,
-                                                bet: double.parse(betFormatter
-                                                    .getUnformattedValue()
-                                                    .toString()));
-                                          } else {
-                                            minesLogic.cashout();
-                                          }
-                                        },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: AutoSizeText(
-                                  !minesLogic.isGameOn ? 'СТАВКА' : 'ЗАБРАТЬ',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: !minesLogic.isGameOn
-                                          ? Colors.white
-                                          : minesLogic.openedIndexes.isNotEmpty
-                                              ? Colors.white
-                                              : Colors.white.withOpacity(0.4),
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    }),
-                  ],
-                )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           appBar: AppBar(
             toolbarHeight: 76.0,
@@ -294,19 +323,6 @@ class Mines extends StatelessWidget {
           body: Consumer<MinesLogic>(builder: (ctx, minesLogic, _) {
             return Column(
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
-                  child: customTextField(
-                      context: context,
-                      currencyTextInputFormatter: betFormatter,
-                      textInputFormatter: betFormatter,
-                      keyboardType: TextInputType.number,
-                      readOnly: minesLogic.isGameOn,
-                      isBetInput: true,
-                      controller: betController,
-                      hintText: 'Ставка...'),
-                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -343,15 +359,13 @@ class Mines extends StatelessWidget {
                             ),
                             child: !minesLogic.isGameOn
                                 ? minesLogic.minesIndex.isNotEmpty
-                                    ? Image(
-                                        image: AssetImage(
-                                            'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png'),
+                                    ? Image.asset(
+                                        'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
                                       )
                                     : Container()
                                 : minesLogic.openedIndexes.contains(index)
-                                    ? Image(
-                                        image: AssetImage(
-                                            'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png'),
+                                    ? Image.asset(
+                                        'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
                                       )
                                     : Container(),
                           ),

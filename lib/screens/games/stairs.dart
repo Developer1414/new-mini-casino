@@ -44,8 +44,8 @@ class _StairsState extends State<Stairs> {
   Widget build(BuildContext context) {
     final balance = Provider.of<Balance>(context, listen: false);
 
-    return WillPopScope(
-      onWillPop: () async => !context.read<StairsLogic>().isGameOn,
+    return PopScope(
+      canPop: !context.read<StairsLogic>().isGameOn,
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -56,203 +56,233 @@ class _StairsState extends State<Stairs> {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Container(
-            height: 188.0,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0)),
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-                ]),
-            child: Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 0.0),
-                      child: Consumer<StairsLogic>(
-                        builder: (ctx, stairsLogic, _) {
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 15.0, bottom: 15.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AutoSizeText(
-                                        'Прибыль (${stairsLogic.currentCoefficient.isNaN ? '0.00' : stairsLogic.currentCoefficient.toStringAsFixed(2)}x):',
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(fontSize: 20.0)),
-                                    AutoSizeText(
-                                        stairsLogic.profit < 1000000
-                                            ? NumberFormat.simpleCurrency(
-                                                    locale:
-                                                        ui.Platform.localeName)
-                                                .format(stairsLogic.profit)
-                                            : NumberFormat
-                                                    .compactSimpleCurrency(
-                                                        locale: ui.Platform
-                                                            .localeName)
-                                                .format(stairsLogic.profit),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium!
-                                            .copyWith(fontSize: 20.0)),
-                                  ],
+          bottomNavigationBar: Consumer<StairsLogic>(
+            builder: (context, stairsLogic, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText(
+                                'Прибыль (${stairsLogic.currentCoefficient.isNaN ? '0.00' : stairsLogic.currentCoefficient.toStringAsFixed(2)}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                stairsLogic.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(stairsLogic.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(stairsLogic.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                        const SizedBox(height: 10.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText('Кол. камней:',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                stairsLogic.sliderValue.round().toString(),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                        Slider(
+                          value: stairsLogic.sliderValue,
+                          max: 3,
+                          min: 1,
+                          divisions: 2,
+                          onChanged: (double value) {
+                            if (stairsLogic.isGameOn) return;
+                            stairsLogic.changeSliderValue(value);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Row(
+                    children: [
+                      stairsLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () => stairsLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  stairsLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
                                 ),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  AutoSizeText('Кол. камней:',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium),
-                                  AutoSizeText(
-                                      stairsLogic.sliderValue
-                                          .round()
-                                          .toString(),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium!
-                                          .copyWith(fontSize: 20.0)),
-                                ],
-                              ),
-                              Slider(
-                                value: stairsLogic.sliderValue,
-                                max: 3,
-                                min: 1,
-                                divisions: 2,
-                                onChanged: (double value) {
-                                  if (stairsLogic.isGameOn) return;
-                                  stairsLogic.changeSliderValue(value);
-                                },
+                            ),
+                      Visibility(
+                        visible: stairsLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: customTextField(
+                                currencyTextInputFormatter: Stairs.betFormatter,
+                                textInputFormatter: Stairs.betFormatter,
+                                keyboardType: TextInputType.number,
+                                isBetInput: true,
+                                controller: Stairs.betController,
+                                context: context,
+                                hintText: 'Ставка...'),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !stairsLogic.isShowInputBet,
+                        child: Expanded(
+                          child: Row(
+                            children: [
+                              !stairsLogic.isGameOn
+                                  ? Container()
+                                  : Expanded(
+                                      child: SizedBox(
+                                        height: 60.0,
+                                        child: Container(
+                                          color: Theme.of(context).cardColor,
+                                          child: ElevatedButton(
+                                            onPressed: !stairsLogic.isGameOn
+                                                ? null
+                                                : () {
+                                                    stairsLogic.autoMove();
+                                                  },
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 5,
+                                              backgroundColor:
+                                                  Colors.blueAccent,
+                                              shape:
+                                                  const RoundedRectangleBorder(),
+                                            ),
+                                            child: AutoSizeText(
+                                              'АВТО',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                  color: !stairsLogic.isGameOn
+                                                      ? Colors.white
+                                                          .withOpacity(0.4)
+                                                      : Colors.white,
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.w900),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 60.0,
+                                  child: Container(
+                                    color: Theme.of(context).cardColor,
+                                    child: ElevatedButton(
+                                      onPressed: !stairsLogic.isGameOn
+                                          ? () {
+                                              if (!stairsLogic.isGameOn) {
+                                                if (balance.currentBalance <
+                                                    double.parse(Stairs
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString())) {
+                                                  return;
+                                                }
+
+                                                stairsLogic.startGame(
+                                                    context: context,
+                                                    bet: double.parse(Stairs
+                                                        .betFormatter
+                                                        .getUnformattedValue()
+                                                        .toString()));
+                                              } else {
+                                                stairsLogic.cashout();
+                                              }
+                                            }
+                                          : stairsLogic
+                                                  .openedColumnIndex.isEmpty
+                                              ? null
+                                              : () {
+                                                  if (!stairsLogic.isGameOn) {
+                                                    if (balance.currentBalance <
+                                                        double.parse(Stairs
+                                                            .betFormatter
+                                                            .getUnformattedValue()
+                                                            .toString())) {
+                                                      return;
+                                                    }
+
+                                                    stairsLogic.startGame(
+                                                        context: context,
+                                                        bet: double.parse(Stairs
+                                                            .betFormatter
+                                                            .getUnformattedValue()
+                                                            .toString()));
+                                                  } else {
+                                                    stairsLogic.cashout();
+                                                  }
+                                                },
+                                      style: ElevatedButton.styleFrom(
+                                        elevation: 0,
+                                        backgroundColor: Colors.redAccent,
+                                        shape: const RoundedRectangleBorder(),
+                                      ),
+                                      child: AutoSizeText(
+                                        !stairsLogic.isGameOn
+                                            ? 'СТАВКА'
+                                            : 'ЗАБРАТЬ',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                            color: stairsLogic.isGameOn
+                                                ? stairsLogic.openedColumnIndex
+                                                        .isEmpty
+                                                    ? Colors.white
+                                                        .withOpacity(0.4)
+                                                    : Colors.white
+                                                : Colors.white,
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.w900),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
-                          );
-                        },
-                      ),
-                    ),
-                    Consumer<StairsLogic>(builder: (ctx, stairsLogic, _) {
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: !stairsLogic.isGameOn
-                                  ? null
-                                  : () {
-                                      stairsLogic.autoMove();
-                                    },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.blueAccent,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: AutoSizeText(
-                                  'АВТО',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: !stairsLogic.isGameOn
-                                          ? Colors.white.withOpacity(0.4)
-                                          : Colors.white,
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              ),
-                            ),
                           ),
-                          const SizedBox(width: 15.0),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: !stairsLogic.isGameOn
-                                  ? () {
-                                      if (!stairsLogic.isGameOn) {
-                                        if (balance.currentBalance <
-                                            double.parse(Stairs.betFormatter
-                                                .getUnformattedValue()
-                                                .toString())) {
-                                          return;
-                                        }
-
-                                        stairsLogic.startGame(
-                                            context: context,
-                                            bet: double.parse(Stairs
-                                                .betFormatter
-                                                .getUnformattedValue()
-                                                .toString()));
-                                      } else {
-                                        stairsLogic.cashout();
-                                      }
-                                    }
-                                  : stairsLogic.openedColumnIndex.isEmpty
-                                      ? null
-                                      : () {
-                                          if (!stairsLogic.isGameOn) {
-                                            if (balance.currentBalance <
-                                                double.parse(Stairs.betFormatter
-                                                    .getUnformattedValue()
-                                                    .toString())) {
-                                              return;
-                                            }
-
-                                            stairsLogic.startGame(
-                                                context: context,
-                                                bet: double.parse(Stairs
-                                                    .betFormatter
-                                                    .getUnformattedValue()
-                                                    .toString()));
-                                          } else {
-                                            stairsLogic.cashout();
-                                          }
-                                        },
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
-                                ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: AutoSizeText(
-                                  !stairsLogic.isGameOn ? 'СТАВКА' : 'ЗАБРАТЬ',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: !stairsLogic.isGameOn
-                                          ? Colors.white
-                                          : stairsLogic
-                                                  .openedColumnIndex.isNotEmpty
-                                              ? Colors.white
-                                              : Colors.white.withOpacity(0.4),
-                                      fontSize: 24.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      );
-                    }),
-                  ],
-                )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           appBar: AppBar(
             toolbarHeight: 76.0,
@@ -312,19 +342,6 @@ class _StairsState extends State<Stairs> {
             builder: (context, stairsLogic, child) {
               return Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0),
-                    child: customTextField(
-                        context: context,
-                        currencyTextInputFormatter: Stairs.betFormatter,
-                        textInputFormatter: Stairs.betFormatter,
-                        keyboardType: TextInputType.number,
-                        readOnly: stairsLogic.isGameOn,
-                        isBetInput: true,
-                        controller: Stairs.betController,
-                        hintText: 'Ставка...'),
-                  ),
                   Expanded(
                       child: Padding(
                           padding: const EdgeInsets.all(15.0),
@@ -398,58 +415,55 @@ class _StairsState extends State<Stairs> {
                                                                     rowIndex
                                                                 ? 1.0
                                                                 : 0.4))
-                                                    : ElevatedButton(
-                                                        onPressed: () {
-                                                          if (stairsLogic
-                                                                  .currentIndex !=
-                                                              columnIndex) {
-                                                            return;
-                                                          }
-
-                                                          stairsLogic
-                                                              .selectCell(
-                                                                  rowIndex,
-                                                                  columnIndex);
-                                                        },
-                                                        style: ElevatedButton
-                                                            .styleFrom(
-                                                          elevation: 5,
-                                                          shadowColor: stairsLogic
-                                                                      .currentIndex !=
-                                                                  columnIndex
-                                                              ? Theme.of(
-                                                                      context)
-                                                                  .canvasColor
-                                                              : Colors.brown,
-                                                          backgroundColor:
-                                                              Theme.of(context)
-                                                                  .canvasColor,
-                                                          shape:
-                                                              RoundedRectangleBorder(
-                                                            side: BorderSide(
-                                                                color: stairsLogic.openedColumnIndex[
-                                                                            columnIndex] ==
-                                                                        rowIndex
-                                                                    ? Colors
-                                                                        .brown
-                                                                        .shade300
-                                                                    : Colors
-                                                                        .transparent,
-                                                                width: 2.0),
-                                                            borderRadius:
-                                                                BorderRadius
-                                                                    .circular(
-                                                                        12.0),
-                                                          ),
+                                                    : Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      15.0),
+                                                          border: Border.all(
+                                                              color: stairsLogic
+                                                                          .currentIndex !=
+                                                                      columnIndex
+                                                                  ? Colors
+                                                                      .transparent
+                                                                  : Colors
+                                                                      .lightBlueAccent,
+                                                              width: 2.0),
                                                         ),
-                                                        child: Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                                    left: 5.0,
-                                                                    right: 5.0),
-                                                            child:
-                                                                Container())),
+                                                        child: ElevatedButton(
+                                                            onPressed: () {
+                                                              if (stairsLogic
+                                                                      .currentIndex !=
+                                                                  columnIndex) {
+                                                                return;
+                                                              }
+
+                                                              stairsLogic
+                                                                  .selectCell(
+                                                                      rowIndex,
+                                                                      columnIndex);
+                                                            },
+                                                            style:
+                                                                ElevatedButton
+                                                                    .styleFrom(
+                                                              backgroundColor: Colors
+                                                                  .lightBlueAccent
+                                                                  .withOpacity(
+                                                                      0.5),
+                                                            ),
+                                                            child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .only(
+                                                                        left:
+                                                                            5.0,
+                                                                        right:
+                                                                            5.0),
+                                                                child:
+                                                                    Container())),
+                                                      ),
                                           ),
                                         ),
                                     ],

@@ -7,7 +7,6 @@ import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 
 import 'package:intl/intl.dart';
@@ -17,7 +16,8 @@ import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/bottom_game_navigation.dart';
 import 'package:provider/provider.dart';
 
 class Slots extends StatefulWidget {
@@ -38,7 +38,7 @@ class Slots extends StatefulWidget {
 }
 
 class _SlotsState extends State<Slots> {
-  List<ScrollController> controllers =
+  static List<ScrollController> controllers =
       List.generate(3, (index) => ScrollController());
 
   final ConfettiController confettiController =
@@ -81,6 +81,8 @@ class _SlotsState extends State<Slots> {
 
   bool isSpinning = false;
   bool isAutoBets = false;
+
+  static bool isFast = false;
 
   List<bool> isReelsSpinning = [
     false,
@@ -188,32 +190,56 @@ class _SlotsState extends State<Slots> {
     Timer.periodic(const Duration(milliseconds: 100), (timer) async {
       time++;
 
-      for (int i = startIndex; i < 3; i++) {
-        choosedReels[i] = reelItems[Random().nextInt(reelItems.length)];
-        controllers[i].animateTo(100,
-            duration: const Duration(milliseconds: 100), curve: Curves.linear);
-      }
+      if (!isFast) {
+        for (int i = startIndex; i < 3; i++) {
+          choosedReels[i] = reelItems[Random().nextInt(reelItems.length)];
+          controllers[i].animateTo(100,
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.linear);
+        }
 
-      if (time == 10) {
-        startIndex++;
-        choosedReels[0] = reelItems[Random.secure().nextInt(reelItems.length)];
-        isReelsSpinning[0] = false;
-      }
+        if (time == 10) {
+          startIndex++;
+          choosedReels[0] =
+              reelItems[Random.secure().nextInt(reelItems.length)];
+          isReelsSpinning[0] = false;
+        }
 
-      if (time == 20) {
-        startIndex++;
-        choosedReels[1] = reelItems[Random.secure().nextInt(reelItems.length)];
-        isReelsSpinning[1] = false;
-      }
+        if (time == 20) {
+          startIndex++;
+          choosedReels[1] =
+              reelItems[Random.secure().nextInt(reelItems.length)];
+          isReelsSpinning[1] = false;
+        }
 
-      if (time == 30) {
-        choosedReels[2] = reelItems[Random.secure().nextInt(reelItems.length)];
-        isReelsSpinning[2] = false;
+        if (time == 30) {
+          choosedReels[2] =
+              reelItems[Random.secure().nextInt(reelItems.length)];
+          isReelsSpinning[2] = false;
 
-        timer.cancel();
-        isSpinning = false;
+          timer.cancel();
+          isSpinning = false;
 
-        coefficientsIndexWinner = getWinnerCoefficient();
+          coefficientsIndexWinner = getWinnerCoefficient();
+        }
+      } else {
+        for (int i = 0; i < choosedReels.length; i++) {
+          choosedReels[i] =
+              reelItems[Random.secure().nextInt(reelItems.length)];
+        }
+
+        if (time == 5) {
+          for (int i = 0; i < choosedReels.length; i++) {
+            choosedReels[i] =
+                reelItems[Random.secure().nextInt(reelItems.length)];
+            isReelsSpinning[i] = false;
+          }
+
+          timer.cancel();
+          isSpinning = false;
+
+          coefficientsIndexWinner = getWinnerCoefficient();
+        }
       }
 
       if (!timer.isActive) {
@@ -264,13 +290,12 @@ class _SlotsState extends State<Slots> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (isSpinning) return false;
-
-        if (isAutoBets) return false;
-
-        return true;
+    return PopScope(
+      canPop: !isSpinning && !isAutoBets,
+      onPopInvoked: (isCan) {
+        if (isCan) {
+          context.beamBack();
+        }
       },
       child: GestureDetector(
         onTap: () {
@@ -285,68 +310,29 @@ class _SlotsState extends State<Slots> {
           children: [
             Scaffold(
               resizeToAvoidBottomInset: false,
-              bottomNavigationBar: Container(
-                height: 80.0,
-                decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(25.0),
-                        topRight: Radius.circular(25.0)),
-                    color: Theme.of(context).cardColor,
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
-                          blurRadius: 10.0)
-                    ]),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      //height: 80.0,
-                      margin: const EdgeInsets.only(
-                          left: 15.0, right: 15.0, top: 15.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          if (isAutoBets || isSpinning) return;
+              bottomNavigationBar: bottomGameNavigation(
+                  context: context,
+                  betFormatter: Slots.betFormatter,
+                  betController: Slots.betController,
+                  isAutoBets: isAutoBets,
+                  isPlaying: isSpinning,
+                  switchValue: isFast,
+                  isCanSwitch: true,
+                  onSwitched: (value) {
+                    setState(() {
+                      isFast = !isFast;
+                    });
 
-                          makeBet(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 5,
-                          backgroundColor: isAutoBets || isSpinning
-                              ? Colors.redAccent
-                              : Colors.green,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(25.0),
-                                topRight: Radius.circular(25.0)),
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(18.0),
-                          child: isAutoBets || isSpinning
-                              ? FaIcon(
-                                  FontAwesomeIcons.lock,
-                                  color: Theme.of(context)
-                                      .appBarTheme
-                                      .iconTheme!
-                                      .color,
-                                  size: 28.0,
-                                )
-                              : AutoSizeText(
-                                  'СТАВКА',
-                                  maxLines: 1,
-                                  style: GoogleFonts.roboto(
-                                      color: Colors.white,
-                                      fontSize: 20.0,
-                                      fontWeight: FontWeight.w900),
-                                ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                    if (isFast) {
+                      alertDialogSuccess(
+                        context: context,
+                        title: 'Успех',
+                        confirmBtnText: 'Окей',
+                        text: 'Быстрый режим включен!',
+                      );
+                    }
+                  },
+                  onPressed: () => makeBet(context)),
               appBar: AppBar(
                 toolbarHeight: 76.0,
                 elevation: 0,
@@ -430,19 +416,7 @@ class _SlotsState extends State<Slots> {
               body: Column(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(
-                        left: 15.0, right: 15.0, top: 15.0),
-                    child: customTextField(
-                        currencyTextInputFormatter: Slots.betFormatter,
-                        textInputFormatter: Slots.betFormatter,
-                        keyboardType: TextInputType.number,
-                        isBetInput: true,
-                        controller: Slots.betController,
-                        context: context,
-                        hintText: 'Ставка...'),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15.0, top: 15.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       children: [
                         Row(
@@ -455,7 +429,7 @@ class _SlotsState extends State<Slots> {
                                   coefficient: reelWinners.values.toList()[i]),
                           ],
                         ),
-                        const SizedBox(height: 15.0),
+                        const SizedBox(height: 10.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -469,43 +443,40 @@ class _SlotsState extends State<Slots> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 10.0),
                   Expanded(
                       child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         for (int i = 0; i < 3; i++)
                           Expanded(
                             child: Container(
-                              //width: 120.0,
                               height: 150.0,
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 5.0),
                               decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .cardColor
-                                      .withOpacity(0.4),
+                                  color:
+                                      Colors.lightBlueAccent.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(15.0),
                                   border: Border.all(
-                                      color: Theme.of(context).cardColor,
-                                      width: 5.0)),
+                                      color: Colors.lightBlueAccent
+                                          .withOpacity(0.7),
+                                      width: 4.0)),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 15.0),
                                 child: isReelsSpinning[i] == false
                                     ? Image.asset(
                                         'assets/slots/${choosedReels[i]}.png',
-                                        color: choosedReels[i] == 'question'
-                                            ? Theme.of(context).cardColor
-                                            : null,
                                       )
                                     : AnimatedSwitcher(
                                         duration:
                                             const Duration(milliseconds: 100),
                                         child: ListView.separated(
-                                          key:
-                                              ValueKey<String>(choosedReels[i]),
+                                          key: ValueKey<String>(
+                                              '${choosedReels[i]}${Random().nextInt(10000)}'),
                                           itemCount: 100,
                                           physics:
                                               const NeverScrollableScrollPhysics(),
@@ -523,8 +494,9 @@ class _SlotsState extends State<Slots> {
                       ],
                     ),
                   )),
+                  const SizedBox(height: 10.0),
                   Padding(
-                    padding: const EdgeInsets.only(left: 15.0, bottom: 15.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: Column(
                       children: [
                         Row(
@@ -537,7 +509,7 @@ class _SlotsState extends State<Slots> {
                                   coefficient: reelWinners.values.toList()[i]),
                           ],
                         ),
-                        const SizedBox(height: 15.0),
+                        const SizedBox(height: 10.0),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -551,6 +523,7 @@ class _SlotsState extends State<Slots> {
                       ],
                     ),
                   ),
+                  const SizedBox(height: 15.0),
                 ],
               ),
             ),
@@ -570,12 +543,16 @@ class _SlotsState extends State<Slots> {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10.0),
-        margin: const EdgeInsets.only(right: 15.0),
+        margin: const EdgeInsets.symmetric(horizontal: 5.0),
         decoration: BoxDecoration(
-            color: Theme.of(context).cardColor.withOpacity(0.2),
+            color: isSelected
+                ? const Color.fromARGB(50, 76, 175, 80)
+                : Theme.of(context).cardColor.withOpacity(0.5),
             borderRadius: BorderRadius.circular(15.0),
             border: Border.all(
-                color: isSelected ? Colors.green : Theme.of(context).cardColor,
+                color: isSelected
+                    ? Colors.green
+                    : const Color.fromARGB(200, 83, 91, 121),
                 width: 3.0)),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -589,8 +566,8 @@ class _SlotsState extends State<Slots> {
                     color: icons[i] == '?'
                         ? Theme.of(context).buttonTheme.colorScheme!.background
                         : null,
-                    width: 20.0,
-                    height: 20.0,
+                    width: 12.0,
+                    height: 12.0,
                   ),
               ],
             ),
@@ -599,7 +576,7 @@ class _SlotsState extends State<Slots> {
                 maxLines: 1,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    fontSize: 12.0,
+                    fontSize: 5.0,
                     color: Theme.of(context)
                         .textTheme
                         .bodySmall!

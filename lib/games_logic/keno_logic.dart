@@ -14,6 +14,8 @@ enum KenoRiskStatus { low, medium, high }
 
 class KenoLogic extends ChangeNotifier {
   bool isGameOn = false;
+  bool isShowInputBet = false;
+
   KenoRiskStatus riskStatus = KenoRiskStatus.low;
 
   List<int> randomNumbersList = [];
@@ -30,6 +32,11 @@ class KenoLogic extends ChangeNotifier {
   double profit = 0.0;
   double coefficient = 0.0;
   double bet = 0.0;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void getRandomNumbers() {
     if (isGameOn) {

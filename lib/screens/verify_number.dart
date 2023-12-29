@@ -1,9 +1,10 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
-import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:pinput/pinput.dart';
 
@@ -57,9 +58,8 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
 
   @override
   Widget build(BuildContext context) {
-    Color focusedBorderColor =
-        Theme.of(context).buttonTheme.colorScheme!.background;
-    const fillColor = Color.fromRGBO(243, 246, 249, 0);
+    Color focusedBorderColor = Colors.white70;
+    const fillColor = Color.fromRGBO(24, 133, 241, 0);
 
     final defaultPinTheme = PinTheme(
       width: 60,
@@ -70,43 +70,74 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(19),
-        border: Border.all(width: 2.0, color: Theme.of(context).cardColor),
+        border: Border.all(
+            width: 2.0,
+            color: Theme.of(context).buttonTheme.colorScheme!.background),
       ),
     );
 
     return isLoading
         ? loading(context: context)
         : Scaffold(
-            bottomNavigationBar: Padding(
-              padding: const EdgeInsets.only(
-                left: 15.0,
-                right: 15.0,
-                bottom: 15.0,
-              ),
-              child: buttonModel(
-                  context: context,
-                  buttonName: 'Подтвердить',
-                  color: Colors.blueAccent,
-                  onPressed: () async {
-                    if (pinController.text.length < 6) {
-                      return;
-                    }
+            bottomNavigationBar: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 60.0,
+                  child: Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withOpacity(0.2), blurRadius: 5.0)
+                    ], color: Theme.of(context).cardColor),
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (pinController.text.length < 6) {
+                          return;
+                        }
 
-                    focusNode.unfocus();
+                        focusNode.unfocus();
 
-                    setState(() {
-                      isLoading = true;
-                    });
+                        setState(() {
+                          isLoading = true;
+                        });
 
-                    await SupabaseController().verifyEmail(
-                        email: widget.email,
-                        context: context,
-                        code: pinController.text);
+                        await SupabaseController().verifyEmail(
+                          email: widget.email,
+                          context: context,
+                          verifyCode: pinController.text,
+                        );
 
-                    setState(() {
-                      isLoading = false;
-                    });
-                  }),
+                        setState(() {
+                          isLoading = false;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: Colors.blueAccent,
+                        shape: const RoundedRectangleBorder(),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AutoSizeText(
+                              'Подтвердить',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 25.0,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
             body: Center(
               child: Form(
@@ -138,49 +169,54 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                     ),
                     Column(
                       children: [
-                        Pinput(
-                          length: 6,
-                          controller: pinController,
-                          focusNode: focusNode,
-                          androidSmsAutofillMethod:
-                              AndroidSmsAutofillMethod.smsUserConsentApi,
-                          listenForMultipleSmsOnAndroid: true,
-                          defaultPinTheme: defaultPinTheme,
-                          separatorBuilder: (index) => const SizedBox(width: 8),
-                          hapticFeedbackType: HapticFeedbackType.lightImpact,
-                          onCompleted: (pin) {
-                            debugPrint('onCompleted: $pin');
-                          },
-                          onChanged: (value) {
-                            debugPrint('onChanged: $value');
-                          },
-                          cursor: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 9),
-                                width: 22,
-                                height: 1,
-                                color: focusedBorderColor,
+                        SizedBox(
+                          width: 330.0,
+                          height: 55.0,
+                          child: Pinput(
+                            length: 6,
+                            controller: pinController,
+                            focusNode: focusNode,
+                            androidSmsAutofillMethod:
+                                AndroidSmsAutofillMethod.smsUserConsentApi,
+                            listenForMultipleSmsOnAndroid: true,
+                            defaultPinTheme: defaultPinTheme,
+                            separatorBuilder: (index) =>
+                                const SizedBox(width: 8),
+                            hapticFeedbackType: HapticFeedbackType.lightImpact,
+                            onCompleted: (pin) {
+                              debugPrint('onCompleted: $pin');
+                            },
+                            onChanged: (value) {
+                              debugPrint('onChanged: $value');
+                            },
+                            cursor: Column(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(bottom: 9),
+                                  width: 22,
+                                  height: 1,
+                                  color: focusedBorderColor,
+                                ),
+                              ],
+                            ),
+                            focusedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: focusedBorderColor, width: 2.0),
                               ),
-                            ],
-                          ),
-                          focusedPinTheme: defaultPinTheme.copyWith(
-                            decoration: defaultPinTheme.decoration!.copyWith(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                  color: focusedBorderColor, width: 2.0),
                             ),
-                          ),
-                          submittedPinTheme: defaultPinTheme.copyWith(
-                            decoration: defaultPinTheme.decoration!.copyWith(
-                              color: fillColor,
-                              borderRadius: BorderRadius.circular(19),
-                              border: Border.all(color: focusedBorderColor),
+                            submittedPinTheme: defaultPinTheme.copyWith(
+                              decoration: defaultPinTheme.decoration!.copyWith(
+                                color: fillColor,
+                                borderRadius: BorderRadius.circular(19),
+                                border: Border.all(color: focusedBorderColor),
+                              ),
                             ),
-                          ),
-                          errorPinTheme: defaultPinTheme.copyBorderWith(
-                            border: Border.all(color: Colors.redAccent),
+                            errorPinTheme: defaultPinTheme.copyBorderWith(
+                              border: Border.all(color: Colors.redAccent),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 15.0),

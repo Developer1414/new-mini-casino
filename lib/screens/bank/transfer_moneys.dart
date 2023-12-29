@@ -9,8 +9,8 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -70,6 +70,70 @@ class TransferMoneys extends StatelessWidget {
               ],
             ),
           ),
+          bottomNavigationBar: Consumer<TransferMoneysManager>(
+            builder: (context, transferManager, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () => transferManager.transfer(
+                                  amount: double.parse(betFormatter
+                                      .getUnformattedValue()
+                                      .toString()),
+                                  context: context,
+                                  name: usernameController.text.trim()),
+                              style: ElevatedButton.styleFrom(
+                                elevation: 5,
+                                backgroundColor: Colors.green,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(25.0),
+                                      topRight: Radius.circular(25.0)),
+                                ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 15.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    FaIcon(
+                                      FontAwesomeIcons.moneyBillTransfer,
+                                      color: Theme.of(context)
+                                          .appBarTheme
+                                          .iconTheme!
+                                          .color,
+                                      size: Theme.of(context)
+                                          .appBarTheme
+                                          .iconTheme!
+                                          .size,
+                                    ),
+                                    const SizedBox(width: 10.0),
+                                    AutoSizeText(
+                                      'Перевести',
+                                      maxLines: 1,
+                                      style: GoogleFonts.roboto(
+                                          color: Colors.white,
+                                          fontSize: 22.0,
+                                          fontWeight: FontWeight.w800),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      )),
+                ],
+              );
+            },
+          ),
           body: Consumer<TransferMoneysManager>(
             builder: (context, loanMoneysManager, child) {
               return loanMoneysManager.isLoading
@@ -83,27 +147,6 @@ class TransferMoneys extends StatelessWidget {
                               padding: const EdgeInsets.all(35.0),
                               child: Column(
                                 children: [
-                                  Column(
-                                    children: [
-                                      const FaIcon(
-                                        FontAwesomeIcons.moneyBillTransfer,
-                                        color: Colors.white,
-                                        size: 80.0,
-                                      ),
-                                      const SizedBox(height: 10.0),
-                                      AutoSizeText(
-                                        'Перевод',
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 30.0,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 30.0),
                                   Column(
                                     children: [
                                       TextField(
@@ -133,7 +176,7 @@ class TransferMoneys extends StatelessWidget {
                                             .displaySmall!
                                             .copyWith(fontSize: 20.0),
                                       ),
-                                      const SizedBox(height: 20.0),
+                                      const SizedBox(height: 15.0),
                                       TextField(
                                         textAlign: TextAlign.center,
                                         textInputAction: TextInputAction.done,
@@ -179,7 +222,7 @@ class TransferMoneys extends StatelessWidget {
                                           ? Container()
                                           : Padding(
                                               padding: const EdgeInsets.only(
-                                                  top: 20.0),
+                                                  top: 15.0),
                                               child: Row(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment
@@ -203,51 +246,17 @@ class TransferMoneys extends StatelessWidget {
                                                 ],
                                               ),
                                             ),
-                                      const SizedBox(height: 20.0),
-                                      buttonModel(
-                                          context: context,
-                                          buttonName: 'Перевести',
-                                          onPressed: () =>
-                                              loanMoneysManager.transfer(
-                                                  amount: double.parse(
-                                                      betFormatter
-                                                          .getUnformattedValue()
-                                                          .toString()),
-                                                  context: context,
-                                                  name: usernameController.text
-                                                      .trim()),
-                                          color: Colors.blueAccent),
-                                      const SizedBox(height: 20.0),
-                                      SupabaseController.isPremium
-                                          ? Container()
-                                          : Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 15.0),
-                                              child: AutoSizeText(
-                                                'Комиссия 60%.\nP.S. c Premium комиссии нет.',
-                                                textAlign: TextAlign.center,
-                                                style: GoogleFonts.roboto(
-                                                    color: Colors.white
-                                                        .withOpacity(0.5),
-                                                    fontSize: 12.0,
-                                                    fontWeight:
-                                                        FontWeight.w600),
-                                              ),
-                                            ),
-                                      AutoSizeText(
-                                        'Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                            color:
-                                                Colors.white.withOpacity(0.5),
-                                            fontSize: 12.0,
-                                            fontWeight: FontWeight.w600),
+                                      const SizedBox(height: 15.0),
+                                      smallHelperPanel(
+                                        context: context,
+                                        text:
+                                            '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
                                       ),
-                                      const SizedBox(height: 20.0),
+                                      const SizedBox(height: 15.0),
                                       Container(
                                         decoration: BoxDecoration(
                                             color:
-                                                Colors.orange.withOpacity(0.2),
+                                                Colors.orange.withOpacity(0.3),
                                             borderRadius:
                                                 BorderRadius.circular(15.0),
                                             border: Border.all(

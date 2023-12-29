@@ -9,12 +9,10 @@ Widget importantUserProfileInfo(
     width: double.infinity,
     padding: const EdgeInsets.symmetric(vertical: 15.0),
     decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(15.0),
-      color: Theme.of(context).cardColor,
-      border: Border.all(
-          color: Theme.of(context).buttonTheme.colorScheme!.background,
-          width: 3.0),
-    ),
+        color: Colors.lightBlueAccent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(15.0),
+        border: Border.all(
+            color: Colors.lightBlueAccent.withOpacity(0.7), width: 3.0)),
     child: Column(
       children: [
         AutoSizeText(

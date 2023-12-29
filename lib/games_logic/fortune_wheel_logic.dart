@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 class FortuneWheelLogic extends ChangeNotifier {
   bool isGameOn = false;
+  bool isShowInputBet = false;
 
   double coefficient = 0.0;
   double bet = 0.0;
@@ -20,6 +21,11 @@ class FortuneWheelLogic extends ChangeNotifier {
   List<Color> lastColors = [];
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void selectNumber({required int number}) {
     selectedNumber = number;

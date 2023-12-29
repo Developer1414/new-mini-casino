@@ -75,6 +75,7 @@ import 'package:new_mini_casino/themes/dark_theme.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:new_mini_casino/themes/light_theme.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
+import 'package:new_mini_casino/widgets/background_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'package:flutter/material.dart';
@@ -171,40 +172,184 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       routes: {
         '/': (context, state, data) => const Home(),
         '/games': (context, state, data) => const AllGames(),
-        '/notifications': (context, state, data) => const Notifications(),
-        '/transfer-moneys': (context, state, data) => const TransferMoneys(),
-        '/tax': (context, state, data) => const Tax(),
-        '/loan-moneys': (context, state, data) => const LoanMoneys(),
+        '/notifications': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Notifications(),
+              ],
+            ),
+        '/transfer-moneys': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const TransferMoneys(),
+              ],
+            ),
+        '/tax': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Tax(),
+              ],
+            ),
+        '/loan-moneys': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const LoanMoneys(),
+              ],
+            ),
         '/no-internet': (context, state, data) => const NoInternetConnection(),
-        '/premium': (context, state, data) => const PremiumInfo(),
-        '/my-promocodes': (context, state, data) => const MyPromocodes(),
-        '/own-promocode': (context, state, data) => const OwnPromocode(),
-        '/welcome': (context, state, data) => const Welcome(),
-        '/daily-bonus': (context, state, data) => const DailyBonus(),
-        '/login': (context, state, data) => const Login(),
-        '/bank': (context, state, data) => const Bank(),
+        '/premium': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const PremiumInfo(),
+              ],
+            ),
+        '/my-promocodes': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const MyPromocodes(),
+              ],
+            ),
+        '/own-promocode': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const OwnPromocode(),
+              ],
+            ),
+        '/welcome': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Welcome(),
+              ],
+            ),
+        '/daily-bonus': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const DailyBonus(),
+              ],
+            ),
+        '/login': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Login(),
+              ],
+            ),
+        '/bank': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Bank(),
+              ],
+            ),
         '/store-items': (context, state, data) => const StoreItems(),
-        '/profile': (context, state, data) => const Profile(),
+        '/profile': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Profile(),
+              ],
+            ),
         '/raffle-info': (context, state, data) => const RaffleInfo(),
-        '/mines': (context, state, data) => const Mines(),
-        '/dice': (context, state, data) => const Dice(),
-        '/blackjack': (context, state, data) => const Blackjack(),
-        '/promocode': (context, state, data) => const Promocode(),
-        '/crash': (context, state, data) => const Crash(),
-        '/stairs': (context, state, data) => const Stairs(),
-        '/jackpot': (context, state, data) => const Jackpot(),
-        '/plinko': (context, state, data) => const Plinko(),
-        '/keno': (context, state, data) => const Keno(),
-        '/slots': (context, state, data) => const Slots(),
-        '/coinflip': (context, state, data) => const Coinflip(),
-        '/purchasing-game-currency': (context, state, data) =>
-            const PurchasingGameCurrency(),
+        '/mines': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Mines(),
+              ],
+            ),
+        '/dice': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Dice(),
+              ],
+            ),
+        '/blackjack': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Blackjack(),
+              ],
+            ),
+        '/promocode': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Promocode(),
+              ],
+            ),
+        '/crash': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Crash(),
+              ],
+            ),
+        '/stairs': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Stairs(),
+              ],
+            ),
+        '/jackpot': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Jackpot(),
+              ],
+            ),
+        '/plinko': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Plinko(),
+              ],
+            ),
+        '/keno': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Keno(),
+              ],
+            ),
+        '/slots': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Slots(),
+              ],
+            ),
+        '/coinflip': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Coinflip(),
+              ],
+            ),
+        '/purchasing-game-currency': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const PurchasingGameCurrency(),
+              ],
+            ),
         '/product-review': (context, state, data) => const StoreProductReview(),
-        '/money-storage': (context, state, data) => const MoneyStorage(),
-        '/fortuneWheel': (context, state, data) => const FortuneWheel(),
-        '/privacy-policy': (context, state, data) => const PrivacyPolicy(),
-        '/user-agreement': (context, state, data) => const UserAgreement(),
-        '/leader-board': (context, state, data) => const LeaderBoard(),
+        '/money-storage': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const MoneyStorage(),
+              ],
+            ),
+        '/fortuneWheel': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const FortuneWheel(),
+              ],
+            ),
+        '/privacy-policy': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const PrivacyPolicy(),
+              ],
+            ),
+        '/user-agreement': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const UserAgreement(),
+              ],
+            ),
+        '/leader-board': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const LeaderBoard(),
+              ],
+            ),
         '/other-user-profile/:userName/:userid/:pinId': (context, state, data) {
           final userName = state.pathParameters['userName']!;
           final userid = state.pathParameters['userid']!;
@@ -233,13 +378,23 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         '/game-statistic/:game': (context, state, data) {
           final game = state.pathParameters['game']!;
           return BeamPage(
-            child: GameStatistic(game: game),
+            child: Stack(
+              children: [
+                backgroundModel(),
+                GameStatistic(game: game),
+              ],
+            ),
           );
         },
         '/verify-email/:email': (context, state, data) {
           final email = state.pathParameters['email']!;
           return BeamPage(
-            child: VerifyPhoneNumber(email: email),
+            child: Stack(
+              children: [
+                backgroundModel(),
+                VerifyPhoneNumber(email: email),
+              ],
+            ),
           );
         },
       },

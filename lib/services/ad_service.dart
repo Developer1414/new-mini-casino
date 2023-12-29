@@ -19,8 +19,10 @@ class AdService {
       {required BuildContext context,
       Function? func,
       bool isBet = true}) async {
-    if (SupabaseController.isPremium) {
-      return;
+    if (isBet) {
+      if (SupabaseController.isPremium) {
+        return;
+      }
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();

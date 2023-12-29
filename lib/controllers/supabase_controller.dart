@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:beamer/beamer.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/friend_code_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 import 'package:provider/src/provider.dart' as provider;
@@ -30,6 +31,7 @@ class SupabaseController extends ChangeNotifier {
   static DateTime expiredSubscriptionDate = DateTime.now();
 
   static String userName = '';
+  static String friendCode = '';
 
   String loadingText = 'Пожалуйста, подождите...';
 
@@ -58,10 +60,36 @@ class SupabaseController extends ChangeNotifier {
   Future signUp(
       {required String email,
       required String password,
+      String friendCode = '',
       required String name}) async {
     String? deviceId = await PlatformDeviceId.getDeviceId;
 
+    bool isFriendCodeFinded = false;
+
     loading(true);
+
+    if (friendCode.isNotEmpty) {
+      await FriendCodeController().findFriendCode(friendCode).then((isFinded) {
+        isFriendCodeFinded = isFinded;
+
+        if (!isFinded) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text: 'Код друга не найден!');
+
+          loading(false);
+          return;
+        } else {
+          SupabaseController.friendCode = friendCode;
+        }
+      });
+    }
+
+    if (friendCode.isNotEmpty && !isFriendCodeFinded) {
+      return;
+    }
 
     await SupabaseController.supabase!
         .from('users')
@@ -205,12 +233,12 @@ class SupabaseController extends ChangeNotifier {
 
   Future verifyEmail(
       {required String email,
-      required String code,
+      required String verifyCode,
       required BuildContext context}) async {
     try {
       await SupabaseController.supabase?.auth.verifyOTP(
         type: OtpType.email,
-        token: code,
+        token: verifyCode,
         email: email,
       );
 
@@ -254,15 +282,44 @@ class SupabaseController extends ChangeNotifier {
 
       DateTime ntpDate = await NTP.now();
 
+      double startBalance = SupabaseController.friendCode.isEmpty
+          ? 500
+          : Random().nextInt(10000).toDouble() + 10000;
+
       await SupabaseController.supabase!.from('users').insert({
         'name': name,
         'deviceId': deviceId,
-        'balance': 500,
+        'balance': startBalance,
         'totalGames': 0,
         'level': 1.0,
         'premium': ntpDate.add(const Duration(days: 8)).toIso8601String(),
         'moneyStorage': 0.0,
+        'promocodes': SupabaseController.friendCode.isEmpty
+            ? {}
+            : {friendCode: startBalance}
       });
+
+      if (SupabaseController.friendCode.isNotEmpty) {
+        await SupabaseController.supabase!
+            .from('users')
+            .select('*')
+            .eq('uid', friendCode)
+            .then((value) async {
+          Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+          String friendName = map['name'];
+
+          DateTime dateTimeNow = await NTP.now();
+
+          await SupabaseController.supabase!.from('notifications').insert({
+            'amount': Random().nextInt(50000).toDouble() + 50000,
+            'to': friendName,
+            'from': name,
+            'action': 'friend_code_moneys',
+            'date': dateTimeNow.toIso8601String(),
+          });
+        });
+      }
 
       if (context.mounted) {
         alertDialogSuccess(

@@ -200,7 +200,8 @@ Widget customTextField(
                 .color!
                 .withOpacity(0.5)),
         enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        fillColor: Colors.lightBlueAccent.withOpacity(0.1),
         focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
-    style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 20.0),
+    style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 18.0),
   );
 }

@@ -17,12 +17,18 @@ class MinesLogic extends ChangeNotifier {
   int countMines = 1;
 
   bool isGameOn = false;
+  bool isShowInputBet = false;
 
   late BuildContext context;
 
   List<int> minesIndex = [];
   List<int> brilliantsIndex = [];
   List<int> openedIndexes = [];
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void changeSliderValue(double value) {
     sliderValue = value;

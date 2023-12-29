@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
 
 class AutoBetsController extends ChangeNotifier {
@@ -15,13 +14,6 @@ class AutoBetsController extends ChangeNotifier {
 
   bool exitGame(BuildContext context) {
     if (isAutoBetsEnabled) {
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text: 'Нельзя выйти из игры во время автоставок!',
-      );
-
       return false;
     } else {
       return true;

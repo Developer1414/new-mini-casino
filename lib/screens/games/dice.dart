@@ -9,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -75,10 +74,8 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
       });
     }
 
-    return WillPopScope(
-      onWillPop: () async {
-        return !context.read<DiceLogic>().isGameOn;
-      },
+    return PopScope(
+      canPop: !context.read<DiceLogic>().isGameOn,
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -89,212 +86,239 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
         },
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Container(
-            height: 312.0,
-            decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(25.0),
-                    topRight: Radius.circular(25.0)),
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                      color: Colors.black.withOpacity(0.3), blurRadius: 10.0)
-                ]),
-            child: Consumer<DiceLogic>(
-              builder: (ctx, diceLogic, _) {
-                return Padding(
+          bottomNavigationBar: Consumer<DiceLogic>(
+            builder: (context, diceLogic, child) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
                     padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Padding(
-                          padding:
-                              const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              AutoSizeText(
-                                  'Прибыль (${diceLogic.coefficient}x):',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontSize: 20.0)),
-                              AutoSizeText(
-                                  diceLogic.profit < 1000000
-                                      ? NumberFormat.simpleCurrency(
-                                              locale: ui.Platform.localeName)
-                                          .format(diceLogic.profit)
-                                      : NumberFormat.compactSimpleCurrency(
-                                              locale: ui.Platform.localeName)
-                                          .format(diceLogic.profit),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(fontSize: 20.0)),
-                            ],
-                          ),
-                        ),
-                        Column(
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: itemButtons(
-                                      context: context,
-                                      isSelected: diceLogic.numberFromToType ==
-                                          NumberFromToButtonType.oneToThree,
-                                      diceLogic: diceLogic,
-                                      coefficient: 2.0,
-                                      text: '1 - 3',
-                                      onClick: () {
-                                        if (!diceLogic.isGameOn) {
-                                          if (diceLogic.numberFromToType ==
-                                              NumberFromToButtonType
-                                                  .oneToThree) {
-                                            diceLogic.unSelectNumbersFromTo();
-                                          } else {
-                                            diceLogic.selectNumbersFromTo(
-                                                NumberFromToButtonType
-                                                    .oneToThree);
-                                          }
-                                        }
-                                      }),
-                                ),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: itemButtons(
-                                      context: context,
-                                      isSelected: diceLogic.numberFromToType ==
-                                          NumberFromToButtonType.fourToSix,
-                                      diceLogic: diceLogic,
-                                      coefficient: 2.0,
-                                      text: '4 - 6',
-                                      onClick: () {
-                                        if (!diceLogic.isGameOn) {
-                                          if (diceLogic.numberFromToType ==
-                                              NumberFromToButtonType
-                                                  .fourToSix) {
-                                            diceLogic.unSelectNumbersFromTo();
-                                          } else {
-                                            diceLogic.selectNumbersFromTo(
-                                                NumberFromToButtonType
-                                                    .fourToSix);
-                                          }
-                                        }
-                                      }),
-                                ),
-                              ],
+                            AutoSizeText('Прибыль (${diceLogic.coefficient}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                diceLogic.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(diceLogic.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(diceLogic.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15.0),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: itemButtons(
+                                  context: context,
+                                  isSelected: diceLogic.numberFromToType ==
+                                      NumberFromToButtonType.oneToThree,
+                                  diceLogic: diceLogic,
+                                  coefficient: 2.0,
+                                  text: '1 - 3',
+                                  onClick: () {
+                                    if (!diceLogic.isGameOn) {
+                                      if (diceLogic.numberFromToType ==
+                                          NumberFromToButtonType.oneToThree) {
+                                        diceLogic.unSelectNumbersFromTo();
+                                      } else {
+                                        diceLogic.selectNumbersFromTo(
+                                            NumberFromToButtonType.oneToThree);
+                                      }
+                                    }
+                                  }),
                             ),
-                            const SizedBox(height: 15.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                for (int index = 0; index < 6; index++)
-                                  itemNumber(
-                                      number: index + 1, diceLogic: diceLogic)
-                              ],
-                            ),
-                            const SizedBox(height: 15.0),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: itemButtons(
-                                      context: context,
-                                      isSelected: diceLogic.evenOrOddType ==
-                                          EvenOrOddButtonType.even,
-                                      diceLogic: diceLogic,
-                                      coefficient: 2.0,
-                                      text: 'Even',
-                                      onClick: () {
-                                        if (!diceLogic.isGameOn) {
-                                          if (diceLogic.evenOrOddType ==
-                                              EvenOrOddButtonType.even) {
-                                            diceLogic.unSelectEvenOrOdd();
-                                          } else {
-                                            diceLogic.selectOddOrEvenNumbers(
-                                                EvenOrOddButtonType.even);
-                                          }
-                                        }
-                                      }),
-                                ),
-                                const SizedBox(width: 15.0),
-                                Expanded(
-                                  child: itemButtons(
-                                      context: context,
-                                      isSelected: diceLogic.evenOrOddType ==
-                                          EvenOrOddButtonType.odd,
-                                      diceLogic: diceLogic,
-                                      coefficient: 2.0,
-                                      text: 'Odd',
-                                      onClick: () {
-                                        if (!diceLogic.isGameOn) {
-                                          if (diceLogic.evenOrOddType ==
-                                              EvenOrOddButtonType.odd) {
-                                            diceLogic.unSelectEvenOrOdd();
-                                          } else {
-                                            diceLogic.selectOddOrEvenNumbers(
-                                                EvenOrOddButtonType.odd);
-                                          }
-                                        }
-                                      }),
-                                ),
-                              ],
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: itemButtons(
+                                  context: context,
+                                  isSelected: diceLogic.numberFromToType ==
+                                      NumberFromToButtonType.fourToSix,
+                                  diceLogic: diceLogic,
+                                  coefficient: 2.0,
+                                  text: '4 - 6',
+                                  onClick: () {
+                                    if (!diceLogic.isGameOn) {
+                                      if (diceLogic.numberFromToType ==
+                                          NumberFromToButtonType.fourToSix) {
+                                        diceLogic.unSelectNumbersFromTo();
+                                      } else {
+                                        diceLogic.selectNumbersFromTo(
+                                            NumberFromToButtonType.fourToSix);
+                                      }
+                                    }
+                                  }),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 15.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Consumer<AutoBetsController>(
-                            builder: (context, value, child) => ElevatedButton(
-                              onPressed: value.isAutoBetsEnabled
-                                  ? null
-                                  : diceLogic.isGameOn || !Dice.isFetchCompleted
-                                      ? null
-                                      : () => makeBet(diceLogic),
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: value.isAutoBetsEnabled
-                                    ? Colors.redAccent
-                                    : Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            for (int index = 0; index < 6; index++)
+                              itemNumber(
+                                  number: index + 1, diceLogic: diceLogic)
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: itemButtons(
+                                  context: context,
+                                  isSelected: diceLogic.evenOrOddType ==
+                                      EvenOrOddButtonType.even,
+                                  diceLogic: diceLogic,
+                                  coefficient: 2.0,
+                                  text: 'Even',
+                                  onClick: () {
+                                    if (!diceLogic.isGameOn) {
+                                      if (diceLogic.evenOrOddType ==
+                                          EvenOrOddButtonType.even) {
+                                        diceLogic.unSelectEvenOrOdd();
+                                      } else {
+                                        diceLogic.selectOddOrEvenNumbers(
+                                            EvenOrOddButtonType.even);
+                                      }
+                                    }
+                                  }),
+                            ),
+                            const SizedBox(width: 10.0),
+                            Expanded(
+                              child: itemButtons(
+                                  context: context,
+                                  isSelected: diceLogic.evenOrOddType ==
+                                      EvenOrOddButtonType.odd,
+                                  diceLogic: diceLogic,
+                                  coefficient: 2.0,
+                                  text: 'Odd',
+                                  onClick: () {
+                                    if (!diceLogic.isGameOn) {
+                                      if (diceLogic.evenOrOddType ==
+                                          EvenOrOddButtonType.odd) {
+                                        diceLogic.unSelectEvenOrOdd();
+                                      } else {
+                                        diceLogic.selectOddOrEvenNumbers(
+                                            EvenOrOddButtonType.odd);
+                                      }
+                                    }
+                                  }),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 15.0),
+                  Row(
+                    children: [
+                      diceLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () => diceLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  diceLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
                                 ),
                               ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(18.0),
-                                child: value.isAutoBetsEnabled
-                                    ? FaIcon(
-                                        FontAwesomeIcons.lock,
-                                        color: Theme.of(context)
-                                            .appBarTheme
-                                            .iconTheme!
-                                            .color,
-                                        size: 28.0,
-                                      )
-                                    : AutoSizeText(
-                                        'СТАВКА',
-                                        maxLines: 1,
-                                        style: GoogleFonts.roboto(
-                                            color: diceLogic.isGameOn ||
-                                                    !Dice.isFetchCompleted
-                                                ? Colors.white.withOpacity(0.4)
-                                                : Colors.white,
-                                            fontSize: 24.0,
-                                            fontWeight: FontWeight.w900),
-                                      ),
+                            ),
+                      Visibility(
+                        visible: diceLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: customTextField(
+                                currencyTextInputFormatter: Dice.betFormatter,
+                                textInputFormatter: Dice.betFormatter,
+                                keyboardType: TextInputType.number,
+                                isBetInput: true,
+                                controller: Dice.betController,
+                                context: context,
+                                hintText: 'Ставка...'),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !diceLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 5.0)
+                              ], color: Theme.of(context).cardColor),
+                              child: ElevatedButton(
+                                onPressed:
+                                    diceLogic.isGameOn || !Dice.isFetchCompleted
+                                        ? null
+                                        : () => makeBet(diceLogic),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: Colors.green,
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: AutoSizeText(
+                                  'СТАВКА',
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                      color: diceLogic.isGameOn ||
+                                              !Dice.isFetchCompleted
+                                          ? Colors.white.withOpacity(0.4)
+                                          : Colors.white,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w900),
+                                ),
                               ),
                             ),
                           ),
-                        )
-                      ],
-                    ));
-              },
-            ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              );
+            },
           ),
           appBar: AppBar(
             toolbarHeight: 76.0,
@@ -363,19 +387,6 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
           body: Consumer<DiceLogic>(builder: (ctx, diceLogic, _) {
             return Column(
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.only(left: 15.0, right: 15.0, top: 15.0),
-                  child: customTextField(
-                      currencyTextInputFormatter: Dice.betFormatter,
-                      textInputFormatter: Dice.betFormatter,
-                      context: context,
-                      keyboardType: TextInputType.number,
-                      readOnly: diceLogic.isGameOn,
-                      isBetInput: true,
-                      controller: Dice.betController,
-                      hintText: 'Ставка...'),
-                ),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(15.0),
@@ -409,13 +420,18 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
   }
 
   Widget itemNumber({int number = 1, required DiceLogic diceLogic}) {
-    return SizedBox(
-      width: 50.0,
+    return Container(
+      width: 45.0,
       height: 50.0,
+      margin: const EdgeInsets.symmetric(horizontal: 5.0),
       child: Material(
         borderRadius: BorderRadius.circular(15.0),
         clipBehavior: Clip.antiAlias,
-        color: Theme.of(context).buttonTheme.colorScheme!.background,
+        color: Theme.of(context)
+            .buttonTheme
+            .colorScheme!
+            .background
+            .withOpacity(diceLogic.selectedNumber == number ? 1.0 : 0.7),
         child: InkWell(
           onTap: () {
             if (!diceLogic.isGameOn) {
@@ -430,7 +446,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
                 border: diceLogic.selectedNumber == number
-                    ? Border.all(width: 2.5, color: Colors.blueAccent)
+                    ? Border.all(width: 2.5, color: Colors.lightBlueAccent)
                     : null),
             child: Center(
               child: Column(
@@ -438,19 +454,24 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                 children: [
                   AutoSizeText(
                     number.toString(),
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 18.0,
+                        color: Colors.white.withOpacity(
+                            diceLogic.selectedNumber == number ? 1.0 : 0.4)),
                   ),
                   AutoSizeText(
                     'x6.0',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontSize: 10.0,
+                        fontSize: 8.0,
                         color: Theme.of(context)
                             .textTheme
                             .bodySmall!
                             .color!
-                            .withOpacity(0.7)),
+                            .withOpacity(diceLogic.selectedNumber == number
+                                ? 0.7
+                                : 0.4)),
                   ),
                 ],
               ),
@@ -474,14 +495,18 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
       child: Material(
         borderRadius: BorderRadius.circular(15.0),
         clipBehavior: Clip.antiAlias,
-        color: Theme.of(context).buttonTheme.colorScheme!.background,
+        color: Theme.of(context)
+            .buttonTheme
+            .colorScheme!
+            .background
+            .withOpacity(isSelected ? 1.0 : 0.7),
         child: InkWell(
           onTap: () => onClick.call(),
           child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
                 border: isSelected
-                    ? Border.all(width: 2.5, color: Colors.blueAccent)
+                    ? Border.all(width: 2.5, color: Colors.lightBlueAccent)
                     : null),
             child: Center(
               child: Column(
@@ -489,22 +514,22 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                 children: [
                   AutoSizeText(
                     text,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium!
-                        .copyWith(fontSize: 23.0),
+                    style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        fontSize: 18.0,
+                        color:
+                            Colors.white.withOpacity(isSelected ? 1.0 : 0.4)),
                   ),
                   AutoSizeText(
                     'x$coefficient',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontSize: 10.0,
+                        fontSize: 8.0,
                         color: Theme.of(context)
                             .textTheme
                             .bodySmall!
                             .color!
-                            .withOpacity(0.7)),
+                            .withOpacity(isSelected ? 0.7 : 0.4)),
                   ),
                 ],
               ),

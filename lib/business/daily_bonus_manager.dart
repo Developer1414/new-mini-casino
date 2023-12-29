@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
@@ -13,21 +14,32 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DailyBonusManager extends ChangeNotifier {
   bool isLoading = false;
   bool isClickableButton = true;
-
-  List<Color> colors = [
-    Colors.redAccent,
-    Colors.purpleAccent,
-    Colors.lightGreen,
-    Colors.lightBlue,
-  ];
-
-  List<int> coefficients = [5, 10, 2, 3];
+  bool isActiveFortuneWheel = false;
+  bool isCanSpinAgain = false;
 
   int dailyCountBets = 0;
+
+  void spin(bool isActive) {
+    isActiveFortuneWheel = isActive;
+
+    if (!isActive) {
+      isCanSpinAgain = true;
+    }
+
+    notifyListeners();
+  }
 
   void showLoading(bool isActive) {
     isLoading = isActive;
     notifyListeners();
+  }
+
+  Future spinAgain(
+      {required BuildContext context,
+      required VoidCallback voidCallback}) async {
+    print('HGELO');
+    await AdService.showInterstitialAd(
+        context: context, func: voidCallback, isBet: false);
   }
 
   Future<bool> checkDailyBonus() async {
@@ -66,34 +78,28 @@ class DailyBonusManager extends ChangeNotifier {
   }
 
   Future getBonus(
-      {required BuildContext context, required int bonusIndex}) async {
+      {required BuildContext context, required double bonus}) async {
     if (!isClickableButton) return;
+
+    isActiveFortuneWheel = false;
 
     DateTime dateTimeNow = await NTP.now();
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    dailyCountBets = prefs.getInt('dailyCountBets') ?? 500;
-
-    coefficients.shuffle();
     notifyListeners();
 
     isClickableButton = false;
 
-    int resultBonus = dailyCountBets *
-        coefficients[bonusIndex] *
-        (SupabaseController.isPremium ? 2 : 1);
+    double resultBonus = bonus * (SupabaseController.isPremium ? 2 : 1);
 
     notifyListeners();
 
     await prefs.setString('dailyBonus', dateTimeNow.toString());
     await prefs.remove('dailyCountBets');
 
-    await Future.delayed(const Duration(seconds: 1));
-
     if (!context.mounted) return;
 
-    Provider.of<Balance>(context, listen: false)
-        .cashout(double.parse(resultBonus.toString()));
+    Provider.of<Balance>(context, listen: false).cashout(resultBonus);
 
     alertDialogSuccess(
         context: context,

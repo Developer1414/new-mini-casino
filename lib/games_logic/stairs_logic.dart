@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 class StairsLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isGameOver = false;
+  bool isShowInputBet = false;
 
   double currentCoefficient = 0.0;
   double sliderValue = 1;
@@ -27,6 +28,11 @@ class StairsLogic extends ChangeNotifier {
   int currentIndex = 9;
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void changeSliderValue(double value) {
     sliderValue = value;

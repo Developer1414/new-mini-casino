@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/menu.dart';
+import 'package:new_mini_casino/widgets/background_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -68,17 +69,22 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-        onWillPop: () async => false,
-        child: FutureBuilder(
-          future: redirect(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return loading(context: context);
-            }
+    return Stack(
+      children: [
+        backgroundModel(),
+        PopScope(
+            canPop: false,
+            child: FutureBuilder(
+              future: redirect(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return loading(context: context);
+                }
 
-            return snapshot.data!;
-          },
-        ));
+                return snapshot.data!;
+              },
+            )),
+      ],
+    );
   }
 }

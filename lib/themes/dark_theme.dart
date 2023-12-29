@@ -6,11 +6,12 @@ ThemeData darkThemeData(BuildContext context) {
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       }),
-      scaffoldBackgroundColor: const Color.fromARGB(255, 35, 38, 51),
+      scaffoldBackgroundColor:
+          Colors.transparent, //const Color.fromARGB(255, 35, 38, 51),
       textTheme: Theme.of(context).textTheme.copyWith(
             displaySmall: GoogleFonts.roboto(
                 color: Colors.grey.shade100,
-                fontSize: 18.0,
+                fontSize: 15.0,
                 fontWeight: FontWeight.w800),
             displayMedium: GoogleFonts.roboto(
                 color: Colors.white.withOpacity(0.4),
@@ -57,21 +58,20 @@ ThemeData darkThemeData(BuildContext context) {
       cardColor: const Color.fromARGB(255, 51, 56, 75),
       canvasColor: const Color.fromARGB(255, 51, 56, 75),
       appBarTheme: Theme.of(context).appBarTheme.copyWith(
-          iconTheme: Theme.of(context).iconTheme.copyWith(
-                color: Colors.grey.shade100,
-                size: 30.0,
-              ),
+          iconTheme: Theme.of(context)
+              .iconTheme
+              .copyWith(color: Colors.grey.shade100, size: 25.0),
           titleTextStyle: GoogleFonts.roboto(
               color: Colors.grey.shade100,
-              fontSize: 30.0,
+              fontSize: 25.0,
               fontWeight: FontWeight.w800)),
       inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
               borderSide:
                   BorderSide(width: 2.5, color: Colors.white.withOpacity(0.3))),
           focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(15.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
               borderSide: BorderSide(
                   width: 2.5, color: Colors.white.withOpacity(0.5)))));
 }

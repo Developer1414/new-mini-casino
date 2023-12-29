@@ -15,19 +15,19 @@ class Bank extends StatelessWidget {
     return Scaffold(
         body: Stack(
       children: [
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-              color: Colors.blue.shade700,
-              gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.blue.shade500, Colors.blue.shade900]),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.black.withOpacity(0.5), blurRadius: 10.0)
-              ]),
-        ),
+        // Container(
+        //   width: double.infinity,
+        //   decoration: BoxDecoration(
+        //       color: Colors.blue.shade700,
+        //       gradient: LinearGradient(
+        //           begin: Alignment.bottomCenter,
+        //           end: Alignment.topCenter,
+        //           colors: [Colors.blue.shade500, Colors.blue.shade900]),
+        //       boxShadow: [
+        //         BoxShadow(
+        //             color: Colors.black.withOpacity(0.5), blurRadius: 10.0)
+        //       ]),
+        // ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

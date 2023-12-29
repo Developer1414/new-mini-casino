@@ -13,6 +13,7 @@ enum CoinflipStatus { dollar, nothing, init }
 class CoinflipLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isContinueGame = false;
+  bool isShowInputBet = false;
 
   CoinflipStatus randomCoinflipStatus = CoinflipStatus.init;
   CoinflipStatus userCoinflipStatus = CoinflipStatus.nothing;
@@ -38,6 +39,11 @@ class CoinflipLogic extends ChangeNotifier {
   double profit = 0.0;
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void startGame(
       {required BuildContext context,

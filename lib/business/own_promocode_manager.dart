@@ -96,6 +96,17 @@ class OwnPromocodeManager extends ChangeNotifier {
       return;
     }
 
+    if (name.length < 4) {
+      alertDialogError(
+        context: context,
+        title: 'Ошибка',
+        confirmBtnText: 'Окей',
+        text: 'Промокод не может быть меньше 4 символов!',
+      );
+
+      return;
+    }
+
     loading(true);
 
     try {

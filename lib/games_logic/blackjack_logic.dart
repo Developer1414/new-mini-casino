@@ -16,6 +16,7 @@ class BlackjackLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isLoadingMove = false;
   bool gameWithInsurance = true;
+  bool isShowInputBet = false;
 
   BlackjackType blackjackType = BlackjackType.init;
   Insurance insuranceType = Insurance.none;
@@ -50,6 +51,11 @@ class BlackjackLogic extends ChangeNotifier {
   String resultDealerValue = '';
 
   late BuildContext context;
+
+  void showInputBet() {
+    isShowInputBet = !isShowInputBet;
+    notifyListeners();
+  }
 
   void startGame({required BuildContext context, required double bet}) {
     this.context = context;

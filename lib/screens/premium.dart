@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -66,177 +65,170 @@ class PremiumInfo extends StatelessWidget {
                             size: 30.0,
                           )),
                     ),
-                    bottomNavigationBar: SupabaseController.isPremium
-                        ? Container(
-                            height: 66.0,
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 179, 242, 31),
-                                boxShadow: [
-                                  BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
-                                      blurRadius: 10.0)
-                                ]),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        color: Colors.black87),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0, horizontal: 10.0),
-                                      child: AutoSizeText(
-                                        'PREMIUM',
-                                        maxLines: 1,
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 22.0,
-                                          letterSpacing: 0.5,
-                                          fontWeight: FontWeight.w900,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 5.0),
-                                  Expanded(
-                                    child: FutureBuilder(
-                                        future: NTP.now(),
-                                        builder: (context, snapshot) {
-                                          return AutoSizeText(
-                                            'АКТИВЕН ЕЩЁ ${getDaysString(SupabaseController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays)}',
+                    bottomNavigationBar: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SupabaseController.isPremium
+                            ? Container(
+                                height: 66.0,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color:
+                                        const Color.fromARGB(255, 179, 242, 31),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 10.0)
+                                    ]),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            color: Colors.black87),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5.0, horizontal: 10.0),
+                                          child: AutoSizeText(
+                                            'PREMIUM',
                                             maxLines: 1,
                                             textAlign: TextAlign.center,
                                             style: GoogleFonts.roboto(
-                                              color: const Color.fromARGB(
-                                                  255, 5, 2, 1),
+                                              color: Colors.white,
                                               fontSize: 22.0,
                                               letterSpacing: 0.5,
                                               fontWeight: FontWeight.w900,
                                             ),
-                                          );
-                                        }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : Container(
-                            color: Theme.of(context).scaffoldBackgroundColor,
-                            height: 178.0,
-                            child: Padding(
-                              padding: const EdgeInsets.only(
-                                  bottom: 15.0,
-                                  left: 15.0,
-                                  right: 15.0,
-                                  top: 10.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    children: [
-                                      AutoSizeText('Месяц',
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!),
-                                      const SizedBox(width: 5.0),
-                                      CupertinoSwitch(
-                                        trackColor: Colors.blueAccent,
-                                        value: paymentController
-                                            .isYearSubscription,
-                                        onChanged: (value) {
-                                          paymentController
-                                              .chooseSubscriptionDuration(
-                                                  value);
-                                        },
+                                          ),
+                                        ),
                                       ),
                                       const SizedBox(width: 5.0),
-                                      AutoSizeText('Год',
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 6.0),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 5.0, bottom: 15.0),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          flex: 5,
-                                          child: SizedBox(
-                                            height: 60.0,
-                                            width: double.infinity,
-                                            child: ElevatedButton(
-                                              onPressed: () {
-                                                /* paymentController
-                                                    .premiumForGift('');*/
-
-                                                paymentController.getPremium(
-                                                    context: context);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                elevation: 5,
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 179, 242, 31),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15.0)),
-                                              ),
-                                              child: AutoSizeText(
-                                                'Подключить',
+                                      Expanded(
+                                        child: FutureBuilder(
+                                            future: NTP.now(),
+                                            builder: (context, snapshot) {
+                                              return AutoSizeText(
+                                                'АКТИВЕН ЕЩЁ ${getDaysString(SupabaseController.expiredSubscriptionDate.difference(snapshot.data ?? DateTime.now()).inDays)}',
+                                                maxLines: 1,
                                                 textAlign: TextAlign.center,
                                                 style: GoogleFonts.roboto(
                                                   color: const Color.fromARGB(
                                                       255, 5, 2, 1),
-                                                  fontSize: 25.0,
-                                                  fontWeight: FontWeight.w700,
+                                                  fontSize: 22.0,
+                                                  letterSpacing: 0.5,
+                                                  fontWeight: FontWeight.w900,
                                                 ),
+                                              );
+                                            }),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            : Row(
+                                children: [
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 60.0,
+                                        //width: 80.0,
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.2),
+                                                  blurRadius: 5.0)
+                                            ],
+                                            color: const Color(0xFF3d7ce6),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              AutoSizeText('Месяц',
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium!),
+                                              const SizedBox(width: 5.0),
+                                              Switch(
+                                                value: paymentController
+                                                    .isYearSubscription,
+                                                onChanged: (value) {
+                                                  paymentController
+                                                      .chooseSubscriptionDuration(
+                                                          value);
+                                                },
                                               ),
+                                              const SizedBox(width: 5.0),
+                                              AutoSizeText('Год',
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium!),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 60.0,
+                                      child: Container(
+                                        decoration: BoxDecoration(boxShadow: [
+                                          BoxShadow(
+                                              color:
+                                                  Colors.black.withOpacity(0.2),
+                                              blurRadius: 5.0)
+                                        ], color: Theme.of(context).cardColor),
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            paymentController.getPremium(
+                                                context: context);
+                                          },
+                                          style: ElevatedButton.styleFrom(
+                                            elevation: 0,
+                                            backgroundColor:
+                                                const Color.fromARGB(
+                                                    255, 179, 242, 31),
+                                            shape:
+                                                const RoundedRectangleBorder(),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 15.0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                AutoSizeText(
+                                                  'Подключить',
+                                                  maxLines: 1,
+                                                  style: GoogleFonts.roboto(
+                                                    color: const Color.fromARGB(
+                                                        255, 5, 2, 1),
+                                                    fontSize: 25.0,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                         ),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                  RichText(
-                                      textAlign: TextAlign.center,
-                                      text: TextSpan(children: [
-                                        TextSpan(
-                                            text:
-                                                'Подключаясь, Вы соглашаетесь с ',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium!
-                                                .copyWith(fontSize: 12.0)),
-                                        TextSpan(
-                                          recognizer: TapGestureRecognizer()
-                                            ..onTap = () => context
-                                                .beamToNamed('/user-agreement'),
-                                          text: 'Пользовательским Соглашением',
-                                          style: GoogleFonts.roboto(
-                                              textStyle: const TextStyle(
-                                            letterSpacing: 0.5,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.blue,
-                                          )),
-                                        )
-                                      ])),
                                 ],
                               ),
-                            ),
-                          ),
+                      ],
+                    ),
                     appBar: AppBar(
                       toolbarHeight: 76.0,
                       elevation: 0,
@@ -264,18 +256,16 @@ class PremiumInfo extends StatelessWidget {
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15.0),
                                   color: Colors.black87),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 10.0),
-                                child: AutoSizeText(
-                                  'PREMIUM',
-                                  textAlign: TextAlign.center,
-                                  style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 22.0,
-                                    letterSpacing: 0.5,
-                                    fontWeight: FontWeight.w900,
-                                  ),
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5.0, horizontal: 10.0),
+                              child: AutoSizeText(
+                                'PREMIUM',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 22.0,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.w900,
                                 ),
                               ),
                             ),
@@ -326,44 +316,124 @@ class PremiumInfo extends StatelessWidget {
                                                 255, 179, 242, 31),
                                           )),
                                   const SizedBox(width: 5.0),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        color: Colors.black87),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5.0, horizontal: 10.0),
-                                      child: AutoSizeText(
-                                        'PREMIUM',
-                                        textAlign: TextAlign.center,
-                                        style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 35.0,
-                                          letterSpacing: 0.5,
-                                          fontWeight: FontWeight.w900,
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            color: Colors.black87),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5.0, horizontal: 10.0),
+                                          child: AutoSizeText(
+                                            'PREMIUM',
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 35.0,
+                                              letterSpacing: 0.5,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                      const SizedBox(width: 5.0),
+                                      Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0),
+                                            color: Colors.redAccent),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 5.0, horizontal: 10.0),
+                                          child: AutoSizeText(
+                                            '-30%',
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 35.0,
+                                              letterSpacing: 0.5,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 15.0),
-                                  Text(
-                                    'Попробуйте Premium всего за 149 руб. в месяц или 1499 руб. в год!',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displayMedium!
-                                        .copyWith(
-                                            color: Theme.of(context)
+                                  Container(
+                                    padding: const EdgeInsets.all(15.0),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      color: Theme.of(context).cardColor,
+                                      border: Border.all(
+                                          color: const Color.fromARGB(
+                                              255, 179, 242, 31),
+                                          width: 3.0),
+                                    ),
+                                    child: RichText(
+                                        textAlign: TextAlign.center,
+                                        text: TextSpan(children: [
+                                          TextSpan(
+                                              text:
+                                                  'Попробуйте Premium всего за ',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 12.0)),
+                                          TextSpan(
+                                            text: '149',
+                                            style: Theme.of(context)
                                                 .textTheme
-                                                .displayMedium!
-                                                .color!
-                                                .withOpacity(0.8)),
+                                                .bodySmall!
+                                                .copyWith(
+                                                  color: Colors.white70,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  decorationColor:
+                                                      Colors.redAccent,
+                                                  decorationThickness: 2.0,
+                                                  letterSpacing: 0.5,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          TextSpan(
+                                              text: ' 99 руб. в месяц или ',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 12.0)),
+                                          TextSpan(
+                                            text: '1499',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall!
+                                                .copyWith(
+                                                  color: Colors.white70,
+                                                  decoration: TextDecoration
+                                                      .lineThrough,
+                                                  decorationColor:
+                                                      Colors.redAccent,
+                                                  decorationThickness: 2.0,
+                                                  letterSpacing: 0.5,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          TextSpan(
+                                              text: ' 999 руб. в год!',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium!
+                                                  .copyWith(fontSize: 12.0)),
+                                        ])),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 30.0),
-
+                              const SizedBox(height: 15.0),
                               Container(
                                 width: double.infinity,
                                 decoration: BoxDecoration(
@@ -526,8 +596,31 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
-                              //Expanded(child: Container())
+                              const SizedBox(height: 12.0),
+                              RichText(
+                                  textAlign: TextAlign.center,
+                                  text: TextSpan(children: [
+                                    TextSpan(
+                                        text: 'Подключаясь, Вы соглашаетесь с ',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 12.0)),
+                                    TextSpan(
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () => context
+                                            .beamToNamed('/user-agreement'),
+                                      text: 'Пользовательским Соглашением',
+                                      style: GoogleFonts.roboto(
+                                          textStyle: const TextStyle(
+                                        decoration: TextDecoration.underline,
+                                        letterSpacing: 0.5,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.blue,
+                                      )),
+                                    )
+                                  ])),
                             ],
                           ),
                         ),
