@@ -19,12 +19,17 @@ class DailyBonusManager extends ChangeNotifier {
 
   int dailyCountBets = 0;
 
-  void spin(bool isActive) {
+  void spin(bool isActive) async {
     isActiveFortuneWheel = isActive;
 
     if (!isActive) {
       isCanSpinAgain = true;
     }
+
+    DateTime dateTimeNow = await NTP.now();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('dailyBonus', dateTimeNow.toString());
 
     notifyListeners();
   }

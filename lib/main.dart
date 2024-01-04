@@ -386,13 +386,16 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
             ),
           );
         },
-        '/verify-email/:email': (context, state, data) {
+        '/verify-email/:email/:isResetPassword': (context, state, data) {
           final email = state.pathParameters['email']!;
+          bool isResetPassword =
+              state.pathParameters['isResetPassword']! == 'true' ? true : false;
           return BeamPage(
             child: Stack(
               children: [
                 backgroundModel(),
-                VerifyPhoneNumber(email: email),
+                VerifyPhoneNumber(
+                    email: email, isResetPassword: isResetPassword),
               ],
             ),
           );

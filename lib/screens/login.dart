@@ -7,7 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/login_custom_text_field.dart';
 import 'package:provider/provider.dart';
 import 'package:quickalert/quickalert.dart';
 
@@ -255,7 +257,44 @@ class Login extends StatelessWidget {
                                           controller: friendCodeController,
                                           hintText: 'Код друга... (если есть)')
                                       : Container(),
-                                  const SizedBox(height: 15.0),
+                                  accountController.authorizationAction !=
+                                          AuthorizationAction.login
+                                      ? Container()
+                                      : RichText(
+                                          textAlign: TextAlign.center,
+                                          text: TextSpan(children: [
+                                            TextSpan(
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () async {
+                                                  if (emailController
+                                                      .text.isNotEmpty) {
+                                                    await accountController
+                                                        .sendCodeToResetPassword(
+                                                            email:
+                                                                emailController
+                                                                    .text,
+                                                            context: context);
+                                                  } else {
+                                                    alertDialogError(
+                                                        context: context,
+                                                        title: 'Ошибка',
+                                                        confirmBtnText: 'Окей',
+                                                        text:
+                                                            'Для восстановления пароля впишите вашу почту!');
+                                                  }
+                                                },
+                                              text: 'Забыл(а) пароль',
+                                              style: GoogleFonts.roboto(
+                                                  textStyle: const TextStyle(
+                                                decoration:
+                                                    TextDecoration.underline,
+                                                letterSpacing: 0.5,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w700,
+                                                color: Colors.blue,
+                                              )),
+                                            )
+                                          ])),
                                   Visibility(
                                     visible:
                                         accountController.authorizationAction ==
@@ -263,6 +302,8 @@ class Login extends StatelessWidget {
                                     child: Column(
                                       children: [
                                         Container(
+                                          margin:
+                                              const EdgeInsets.only(top: 15.0),
                                           decoration: BoxDecoration(
                                               color: Colors.orange
                                                   .withOpacity(0.2),
@@ -327,43 +368,6 @@ class Login extends StatelessWidget {
                 );
         },
       ),
-    );
-  }
-
-  Widget loginCustomTextField(
-      {required String hintText,
-      required TextEditingController controller,
-      required BuildContext context,
-      bool isLastInput = false,
-      bool readOnly = false,
-      bool limitSymbols = false,
-      TextInputType? keyboardType,
-      bool isPassword = false}) {
-    return TextField(
-      controller: controller,
-      readOnly: readOnly,
-      obscureText: isPassword,
-      keyboardType: keyboardType,
-      textAlign: TextAlign.center,
-      inputFormatters: limitSymbols
-          ? [
-              LengthLimitingTextInputFormatter(12),
-              FilteringTextInputFormatter.allow(RegExp('[a-z A-Z 0-9]'))
-            ]
-          : null,
-      textInputAction:
-          isLastInput ? TextInputAction.done : TextInputAction.next,
-      decoration: InputDecoration(
-          hintText: hintText,
-          hintStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
-              color: Theme.of(context)
-                  .textTheme
-                  .displaySmall!
-                  .color!
-                  .withOpacity(0.5)),
-          enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
-          focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
-      style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 20.0),
     );
   }
 }

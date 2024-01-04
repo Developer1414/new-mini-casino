@@ -37,253 +37,244 @@ class TransferMoneys extends StatelessWidget {
           currentFocus.unfocus();
         }
       },
-      child: Scaffold(
-          appBar: AppBar(
-            toolbarHeight: 76.0,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: IconButton(
-                  splashRadius: 25.0,
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    Beamer.of(context).beamBack();
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.arrowLeft,
-                    color: Theme.of(context).appBarTheme.iconTheme!.color,
-                    size: Theme.of(context).appBarTheme.iconTheme!.size,
-                  )),
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  'Перевод',
-                  style: Theme.of(context).appBarTheme.titleTextStyle,
+      child: Consumer<TransferMoneysManager>(
+          builder: (context, transferManager, child) {
+        return transferManager.isLoading
+            ? loading(context: context)
+            : Scaffold(
+                appBar: AppBar(
+                  toolbarHeight: 76.0,
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: IconButton(
+                        splashRadius: 25.0,
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          Beamer.of(context).beamBack();
+                        },
+                        icon: FaIcon(
+                          FontAwesomeIcons.arrowLeft,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
+                        )),
+                  ),
+                  title: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AutoSizeText(
+                        'Перевод',
+                        style: Theme.of(context).appBarTheme.titleTextStyle,
+                      ),
+                      Consumer<Balance>(builder: (ctx, balance, _) {
+                        return currencyNormalFormat(
+                            context: context, moneys: balance.currentBalance);
+                      })
+                    ],
+                  ),
                 ),
-                Consumer<Balance>(builder: (ctx, balance, _) {
-                  return currencyNormalFormat(
-                      context: context, moneys: balance.currentBalance);
-                })
-              ],
-            ),
-          ),
-          bottomNavigationBar: Consumer<TransferMoneysManager>(
-            builder: (context, transferManager, child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => transferManager.transfer(
-                                  amount: double.parse(betFormatter
-                                      .getUnformattedValue()
-                                      .toString()),
-                                  context: context,
-                                  name: usernameController.text.trim()),
-                              style: ElevatedButton.styleFrom(
-                                elevation: 5,
-                                backgroundColor: Colors.green,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(25.0),
-                                      topRight: Radius.circular(25.0)),
-                                ),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 15.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    FaIcon(
-                                      FontAwesomeIcons.moneyBillTransfer,
-                                      color: Theme.of(context)
-                                          .appBarTheme
-                                          .iconTheme!
-                                          .color,
-                                      size: Theme.of(context)
-                                          .appBarTheme
-                                          .iconTheme!
-                                          .size,
-                                    ),
-                                    const SizedBox(width: 10.0),
-                                    AutoSizeText(
-                                      'Перевести',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 22.0,
-                                          fontWeight: FontWeight.w800),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )),
-                ],
-              );
-            },
-          ),
-          body: Consumer<TransferMoneysManager>(
-            builder: (context, loanMoneysManager, child) {
-              return loanMoneysManager.isLoading
-                  ? loading(context: context)
-                  : Center(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                bottomNavigationBar: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Padding(
+                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                        child: Row(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.all(35.0),
-                              child: Column(
-                                children: [
-                                  Column(
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: () => transferManager.transfer(
+                                    amount: double.parse(betFormatter
+                                        .getUnformattedValue()
+                                        .toString()),
+                                    context: context,
+                                    name: usernameController.text.trim()),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: Colors.green,
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(25.0),
+                                        topRight: Radius.circular(25.0)),
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 15.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      TextField(
-                                        textAlign: TextAlign.center,
-                                        textInputAction: TextInputAction.next,
-                                        keyboardType: TextInputType.text,
-                                        controller: usernameController,
-                                        decoration: InputDecoration(
-                                            hintText: 'Никнейм...',
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .displaySmall!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .textTheme
-                                                        .displaySmall!
-                                                        .color!
-                                                        .withOpacity(0.5)),
-                                            enabledBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .enabledBorder,
-                                            focusedBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .focusedBorder),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .displaySmall!
-                                            .copyWith(fontSize: 20.0),
+                                      FaIcon(
+                                        FontAwesomeIcons.moneyBillTransfer,
+                                        color: Theme.of(context)
+                                            .appBarTheme
+                                            .iconTheme!
+                                            .color,
+                                        size: Theme.of(context)
+                                            .appBarTheme
+                                            .iconTheme!
+                                            .size,
                                       ),
-                                      const SizedBox(height: 15.0),
-                                      TextField(
-                                        textAlign: TextAlign.center,
-                                        textInputAction: TextInputAction.done,
-                                        keyboardType: TextInputType.number,
-                                        controller: betController,
-                                        inputFormatters: [betFormatter],
-                                        onTap: () {
-                                          betController.selection =
-                                              TextSelection(
-                                                  baseOffset: 0,
-                                                  extentOffset: betController
-                                                      .text.length);
-                                        },
-                                        onChanged: (value) {
-                                          loanMoneysManager.changeAmount(
-                                              double.parse(betFormatter
-                                                  .getUnformattedValue()
-                                                  .toString()));
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: 'Количество...',
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .displaySmall!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .textTheme
-                                                        .displaySmall!
-                                                        .color!
-                                                        .withOpacity(0.5)),
-                                            enabledBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .enabledBorder,
-                                            focusedBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .focusedBorder),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .displaySmall!
-                                            .copyWith(fontSize: 20.0),
-                                      ),
-                                      SupabaseController.isPremium
-                                          ? Container()
-                                          : Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 15.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                children: [
-                                                  AutoSizeText(
-                                                    'C комиссией:',
-                                                    textAlign: TextAlign.center,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall,
-                                                  ),
-                                                  AutoSizeText(
-                                                    loanMoneysManager
-                                                        .currentAmount,
-                                                    textAlign: TextAlign.center,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                      const SizedBox(height: 15.0),
-                                      smallHelperPanel(
-                                        context: context,
-                                        text:
-                                            '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
-                                      ),
-                                      const SizedBox(height: 15.0),
-                                      Container(
-                                        decoration: BoxDecoration(
-                                            color:
-                                                Colors.orange.withOpacity(0.3),
-                                            borderRadius:
-                                                BorderRadius.circular(15.0),
-                                            border: Border.all(
-                                                color: Colors.orangeAccent,
-                                                width: 2.0)),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(15.0),
-                                          child: Text(
-                                              'Прежде чем перевести деньги игроку, сообщите ему об этом, так как на их получение у него будет всего 5 минут!',
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium!
-                                                  .copyWith(fontSize: 12.0)),
-                                        ),
-                                      ),
+                                      const SizedBox(width: 10.0),
+                                      AutoSizeText(
+                                        'Перевести',
+                                        maxLines: 1,
+                                        style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: 22.0,
+                                            fontWeight: FontWeight.w800),
+                                      )
                                     ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ],
+                        )),
+                  ],
+                ),
+                body: Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(35.0),
+                          child: Column(
+                            children: [
+                              Column(
+                                children: [
+                                  TextField(
+                                    textAlign: TextAlign.center,
+                                    textInputAction: TextInputAction.next,
+                                    keyboardType: TextInputType.text,
+                                    controller: usernameController,
+                                    decoration: InputDecoration(
+                                        hintText: 'Никнейм...',
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .displaySmall!
+                                                    .color!
+                                                    .withOpacity(0.5)),
+                                        enabledBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder,
+                                        focusedBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .focusedBorder),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!
+                                        .copyWith(fontSize: 20.0),
+                                  ),
+                                  const SizedBox(height: 15.0),
+                                  TextField(
+                                    textAlign: TextAlign.center,
+                                    textInputAction: TextInputAction.done,
+                                    keyboardType: TextInputType.number,
+                                    controller: betController,
+                                    inputFormatters: [betFormatter],
+                                    onTap: () {
+                                      betController.selection = TextSelection(
+                                          baseOffset: 0,
+                                          extentOffset:
+                                              betController.text.length);
+                                    },
+                                    onChanged: (value) {
+                                      transferManager.changeAmount(double.parse(
+                                          betFormatter
+                                              .getUnformattedValue()
+                                              .toString()));
+                                    },
+                                    decoration: InputDecoration(
+                                        hintText: 'Количество...',
+                                        hintStyle: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .copyWith(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .displaySmall!
+                                                    .color!
+                                                    .withOpacity(0.5)),
+                                        enabledBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .enabledBorder,
+                                        focusedBorder: Theme.of(context)
+                                            .inputDecorationTheme
+                                            .focusedBorder),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!
+                                        .copyWith(fontSize: 20.0),
+                                  ),
+                                  SupabaseController.isPremium
+                                      ? Container()
+                                      : Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 15.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              AutoSizeText(
+                                                'C комиссией:',
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall,
+                                              ),
+                                              AutoSizeText(
+                                                transferManager.currentAmount,
+                                                textAlign: TextAlign.center,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                  const SizedBox(height: 15.0),
+                                  smallHelperPanel(
+                                    context: context,
+                                    text:
+                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
+                                  ),
+                                  const SizedBox(height: 15.0),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.orange.withOpacity(0.3),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0),
+                                        border: Border.all(
+                                            color: Colors.orangeAccent,
+                                            width: 2.0)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(15.0),
+                                      child: Text(
+                                          'Прежде чем перевести деньги игроку, сообщите ему об этом, так как на их получение у него будет всего 5 минут!',
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium!
+                                              .copyWith(fontSize: 12.0)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-            },
-          )),
+                      ],
+                    ),
+                  ),
+                ));
+      }),
     );
   }
 }

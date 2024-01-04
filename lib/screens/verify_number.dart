@@ -6,12 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/login_custom_text_field.dart';
 import 'package:pinput/pinput.dart';
 
 class VerifyPhoneNumber extends StatefulWidget {
-  const VerifyPhoneNumber({super.key, required this.email});
+  const VerifyPhoneNumber(
+      {super.key, required this.email, this.isResetPassword = false});
 
   final String email;
+  final bool isResetPassword;
 
   @override
   State<VerifyPhoneNumber> createState() => _VerifyPhoneNumberState();
@@ -23,6 +26,8 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
   final formKey = GlobalKey<FormState>();
 
   static bool isLoading = false;
+
+  static TextEditingController newPasswordController = TextEditingController();
 
   late Timer timer;
   int timeBeforeSendCodeAgain = 0;
@@ -102,11 +107,19 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                           isLoading = true;
                         });
 
-                        await SupabaseController().verifyEmail(
-                          email: widget.email,
-                          context: context,
-                          verifyCode: pinController.text,
-                        );
+                        if (!widget.isResetPassword) {
+                          await SupabaseController().verifyEmail(
+                            email: widget.email,
+                            context: context,
+                            verifyCode: pinController.text,
+                          );
+                        } else {
+                          await SupabaseController().resetPassword(
+                              email: widget.email,
+                              context: context,
+                              verifyCode: pinController.text,
+                              newPassword: newPasswordController.text);
+                        }
 
                         setState(() {
                           isLoading = false;
@@ -147,7 +160,10 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                   children: [
                     Column(
                       children: [
-                        Text('Верификация',
+                        Text(
+                            widget.isResetPassword
+                                ? 'Сброс пароля'
+                                : 'Верификация',
                             style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: 5.0),
                         Text('Введите код из электронной почты',
@@ -261,7 +277,20 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                                     .bodySmall!
                                     .copyWith(
                                         height: 1.4,
-                                        color: Colors.white.withOpacity(0.5)))
+                                        color: Colors.white.withOpacity(0.5))),
+                        !widget.isResetPassword
+                            ? Container()
+                            : Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15.0, vertical: 15.0),
+                                child: loginCustomTextField(
+                                    context: context,
+                                    keyboardType: TextInputType.text,
+                                    controller: newPasswordController,
+                                    isLastInput: true,
+                                    isPassword: true,
+                                    hintText: 'Новый пароль...'),
+                              ),
                       ],
                     ),
                     Container(),

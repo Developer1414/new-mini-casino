@@ -120,8 +120,7 @@ class SupabaseController extends ChangeNotifier {
               )
                   .then((value) {
                 loading(false);
-
-                context.beamToReplacementNamed('/verify-email/$email');
+                context.beamToReplacementNamed('/verify-email/$email/false');
               });
             } on AuthException catch (e) {
               loading(false);
@@ -150,6 +149,84 @@ class SupabaseController extends ChangeNotifier {
     });
   }
 
+  Future sendCodeToResetPassword(
+      {required String email, required BuildContext context}) async {
+    loading(true);
+
+    try {
+      await SupabaseController.supabase?.auth.resetPasswordForEmail(
+        email,
+      );
+
+      if (context.mounted) {
+        context.beamToNamed('/verify-email/$email/true');
+      }
+    } on AuthException catch (e) {
+      if (e.statusCode == '429') {
+        if (context.mounted) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text:
+                  'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
+        }
+      }
+    }
+
+    loading(false);
+  }
+
+  Future resetPassword({
+    required String verifyCode,
+    required String email,
+    required String newPassword,
+    required BuildContext context,
+  }) async {
+    try {
+      await SupabaseController.supabase?.auth.verifyOTP(
+        type: OtpType.email,
+        token: verifyCode,
+        email: email,
+      );
+
+      await SupabaseController.supabase?.auth
+          .updateUser(UserAttributes(email: email, password: newPassword));
+
+      if (context.mounted) {
+        alertDialogSuccess(
+            context: context,
+            title: 'Уведомление',
+            barrierDismissible: false,
+            confirmBtnText: 'Перезайти',
+            text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
+            onConfirmBtnTap: () => Restart.restartApp());
+      }
+    } on AuthException catch (e) {
+      if (e.statusCode == '401') {
+        if (context.mounted) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text: 'Неверный код!');
+        }
+      } else {
+        if (context.mounted) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text: e.message);
+        }
+
+        if (kDebugMode) {
+          print(e.message);
+        }
+      }
+    }
+  }
+
   Future signInWithPassword(
       {required String email, required String password}) async {
     loading(true);
@@ -166,7 +243,7 @@ class SupabaseController extends ChangeNotifier {
         alertDialogSuccess(
             context: context,
             title: 'Уведомление',
-            confirmBtnText: 'Окей',
+            confirmBtnText: 'Перезайти',
             text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
             onConfirmBtnTap: () => Restart.restartApp());
       }
@@ -326,7 +403,7 @@ class SupabaseController extends ChangeNotifier {
             context: context,
             title: 'Уведомление',
             barrierDismissible: false,
-            confirmBtnText: 'Окей',
+            confirmBtnText: 'Перезайти',
             text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
             onConfirmBtnTap: () => Restart.restartApp());
       }
