@@ -69,10 +69,11 @@ class Notifications extends StatelessWidget {
                     return map.isEmpty
                         ? Center(
                             child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 15.0, right: 15.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 15.0),
                               child: smallHelperPanel(
                                 context: context,
+                                icon: FontAwesomeIcons.solidBellSlash,
                                 text: 'Новых уведомлений нет',
                               ),
                             ),

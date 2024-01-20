@@ -48,3 +48,4 @@ app.*.map.json
 /lib/business/get_premium_version.dart
 /lib/business/purchasing_game_currency_controller.dart
 /lib/firebase_options.dart
+/lib/secret

@@ -2,8 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 Widget loading({required BuildContext context, String text = ''}) {
-  return WillPopScope(
-    onWillPop: () async => false,
+  return PopScope(
+    canPop: false,
     child: Scaffold(
       body: Center(
         child: Column(

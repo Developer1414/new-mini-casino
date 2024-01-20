@@ -9,7 +9,7 @@ Widget newsModel(
     {required BuildContext context,
     required NotificationController notificationController,
     required Map<dynamic, dynamic> docs}) {
-  DateTime date = DateTime.parse(docs['date']);
+  DateTime date = DateTime.parse('${docs['date']}Z').toLocal();
 
   String news = docs['news'];
   String title = docs['title'];

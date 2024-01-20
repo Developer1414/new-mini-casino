@@ -1,14 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
-import 'package:circle_progress_bar/circle_progress_bar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:io' as ui;
-import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 
 class LeaderBoard extends StatefulWidget {
   const LeaderBoard({super.key});
@@ -24,94 +26,13 @@ class LeaderBoard extends StatefulWidget {
 }
 
 class _LeaderBoardState extends State<LeaderBoard> {
+  String imageURL =
+      'https://ynlxqherxvlancmqppyp.supabase.co/storage/v1/object/public/leader/leader.png';
+
   @override
   Widget build(BuildContext context) {
-    ScrollController controller =
-        ScrollController(initialScrollOffset: LeaderBoard.scrollOffset);
-
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: Container(
-        height: 60.0,
-        margin: const EdgeInsets.only(top: 15.0),
-        decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            boxShadow: [
-              BoxShadow(color: Colors.black87.withOpacity(0.4), blurRadius: 5.0)
-            ]),
-        child: StreamBuilder(
-            stream: SupabaseController.supabase
-                ?.from('users')
-                .select('*')
-                .order(
-                    LeaderBoard.selectedValue == LeaderBoard.items.first
-                        ? 'level'
-                        : LeaderBoard.selectedValue == LeaderBoard.items[1]
-                            ? 'balance'
-                            : 'totalGames',
-                    ascending: false)
-                .asStream(),
-            builder: (context, snapshot) {
-              int userPlace = 0;
-              int realUserPlace = 0;
-
-              if (snapshot.data != null) {
-                userPlace = (snapshot.data as List<dynamic>).indexWhere(
-                    (element) =>
-                        element['uid'] ==
-                        SupabaseController.supabase?.auth.currentUser!.id);
-
-                realUserPlace = userPlace;
-
-                userPlace = userPlace < 3
-                    ? userPlace + 1
-                    : userPlace < 13
-                        ? (userPlace + 1) - (userPlace - (userPlace - 3))
-                        : (userPlace + 1) - (userPlace - (userPlace - 13));
-              }
-
-              return Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AutoSizeText(
-                      'Вы на $userPlace месте',
-                      style: Theme.of(context)
-                          .appBarTheme
-                          .titleTextStyle!
-                          .copyWith(fontSize: 23.0),
-                    ),
-                    const SizedBox(width: 10.0),
-                    userPlace > 100
-                        ? Container()
-                        : Container(
-                            decoration: BoxDecoration(
-                              color: realUserPlace < 3
-                                  ? Colors.lightGreen
-                                  : realUserPlace < 13
-                                      ? Colors.blue
-                                      : realUserPlace < 100
-                                          ? Colors.deepPurple
-                                          : Colors.transparent,
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: AutoSizeText(
-                                'ТОП-${realUserPlace < 3 ? 3 : realUserPlace < 13 ? 10 : realUserPlace < 100 ? 100 : 1000}',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                    color: Colors.white,
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w900),
-                              ),
-                            ),
-                          )
-                  ],
-                ),
-              );
-            }),
-      ),
       appBar: AppBar(
         toolbarHeight: 76.0,
         elevation: 0,
@@ -132,404 +53,235 @@ class _LeaderBoardState extends State<LeaderBoard> {
               )),
         ),
         title: AutoSizeText(
-          'Лидеры',
+          'Лидер дня',
           maxLines: 1,
           style: Theme.of(context).appBarTheme.titleTextStyle,
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton2(
-                items: LeaderBoard.items
-                    .map((item) => DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(item,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall!
-                                  .copyWith(fontSize: 14.0)),
-                        ))
-                    .toList(),
-                value: LeaderBoard.selectedValue,
-                onChanged: (value) {
-                  setState(() {
-                    LeaderBoard.selectedValue = value;
-                  });
-                },
-                buttonStyleData: ButtonStyleData(
-                  height: 50,
-                  width: 160,
-                  padding: const EdgeInsets.only(left: 14, right: 14),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: Colors.black26,
-                      ),
-                      color: Theme.of(context).cardColor),
-                  elevation: 2,
-                ),
-                style: GoogleFonts.roboto(
-                    color: Colors.black87,
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.w700),
-                iconStyleData: IconStyleData(
-                  icon: const Icon(
-                    Icons.arrow_drop_down_rounded,
-                  ),
-                  iconSize: 30,
-                  iconEnabledColor:
-                      Theme.of(context).appBarTheme.iconTheme!.color,
-                  iconDisabledColor: Colors.grey,
-                ),
-                dropdownStyleData: DropdownStyleData(
-                    maxHeight: 200,
-                    padding: null,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(14),
-                      color: Theme.of(context).cardColor,
-                    ),
-                    elevation: 8,
-                    scrollbarTheme: ScrollbarThemeData(
-                      radius: const Radius.circular(40),
-                      thickness: MaterialStateProperty.all(6),
-                      thumbVisibility: MaterialStateProperty.all(true),
-                    )),
-                menuItemStyleData: const MenuItemStyleData(
-                  height: 40,
-                  padding: EdgeInsets.only(left: 14, right: 14),
-                ),
-              ),
-            ),
-          ),
-        ],
       ),
       body: StreamBuilder(
           stream: SupabaseController.supabase
-              ?.from('users')
+              ?.from('leader_day')
               .select('*')
-              .eq('freeze', false)
-              .order(
-                  LeaderBoard.selectedValue == LeaderBoard.items.first
-                      ? 'level'
-                      : LeaderBoard.selectedValue == LeaderBoard.items[1]
-                          ? 'balance'
-                          : 'totalGames',
-                  ascending: false)
-              .limit(113)
               .asStream(),
           builder: (context, snapshot) {
+            Map<dynamic, dynamic> map = snapshot.data == null
+                ? {}
+                : (snapshot.data as List<dynamic>).first;
+
             if (snapshot.connectionState == ConnectionState.waiting) {
               return loading(context: context);
             }
 
-            return list(
-                map: (snapshot.data as List<dynamic>), controller: controller);
-          }),
-    );
-  }
+            String gameName =
+                '${map['game'][0].toUpperCase()}${map['game'].toString().substring(1)}';
 
-  Widget list(
-      {required List<dynamic> map,
-      required ScrollController controller,
-      bool isShowRaiting = true}) {
-    return ListView.separated(
-        itemCount: map.length,
-        controller: controller,
-        itemBuilder: (context, index) {
-          double balance = 0.0;
+            DateTime leaderDate = DateTime.parse('${map['date']}Z').toLocal();
+            DateTime leaderDateUTC = DateTime.parse('${map['date']}');
 
-          int totalGames = 0;
-
-          double level = 1;
-
-          int pinId = -1;
-
-          if (LeaderBoard.selectedValue == LeaderBoard.items.first) {
-            level = double.parse(map[index]['level'].toString());
-          } else if (LeaderBoard.selectedValue == LeaderBoard.items[1]) {
-            balance = double.parse(map[index]['balance'].toString());
-          } else if (LeaderBoard.selectedValue == LeaderBoard.items[2]) {
-            totalGames = int.parse(map[index]['totalGames'].toString());
-          }
-
-          /*if (snapshot.data!.docs[index].data().containsKey('selectedpins')) {
-            pinId = int.parse(
-                snapshot.data!.docs[index].get('selectedpins').toString());
-          }*/
-
-          return Container(
-            padding: EdgeInsets.only(
-              top: 15.0,
-              bottom: index == 2 || index == 12 ? 15.0 : 0.0,
-            ),
-            margin:
-                EdgeInsets.only(bottom: index == 2 || index == 12 ? 15.0 : 0.0),
-            decoration: BoxDecoration(
-                color: index < 3
-                    ? Colors.lightGreen
-                    : index < 13
-                        ? Colors.blue.withOpacity(1.0 - (index / 100))
-                        : index < 100
-                            ? Colors.deepPurple.withOpacity(1.0 - (index / 100))
-                            : Colors.transparent,
-                borderRadius: BorderRadius.only(
-                  topLeft: index == 0 || index == 3 || index == 13
-                      ? const Radius.circular(15.0)
-                      : const Radius.circular(0.0),
-                  topRight: index == 0 || index == 3 || index == 13
-                      ? const Radius.circular(15.0)
-                      : const Radius.circular(0.0),
-                  bottomLeft: index == 2 || index == 12
-                      ? const Radius.circular(15.0)
-                      : const Radius.circular(0.0),
-                  bottomRight: index == 2 || index == 12
-                      ? const Radius.circular(15.0)
-                      : const Radius.circular(0.0),
-                )),
-            child: GestureDetector(
-              onTap: () {
-                /* LeaderBoard.scrollOffset = controller.offset;
-                context.beamToNamed(
-                  '/other-user-profile/${map[index]['name']}/${map[index]['uid']}/$pinId',
-                );*/
-              },
-              child: Column(
-                children: [
-                  index == 0 || index == 3 || index == 13
-                      ? Padding(
-                          padding:
-                              const EdgeInsets.only(left: 15.0, bottom: 15.0),
-                          child: AutoSizeText(
-                            'ТОП-${index == 0 ? 3 : index == 3 ? 10 : 100}',
-                            maxLines: 1,
-                            style: Theme.of(context)
-                                .appBarTheme
-                                .titleTextStyle!
-                                .copyWith(fontSize: 25.0),
-                          ),
-                        )
-                      : Container(),
-                  Container(
+            return map.isEmpty ||
+                    leaderDateUTC.day != DateTime.now().toUtc().day ||
+                    leaderDateUTC.month != DateTime.now().toUtc().month
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                      child: smallHelperPanel(
+                          context: context,
+                          icon: FontAwesomeIcons.circleXmark,
+                          iconColor: Colors.redAccent,
+                          text:
+                              'Лидер дня ещё не выбран. Продолжайте играть и становитесь лучшим – возможно, именно вы займёте этот почетный статус!'),
+                    ),
+                  )
+                : Container(
+                    margin: const EdgeInsets.only(
+                        right: 15.0, left: 15.0, bottom: 15.0),
                     width: double.infinity,
-                    margin: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    height: double.infinity,
                     decoration: BoxDecoration(
+                        color: GamesController.games
+                            .where((element) => element.title == gameName)
+                            .first
+                            .buttonColor
+                            .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(15.0),
-                        color: Theme.of(context).cardColor,
-                        border: map[index]['uid'] ==
-                                SupabaseController
-                                    .supabase?.auth.currentUser!.id
-                            ? Border.all(color: Colors.white, width: 2.0)
-                            : null,
-                        boxShadow: [
-                          BoxShadow(
-                              color: map[index]['uid'] ==
-                                      SupabaseController
-                                          .supabase?.auth.currentUser!.id
-                                  ? Colors.white.withOpacity(0.5)
-                                  : Colors.black.withOpacity(0.3),
-                              blurRadius: 10.0)
-                        ]),
-                    child: Stack(
-                      alignment: AlignmentDirectional.topEnd,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            LeaderBoard.selectedValue != LeaderBoard.items.first
-                                ? Container()
-                                : Container(
-                                    height: 60.0,
-                                    margin: const EdgeInsets.only(
-                                        left: 12.0, top: 12.0, bottom: 12.0),
-                                    decoration: ShapeDecoration(
-                                      shape: const CircleBorder(),
-                                      color: Theme.of(context).cardColor,
-                                    ),
-                                    child: CircleProgressBar(
-                                      foregroundColor: const Color.fromARGB(
-                                          255, 179, 242, 31),
-                                      backgroundColor: Theme.of(context)
-                                          .buttonTheme
-                                          .colorScheme!
-                                          .background,
-                                      strokeWidth: 7.0,
-                                      value: level - level.truncate(),
-                                      child: Center(
-                                          child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10.0),
-                                        child: Column(
+                        border: Border.all(
+                            color: GamesController.games
+                                .where((element) => element.title == gameName)
+                                .first
+                                .buttonColor
+                                .withOpacity(0.7),
+                            width: 2.0)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(0.0),
+                      child: Stack(
+                        alignment: AlignmentDirectional.center,
+                        children: [
+                          GlassContainer(
+                            blur: 8,
+                            color: Colors.white.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(12.0),
+                                    topRight: Radius.circular(12.0)),
+                                gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      GamesController.games
+                                          .where((element) =>
+                                              element.title == gameName)
+                                          .first
+                                          .buttonColor
+                                          .withOpacity(0.7),
+                                      Colors.transparent,
+                                    ]),
+                              ),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 15.0),
+                              AutoSizeText(
+                                map['name'],
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 30.0,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              AutoSizeText(
+                                double.parse(map['profit'].toString()) < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(double.parse(
+                                            map['profit'].toString()))
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(double.parse(
+                                            map['profit'].toString())),
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 18.0,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              AutoSizeText(
+                                'Выигрыш',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  color: Colors.white60,
+                                  fontSize: 10.0,
+                                  letterSpacing: 0.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const SizedBox(height: 15.0),
+                              Expanded(
+                                flex: 2,
+                                child: CachedNetworkImage(
+                                    imageUrl: imageURL,
+                                    cacheKey: DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .toString(),
+                                    imageBuilder: (context, imageProvider) {
+                                      return Container(
+                                        decoration: BoxDecoration(
+                                          image: DecorationImage(
+                                            image: imageProvider,
+                                            fit: BoxFit.contain,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    placeholder: (context, url) => const Center(
+                                          child: SizedBox(
+                                            width: 40.0,
+                                            height: 40.0,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 6.0,
+                                              color: Color.fromARGB(
+                                                  255, 179, 242, 31),
+                                            ),
+                                          ),
+                                        ),
+                                    errorWidget: (context, url, error) =>
+                                        Column(
                                           mainAxisAlignment:
                                               MainAxisAlignment.center,
                                           children: [
+                                            const FaIcon(
+                                              FontAwesomeIcons
+                                                  .circleExclamation,
+                                              color: Colors.redAccent,
+                                              size: 50.0,
+                                            ),
+                                            const SizedBox(height: 5.0),
                                             AutoSizeText(
-                                              NumberFormat.compact(
-                                                      locale: 'en_US')
-                                                  .format(level.floor()),
-                                              maxLines: 1,
-                                              minFontSize: 10.0,
+                                              'Ошибка при загрузке изображения',
+                                              textAlign: TextAlign.center,
                                               style: GoogleFonts.roboto(
-                                                  color: Colors.white,
-                                                  fontSize: 15.0,
-                                                  fontWeight: FontWeight.w800),
+                                                color: Colors.white,
+                                                fontSize: 10.0,
+                                                letterSpacing: 0.5,
+                                                fontWeight: FontWeight.w800,
+                                              ),
                                             ),
                                           ],
-                                        ),
-                                      )),
-                                    ),
-                                  ),
-                            Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        AutoSizeText(map[index]['name'] ?? '',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(fontSize: 23.0)),
-                                        const SizedBox(width: 5.0),
-                                        pinId != -1
-                                            ? Image(
-                                                image: AssetImage(
-                                                    'assets/pins/$pinId.png'),
-                                                width: 25.0,
-                                                height: 25.0)
-                                            : Container(),
-                                        const SizedBox(width: 6.0),
-                                        isShowRaiting
-                                            ? map[index]['uid'] !=
-                                                    SupabaseController.supabase
-                                                        ?.auth.currentUser!.id
-                                                ? Container()
-                                                : Container(
-                                                    margin:
-                                                        const EdgeInsets.only(
-                                                            right: 10.0),
-                                                    decoration: BoxDecoration(
-                                                        color: Colors.redAccent,
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(12.0),
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                              color: Colors
-                                                                  .redAccent
-                                                                  .withOpacity(
-                                                                      0.5),
-                                                              blurRadius: 8.0,
-                                                              spreadRadius: 1.5)
-                                                        ]),
-                                                    child: Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              8.0),
-                                                      child: AutoSizeText(
-                                                        'Вы',
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        style:
-                                                            GoogleFonts.roboto(
-                                                                color: Colors
-                                                                    .white,
-                                                                fontSize: 12.0,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w900),
-                                                      ),
-                                                    ),
-                                                  )
-                                            : Container(),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 5.0),
-                                    LeaderBoard.selectedValue ==
-                                            LeaderBoard.items.first
-                                        ? Container()
-                                        : LeaderBoard.selectedValue ==
-                                                LeaderBoard.items[1]
-                                            ? Row(
-                                                children: [
-                                                  const FaIcon(
-                                                    FontAwesomeIcons.sackDollar,
-                                                    color: Colors.green,
-                                                    size: 18.0,
-                                                  ),
-                                                  const SizedBox(width: 5.0),
-                                                  SizedBox(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            1.5,
-                                                    child: AutoSizeText(
-                                                        'Баланс: ${balance < 1000000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(balance) : balance < 1000000000 ? NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(balance) : '> 1 млрд'}',
-                                                        style: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!
-                                                            .copyWith(
-                                                                overflow:
-                                                                    TextOverflow
-                                                                        .ellipsis)),
-                                                  ),
-                                                ],
-                                              )
-                                            : Row(
-                                                children: [
-                                                  const FaIcon(
-                                                    FontAwesomeIcons.gamepad,
-                                                    color: Colors.blueGrey,
-                                                    size: 18.0,
-                                                  ),
-                                                  const SizedBox(width: 5.0),
-                                                  AutoSizeText(
-                                                      'Игр: ${NumberFormat.compact(locale: ui.Platform.localeName).format(totalGames)}',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium),
-                                                ],
-                                              )
-                                  ],
-                                )),
-                          ],
-                        ),
-                        !isShowRaiting
-                            ? Container()
-                            : Container(
-                                width: 50.0,
+                                        )),
+                              ),
+                              Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                                decoration: BoxDecoration(
-                                    color: Theme.of(context)
-                                        .buttonTheme
-                                        .colorScheme!
-                                        .background,
-                                    borderRadius: const BorderRadius.only(
-                                        bottomLeft: Radius.circular(15.0),
-                                        topRight: Radius.circular(12.0))),
-                                child: Center(
-                                  child: AutoSizeText(
-                                    '#${index < 3 ? index + 1 : index < 13 ? (index + 1) - (index - (index - 3)) : (index + 1) - (index - (index - 13))}',
-                                    maxLines: 1,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium!
-                                        .copyWith(fontSize: 18.0),
-                                  ),
+                                    vertical: 15.0, horizontal: 10.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    AutoSizeText(
+                                      'Игра: $gameName',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 10.0,
+                                        letterSpacing: 0.5,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    AutoSizeText(
+                                      'Ставка: ${double.parse(map['bet'].toString()) < 100000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString())) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString()))}',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 10.0,
+                                        letterSpacing: 0.5,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                    AutoSizeText(
+                                      'Опубликовано в ${DateFormat.jm(ui.Platform.localeName).format(leaderDate)}',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white60,
+                                        fontSize: 3.0,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
-        separatorBuilder: (contex, index) => const SizedBox(
-            height: /* index == 0 || index == 1 ? 0.0 : 15.0*/ 0.0));
+                  );
+          }),
+    );
   }
 }

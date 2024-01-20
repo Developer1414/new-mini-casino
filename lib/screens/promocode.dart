@@ -155,7 +155,7 @@ class _PromocodeState extends State<Promocode> {
                     ),
                     actions: [
                       Padding(
-                        padding: const EdgeInsets.only(right: 5.0),
+                        padding: const EdgeInsets.only(right: 15.0),
                         child: IconButton(
                             splashRadius: 25.0,
                             padding: EdgeInsets.zero,
@@ -173,25 +173,6 @@ class _PromocodeState extends State<Promocode> {
                                   .copyWith(size: 28.0)
                                   .size,
                             )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: IconButton(
-                          splashRadius: 25.0,
-                          padding: EdgeInsets.zero,
-                          onPressed: () =>
-                              context.beamToNamed('/my-promocodes'),
-                          icon: FaIcon(
-                            FontAwesomeIcons.bars,
-                            color:
-                                Theme.of(context).appBarTheme.iconTheme!.color,
-                            size: Theme.of(context)
-                                .appBarTheme
-                                .iconTheme!
-                                .copyWith(size: 28.0)
-                                .size,
-                          ),
-                        ),
                       ),
                     ],
                   ),

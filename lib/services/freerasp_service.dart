@@ -26,11 +26,7 @@ class FreeraspService {
       onUnofficialStore: () => errorDetected(context, 'Unofficial store'),
       onObfuscationIssues: () => errorDetected(context, 'Obfuscation issues'),
       onDebug: () {
-        if (kDebugMode) {
-          print("Debugging");
-        } else {
-          exit(0);
-        }
+        exit(0);
       },
       onDeviceBinding: () => errorDetected(context, 'Device binding'),
       onPrivilegedAccess: () => errorDetected(context,
@@ -41,9 +37,12 @@ class FreeraspService {
         }
       },
       onSimulator: () {
-        if (kDebugMode) {
-          print("Simulator detected");
-        }
+        errorDetected(
+          context,
+          """Уведомление о нарушении правил
+
+Мы заметили, что вы используете эмулятор в игре, что противоречит нашим правилам. В целях поддержания честной и равной среды для всех участников, использование любых эмуляторов в игре строго запрещено.""",
+        );
       },
     );
 

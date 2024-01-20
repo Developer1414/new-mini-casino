@@ -8,12 +8,12 @@ class GamesController {
         gameLogo: 'Slots',
         buttonColor: const Color.fromARGB(255, 221, 129, 75),
         nextScreen: '/slots'),
-    GameButtonDetails(
-        title: 'Plinko',
-        gameLogo: 'PlinkoLogo',
-        forPremium: true,
-        buttonColor: Colors.deepPurple,
-        nextScreen: '/plinko'),
+    // GameButtonDetails(
+    //     title: 'Plinko',
+    //     gameLogo: 'PlinkoLogo',
+    //     forPremium: true,
+    //     buttonColor: Colors.deepPurple,
+    //     nextScreen: '/plinko'),
     GameButtonDetails(
         title: 'Blackjack',
         gameLogo: 'Blackjack',
@@ -45,7 +45,7 @@ class GamesController {
         buttonColor: const Color.fromARGB(255, 79, 173, 79),
         nextScreen: '/coinflip'),
     GameButtonDetails(
-        title: 'F. wheel',
+        title: 'FortuneWheel',
         gameLogo: 'FortuneWheelLogo',
         buttonColor: Colors.purpleAccent,
         nextScreen: '/fortuneWheel'),

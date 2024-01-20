@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
@@ -96,7 +98,7 @@ class DiceLogic extends ChangeNotifier {
     randomNumber = Random.secure().nextInt(6) + 1;
     profit = 0.0;
 
-    CommonFunctions.call(context: context, bet: bet, gameName: 'dice');
+    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'dice');
 
     notifyListeners();
   }
@@ -119,6 +121,18 @@ class DiceLogic extends ChangeNotifier {
           gameName: 'dice',
           gameStatisticModel:
               GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+
+      CommonFunctions.callOnProfit(
+        context: context,
+        bet: bet,
+        gameName: 'dice',
+        profit: profit,
+      );
+
+      if (Provider.of<SettingsController>(context, listen: false)
+          .isEnabledConfetti) {
+        confettiController.play();
+      }
     } else {
       profit = 0.0;
 

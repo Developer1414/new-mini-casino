@@ -243,7 +243,7 @@ class TransferMoneys extends StatelessWidget {
                                   smallHelperPanel(
                                     context: context,
                                     text:
-                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000)} в сутки!',
+                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)} за 12 часов!',
                                   ),
                                   const SizedBox(height: 15.0),
                                   Container(
@@ -253,7 +253,7 @@ class TransferMoneys extends StatelessWidget {
                                             BorderRadius.circular(15.0),
                                         border: Border.all(
                                             color: Colors.orangeAccent,
-                                            width: 2.0)),
+                                            width: 3.0)),
                                     child: Padding(
                                       padding: const EdgeInsets.all(15.0),
                                       child: Text(

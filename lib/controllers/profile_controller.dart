@@ -22,7 +22,7 @@ class ProfileController extends ChangeNotifier {
         Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
         profileModel = ProfileModel(
-          nickname: map['name'] ?? '',
+          nickname: map['name'] ?? 'null',
           totalGame: int.parse(map['totalGames'].toString()),
           level: double.parse(map['level'].toString()),
         );

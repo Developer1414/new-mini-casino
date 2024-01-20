@@ -2,20 +2,25 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:beamer/beamer.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
+import 'package:new_mini_casino/controllers/audio_controller.dart';
 import 'package:new_mini_casino/controllers/friend_code_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/freerasp_service.dart';
 import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/src/provider.dart' as provider;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/local_promocodes_service.dart';
+import 'package:new_mini_casino/business/local_bonuse_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:ntp/ntp.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -43,9 +48,8 @@ class SupabaseController extends ChangeNotifier {
 
   static Future initialize() async {
     await Supabase.initialize(
-      url: 'https://ynlxqherxvlancmqppyp.supabase.co',
-      anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlubHhxaGVyeHZsYW5jbXFwcHlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTgyMzgzNjAsImV4cCI6MjAxMzgxNDM2MH0.gPqHebuUQnQPKB02wtq4XJIL9mbIZdOIf-Gu1TiM28w',
+      url: APIKeys.supabaseUrl,
+      anonKey: APIKeys.supabaseKey,
     );
 
     supabase = Supabase.instance.client;
@@ -357,8 +361,6 @@ class SupabaseController extends ChangeNotifier {
 
       String? deviceId = await PlatformDeviceId.getDeviceId;
 
-      DateTime ntpDate = await NTP.now();
-
       double startBalance = SupabaseController.friendCode.isEmpty
           ? 500
           : Random().nextInt(10000).toDouble() + 10000;
@@ -369,7 +371,10 @@ class SupabaseController extends ChangeNotifier {
         'balance': startBalance,
         'totalGames': 0,
         'level': 1.0,
-        'premium': ntpDate.add(const Duration(days: 8)).toIso8601String(),
+        'premium': DateTime.now()
+            .toUtc()
+            .add(const Duration(days: 8))
+            .toIso8601String(),
         'moneyStorage': 0.0,
         'promocodes': SupabaseController.friendCode.isEmpty
             ? {}
@@ -386,14 +391,12 @@ class SupabaseController extends ChangeNotifier {
 
           String friendName = map['name'];
 
-          DateTime dateTimeNow = await NTP.now();
-
           await SupabaseController.supabase!.from('notifications').insert({
             'amount': Random().nextInt(50000).toDouble() + 50000,
             'to': friendName,
             'from': name,
             'action': 'friend_code_moneys',
-            'date': dateTimeNow.toIso8601String(),
+            'date': DateTime.now().toLocal().toIso8601String(),
           });
         });
       }
@@ -443,7 +446,8 @@ class SupabaseController extends ChangeNotifier {
   }
 
   Future checkPremiumAvailability(BuildContext context) async {
-    DateTime dateTimeNow = await NTP.now();
+    DateTime dateTimeUTC = await NTP.now();
+    dateTimeUTC = dateTimeUTC.toUtc();
 
     try {
       await SupabaseController.supabase!
@@ -453,11 +457,14 @@ class SupabaseController extends ChangeNotifier {
           .then((value) {
         Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-        expiredSubscriptionDate = DateTime.parse(map['premium']);
+        expiredSubscriptionDate =
+            DateTime.parse('${map['premium']}Z').toLocal();
 
-        if (expiredSubscriptionDate.difference(dateTimeNow).inDays <= 0 &&
-            expiredSubscriptionDate.difference(dateTimeNow).inHours <= 0 &&
-            expiredSubscriptionDate.difference(dateTimeNow).inMinutes <= 0) {
+        DateTime expiredSubscriptionDateUTC = DateTime.parse(map['premium']);
+
+        if (expiredSubscriptionDateUTC.difference(dateTimeUTC).inDays <= 0 &&
+            expiredSubscriptionDateUTC.difference(dateTimeUTC).inHours <= 0 &&
+            expiredSubscriptionDateUTC.difference(dateTimeUTC).inMinutes <= 0) {
           isPremium = false;
         } else {
           isPremium = true;
@@ -508,7 +515,20 @@ class SupabaseController extends ChangeNotifier {
     return result;
   }
 
+  Future<bool> checkOnEmulator() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
+    return androidInfo.isPhysicalDevice; // && !kDebugMode
+  }
+
   Future loadGameServices(BuildContext context) async {
+    if (!kDebugMode) {
+      await FreeraspService().initSecurityState(context);
+    }
+
+    // ignore: use_build_context_synchronously
     await checkAccountForFreezing(context).then((frozen) async {
       if (frozen) {
         showSimpleAlertDialog(
@@ -535,7 +555,13 @@ class SupabaseController extends ChangeNotifier {
 
         await LocalPromocodes().initializeMyPromocodes();
 
+        // ignore: use_build_context_synchronously
+        await provider.Provider.of<SettingsController>(context, listen: false)
+            .loadSettings();
+
         await AdService.loadCountBet();
+
+        await AudioController.initializeAudios();
       }
     });
   }

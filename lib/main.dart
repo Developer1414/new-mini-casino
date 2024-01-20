@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
@@ -22,6 +23,7 @@ import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/notification_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
@@ -55,7 +57,7 @@ import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/money_storage.dart';
-import 'package:new_mini_casino/screens/my_promocodes.dart';
+import 'package:new_mini_casino/screens/local_bonuses.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
 import 'package:new_mini_casino/screens/notifications.dart';
 import 'package:new_mini_casino/screens/other_user_profile.dart';
@@ -65,17 +67,20 @@ import 'package:new_mini_casino/screens/privacy_policy.dart';
 import 'package:new_mini_casino/screens/profile.dart';
 import 'package:new_mini_casino/screens/promocode.dart';
 import 'package:new_mini_casino/screens/raffle_info.dart';
+import 'package:new_mini_casino/screens/settings.dart';
 import 'package:new_mini_casino/screens/store/store.dart';
 import 'package:new_mini_casino/screens/store/store_items.dart';
 import 'package:new_mini_casino/screens/store/store_product_review.dart';
 import 'package:new_mini_casino/screens/user_agreement.dart';
 import 'package:new_mini_casino/screens/verify_number.dart';
 import 'package:new_mini_casino/screens/welcome.dart';
+import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/themes/dark_theme.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:new_mini_casino/themes/light_theme.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/background_model.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'package:flutter/material.dart';
@@ -83,13 +88,17 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:provider/provider.dart';
 
+ScreenshotController screenshotController = ScreenshotController();
+ConfettiController confettiController =
+    ConfettiController(duration: const Duration(seconds: 1));
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await SupabaseController.initialize();
 
   Appodeal.initialize(
-      appKey: "c78a1ef351d23b50755c40ac6f29bbfd75d1296524830f25",
+      appKey: APIKeys.appodealKey,
       adTypes: [
         AppodealAdType.Interstitial,
         AppodealAdType.Banner,
@@ -98,11 +107,10 @@ void main() async {
       ],
       onInitializationFinished: (errors) => {});
 
-  await AppMetrica.activate(
-      const AppMetricaConfig("c7091f0c-996b-4764-a824-8b1570535fd6"));
+  await AppMetrica.activate(AppMetricaConfig(APIKeys.appMetricaKey));
   AppMetrica.reportEvent('My first AppMetrica event!');
 
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
     initializeDateFormatting('ru_RU', null)
         .then((value) => runApp(const MainApp()));
@@ -171,11 +179,22 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
     locationBuilder: RoutesLocationBuilder(
       routes: {
         '/': (context, state, data) => const Home(),
-        '/games': (context, state, data) => const AllGames(),
+        '/games': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const AllGames(),
+              ],
+            ),
         '/notifications': (context, state, data) => Stack(
               children: [
                 backgroundModel(),
                 const Notifications(),
+              ],
+            ),
+        '/settings': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Settings(),
               ],
             ),
         '/transfer-moneys': (context, state, data) => Stack(
@@ -203,10 +222,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 const PremiumInfo(),
               ],
             ),
-        '/my-promocodes': (context, state, data) => Stack(
+        '/local-bonuses': (context, state, data) => Stack(
               children: [
                 backgroundModel(),
-                const MyPromocodes(),
+                const LocalBonuses(),
               ],
             ),
         '/own-promocode': (context, state, data) => Stack(
@@ -246,7 +265,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 const Profile(),
               ],
             ),
-        '/raffle-info': (context, state, data) => const RaffleInfo(),
+        '/raffle-info': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const RaffleInfo(),
+              ],
+            ),
         '/mines': (context, state, data) => Stack(
               children: [
                 backgroundModel(),
@@ -429,6 +453,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(
             create: (ctx) => PurchasingGameCurrencyController()),
         ChangeNotifierProvider(create: (ctx) => SupabaseController()),
+        ChangeNotifierProvider(create: (ctx) => SettingsController()),
         ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
         ChangeNotifierProvider(create: (ctx) => AutoBetsController()),
         ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),

@@ -89,13 +89,13 @@ class TransferMoneysManager extends ChangeNotifier {
       return;
     }
 
-    if (amount > 100000) {
+    if (amount > 1000000) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}!',
+            'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000000)}!',
       );
 
       return;
@@ -105,6 +105,10 @@ class TransferMoneysManager extends ChangeNotifier {
 
     DateTime dateTimeNow = await NTP.now();
     DateTime dateTime = await NTP.now();
+
+    dateTime = dateTime.toUtc();
+    dateTimeNow = dateTimeNow.toUtc();
+
     double currentSum = 0.0;
 
     if (prefs.containsKey('transfer')) {
@@ -114,7 +118,7 @@ class TransferMoneysManager extends ChangeNotifier {
       currentSum = double.parse(
           jsonDecode(prefs.getString('transfer').toString())[0].toString());
 
-      if (currentSum >= 100000) {
+      if (currentSum >= 1000000) {
         if (dateTime.difference(dateTimeNow).inHours > 0) {
           if (context.mounted) {
             alertDialogError(
@@ -131,14 +135,14 @@ class TransferMoneysManager extends ChangeNotifier {
           prefs.remove('transfer');
         }
       } else {
-        if (currentSum + amount > 100000) {
+        if (currentSum + amount > 1000000) {
           if (context.mounted) {
             alertDialogError(
               context: context,
               title: 'Ошибка',
               confirmBtnText: 'Окей',
               text:
-                  'Вы можете перевести максимум еще ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000 - currentSum)}!',
+                  'Вы можете перевести максимум еще ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000000 - currentSum)}!',
             );
           }
 
@@ -154,16 +158,12 @@ class TransferMoneysManager extends ChangeNotifier {
           .checkNameOnAvailability(name: name)
           .then((isExist) async {
         if (isExist) {
-          DateTime dateTimeNow = await NTP.now();
-
           await SupabaseController.supabase!.from('notifications').insert({
             'amount': amount,
             'to': name,
             'from': ProfileController.profileModel.nickname,
             'action': 'transfer_moneys',
             'date': dateTimeNow.toIso8601String(),
-            'expiredDate':
-                dateTimeNow.add(const Duration(minutes: 5)).toIso8601String(),
           });
 
           balance.placeBet(amountWithComission);
@@ -196,7 +196,7 @@ class TransferMoneysManager extends ChangeNotifier {
                 'transfer',
                 jsonEncode([
                   currentSum,
-                  dateTimeNow.add(const Duration(hours: 24)).toString()
+                  dateTimeNow.add(const Duration(hours: 12)).toString()
                 ]));
 
             AdService.showInterstitialAd(
@@ -216,12 +216,14 @@ class TransferMoneysManager extends ChangeNotifier {
     } on PostgrestException catch (e) {
       showLoading(false);
 
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text: e.message,
-      );
+      if (context.mounted) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: e.message,
+        );
+      }
 
       if (kDebugMode) {
         print('createUserDates: $e');

@@ -6,7 +6,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:new_mini_casino/business/local_promocodes_service.dart';
+import 'package:new_mini_casino/business/local_bonuse_manager.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:provider/provider.dart' as provider;
 import 'dart:io' as ui;
@@ -122,8 +122,8 @@ class PromocodeManager extends ChangeNotifier {
           .eq('uid',
               SupabaseController.supabase?.auth.currentUser!.id) // newyear
           .then((value) async {
-        Map<String, dynamic> promocodes = (((value) as List<dynamic>)
-            .first['promocodes']) as Map<String, dynamic>;
+        Map<String, dynamic> promocodes =
+            jsonDecode((value as List<dynamic>).first['promocodes']);
 
         if (promocodes.containsKey(title)) {
           alertDialogError(

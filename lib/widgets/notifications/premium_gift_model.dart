@@ -13,8 +13,8 @@ Widget premiumGiftModel(
     required Map<dynamic, dynamic> docs}) {
   String from = docs['from'];
 
-  DateTime expiredDate = DateTime.parse(docs['expiredDate']);
-  DateTime date = DateTime.parse(docs['date']);
+  DateTime expiredDate = DateTime.parse('${docs['expiredDate']}Z').toLocal();
+  DateTime date = DateTime.parse('${docs['date']}Z').toLocal();
 
   return Container(
     width: double.infinity,
@@ -38,14 +38,17 @@ Widget premiumGiftModel(
                 size: 23.0,
               ),
               const SizedBox(width: 8.0),
-              AutoSizeText(
-                'MINI CASINO',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.roboto(
-                  color: const Color.fromARGB(255, 5, 2, 1),
-                  fontSize: 22.0,
-                  letterSpacing: 0.5,
-                  fontWeight: FontWeight.w900,
+              Expanded(
+                child: AutoSizeText(
+                  'MINI CASINO',
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    color: const Color.fromARGB(255, 5, 2, 1),
+                    fontSize: 22.0,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w900,
+                  ),
                 ),
               ),
               const SizedBox(width: 5.0),
@@ -58,6 +61,7 @@ Widget premiumGiftModel(
                       vertical: 5.0, horizontal: 10.0),
                   child: AutoSizeText(
                     'PREMIUM',
+                    maxLines: 1,
                     textAlign: TextAlign.center,
                     style: GoogleFonts.roboto(
                       color: Colors.white,

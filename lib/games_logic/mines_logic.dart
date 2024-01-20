@@ -1,7 +1,10 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
@@ -94,7 +97,8 @@ class MinesLogic extends ChangeNotifier {
         }
       }
 
-      CommonFunctions.call(context: context, bet: bet, gameName: 'mines');
+      CommonFunctions.callOnStart(
+          context: context, bet: bet, gameName: 'mines');
 
       notifyListeners();
     } else {
@@ -129,7 +133,25 @@ class MinesLogic extends ChangeNotifier {
         gameStatisticModel:
             GameStatisticModel(winningsMoneys: profit, maxWin: profit));
 
+    try {
+      CommonFunctions.callOnProfit(
+        context: context,
+        bet: bet,
+        gameName: 'mines',
+        profit: profit,
+      );
+    } on Exception catch (e) {
+      if (kDebugMode) {
+        print('ERROR: ${e.toString()}');
+      }
+    }
+
     notifyListeners();
+
+    if (Provider.of<SettingsController>(context, listen: false)
+        .isEnabledConfetti) {
+      confettiController.play();
+    }
 
     AutoclickerSecure().checkAutoclicker();
     AdService.showInterstitialAd(context: context, func: () {});

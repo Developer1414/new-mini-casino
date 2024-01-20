@@ -9,11 +9,9 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
-import 'package:new_mini_casino/widgets/change_nickname_alert.dart';
 import 'package:new_mini_casino/widgets/imporant_user_profile_info_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/quickalert.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -73,50 +71,15 @@ class _ProfileState extends State<Profile> {
                     },
                   ),
                   actions: [
-                    IconButton(
-                        splashRadius: 25.0,
-                        padding: EdgeInsets.zero,
-                        onPressed: () => changeNicknameAlert(context: context),
-                        icon: FaIcon(FontAwesomeIcons.pen,
-                            color:
-                                Theme.of(context).appBarTheme.iconTheme!.color,
-                            size: 22.0)),
-                    const SizedBox(width: 5.0),
                     Padding(
                       padding: const EdgeInsets.only(right: 15.0),
                       child: IconButton(
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
-                          onPressed: () {
-                            QuickAlert.show(
-                                context: context,
-                                type: QuickAlertType.confirm,
-                                title: 'Подтверждение',
-                                text:
-                                    'Вы уверены что хотите выйти из аккаунта?',
-                                confirmBtnText: 'Нет',
-                                cancelBtnText: 'Да',
-                                showCancelBtn: true,
-                                confirmBtnColor: Colors.redAccent,
-                                animType: QuickAlertAnimType.slideInDown,
-                                onCancelBtnTap: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-
-                                  accountController.signOut().whenComplete(() {
-                                    Provider.of<Balance>(context, listen: false)
-                                        .balance = 0.0;
-                                    context.beamToReplacementNamed('/login');
-                                  });
-                                },
-                                onConfirmBtnTap: () {
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop();
-                                });
-                          },
+                          onPressed: () => context.beamToNamed('/settings'),
                           icon: FaIcon(
-                            FontAwesomeIcons.rightFromBracket,
-                            color: Colors.redAccent,
+                            FontAwesomeIcons.gear,
+                            color: Colors.white,
                             size: Theme.of(context).appBarTheme.iconTheme!.size,
                           )),
                     ),

@@ -7,18 +7,23 @@ import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'dart:io' as ui;
 
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/background_model.dart';
 import 'package:new_mini_casino/widgets/bottom_game_navigation.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 class Slots extends StatefulWidget {
   const Slots({super.key});
@@ -40,9 +45,6 @@ class Slots extends StatefulWidget {
 class _SlotsState extends State<Slots> {
   static List<ScrollController> controllers =
       List.generate(3, (index) => ScrollController());
-
-  final ConfettiController confettiController =
-      ConfettiController(duration: const Duration(seconds: 1));
 
   int time = 0;
   int startIndex = 0;
@@ -172,7 +174,7 @@ class _SlotsState extends State<Slots> {
 
     double bet = Slots.betFormatter.getUnformattedValue().toDouble();
 
-    CommonFunctions.call(context: context, bet: bet, gameName: 'slots');
+    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'slots');
 
     setState(() {
       isSpinning = true;
@@ -245,7 +247,10 @@ class _SlotsState extends State<Slots> {
       if (!timer.isActive) {
         if (coefficientsIndexWinner != -1) {
           if (reelWinners.values.toList()[coefficientsIndexWinner] >= 2.0) {
-            confettiController.play();
+            if (Provider.of<SettingsController>(context, listen: false)
+                .isEnabledConfetti) {
+              confettiController.play();
+            }
           }
 
           double profit =
@@ -257,6 +262,13 @@ class _SlotsState extends State<Slots> {
               gameName: 'slots',
               gameStatisticModel:
                   GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+
+          CommonFunctions.callOnProfit(
+            context: context,
+            bet: bet,
+            gameName: 'slots',
+            profit: profit,
+          );
         } else {
           GameStatisticController.updateGameStatistic(
               gameName: 'slots',
@@ -308,6 +320,7 @@ class _SlotsState extends State<Slots> {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
+            backgroundModel(),
             Scaffold(
               resizeToAvoidBottomInset: false,
               bottomNavigationBar: bottomGameNavigation(
@@ -319,6 +332,10 @@ class _SlotsState extends State<Slots> {
                   switchValue: isFast,
                   isCanSwitch: true,
                   onSwitched: (value) {
+                    if (isSpinning) {
+                      return;
+                    }
+
                     setState(() {
                       isFast = !isFast;
                     });
@@ -413,118 +430,136 @@ class _SlotsState extends State<Slots> {
                   ),
                 ],
               ),
-              body: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      children: [
-                        Row(
+              body: Padding(
+                padding: const EdgeInsets.only(bottom: 15.0),
+                child: Screenshot(
+                  controller: screenshotController,
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (int i = 0; i < 3; i++)
+                                  coefficient(
+                                      isSelected: coefficientsIndexWinner == i,
+                                      icons: reelWinners.keys.toList()[i],
+                                      coefficient:
+                                          reelWinners.values.toList()[i]),
+                              ],
+                            ),
+                            const SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (int i = 3; i < 6; i++)
+                                  coefficient(
+                                      isSelected: coefficientsIndexWinner == i,
+                                      icons: reelWinners.keys.toList()[i],
+                                      coefficient:
+                                          reelWinners.values.toList()[i]),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 10.0),
+                      Expanded(
+                          child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             for (int i = 0; i < 3; i++)
-                              coefficient(
-                                  isSelected: coefficientsIndexWinner == i,
-                                  icons: reelWinners.keys.toList()[i],
-                                  coefficient: reelWinners.values.toList()[i]),
-                          ],
-                        ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            for (int i = 3; i < 6; i++)
-                              coefficient(
-                                  isSelected: coefficientsIndexWinner == i,
-                                  icons: reelWinners.keys.toList()[i],
-                                  coefficient: reelWinners.values.toList()[i]),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10.0),
-                  Expanded(
-                      child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        for (int i = 0; i < 3; i++)
-                          Expanded(
-                            child: Container(
-                              height: 150.0,
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 5.0),
-                              decoration: BoxDecoration(
-                                  color:
-                                      Colors.lightBlueAccent.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(
-                                      color: Colors.lightBlueAccent
-                                          .withOpacity(0.7),
-                                      width: 4.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15.0),
-                                child: isReelsSpinning[i] == false
-                                    ? Image.asset(
-                                        'assets/slots/${choosedReels[i]}.png',
-                                      )
-                                    : AnimatedSwitcher(
-                                        duration:
-                                            const Duration(milliseconds: 100),
-                                        child: ListView.separated(
-                                          key: ValueKey<String>(
-                                              '${choosedReels[i]}${Random().nextInt(10000)}'),
-                                          itemCount: 100,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          controller: controllers[i],
-                                          itemBuilder: (context, index) =>
-                                              Image.asset(
-                                            'assets/slots/${choosedReels[i]}.png',
-                                          ),
-                                          separatorBuilder: (context, index) =>
-                                              const SizedBox(height: 15.0),
-                                        )),
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 5.0),
+                                  child: GlassContainer(
+                                    blur: 8,
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    child: Container(
+                                      height: 150.0,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          border: Border.all(
+                                              color: Colors.lightBlueAccent
+                                                  .withOpacity(0.7),
+                                              width: 4.0)),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 15.0),
+                                        child: isReelsSpinning[i] == false
+                                            ? Image.asset(
+                                                'assets/slots/${choosedReels[i]}.png',
+                                              )
+                                            : AnimatedSwitcher(
+                                                duration: const Duration(
+                                                    milliseconds: 100),
+                                                child: ListView.separated(
+                                                  key: ValueKey<String>(
+                                                      '${choosedReels[i]}${Random().nextInt(10000)}'),
+                                                  itemCount: 100,
+                                                  physics:
+                                                      const NeverScrollableScrollPhysics(),
+                                                  controller: controllers[i],
+                                                  itemBuilder:
+                                                      (context, index) =>
+                                                          Image.asset(
+                                                    'assets/slots/${choosedReels[i]}.png',
+                                                  ),
+                                                  separatorBuilder:
+                                                      (context, index) =>
+                                                          const SizedBox(
+                                                              height: 15.0),
+                                                )),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
+                          ],
+                        ),
+                      )),
+                      const SizedBox(height: 10.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (int i = 6; i < 9; i++)
+                                  coefficient(
+                                      isSelected: coefficientsIndexWinner == i,
+                                      icons: reelWinners.keys.toList()[i],
+                                      coefficient:
+                                          reelWinners.values.toList()[i]),
+                              ],
                             ),
-                          ),
-                      ],
-                    ),
-                  )),
-                  const SizedBox(height: 10.0),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            for (int i = 6; i < 9; i++)
-                              coefficient(
-                                  isSelected: coefficientsIndexWinner == i,
-                                  icons: reelWinners.keys.toList()[i],
-                                  coefficient: reelWinners.values.toList()[i]),
+                            const SizedBox(height: 10.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                for (int i = 9; i < 12; i++)
+                                  coefficient(
+                                      isSelected: coefficientsIndexWinner == i,
+                                      icons: reelWinners.keys.toList()[i],
+                                      coefficient:
+                                          reelWinners.values.toList()[i]),
+                              ],
+                            ),
                           ],
                         ),
-                        const SizedBox(height: 10.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            for (int i = 9; i < 12; i++)
-                              coefficient(
-                                  isSelected: coefficientsIndexWinner == i,
-                                  icons: reelWinners.keys.toList()[i],
-                                  coefficient: reelWinners.values.toList()[i]),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 15.0),
-                ],
+                ),
               ),
             ),
             ConfettiWidget(
@@ -541,48 +576,55 @@ class _SlotsState extends State<Slots> {
       required double coefficient,
       bool isSelected = false}) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
-        margin: const EdgeInsets.symmetric(horizontal: 5.0),
-        decoration: BoxDecoration(
-            color: isSelected
-                ? const Color.fromARGB(50, 76, 175, 80)
-                : Theme.of(context).cardColor.withOpacity(0.5),
-            borderRadius: BorderRadius.circular(15.0),
-            border: Border.all(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: GlassContainer(
+          blur: 8,
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(15.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            decoration: BoxDecoration(
                 color: isSelected
-                    ? Colors.green
-                    : const Color.fromARGB(200, 83, 91, 121),
-                width: 3.0)),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Row(
+                    ? const Color.fromARGB(50, 76, 175, 80)
+                    : Colors
+                        .transparent, // Theme.of(context).cardColor.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(15.0),
+                border: Border.all(
+                    color: isSelected
+                        ? Colors.green
+                        : Colors
+                            .transparent, //const Color.fromARGB(200, 83, 91, 121),
+                    width: 3.0)),
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                for (int i = 0; i < icons.length; i++)
-                  Image.asset(
-                    'assets/slots/${icons[i] != '?' ? icons[i] : 'question'}.png',
-                    color: icons[i] == '?'
-                        ? Theme.of(context).buttonTheme.colorScheme!.background
-                        : null,
-                    width: 12.0,
-                    height: 12.0,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < icons.length; i++)
+                      Image.asset(
+                        'assets/slots/${icons[i] != '?' ? icons[i] : 'question'}.png',
+                        color: icons[i] == '?' ? Colors.grey.shade400 : null,
+                        width: 12.0,
+                        height: 12.0,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 5.0),
+                AutoSizeText('${coefficient.toStringAsFixed(2)}x',
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontSize: 5.0,
+                        color: Theme.of(context)
+                            .textTheme
+                            .bodySmall!
+                            .color!
+                            .withOpacity(0.7))),
               ],
             ),
-            const SizedBox(height: 5.0),
-            AutoSizeText('${coefficient.toStringAsFixed(2)}x',
-                maxLines: 1,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                    fontSize: 5.0,
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodySmall!
-                        .color!
-                        .withOpacity(0.7))),
-          ],
+          ),
         ),
       ),
     );

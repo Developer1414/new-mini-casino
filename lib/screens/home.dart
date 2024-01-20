@@ -16,6 +16,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  static bool isLoaded = false;
+
   Future showPremiumSubscription() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -46,45 +48,56 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    redirect();
+    //redirect();
     //showPremiumSubscription();
   }
 
   Future<Widget> redirect() async {
-    await Future.delayed(Duration.zero);
-    if (!mounted) {
-      return const Login();
-    }
+    if (!isLoaded) {
+      final session = SupabaseController.supabase?.auth.currentSession;
 
-    final session = SupabaseController.supabase?.auth.currentSession;
+      if (session != null) {
+        await SupabaseController().loadGameServices(context);
 
-    if (session != null) {
-      await SupabaseController().loadGameServices(context);
+        isLoaded = true;
 
-      return const AllGames();
+        return Stack(
+          children: [
+            backgroundModel(),
+            const AllGames(),
+          ],
+        );
+      } else {
+        return Stack(
+          children: [
+            backgroundModel(),
+            const Login(),
+          ],
+        );
+      }
     } else {
-      return const Login();
+      return Stack(
+        children: [
+          backgroundModel(),
+          const AllGames(),
+        ],
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        backgroundModel(),
-        PopScope(
-            canPop: false,
-            child: FutureBuilder(
-              future: redirect(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return loading(context: context);
-                }
+    return PopScope(
+        canPop: false,
+        child: FutureBuilder(
+          future: redirect(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return loading(context: context);
+            }
 
-                return snapshot.data!;
-              },
-            )),
-      ],
-    );
+            return snapshot.data ?? Container();
+          },
+        ));
   }
 }

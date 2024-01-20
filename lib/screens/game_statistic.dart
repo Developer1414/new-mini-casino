@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
@@ -140,12 +141,10 @@ class GameStatistic extends StatelessWidget {
       required double number,
       bool isMoneys = true,
       bool isPercent = false}) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.lightBlueAccent.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15.0),
-          border: Border.all(
-              color: Colors.lightBlueAccent.withOpacity(0.7), width: 2.0)),
+    return GlassContainer(
+      blur: 8,
+      color: Colors.white.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(10.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -161,7 +160,7 @@ class GameStatistic extends StatelessWidget {
                               locale: ui.Platform.localeName)
                           .format(number)
                   : isPercent
-                      ? '${number.toStringAsFixed(2)}%'
+                      ? '${number.toInt()}%'
                       : NumberFormat.compact(locale: ui.Platform.localeName)
                           .format(number),
               maxLines: 1,

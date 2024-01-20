@@ -1,12 +1,11 @@
-import 'dart:math';
 import 'dart:io' as ui;
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -30,8 +29,9 @@ class AllGames extends StatefulWidget {
   const AllGames({super.key});
 
   static Map<String, String> items = {
-    '/leader-board': 'Лидеры',
+    '/leader-board': 'Лидер дня',
     '/promocode': 'Промокод',
+    '/local-bonuses': 'Мои бонусы',
   };
 
   @override
@@ -39,8 +39,6 @@ class AllGames extends StatefulWidget {
 }
 
 class _AllGamesState extends State<AllGames> {
-  static bool show1xBanner = false;
-
   Future checkDailyBonus() async {
     await DailyBonusManager().checkDailyBonus().then((value) {
       if (value) {
@@ -63,33 +61,11 @@ class _AllGamesState extends State<AllGames> {
     });
   }
 
-  Future show1xBanners() async {
-    if (kDebugMode) {
-      return;
-    }
-
-    await SupabaseController.supabase!
-        .from('settings')
-        .select('*')
-        .eq('setting', '1xBannerShow')
-        .then((value) {
-      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
-      show1xBanner = (map['value'] as bool);
-
-      if (show1xBanner) {
-        setState(() {
-          show1xBanner = Random().nextBool();
-        });
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     checkDailyBonus();
     checkOnEngineeringWorks();
-    show1xBanners();
   }
 
   @override
@@ -429,116 +405,134 @@ class _AllGamesState extends State<AllGames> {
                                               Radius.circular(25.0))),
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 15.0),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(80, 42, 171, 238),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    color:
-                                        const Color.fromARGB(255, 42, 171, 238),
-                                    width: 2.0)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Telegram',
-                                      textAlign: TextAlign.left,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(fontSize: 22.0)),
-                                  Text(
-                                      'Подписывайтесь на наш телеграм канал, чтобы не пропускать новости и обновления!',
-                                      textAlign: TextAlign.left,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall),
-                                  const SizedBox(height: 15.0),
-                                  buttonModel(
-                                    context: context,
-                                    icon: FontAwesomeIcons.telegram,
-                                    buttonName: 'Mini Casino',
-                                    color:
-                                        const Color.fromARGB(255, 42, 171, 238),
-                                    onPressed: () async {
-                                      if (!await launchUrl(
-                                          Uri.parse(
-                                              'https://t.me/mini_casino_info'),
-                                          mode: LaunchMode
-                                              .externalNonBrowserApplication)) {
-                                        throw Exception(
-                                            'Could not launch ${Uri.parse('https://t.me/mini_casino_info')}');
-                                      }
-                                    },
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: GlassContainer(
+                              blur: 8,
+                              color: const Color.fromARGB(80, 42, 171, 238)
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(15.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    //color: const Color.fromARGB(80, 42, 171, 238),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 42, 171, 238),
+                                        width: 2.0)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Telegram',
+                                          textAlign: TextAlign.left,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(fontSize: 22.0)),
+                                      Text(
+                                          'Подписывайтесь на наш телеграм канал, чтобы не пропускать новости и обновления!\n\nP.S. Раз в месяц там проходит розыгрыш на Premium!',
+                                          textAlign: TextAlign.left,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                      const SizedBox(height: 15.0),
+                                      buttonModel(
+                                        context: context,
+                                        icon: FontAwesomeIcons.telegram,
+                                        buttonName: 'Mini Casino',
+                                        color: const Color.fromARGB(
+                                            255, 42, 171, 238),
+                                        onPressed: () async {
+                                          if (!await launchUrl(
+                                              Uri.parse(
+                                                  'https://t.me/mini_casino_info'),
+                                              mode: LaunchMode
+                                                  .externalNonBrowserApplication)) {
+                                            throw Exception(
+                                                'Could not launch ${Uri.parse('https://t.me/mini_casino_info')}');
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
-                          Container(
-                            margin: const EdgeInsets.only(top: 15.0),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(80, 238, 104, 42),
-                                borderRadius: BorderRadius.circular(15.0),
-                                border: Border.all(
-                                    color:
-                                        const Color.fromARGB(255, 238, 104, 42),
-                                    width: 2.0)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Приведите друга',
-                                      textAlign: TextAlign.left,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium!
-                                          .copyWith(fontSize: 22.0)),
-                                  Text(
-                                      'Вы и ваш друг, зарегистрировавшийся по вашему коду, получите вознаграждение! Вы до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}, а друг до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(20000)}',
-                                      textAlign: TextAlign.left,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall),
-                                  const SizedBox(height: 15.0),
-                                  buttonModel(
-                                    context: context,
-                                    icon: FontAwesomeIcons.share,
-                                    buttonName: 'Поделиться',
-                                    color:
-                                        const Color.fromARGB(255, 238, 104, 42),
-                                    onPressed: () async {
-                                      await Share.share(
-                                          'Привет! Скачивай игру Mini Casino (https://play.google.com/store/apps/details?id=com.revens.mini.casino), регистрируйся по моему коду (${SupabaseController.supabase?.auth.currentUser!.id}) и получай вознаграждение!');
-                                    },
-                                  ),
-                                  const SizedBox(height: 15.0),
-                                  buttonModel(
-                                    context: context,
-                                    icon: FontAwesomeIcons.solidCopy,
-                                    buttonName: 'Скопировать код',
-                                    color:
-                                        const Color.fromARGB(255, 238, 104, 42),
-                                    onPressed: () async {
-                                      await Clipboard.setData(ClipboardData(
-                                          text: SupabaseController
-                                              .supabase!.auth.currentUser!.id));
+                          Padding(
+                            padding: const EdgeInsets.only(top: 15.0),
+                            child: GlassContainer(
+                              blur: 8,
+                              color: const Color.fromARGB(80, 238, 104, 42)
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(15.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    //color: const Color.fromARGB(80, 238, 104, 42),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 238, 104, 42),
+                                        width: 2.0)),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Приведите друга',
+                                          textAlign: TextAlign.left,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(fontSize: 22.0)),
+                                      Text(
+                                          'Вы и ваш друг, зарегистрировавшийся по вашему коду, получите вознаграждение! Вы до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}, а друг до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(20000)}',
+                                          textAlign: TextAlign.left,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                      const SizedBox(height: 15.0),
+                                      buttonModel(
+                                        context: context,
+                                        icon: FontAwesomeIcons.share,
+                                        buttonName: 'Поделиться',
+                                        color: const Color.fromARGB(
+                                            255, 238, 104, 42),
+                                        onPressed: () async {
+                                          await Share.share(
+                                              'Привет! Скачивай игру Mini Casino (https://play.google.com/store/apps/details?id=com.revens.mini.casino), регистрируйся по моему коду (${SupabaseController.supabase?.auth.currentUser!.id}) и получай вознаграждение!');
+                                        },
+                                      ),
+                                      const SizedBox(height: 15.0),
+                                      buttonModel(
+                                        context: context,
+                                        icon: FontAwesomeIcons.solidCopy,
+                                        buttonName: 'Скопировать код',
+                                        color: const Color.fromARGB(
+                                            255, 238, 104, 42),
+                                        onPressed: () async {
+                                          await Clipboard.setData(ClipboardData(
+                                              text: SupabaseController.supabase!
+                                                  .auth.currentUser!.id));
 
-                                      if (context.mounted) {
-                                        alertDialogSuccess(
-                                          context: context,
-                                          title: 'Поздравляем',
-                                          confirmBtnText: 'Окей!',
-                                          text:
-                                              'Код скопирован! Теперь вы можете поделиться им с другом, и как только ваш друг зарегистрируется, вы оба получите награду!',
-                                        );
-                                      }
-                                    },
+                                          if (context.mounted) {
+                                            alertDialogSuccess(
+                                              context: context,
+                                              title: 'Поздравляем',
+                                              confirmBtnText: 'Окей!',
+                                              text:
+                                                  'Код скопирован! Теперь вы можете поделиться им с другом, и как только ваш друг зарегистрируется, вы оба получите награду!',
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
                             ),
                           ),
@@ -562,104 +556,61 @@ class _AllGamesState extends State<AllGames> {
   Widget premiumButton() {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 60.0,
-              child: ElevatedButton(
-                onPressed: () async {
-                  context.beamToNamed('/premium');
+        child: SizedBox(
+          height: 60.0,
+          child: ElevatedButton(
+            onPressed: () async {
+              context.beamToNamed('/premium'); // premium // raffle-info
 
-                  /* showSimpleAlertDialog(
-                      context: context,
-                      text: 'Покупка Premium временно недоступна!');*/
-                },
-                style: ElevatedButton.styleFrom(
-                  elevation: 5,
-                  shadowColor:
-                      const Color.fromARGB(255, 179, 242, 31).withOpacity(0.8),
-                  backgroundColor: const Color.fromARGB(255, 179, 242, 31),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
+              /* showSimpleAlertDialog(
+                  context: context,
+                  text: 'Покупка Premium временно недоступна!');*/
+            },
+            style: ElevatedButton.styleFrom(
+              elevation: 5,
+              shadowColor:
+                  const Color.fromARGB(255, 179, 242, 31).withOpacity(0.8),
+              backgroundColor: const Color.fromARGB(255, 179, 242, 31),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AutoSizeText(
+                  'MINI CASINO',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.roboto(
+                    color: const Color.fromARGB(255, 5, 2, 1),
+                    fontSize: 22.0,
+                    letterSpacing: 0.5,
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AutoSizeText(
-                      'MINI CASINO',
+                const SizedBox(width: 5.0),
+                Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.black87),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 5.0, horizontal: 10.0),
+                    child: AutoSizeText(
+                      'PREMIUM',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.roboto(
-                        color: const Color.fromARGB(255, 5, 2, 1),
+                        color: Colors.white,
                         fontSize: 22.0,
                         letterSpacing: 0.5,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const SizedBox(width: 5.0),
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15.0),
-                          color: Colors.black87),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 10.0),
-                        child: AutoSizeText(
-                          'PREMIUM',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: 22.0,
-                            letterSpacing: 0.5,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Image.asset('assets/other_images/christmas-ball.png',
-                    width: 30.0, height: 30.0),
-                Image.asset('assets/other_images/christmas-ball.png',
-                    width: 30.0, height: 30.0),
-                Container(
-                  decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(12.0),
-                          bottomRight: Radius.circular(12.0)),
-                      gradient: LinearGradient(colors: [
-                        const Color.fromARGB(255, 179, 242, 31)
-                            .withOpacity(0.8),
-                        Colors.redAccent
-                      ])),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5.0, horizontal: 22.0),
-                    child: AutoSizeText(
-                      '-30%',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.roboto(
-                        color: Colors.black,
-                        fontSize: 15.0,
-                        letterSpacing: 0.5,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
                   ),
                 ),
-                Image.asset('assets/other_images/christmas-ball.png',
-                    width: 30.0, height: 30.0),
-                Image.asset('assets/other_images/christmas-ball.png',
-                    width: 30.0, height: 30.0),
               ],
             ),
-          ],
+          ),
         ));
   }
 }

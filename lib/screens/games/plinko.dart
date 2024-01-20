@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
@@ -17,6 +18,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/plinko_logic.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
@@ -57,7 +59,7 @@ class Plinko extends StatelessWidget {
 
     double bet = betFormatter.getUnformattedValue().toDouble();
 
-    CommonFunctions.call(context: context, bet: bet, gameName: 'plinko');
+    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'plinko');
 
     if (MyGame.instance != null) {
       MyGame.instance!.createNewBall(context, bet);
@@ -67,160 +69,172 @@ class Plinko extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      bottomNavigationBar: bottomGameNavigation(
-          context: context,
-          betFormatter: Plinko.betFormatter,
-          betController: Plinko.betController,
-          isPlaying: !Provider.of<AutoBetsController>(context, listen: false)
-              .exitGame(context),
-          isCanSwitch: false,
-          onPressed: () => makeBet(context)),
-      appBar: AppBar(
-        toolbarHeight: 76.0,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 15.0),
-          child: IconButton(
-              splashRadius: 25.0,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (!Provider.of<AutoBetsController>(context, listen: false)
-                    .exitGame(context)) {
-                  return;
-                }
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        Scaffold(
+          resizeToAvoidBottomInset: false,
+          bottomNavigationBar: bottomGameNavigation(
+              context: context,
+              betFormatter: Plinko.betFormatter,
+              betController: Plinko.betController,
+              isPlaying:
+                  !Provider.of<AutoBetsController>(context, listen: false)
+                      .exitGame(context),
+              isCanSwitch: false,
+              onPressed: () => makeBet(context)),
+          appBar: AppBar(
+            toolbarHeight: 76.0,
+            elevation: 0,
+            backgroundColor: Colors.transparent,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 15.0),
+              child: IconButton(
+                  splashRadius: 25.0,
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    if (!Provider.of<AutoBetsController>(context, listen: false)
+                        .exitGame(context)) {
+                      return;
+                    }
 
-                Beamer.of(context).beamBack();
-              },
-              icon: FaIcon(
-                FontAwesomeIcons.arrowLeft,
-                color: Theme.of(context).appBarTheme.iconTheme!.color,
-                size: Theme.of(context).appBarTheme.iconTheme!.size,
-              )),
-        ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AutoSizeText(
-              'Plinko',
-              style: Theme.of(context).appBarTheme.titleTextStyle,
+                    Beamer.of(context).beamBack();
+                  },
+                  icon: FaIcon(
+                    FontAwesomeIcons.arrowLeft,
+                    color: Theme.of(context).appBarTheme.iconTheme!.color,
+                    size: Theme.of(context).appBarTheme.iconTheme!.size,
+                  )),
             ),
-            Consumer<Balance>(
-              builder: (context, value, _) {
-                return currencyNormalFormat(
-                    context: context, moneys: value.currentBalance);
-              },
-            )
-          ],
-        ),
-        actions: [
-          autoBetsModel(context: context, function: () => makeBet(context)),
-          Padding(
-            padding: const EdgeInsets.only(right: 15.0),
-            child: IconButton(
-                splashRadius: 25.0,
-                padding: EdgeInsets.zero,
-                onPressed: () {
-                  if (!Provider.of<AutoBetsController>(context, listen: false)
-                      .exitGame(context)) {
-                    return;
-                  }
-
-                  context.beamToNamed('/game-statistic/plinko');
-                },
-                icon: FaIcon(
-                  FontAwesomeIcons.circleInfo,
-                  color: Theme.of(context).appBarTheme.iconTheme!.color,
-                  size: Theme.of(context).appBarTheme.iconTheme!.size,
-                )),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(child: GameWidget(game: MyGame())),
-          Consumer<PlinkoLogic>(
-            builder: (context, plinkoLogic, child) {
-              return Container(
-                margin: const EdgeInsets.all(15.0),
-                height: 40.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
-                  color: Colors.lightBlueAccent.withOpacity(0.1),
-                  border: Border.all(color: Colors.lightBlueAccent, width: 2.0),
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  'Plinko',
+                  style: Theme.of(context).appBarTheme.titleTextStyle,
                 ),
-                child: plinkoLogic.lastCoefficients.isEmpty
-                    ? Center(
-                        child: AutoSizeText('Ставок ещё нет',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall!
-                                        .color!
-                                        .withOpacity(0.4))),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(15.0),
-                        child: ListView.separated(
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (context, index) {
-                              List<double> value = plinkoLogic
-                                  .lastCoefficients.reversed
-                                  .toList();
+                Consumer<Balance>(
+                  builder: (context, value, _) {
+                    return currencyNormalFormat(
+                        context: context, moneys: value.currentBalance);
+                  },
+                )
+              ],
+            ),
+            actions: [
+              autoBetsModel(context: context, function: () => makeBet(context)),
+              Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: IconButton(
+                    splashRadius: 25.0,
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      if (!Provider.of<AutoBetsController>(context,
+                              listen: false)
+                          .exitGame(context)) {
+                        return;
+                      }
 
-                              Map<double, Color> coefficientsColor = {
-                                5.0: const Color.fromRGBO(233, 30, 70, 70),
-                                3.0: const Color.fromRGBO(244, 67, 70, 70),
-                                1.5: const Color.fromRGBO(255, 87, 70, 70),
-                                0.2: const Color.fromRGBO(255, 152, 70, 70),
-                                0.0: const Color.fromRGBO(255, 193, 70, 70),
-                              };
+                      context.beamToNamed('/game-statistic/plinko');
+                    },
+                    icon: FaIcon(
+                      FontAwesomeIcons.circleInfo,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
+                    )),
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              Expanded(child: GameWidget(game: MyGame())),
+              Consumer<PlinkoLogic>(
+                builder: (context, plinkoLogic, child) {
+                  return Container(
+                    margin: const EdgeInsets.all(15.0),
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.lightBlueAccent.withOpacity(0.1),
+                      border:
+                          Border.all(color: Colors.lightBlueAccent, width: 2.0),
+                    ),
+                    child: plinkoLogic.lastCoefficients.isEmpty
+                        ? Center(
+                            child: AutoSizeText('Ставок ещё нет',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall!
+                                            .color!
+                                            .withOpacity(0.4))),
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(15.0),
+                            child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  List<double> value = plinkoLogic
+                                      .lastCoefficients.reversed
+                                      .toList();
 
-                              return Container(
-                                margin: EdgeInsets.only(
-                                    top: 5.0,
-                                    bottom: 5.0,
-                                    left: index == 0 ? 5.0 : 0.0,
-                                    right: index + 1 ==
-                                            context
-                                                .watch<PlinkoLogic>()
-                                                .lastCoefficients
-                                                .length
-                                        ? 5.0
-                                        : 0.0),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    color: coefficientsColor[value[index]]),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: Center(
-                                    child: AutoSizeText(
-                                      '${value[index]}x',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 12.0,
-                                          fontWeight: FontWeight.w700),
+                                  Map<double, Color> coefficientsColor = {
+                                    5.0: const Color.fromRGBO(233, 30, 70, 70),
+                                    3.0: const Color.fromRGBO(244, 67, 70, 70),
+                                    1.5: const Color.fromRGBO(255, 87, 70, 70),
+                                    0.2: const Color.fromRGBO(255, 152, 70, 70),
+                                    0.0: const Color.fromRGBO(255, 193, 70, 70),
+                                  };
+
+                                  return Container(
+                                    margin: EdgeInsets.only(
+                                        top: 5.0,
+                                        bottom: 5.0,
+                                        left: index == 0 ? 5.0 : 0.0,
+                                        right: index + 1 ==
+                                                context
+                                                    .watch<PlinkoLogic>()
+                                                    .lastCoefficients
+                                                    .length
+                                            ? 5.0
+                                            : 0.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: coefficientsColor[value[index]]),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8.0),
+                                      child: Center(
+                                        child: AutoSizeText(
+                                          '${value[index]}x',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 12.0,
+                                              fontWeight: FontWeight.w700),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              );
-                            },
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(width: 5.0),
-                            itemCount: plinkoLogic.lastCoefficients.length),
-                      ),
-              );
-            },
-          )
-        ],
-      ),
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(width: 5.0),
+                                itemCount: plinkoLogic.lastCoefficients.length),
+                          ),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+        ConfettiWidget(
+            confettiController: confettiController,
+            blastDirectionality: BlastDirectionality.explosive)
+      ],
     );
   }
 }

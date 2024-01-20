@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
-
-import '../business/balance.dart';
 
 enum KenoRiskStatus { low, medium, high }
 
@@ -101,7 +102,7 @@ class KenoLogic extends ChangeNotifier {
 
       timer.cancel();
 
-      CommonFunctions.call(context: context, bet: bet, gameName: 'keno');
+      CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'keno');
 
       while (numbers.length < 10) {
         int rand = Random.secure().nextInt(40) + 0;
@@ -147,6 +148,20 @@ class KenoLogic extends ChangeNotifier {
             }
 
             Provider.of<Balance>(context, listen: false).cashout(profit);
+
+            if (Provider.of<SettingsController>(context, listen: false)
+                    .isEnabledConfetti &&
+                coefficients[currentCoefficient - 1] >= 2.0) {
+              confettiController.play();
+            }
+
+            CommonFunctions.callOnProfit(
+              context: context,
+              bet: bet,
+              gameName: 'keno',
+              profit: profit,
+            );
+
             AdService.showInterstitialAd(context: context, func: () {});
           }
 

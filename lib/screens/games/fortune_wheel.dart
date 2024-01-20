@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -13,9 +14,11 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/board_view.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/model.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
 import 'package:provider/provider.dart';
+import 'package:screenshot/screenshot.dart';
 
 class FortuneWheel extends StatefulWidget {
   const FortuneWheel({super.key});
@@ -165,281 +168,297 @@ class _FortuneWheelState extends State<FortuneWheel>
             currentFocus.unfocus();
           }
         },
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          bottomNavigationBar: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        AutoSizeText(
-                            'Прибыль (${fortuneWheelLogic.selectedNumber}x):',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(fontSize: 12.0)),
-                        AutoSizeText(
-                            fortuneWheelLogic.profit < 1000000
-                                ? NumberFormat.simpleCurrency(
-                                        locale: ui.Platform.localeName)
-                                    .format(fortuneWheelLogic.profit)
-                                : NumberFormat.compactSimpleCurrency(
-                                        locale: ui.Platform.localeName)
-                                    .format(fortuneWheelLogic.profit),
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .copyWith(fontSize: 12.0)),
-                      ],
-                    ),
-                    const SizedBox(height: 15.0),
-                    Container(
-                      height: 40.0,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        color: Colors.lightBlueAccent.withOpacity(0.1),
-                        border: Border.all(
-                            color: Colors.lightBlueAccent, width: 2.0),
-                      ),
-                      child: fortuneWheelLogic.lastColors.isEmpty
-                          ? Center(
-                              child: AutoSizeText('Ставок ещё нет',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color!
-                                              .withOpacity(0.4))),
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(15.0),
-                              child: ListView.separated(
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    List<Color> value = fortuneWheelLogic
-                                        .lastColors.reversed
-                                        .toList();
-
-                                    return Container(
-                                      width: 15.0,
-                                      margin: EdgeInsets.only(
-                                          top: 5.0,
-                                          bottom: 5.0,
-                                          left: index == 0 ? 5.0 : 0.0,
-                                          right: index + 1 ==
-                                                  fortuneWheelLogic
-                                                      .lastColors.length
-                                              ? 5.0
-                                              : 0.0),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                          color: value[index]),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) =>
-                                      const SizedBox(width: 5.0),
-                                  itemCount:
-                                      fortuneWheelLogic.lastColors.length),
-                            ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 15.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: SizedBox(
-                    height: 50.0,
-                    child: Row(
-                      children: [
-                        for (int index = 0;
-                            index < fortuneWheelLogic.buttonsCoefficient.length;
-                            index++)
-                          itemNumber(
-                              number:
-                                  fortuneWheelLogic.buttonsCoefficient[index],
-                              fortuneWheelLogic: fortuneWheelLogic)
-                      ],
-                    )),
-              ),
-              const SizedBox(height: 15.0),
-              Row(
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Scaffold(
+              resizeToAvoidBottomInset: false,
+              bottomNavigationBar: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  fortuneWheelLogic.isGameOn
-                      ? Container()
-                      : SizedBox(
-                          height: 60.0,
-                          width: 80.0,
-                          child: ElevatedButton(
-                            onPressed: () => fortuneWheelLogic.showInputBet(),
-                            style: ElevatedButton.styleFrom(
-                              elevation: 5,
-                              backgroundColor: const Color(0xFF366ecc),
-                              shape: const RoundedRectangleBorder(),
-                            ),
-                            child: FaIcon(
-                              fortuneWheelLogic.isShowInputBet
-                                  ? FontAwesomeIcons.arrowLeft
-                                  : FontAwesomeIcons.keyboard,
-                              color: Colors.white,
-                              size: 25.0,
-                            ),
-                          ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            AutoSizeText(
+                                'Прибыль (${fortuneWheelLogic.selectedNumber}x):',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                            AutoSizeText(
+                                fortuneWheelLogic.profit < 1000000
+                                    ? NumberFormat.simpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(fortuneWheelLogic.profit)
+                                    : NumberFormat.compactSimpleCurrency(
+                                            locale: ui.Platform.localeName)
+                                        .format(fortuneWheelLogic.profit),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium!
+                                    .copyWith(fontSize: 12.0)),
+                          ],
                         ),
-                  Visibility(
-                    visible: fortuneWheelLogic.isShowInputBet,
-                    child: Expanded(
-                      child: SizedBox(
-                        height: 60.0,
-                        child: customTextField(
-                            currencyTextInputFormatter:
-                                FortuneWheel.betFormatter,
-                            textInputFormatter: FortuneWheel.betFormatter,
-                            keyboardType: TextInputType.number,
-                            isBetInput: true,
-                            controller: FortuneWheel.betController,
-                            context: context,
-                            hintText: 'Ставка...'),
-                      ),
+                        const SizedBox(height: 15.0),
+                        Container(
+                          height: 40.0,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Colors.lightBlueAccent.withOpacity(0.1),
+                            border: Border.all(
+                                color: Colors.lightBlueAccent, width: 2.0),
+                          ),
+                          child: fortuneWheelLogic.lastColors.isEmpty
+                              ? Center(
+                                  child: AutoSizeText('Ставок ещё нет',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall!
+                                          .copyWith(
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .color!
+                                                  .withOpacity(0.4))),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemBuilder: (context, index) {
+                                        List<Color> value = fortuneWheelLogic
+                                            .lastColors.reversed
+                                            .toList();
+
+                                        return Container(
+                                          width: 15.0,
+                                          margin: EdgeInsets.only(
+                                              top: 5.0,
+                                              bottom: 5.0,
+                                              left: index == 0 ? 5.0 : 0.0,
+                                              right: index + 1 ==
+                                                      fortuneWheelLogic
+                                                          .lastColors.length
+                                                  ? 5.0
+                                                  : 0.0),
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                              color: value[index]),
+                                        );
+                                      },
+                                      separatorBuilder: (context, index) =>
+                                          const SizedBox(width: 5.0),
+                                      itemCount:
+                                          fortuneWheelLogic.lastColors.length),
+                                ),
+                        ),
+                      ],
                     ),
                   ),
-                  Visibility(
-                    visible: !fortuneWheelLogic.isShowInputBet,
-                    child: Expanded(
-                      child: SizedBox(
-                        height: 60.0,
-                        child: Container(
-                          decoration: BoxDecoration(boxShadow: [
-                            BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 5.0)
-                          ], color: Theme.of(context).cardColor),
-                          child: ElevatedButton(
-                            onPressed: fortuneWheelLogic.isGameOn
-                                ? null
-                                : () {
-                                    if (balance.currentBalance <
-                                        double.parse(FortuneWheel.betFormatter
-                                            .getUnformattedValue()
-                                            .toString())) {
-                                      return;
-                                    }
-
-                                    if (fortuneWheelLogic.selectedNumber == 0) {
-                                      return;
-                                    }
-
-                                    _animation();
-
-                                    fortuneWheelLogic.startGame(
-                                        context: context,
-                                        bet: double.parse(FortuneWheel
-                                            .betFormatter
-                                            .getUnformattedValue()
-                                            .toString()));
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              backgroundColor: Colors.green,
-                              shape: const RoundedRectangleBorder(),
+                  const SizedBox(height: 15.0),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: SizedBox(
+                        height: 50.0,
+                        child: Row(
+                          children: [
+                            for (int index = 0;
+                                index <
+                                    fortuneWheelLogic.buttonsCoefficient.length;
+                                index++)
+                              itemNumber(
+                                  number: fortuneWheelLogic
+                                      .buttonsCoefficient[index],
+                                  fortuneWheelLogic: fortuneWheelLogic)
+                          ],
+                        )),
+                  ),
+                  const SizedBox(height: 15.0),
+                  Row(
+                    children: [
+                      fortuneWheelLogic.isGameOn
+                          ? Container()
+                          : SizedBox(
+                              height: 60.0,
+                              width: 80.0,
+                              child: ElevatedButton(
+                                onPressed: () =>
+                                    fortuneWheelLogic.showInputBet(),
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 5,
+                                  backgroundColor: const Color(0xFF366ecc),
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: FaIcon(
+                                  fortuneWheelLogic.isShowInputBet
+                                      ? FontAwesomeIcons.arrowLeft
+                                      : FontAwesomeIcons.keyboard,
+                                  color: Colors.white,
+                                  size: 25.0,
+                                ),
+                              ),
                             ),
-                            child: AutoSizeText(
-                              'СТАВКА',
-                              maxLines: 1,
-                              style: GoogleFonts.roboto(
-                                  color: !fortuneWheelLogic.isGameOn
-                                      ? Colors.white
-                                      : Colors.white.withOpacity(0.4),
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w900),
+                      Visibility(
+                        visible: fortuneWheelLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: customTextField(
+                                currencyTextInputFormatter:
+                                    FortuneWheel.betFormatter,
+                                textInputFormatter: FortuneWheel.betFormatter,
+                                keyboardType: TextInputType.number,
+                                isBetInput: true,
+                                controller: FortuneWheel.betController,
+                                context: context,
+                                hintText: 'Ставка...'),
+                          ),
+                        ),
+                      ),
+                      Visibility(
+                        visible: !fortuneWheelLogic.isShowInputBet,
+                        child: Expanded(
+                          child: SizedBox(
+                            height: 60.0,
+                            child: Container(
+                              decoration: BoxDecoration(boxShadow: [
+                                BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 5.0)
+                              ], color: Theme.of(context).cardColor),
+                              child: ElevatedButton(
+                                onPressed: fortuneWheelLogic.isGameOn
+                                    ? null
+                                    : () {
+                                        if (balance.currentBalance <
+                                            double.parse(FortuneWheel
+                                                .betFormatter
+                                                .getUnformattedValue()
+                                                .toString())) {
+                                          return;
+                                        }
+
+                                        if (fortuneWheelLogic.selectedNumber ==
+                                            0) {
+                                          return;
+                                        }
+
+                                        _animation();
+
+                                        fortuneWheelLogic.startGame(
+                                            context: context,
+                                            bet: double.parse(FortuneWheel
+                                                .betFormatter
+                                                .getUnformattedValue()
+                                                .toString()));
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  backgroundColor: Colors.green,
+                                  shape: const RoundedRectangleBorder(),
+                                ),
+                                child: AutoSizeText(
+                                  'СТАВКА',
+                                  maxLines: 1,
+                                  style: GoogleFonts.roboto(
+                                      color: !fortuneWheelLogic.isGameOn
+                                          ? Colors.white
+                                          : Colors.white.withOpacity(0.4),
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.w900),
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
-          appBar: AppBar(
-            toolbarHeight: 76.0,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: IconButton(
-                  splashRadius: 25.0,
-                  padding: EdgeInsets.zero,
-                  onPressed: context.watch<FortuneWheelLogic>().isGameOn
-                      ? null
-                      : () {
-                          Beamer.of(context).beamBack();
-                        },
-                  icon: FaIcon(
-                    FontAwesomeIcons.arrowLeft,
-                    color: Theme.of(context).appBarTheme.iconTheme!.color,
-                    size: Theme.of(context).appBarTheme.iconTheme!.size,
-                  )),
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  'Fortune Wheel',
-                  style: Theme.of(context).appBarTheme.titleTextStyle,
+              appBar: AppBar(
+                toolbarHeight: 76.0,
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                leading: Padding(
+                  padding: const EdgeInsets.only(left: 15.0),
+                  child: IconButton(
+                      splashRadius: 25.0,
+                      padding: EdgeInsets.zero,
+                      onPressed: context.watch<FortuneWheelLogic>().isGameOn
+                          ? null
+                          : () {
+                              Beamer.of(context).beamBack();
+                            },
+                      icon: FaIcon(
+                        FontAwesomeIcons.arrowLeft,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        size: Theme.of(context).appBarTheme.iconTheme!.size,
+                      )),
                 ),
-                Consumer<Balance>(
-                  builder: (context, value, _) {
-                    return currencyNormalFormat(
-                        context: context, moneys: value.currentBalance);
-                  },
-                )
-              ],
-            ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: IconButton(
-                    splashRadius: 25.0,
-                    padding: EdgeInsets.zero,
-                    onPressed: context.watch<FortuneWheelLogic>().isGameOn
-                        ? null
-                        : () =>
-                            context.beamToNamed('/game-statistic/fortuneWheel'),
-                    icon: FaIcon(
-                      FontAwesomeIcons.circleInfo,
-                      color: Theme.of(context).appBarTheme.iconTheme!.color,
-                      size: Theme.of(context).appBarTheme.iconTheme!.size,
-                    )),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      'Fortune Wheel',
+                      style: Theme.of(context).appBarTheme.titleTextStyle,
+                    ),
+                    Consumer<Balance>(
+                      builder: (context, value, _) {
+                        return currencyNormalFormat(
+                            context: context, moneys: value.currentBalance);
+                      },
+                    )
+                  ],
+                ),
+                actions: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: IconButton(
+                        splashRadius: 25.0,
+                        padding: EdgeInsets.zero,
+                        onPressed: context.watch<FortuneWheelLogic>().isGameOn
+                            ? null
+                            : () => context
+                                .beamToNamed('/game-statistic/fortuneWheel'),
+                        icon: FaIcon(
+                          FontAwesomeIcons.circleInfo,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
+                        )),
+                  ),
+                ],
               ),
-            ],
-          ),
-          body: Center(
-            child: AnimatedBuilder(
-                animation: _ani,
-                builder: (context, child) {
-                  wheelResult = _ani.value;
-                  final angle = wheelResult * _angle;
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: <Widget>[
-                      BoardView(items: _items, current: _current, angle: angle),
-                      _buildResult(wheelResult)
-                    ],
-                  );
-                }),
-          ),
+              body: Screenshot(
+                controller: screenshotController,
+                child: Center(
+                  child: AnimatedBuilder(
+                      animation: _ani,
+                      builder: (context, child) {
+                        wheelResult = _ani.value;
+                        final angle = wheelResult * _angle;
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: <Widget>[
+                            BoardView(
+                                items: _items, current: _current, angle: angle),
+                            _buildResult(wheelResult)
+                          ],
+                        );
+                      }),
+                ),
+              ),
+            ),
+            ConfettiWidget(
+                confettiController: confettiController,
+                blastDirectionality: BlastDirectionality.explosive)
+          ],
         ),
       ),
     );
@@ -465,8 +484,7 @@ class _FortuneWheelState extends State<FortuneWheel>
           clipBehavior: Clip.antiAlias,
           color: fortuneWheelLogic.selectedNumber != number
               ? currentColor.withOpacity(0.4)
-              : currentColor.withOpacity(
-                  0.7), // Theme.of(context).buttonTheme.colorScheme!.background,
+              : currentColor, // Theme.of(context).buttonTheme.colorScheme!.background,
           child: InkWell(
             onTap: () {
               if (!fortuneWheelLogic.isGameOn) {
@@ -496,8 +514,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                       '${number}x',
                       maxLines: 1,
                       style: GoogleFonts.roboto(
-                          color: !fortuneWheelLogic.isGameOn &&
-                                  fortuneWheelLogic.selectedNumber == number
+                          color: fortuneWheelLogic.selectedNumber == number
                               ? Colors.white
                               : Colors.white.withOpacity(0.4),
                           fontSize: 20.0,

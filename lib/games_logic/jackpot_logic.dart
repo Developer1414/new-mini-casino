@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
@@ -13,6 +15,7 @@ class JackpotLogic extends ChangeNotifier {
   bool isShowInputBet = false;
 
   double coefficient = 0.0;
+  double bet = 0.0;
 
   int currentTimerBeforePlaying = 0;
 
@@ -50,8 +53,10 @@ class JackpotLogic extends ChangeNotifier {
     isGameOn = true;
 
     this.context = context;
+    this.bet = bet;
 
-    CommonFunctions.call(context: context, bet: bet, gameName: 'jackpot');
+    CommonFunctions.callOnStart(
+        context: context, bet: bet, gameName: 'jackpot');
 
     notifyListeners();
   }
@@ -68,6 +73,18 @@ class JackpotLogic extends ChangeNotifier {
         gameName: 'jackpot',
         gameStatisticModel:
             GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+
+    CommonFunctions.callOnProfit(
+      context: context,
+      bet: bet,
+      gameName: 'jackpot',
+      profit: profit,
+    );
+
+    if (Provider.of<SettingsController>(context, listen: false)
+        .isEnabledConfetti) {
+      confettiController.play();
+    }
 
     AdService.showInterstitialAd(context: context, func: () {});
   }

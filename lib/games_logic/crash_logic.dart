@@ -4,6 +4,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
@@ -67,7 +69,8 @@ class CrashLogic extends ChangeNotifier {
 
       incrementCoefficient();
 
-      CommonFunctions.call(context: context, bet: bet, gameName: 'crash');
+      CommonFunctions.callOnStart(
+          context: context, bet: bet, gameName: 'crash');
 
       notifyListeners();
     } else {
@@ -76,6 +79,13 @@ class CrashLogic extends ChangeNotifier {
   }
 
   void cashout() {
+    CommonFunctions.callOnProfit(
+      context: context,
+      bet: bet,
+      gameName: 'crash',
+      profit: profit,
+    );
+
     crashStatus = CrashStatus.win;
 
     Provider.of<Balance>(context, listen: false).cashout(profit);
@@ -88,6 +98,11 @@ class CrashLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
 
     notifyListeners();
+
+    if (Provider.of<SettingsController>(context, listen: false)
+        .isEnabledConfetti) {
+      confettiController.play();
+    }
 
     AutoclickerSecure().checkAutoclicker();
   }
@@ -103,6 +118,7 @@ class CrashLogic extends ChangeNotifier {
         coefficient: maxCoefficient.toStringAsFixed(2), isWin: true));
     profit = 0.0;
     winCoefficient = 0.0;
+
     notifyListeners();
   }
 

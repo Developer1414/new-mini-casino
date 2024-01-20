@@ -54,14 +54,11 @@ class RaffleInfo extends StatelessWidget {
                 ),
                 body: ListView(
                   children: [
-                    const Padding(
-                        padding:
-                            EdgeInsets.only(left: 15.0, right: 15.0, top: 30.0),
-                        child: Image(
-                            image:
-                                AssetImage('assets/other_images/DarkLogo.png'),
-                            width: 280.0,
-                            height: 280.0)),
+                    const Image(
+                        image:
+                            AssetImage('assets/other_images/new-year-logo.png'),
+                        width: 250.0,
+                        height: 250.0),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: RichText(
@@ -72,11 +69,11 @@ class RaffleInfo extends StatelessWidget {
                           style: Theme.of(context).textTheme.displaySmall,
                           children: [
                             TextSpan(
-                                text: '1500 ₽',
+                                text: '15 USDT (15\$)',
                                 style: GoogleFonts.roboto(
                                     textStyle: const TextStyle(
                                   color: Color.fromARGB(255, 252, 41, 71),
-                                  fontSize: 20,
+                                  fontSize: 18,
                                   fontWeight: FontWeight.w900,
                                 ))),
                             TextSpan(
@@ -146,7 +143,7 @@ class RaffleInfo extends StatelessWidget {
                     ),
                     helpsText(
                         context: context,
-                        titleQuestion: '1. Как принять участие?',
+                        titleQuestion: '1. Что нужно для участия?',
                         content:
                             'Чтобы принять участие, Вы должны иметь Premium-подписку.'),
                     helpsText(
@@ -159,18 +156,18 @@ class RaffleInfo extends StatelessWidget {
                         context: context,
                         titleQuestion: '3. Что я должен делать?',
                         content:
-                            'Просто играйте в различные режимы этой игры в течение недели и увеличивайте свой баланс.'),
+                            'Просто играйте в различные режимы этой игры.'),
                     helpsText(
                         context: context,
                         titleQuestion: '4. Кто может выиграть?',
                         content:
-                            'Первый игрок в таблице лидеров (отсортированной по «Участники»).'),
+                            'Победителем станет случайный игрок, выбранный через сервис random.org. (доказательства будут в телеграм-канале в день окончания розыгрыша)'),
                     helpsText(
                         context: context,
                         titleQuestion: '5. Как я могу получить выигрыш?',
                         content:
                             //'В случае выигрыша Вас попросят отправить название криптовалюты, на которую Вы хотите получить выигрыш (а также ее сеть, если необходимо) и адрес кошелька. Если Вы ошибётесь в адресе или сети, деньги Вам не будут зачислены. Мы зачисляем выигрыши только в эти криптовалюты: Litecoin, Ripple, Tether, TRON. После отправки Вам вашего выигрыша мы уведомим всех в нашем телеграм-канале о том, что Вы выиграли в розыгрыше, а также опубликуем адрес Вашего кошелька, чтобы все могли отследить платеж.'),
-                            'Если Вы выиграете, Вас попросят отправить номер банковской карты, на которую Вы хотите получить свой выигрыш.'),
+                            'Если Вы выиграете, Вас попросят прислать адрес Вашего криптокошелька Tether (USDT), туда мы и отправим Ваш выигрыш!'),
                     helpsText(
                         context: context,
                         titleQuestion:
@@ -182,14 +179,14 @@ class RaffleInfo extends StatelessWidget {
                         context: context,
                         titleQuestion: '7. Как я узнаю что я выиграл?',
                         content:
-                            '1. Вы всегда можете увидеть свое место в таблице лидеров (отсортированной по «Участники»);\n2. В нашем телеграм канале будет опубликовано время окончания розыгрыша. Если Вы в это время занимаете первое место, то в течение 24 часов с Вами свяжутся по адресу электронной почты указанной при регистрации. После того, как мы Вам написали, у Вас также будет 24 часа, чтобы ответить нам!',
+                            'В день окончания розыгрыша на нашем телеграм-канале будет опубликовано видео, как выбирается победитель. Если на видео победил Ваш ник, то в течение 24 часов с Вами свяжутся по адресу электронной почты указанной при регистрации. После того, как мы Вам написали, у Вас также будет 24 часа, чтобы ответить нам!',
                         isImportant: true),
                     helpsText(
                         context: context,
                         titleQuestion:
                             '8. С какого адреса электронной почты мне напишут?',
                         content:
-                            'Это наш единственный адрес электронной почты для связи с победителями: mini.casino.cash.prize@gmail.com.',
+                            'Это наш единственный адрес электронной почты для связи с победителями:\n\nmini.casino.cash.prize@gmail.com.',
                         isImportant: true),
                     helpsText(
                         context: context,
