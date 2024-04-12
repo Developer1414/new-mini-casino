@@ -3,6 +3,30 @@ import 'package:new_mini_casino/models/game_button_details.dart';
 
 class GamesController {
   static List<GameButtonDetails> games = [
+    // GameButtonDetails(
+    //     title: 'Trading',
+    //     gameLogo: 'FortuneWheelLogo',
+    //     buttonColor: Color.fromARGB(255, 210, 251, 64),
+    //     nextScreen: '/trading'),
+
+    GameButtonDetails(
+        title: 'Dice Classic',
+        gameLogo: 'DiceClassic',
+        forPremium: true,
+        buttonColor: const Color.fromARGB(255, 136, 71, 126),
+        nextScreen: '/dice-classic'),
+
+    GameButtonDetails(
+        title: 'Limbo',
+        gameLogo: 'Limbo',
+        buttonColor: const Color.fromARGB(255, 98, 64, 251),
+        nextScreen: '/limbo'),
+
+    // GameButtonDetails(
+    //     title: 'Roulette',
+    //     gameLogo: 'FortuneWheelLogo',
+    //     buttonColor: const Color.fromARGB(255, 64, 67, 251),
+    //     nextScreen: '/roulette-wheel'),
     GameButtonDetails(
         title: 'Slots',
         gameLogo: 'Slots',
@@ -17,7 +41,7 @@ class GamesController {
     GameButtonDetails(
         title: 'Blackjack',
         gameLogo: 'Blackjack',
-        buttonColor: Colors.blueGrey.shade800,
+        buttonColor: const Color.fromARGB(255, 67, 87, 97),
         nextScreen: '/blackjack'),
     GameButtonDetails(
         title: 'Stairs',
@@ -45,7 +69,7 @@ class GamesController {
         buttonColor: const Color.fromARGB(255, 79, 173, 79),
         nextScreen: '/coinflip'),
     GameButtonDetails(
-        title: 'FortuneWheel',
+        title: 'Fortune Wheel',
         gameLogo: 'FortuneWheelLogo',
         buttonColor: Colors.purpleAccent,
         nextScreen: '/fortuneWheel'),

@@ -8,17 +8,18 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:provider/provider.dart';
 
-Widget customTextField(
-    {required String hintText,
-    required TextEditingController controller,
-    bool isBetInput = false,
-    bool readOnly = false,
-    TextInputType? keyboardType,
-    required BuildContext context,
-    Widget? sufficIcon,
-    required TextInputFormatter textInputFormatter,
-    required CurrencyTextInputFormatter currencyTextInputFormatter,
-    bool isPassword = false}) {
+Widget customTextField({
+  required String hintText,
+  required TextEditingController controller,
+  bool isBetInput = false,
+  bool readOnly = false,
+  TextInputType? keyboardType,
+  required BuildContext context,
+  Widget? sufficIcon,
+  required TextInputFormatter textInputFormatter,
+  required CurrencyTextInputFormatter currencyTextInputFormatter,
+  bool isPassword = false,
+}) {
   return TextField(
     controller: controller,
     readOnly: readOnly,

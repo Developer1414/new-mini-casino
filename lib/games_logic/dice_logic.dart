@@ -16,7 +16,6 @@ enum NumberFromToButtonType { oneToThree, fourToSix, empty }
 
 class DiceLogic extends ChangeNotifier {
   bool isGameOn = false;
-  bool isShowInputBet = false;
 
   double profit = 0.0;
   double coefficient = 2.0;
@@ -33,8 +32,8 @@ class DiceLogic extends ChangeNotifier {
 
   late BuildContext context;
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -89,10 +88,9 @@ class DiceLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context, required double bet}) {
+  void startGame({required BuildContext context}) {
     isGameOn = true;
 
-    this.bet = bet;
     this.context = context;
 
     randomNumber = Random.secure().nextInt(6) + 1;

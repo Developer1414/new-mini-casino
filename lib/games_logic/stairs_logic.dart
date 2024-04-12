@@ -36,15 +36,19 @@ class StairsLogic extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeBet(double value) {
+    bet = value;
+    notifyListeners();
+  }
+
   void changeSliderValue(double value) {
     sliderValue = value;
     countStones = value.round();
     notifyListeners();
   }
 
-  void startGame({double bet = 0.0, required BuildContext context}) {
+  void startGame({required BuildContext context}) {
     if (AutoclickerSecure.isCanPlay) {
-      this.bet = bet;
       this.context = context;
 
       isGameOn = true;
@@ -141,14 +145,15 @@ class StairsLogic extends ChangeNotifier {
     CommonFunctions.callOnProfit(
       context: context,
       bet: bet,
-      gameName: 'stairs',
+      gameName: 'Stairs',
       profit: profit,
     );
 
     notifyListeners();
 
     if (Provider.of<SettingsController>(context, listen: false)
-        .isEnabledConfetti) {
+            .isEnabledConfetti &&
+        currentCoefficient >= 2.0) {
       confettiController.play();
     }
 

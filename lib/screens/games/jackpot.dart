@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:math';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -16,7 +14,7 @@ import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -24,13 +22,6 @@ import 'package:screenshot/screenshot.dart';
 
 class Jackpot extends StatefulWidget {
   const Jackpot({super.key});
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
 
   static StreamController<int> controller = StreamController<int>.broadcast();
 
@@ -46,9 +37,6 @@ class Jackpot extends StatefulWidget {
   static double profit = 0;
   static bool isBlockButton = false;
   static Timer timer = Timer(const Duration(seconds: 1), () {});
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   State<Jackpot> createState() => _JackpotState();
@@ -162,14 +150,11 @@ class _JackpotState extends State<Jackpot> {
       required JackpotLogic jackpotLogic,
       required Balance balance}) {
     if (!jackpotLogic.isGameOn || Jackpot.isBlockButton) {
-      if (balance.currentBalance <
-          double.parse(
-              Jackpot.betFormatter.getUnformattedValue().toStringAsFixed(2))) {
+      if (balance.currentBalance < jackpotLogic.bet) {
         return;
       }
 
-      if (double.parse(Jackpot.betFormatter.getUnformattedValue().toString()) <
-          100.0) {
+      if (jackpotLogic.bet < 100.0) {
         alertDialogError(
           context: context,
           title: 'Ошибка',
@@ -183,22 +168,17 @@ class _JackpotState extends State<Jackpot> {
       createGame();
 
       Jackpot.playersCount++;
-      Jackpot.myBet =
-          double.parse(Jackpot.betFormatter.getUnformattedValue().toString());
+      Jackpot.myBet = jackpotLogic.bet;
 
       Jackpot.players.add('user');
 
-      jackpotLogic.startGame(context: context, bet: Jackpot.myBet);
+      jackpotLogic.startGame(context: context);
 
       setState(() {
-        Jackpot.currentBalance +=
-            double.parse(Jackpot.betFormatter.getUnformattedValue().toString());
+        Jackpot.currentBalance += jackpotLogic.bet;
 
-        Jackpot.items.add(fortuneItem(
-            nickname: 'Вы',
-            isBot: false,
-            bet: double.parse(
-                Jackpot.betFormatter.getUnformattedValue().toString())));
+        Jackpot.items.add(
+            fortuneItem(nickname: 'Вы', isBot: false, bet: jackpotLogic.bet));
       });
     }
   }
@@ -255,91 +235,50 @@ class _JackpotState extends State<Jackpot> {
                                         .copyWith(fontSize: 12.0)),
                               ],
                             ),
+                            const SizedBox(height: 10.0),
+                            gameBetCount(
+                              context: context,
+                              gameLogic: jackpotLogic,
+                              bet: jackpotLogic.bet,
+                            ),
                           ],
                         ),
                       ),
-                      Row(
-                        children: [
-                          jackpotLogic.isGameOn
-                              ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () =>
-                                        jackpotLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      jackpotLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
-                                  ),
-                                ),
-                          Visibility(
-                            visible: jackpotLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: customTextField(
-                                    currencyTextInputFormatter:
-                                        Jackpot.betFormatter,
-                                    textInputFormatter: Jackpot.betFormatter,
-                                    keyboardType: TextInputType.number,
-                                    isBetInput: true,
-                                    controller: Jackpot.betController,
-                                    context: context,
-                                    hintText: 'Ставка...'),
-                              ),
+                      SizedBox(
+                        height: 60.0,
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 5.0)
+                          ], color: Theme.of(context).cardColor),
+                          child: ElevatedButton(
+                            onPressed:
+                                Jackpot.isBlockButton || jackpotLogic.isGameOn
+                                    ? null
+                                    : () => makeBet(
+                                        context: context,
+                                        jackpotLogic: jackpotLogic,
+                                        balance: balance),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: Colors.green,
+                              shape: const RoundedRectangleBorder(),
+                            ),
+                            child: AutoSizeText(
+                              'СТАВКА',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                  color: Jackpot.isBlockButton ||
+                                          jackpotLogic.isGameOn
+                                      ? Colors.white.withOpacity(0.4)
+                                      : Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
-                          Visibility(
-                            visible: !jackpotLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 5.0)
-                                  ], color: Theme.of(context).cardColor),
-                                  child: ElevatedButton(
-                                    onPressed: Jackpot.isBlockButton ||
-                                            jackpotLogic.isGameOn
-                                        ? null
-                                        : () => makeBet(
-                                            context: context,
-                                            jackpotLogic: jackpotLogic,
-                                            balance: balance),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 0,
-                                      backgroundColor: Colors.green,
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: AutoSizeText(
-                                      'СТАВКА',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: Jackpot.isBlockButton ||
-                                                  jackpotLogic.isGameOn
-                                              ? Colors.white.withOpacity(0.4)
-                                              : Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w900),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   );
@@ -473,7 +412,7 @@ class _JackpotState extends State<Jackpot> {
                                           Screenshot(
                                             controller: screenshotController,
                                             child: FortuneBar(
-                                              height: 250.0,
+                                              height: 235,
                                               animateFirst: false,
                                               onAnimationEnd: () async {
                                                 jackpotLogic
@@ -492,11 +431,7 @@ class _JackpotState extends State<Jackpot> {
                                                               Jackpot.profit);
                                                     } else {
                                                       jackpotLogic.loss(
-                                                          context: context,
-                                                          bet: double.parse(Jackpot
-                                                              .betFormatter
-                                                              .getUnformattedValue()
-                                                              .toString()));
+                                                          context: context);
                                                     }
                                                   });
                                                 }

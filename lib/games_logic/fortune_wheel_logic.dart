@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 
 class FortuneWheelLogic extends ChangeNotifier {
   bool isGameOn = false;
-  bool isShowInputBet = false;
 
   double coefficient = 0.0;
   double bet = 0.0;
@@ -24,8 +23,8 @@ class FortuneWheelLogic extends ChangeNotifier {
 
   late BuildContext context;
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -39,10 +38,9 @@ class FortuneWheelLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context, required double bet}) {
+  void startGame({required BuildContext context}) {
     isGameOn = true;
 
-    this.bet = bet;
     this.context = context;
 
     profit = 0.0;
@@ -73,7 +71,7 @@ class FortuneWheelLogic extends ChangeNotifier {
     CommonFunctions.callOnProfit(
       context: context,
       bet: bet,
-      gameName: 'fortuneWheel',
+      gameName: 'Fortune Wheel',
       profit: profit,
     );
 

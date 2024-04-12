@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -11,7 +10,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -19,16 +18,6 @@ import 'package:screenshot/screenshot.dart';
 
 class Keno extends StatelessWidget {
   const Keno({super.key});
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +48,7 @@ class Keno extends StatelessWidget {
                         padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                         child: Column(
                           children: [
+                            const SizedBox(height: 15.0),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -219,100 +209,54 @@ class Keno extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 15.0),
-                      Row(
-                        children: [
-                          kenoLogic.isGameOn
-                              ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () => kenoLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      kenoLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
-                                  ),
-                                ),
-                          Visibility(
-                            visible: kenoLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: customTextField(
-                                    currencyTextInputFormatter:
-                                        Keno.betFormatter,
-                                    textInputFormatter: Keno.betFormatter,
-                                    keyboardType: TextInputType.number,
-                                    isBetInput: true,
-                                    controller: Keno.betController,
-                                    context: context,
-                                    hintText: 'Ставка...'),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: !kenoLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 5.0)
-                                  ], color: Theme.of(context).cardColor),
-                                  child: ElevatedButton(
-                                    onPressed: kenoLogic
-                                                .userNumbersList.isEmpty ||
-                                            kenoLogic.isGameOn
-                                        ? null
-                                        : () {
-                                            if (balance.currentBalance <
-                                                double.parse(Keno.betFormatter
-                                                    .getUnformattedValue()
-                                                    .toStringAsFixed(2))) {
-                                              return;
-                                            }
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: gameBetCount(
+                          context: context,
+                          gameLogic: kenoLogic,
+                          bet: kenoLogic.bet,
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      SizedBox(
+                        height: 60.0,
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 5.0)
+                          ], color: Theme.of(context).cardColor),
+                          child: ElevatedButton(
+                            onPressed: kenoLogic.userNumbersList.isEmpty ||
+                                    kenoLogic.isGameOn
+                                ? null
+                                : () {
+                                    if (balance.currentBalance <
+                                        kenoLogic.bet) {
+                                      return;
+                                    }
 
-                                            kenoLogic.startGame(
-                                                context: context,
-                                                bet: double.parse(Keno
-                                                    .betFormatter
-                                                    .getUnformattedValue()
-                                                    .toString()));
-                                          },
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 0,
-                                      backgroundColor: Colors.green,
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: AutoSizeText(
-                                      'СТАВКА',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: kenoLogic.userNumbersList
-                                                      .isEmpty ||
-                                                  kenoLogic.isGameOn
-                                              ? Colors.white.withOpacity(0.4)
-                                              : Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w900),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                                    kenoLogic.startGame(context: context);
+                                  },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: Colors.green,
+                              shape: const RoundedRectangleBorder(),
+                            ),
+                            child: AutoSizeText(
+                              'СТАВКА',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                  color: kenoLogic.userNumbersList.isEmpty ||
+                                          kenoLogic.isGameOn
+                                      ? Colors.white.withOpacity(0.4)
+                                      : Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   );
@@ -388,9 +332,9 @@ class Keno extends StatelessWidget {
                               mainAxisSpacing: 10,
                               crossAxisSpacing: 10,
                               pattern: const [
-                                WovenGridTile(2),
+                                WovenGridTile(2.2),
                                 WovenGridTile(
-                                  2,
+                                  2.2,
                                   crossAxisRatio: 1,
                                 ),
                               ],

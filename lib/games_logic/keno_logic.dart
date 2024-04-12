@@ -15,7 +15,6 @@ enum KenoRiskStatus { low, medium, high }
 
 class KenoLogic extends ChangeNotifier {
   bool isGameOn = false;
-  bool isShowInputBet = false;
 
   KenoRiskStatus riskStatus = KenoRiskStatus.low;
 
@@ -34,8 +33,8 @@ class KenoLogic extends ChangeNotifier {
   double coefficient = 0.0;
   double bet = 0.0;
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -79,13 +78,12 @@ class KenoLogic extends ChangeNotifier {
     }
   }
 
-  void startGame({required BuildContext context, required double bet}) {
+  void startGame({required BuildContext context}) {
     if (userNumbersList.isEmpty) {
       return;
     }
 
     if (AutoclickerSecure.isCanPlay) {
-      this.bet = bet;
       this.context = context;
 
       randomNumbersList.clear();
@@ -151,14 +149,14 @@ class KenoLogic extends ChangeNotifier {
 
             if (Provider.of<SettingsController>(context, listen: false)
                     .isEnabledConfetti &&
-                coefficients[currentCoefficient - 1] >= 2.0) {
+                coefficient >= 2.0) {
               confettiController.play();
             }
 
             CommonFunctions.callOnProfit(
               context: context,
               bet: bet,
-              gameName: 'keno',
+              gameName: 'Keno',
               profit: profit,
             );
 

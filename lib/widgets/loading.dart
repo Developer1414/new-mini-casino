@@ -21,7 +21,7 @@ Widget loading({required BuildContext context, String text = ''}) {
             const SizedBox(height: 10.0),
             Padding(
               padding:
-                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 5.0),
+                  const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 3.0),
               child:
                   AutoSizeText(text.isEmpty ? 'Пожалуйста, подождите...' : text,
                       textAlign: TextAlign.center,

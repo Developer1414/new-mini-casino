@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +9,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -18,16 +17,6 @@ import 'package:screenshot/screenshot.dart';
 
 class Stairs extends StatefulWidget {
   const Stairs({super.key});
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   State<Stairs> createState() => _StairsState();
@@ -96,15 +85,25 @@ class _StairsState extends State<Stairs> {
                                         .copyWith(fontSize: 12.0)),
                               ],
                             ),
-                            const SizedBox(height: 10.0),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AutoSizeText('Кол. камней:',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
                                         .copyWith(fontSize: 12.0)),
+                                Expanded(
+                                  child: Slider(
+                                    value: stairsLogic.sliderValue,
+                                    max: 3,
+                                    min: 1,
+                                    divisions: 2,
+                                    onChanged: (double value) {
+                                      if (stairsLogic.isGameOn) return;
+                                      stairsLogic.changeSliderValue(value);
+                                    },
+                                  ),
+                                ),
                                 AutoSizeText(
                                     stairsLogic.sliderValue.round().toString(),
                                     style: Theme.of(context)
@@ -113,183 +112,108 @@ class _StairsState extends State<Stairs> {
                                         .copyWith(fontSize: 12.0)),
                               ],
                             ),
-                            Slider(
-                              value: stairsLogic.sliderValue,
-                              max: 3,
-                              min: 1,
-                              divisions: 2,
-                              onChanged: (double value) {
-                                if (stairsLogic.isGameOn) return;
-                                stairsLogic.changeSliderValue(value);
-                              },
+                            gameBetCount(
+                              context: context,
+                              gameLogic: stairsLogic,
+                              bet: stairsLogic.bet,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10.0),
+                      const SizedBox(height: 15.0),
                       Row(
                         children: [
-                          stairsLogic.isGameOn
+                          !stairsLogic.isGameOn
                               ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () => stairsLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      stairsLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
-                                  ),
-                                ),
-                          Visibility(
-                            visible: stairsLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: customTextField(
-                                    currencyTextInputFormatter:
-                                        Stairs.betFormatter,
-                                    textInputFormatter: Stairs.betFormatter,
-                                    keyboardType: TextInputType.number,
-                                    isBetInput: true,
-                                    controller: Stairs.betController,
-                                    context: context,
-                                    hintText: 'Ставка...'),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: !stairsLogic.isShowInputBet,
-                            child: Expanded(
-                              child: Row(
-                                children: [
-                                  !stairsLogic.isGameOn
-                                      ? Container()
-                                      : Expanded(
-                                          child: SizedBox(
-                                            height: 60.0,
-                                            child: Container(
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              child: ElevatedButton(
-                                                onPressed: !stairsLogic.isGameOn
-                                                    ? null
-                                                    : () {
-                                                        stairsLogic.autoMove();
-                                                      },
-                                                style: ElevatedButton.styleFrom(
-                                                  elevation: 5,
-                                                  backgroundColor:
-                                                      Colors.blueAccent,
-                                                  shape:
-                                                      const RoundedRectangleBorder(),
-                                                ),
-                                                child: AutoSizeText(
-                                                  'АВТО',
-                                                  maxLines: 1,
-                                                  style: GoogleFonts.roboto(
-                                                      color: !stairsLogic
-                                                              .isGameOn
-                                                          ? Colors.white
-                                                              .withOpacity(0.4)
-                                                          : Colors.white,
-                                                      fontSize: 20.0,
-                                                      fontWeight:
-                                                          FontWeight.w900),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                              : Expanded(
+                                  child: SizedBox(
+                                    height: 60.0,
+                                    child: Container(
+                                      color: Theme.of(context).cardColor,
+                                      child: ElevatedButton(
+                                        onPressed: !stairsLogic.isGameOn
+                                            ? null
+                                            : () {
+                                                stairsLogic.autoMove();
+                                              },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 5,
+                                          backgroundColor: Colors.blueAccent,
+                                          shape:
+                                              const RoundedRectangleBorder(),
                                         ),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      child: Container(
-                                        color: Theme.of(context).cardColor,
-                                        child: ElevatedButton(
-                                          onPressed: !stairsLogic.isGameOn
-                                              ? () {
-                                                  if (!stairsLogic.isGameOn) {
-                                                    if (balance.currentBalance <
-                                                        double.parse(Stairs
-                                                            .betFormatter
-                                                            .getUnformattedValue()
-                                                            .toString())) {
-                                                      return;
-                                                    }
-
-                                                    stairsLogic.startGame(
-                                                        context: context,
-                                                        bet: double.parse(Stairs
-                                                            .betFormatter
-                                                            .getUnformattedValue()
-                                                            .toString()));
-                                                  } else {
-                                                    stairsLogic.cashout();
-                                                  }
-                                                }
-                                              : stairsLogic
-                                                      .openedColumnIndex.isEmpty
-                                                  ? null
-                                                  : () {
-                                                      if (!stairsLogic
-                                                          .isGameOn) {
-                                                        if (balance
-                                                                .currentBalance <
-                                                            double.parse(Stairs
-                                                                .betFormatter
-                                                                .getUnformattedValue()
-                                                                .toString())) {
-                                                          return;
-                                                        }
-
-                                                        stairsLogic.startGame(
-                                                            context: context,
-                                                            bet: double.parse(Stairs
-                                                                .betFormatter
-                                                                .getUnformattedValue()
-                                                                .toString()));
-                                                      } else {
-                                                        stairsLogic.cashout();
-                                                      }
-                                                    },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            backgroundColor: Colors.redAccent,
-                                            shape:
-                                                const RoundedRectangleBorder(),
-                                          ),
-                                          child: AutoSizeText(
-                                            !stairsLogic.isGameOn
-                                                ? 'СТАВКА'
-                                                : 'ЗАБРАТЬ',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                                color: stairsLogic.isGameOn
-                                                    ? stairsLogic
-                                                            .openedColumnIndex
-                                                            .isEmpty
-                                                        ? Colors.white
-                                                            .withOpacity(0.4)
-                                                        : Colors.white
-                                                    : Colors.white,
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.w900),
-                                          ),
+                                        child: AutoSizeText(
+                                          'АВТО',
+                                          maxLines: 1,
+                                          style: GoogleFonts.roboto(
+                                              color: !stairsLogic.isGameOn
+                                                  ? Colors.white
+                                                      .withOpacity(0.4)
+                                                  : Colors.white,
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.w900),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
+                                ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 60.0,
+                              child: Container(
+                                color: Theme.of(context).cardColor,
+                                child: ElevatedButton(
+                                  onPressed: !stairsLogic.isGameOn
+                                      ? () {
+                                          if (!stairsLogic.isGameOn) {
+                                            if (balance.currentBalance <
+                                                stairsLogic.bet) {
+                                              return;
+                                            }
+                      
+                                            stairsLogic.startGame(
+                                                context: context);
+                                          } else {
+                                            stairsLogic.cashout();
+                                          }
+                                        }
+                                      : stairsLogic.openedColumnIndex.isEmpty
+                                          ? null
+                                          : () {
+                                              if (!stairsLogic.isGameOn) {
+                                                if (balance.currentBalance <
+                                                    stairsLogic.bet) {
+                                                  return;
+                                                }
+                      
+                                                stairsLogic.startGame(
+                                                    context: context);
+                                              } else {
+                                                stairsLogic.cashout();
+                                              }
+                                            },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: Colors.green,
+                                    shape: const RoundedRectangleBorder(),
+                                  ),
+                                  child: AutoSizeText(
+                                    !stairsLogic.isGameOn
+                                        ? 'СТАВКА'
+                                        : 'ЗАБРАТЬ',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: stairsLogic.isGameOn
+                                            ? stairsLogic
+                                                    .openedColumnIndex.isEmpty
+                                                ? Colors.white
+                                                    .withOpacity(0.4)
+                                                : Colors.white
+                                            : Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
@@ -412,9 +336,8 @@ class _StairsState extends State<Stairs> {
                                                           : FaIcon(
                                                               FontAwesomeIcons
                                                                   .solidCircleQuestion,
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .canvasColor,
+                                                              color: Colors.grey
+                                                                  .shade500,
                                                               size: 30.0,
                                                             )
                                                       : stairsLogic

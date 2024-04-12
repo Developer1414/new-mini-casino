@@ -8,6 +8,7 @@ Widget buttonModel(
     String? subtitle,
     required Color color,
     Function()? onPressed,
+    double? titleFontSize,
     Color? textColor,
     Color? iconColor,
     IconData? icon}) {
@@ -50,7 +51,7 @@ Widget buttonModel(
                       maxLines: 1,
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 20.0,
+                          fontSize: titleFontSize ?? 20.0,
                           color: textColor ??
                               Theme.of(context).textTheme.bodyMedium!.color)),
               subtitle == null

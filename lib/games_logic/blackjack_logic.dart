@@ -62,9 +62,13 @@ class BlackjackLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context, required double bet}) {
+  void changeBet(double value) {
+    bet = value;
+    notifyListeners();
+  }
+
+  void startGame({required BuildContext context}) {
     this.context = context;
-    this.bet = bet;
 
     dealerValue = 0;
     playerValue = 0;
@@ -396,12 +400,13 @@ class BlackjackLogic extends ChangeNotifier {
     CommonFunctions.callOnProfit(
       context: context,
       bet: bet,
-      gameName: 'blackjack',
+      gameName: 'Blackjack',
       profit: profit,
     );
 
     if (Provider.of<SettingsController>(context, listen: false)
-        .isEnabledConfetti) {
+            .isEnabledConfetti &&
+        blackjackType == BlackjackType.blackjack) {
       confettiController.play();
     }
 

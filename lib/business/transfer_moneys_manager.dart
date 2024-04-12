@@ -89,13 +89,13 @@ class TransferMoneysManager extends ChangeNotifier {
       return;
     }
 
-    if (amount > 1000000) {
+    if (amount > 5000000) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000000)}!',
+            'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(5000000)}!',
       );
 
       return;
@@ -118,7 +118,7 @@ class TransferMoneysManager extends ChangeNotifier {
       currentSum = double.parse(
           jsonDecode(prefs.getString('transfer').toString())[0].toString());
 
-      if (currentSum >= 1000000) {
+      if (currentSum >= 5000000) {
         if (dateTime.difference(dateTimeNow).inHours > 0) {
           if (context.mounted) {
             alertDialogError(
@@ -135,14 +135,14 @@ class TransferMoneysManager extends ChangeNotifier {
           prefs.remove('transfer');
         }
       } else {
-        if (currentSum + amount > 1000000) {
+        if (currentSum + amount > 5000000) {
           if (context.mounted) {
             alertDialogError(
               context: context,
               title: 'Ошибка',
               confirmBtnText: 'Окей',
               text:
-                  'Вы можете перевести максимум еще ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000000 - currentSum)}!',
+                  'Вы можете перевести максимум еще ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(5000000 - currentSum)}!',
             );
           }
 

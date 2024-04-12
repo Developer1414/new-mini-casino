@@ -129,7 +129,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(35.0),
+                            padding: const EdgeInsets.all(15.0),
                             child: Column(
                               children: [
                                 Column(
@@ -137,6 +137,8 @@ class PurchasingGameCurrency extends StatelessWidget {
                                     SizedBox(
                                       width: double.infinity,
                                       child: smallHelperPanel(
+                                        borderColor: const Color.fromARGB(
+                                            255, 179, 242, 31),
                                         context: context,
                                         textStyle: Theme.of(context)
                                             .textTheme

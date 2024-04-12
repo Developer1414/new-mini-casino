@@ -23,8 +23,8 @@ void autoClickerDetected({required BuildContext context}) {
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: Scaffold(
           backgroundColor: Colors.black.withOpacity(0.2),
           body: Center(

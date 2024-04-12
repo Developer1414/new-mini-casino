@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,7 +11,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -20,16 +19,6 @@ class Mines extends StatelessWidget {
   const Mines({super.key});
 
   static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +49,7 @@ class Mines extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(left: 15.0, right: 15.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,15 +74,25 @@ class Mines extends StatelessWidget {
                                         .copyWith(fontSize: 12.0)),
                               ],
                             ),
-                            const SizedBox(height: 10.0),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AutoSizeText('Кол. мин:',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
                                         .copyWith(fontSize: 12.0)),
+                                Expanded(
+                                  child: Slider(
+                                    value: minesLogic.sliderValue,
+                                    max: 24,
+                                    min: 1,
+                                    divisions: 23,
+                                    onChanged: (double value) {
+                                      if (minesLogic.isGameOn) return;
+                                      minesLogic.changeSliderValue(value);
+                                    },
+                                  ),
+                                ),
                                 AutoSizeText(
                                     minesLogic.sliderValue.round().toString(),
                                     style: Theme.of(context)
@@ -101,180 +101,120 @@ class Mines extends StatelessWidget {
                                         .copyWith(fontSize: 12.0)),
                               ],
                             ),
-                            Slider(
-                              value: minesLogic.sliderValue,
-                              max: 24,
-                              min: 1,
-                              divisions: 23,
-                              onChanged: (double value) {
-                                if (minesLogic.isGameOn) return;
-                                minesLogic.changeSliderValue(value);
-                              },
+                            gameBetCount(
+                              context: context,
+                              gameLogic: minesLogic,
+                              bet: minesLogic.bet,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10.0),
+                      const SizedBox(height: 15.0),
                       Row(
                         children: [
-                          minesLogic.isGameOn
-                              ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () => minesLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      minesLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
-                                  ),
-                                ),
-                          Visibility(
-                            visible: minesLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: customTextField(
-                                    currencyTextInputFormatter:
-                                        Mines.betFormatter,
-                                    textInputFormatter: Mines.betFormatter,
-                                    keyboardType: TextInputType.number,
-                                    isBetInput: true,
-                                    controller: Mines.betController,
-                                    context: context,
-                                    hintText: 'Ставка...'),
-                              ),
-                            ),
-                          ),
-                          Visibility(
-                            visible: !minesLogic.isShowInputBet,
-                            child: Expanded(
-                              child: Row(
-                                children: [
-                                  !minesLogic.isGameOn
-                                      ? Container()
-                                      : Expanded(
-                                          child: SizedBox(
-                                            height: 60.0,
-                                            child: Container(
-                                              color:
-                                                  Theme.of(context).cardColor,
-                                              child: ElevatedButton(
-                                                onPressed: !minesLogic.isGameOn
-                                                    ? null
-                                                    : () {
-                                                        minesLogic.autoMove();
-                                                      },
-                                                style: ElevatedButton.styleFrom(
-                                                  elevation: 5,
-                                                  backgroundColor:
-                                                      Colors.blueAccent,
-                                                  shape:
-                                                      const RoundedRectangleBorder(),
-                                                ),
-                                                child: AutoSizeText(
-                                                  'АВТО',
-                                                  maxLines: 1,
-                                                  style: GoogleFonts.roboto(
-                                                      color: !minesLogic
-                                                              .isGameOn
-                                                          ? Colors.white
-                                                              .withOpacity(0.4)
-                                                          : Colors.white,
-                                                      fontSize: 20.0,
-                                                      fontWeight:
-                                                          FontWeight.w900),
-                                                ),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                !minesLogic.isGameOn
+                                    ? Container()
+                                    : Expanded(
+                                        child: SizedBox(
+                                          height: 60.0,
+                                          child: Container(
+                                            color: Theme.of(context).cardColor,
+                                            child: ElevatedButton(
+                                              onPressed: !minesLogic.isGameOn
+                                                  ? null
+                                                  : () {
+                                                      minesLogic.autoMove();
+                                                    },
+                                              style: ElevatedButton.styleFrom(
+                                                elevation: 5,
+                                                backgroundColor:
+                                                    Colors.blueAccent,
+                                                shape:
+                                                    const RoundedRectangleBorder(),
+                                              ),
+                                              child: AutoSizeText(
+                                                'АВТО',
+                                                maxLines: 1,
+                                                style: GoogleFonts.roboto(
+                                                    color: !minesLogic.isGameOn
+                                                        ? Colors.white
+                                                            .withOpacity(0.4)
+                                                        : Colors.white,
+                                                    fontSize: 20.0,
+                                                    fontWeight:
+                                                        FontWeight.w900),
                                               ),
                                             ),
                                           ),
                                         ),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      child: Container(
-                                        color: Theme.of(context).cardColor,
-                                        child: ElevatedButton(
-                                          onPressed: !minesLogic.isGameOn
-                                              ? () {
-                                                  if (!minesLogic.isGameOn) {
-                                                    if (balance.currentBalance <
-                                                        double.parse(betFormatter
-                                                            .getUnformattedValue()
-                                                            .toString())) {
-                                                      return;
-                                                    }
-
-                                                    minesLogic.startGame(
-                                                        context: context,
-                                                        bet: double.parse(
-                                                            betFormatter
-                                                                .getUnformattedValue()
-                                                                .toString()));
-                                                  } else {
-                                                    minesLogic.cashout();
+                                      ),
+                                Expanded(
+                                  child: SizedBox(
+                                    height: 60.0,
+                                    child: Container(
+                                      color: Theme.of(context).cardColor,
+                                      child: ElevatedButton(
+                                        onPressed: !minesLogic.isGameOn
+                                            ? () {
+                                                if (!minesLogic.isGameOn) {
+                                                  if (balance.currentBalance <
+                                                      minesLogic.bet) {
+                                                    return;
                                                   }
-                                                }
-                                              : minesLogic.openedIndexes.isEmpty
-                                                  ? null
-                                                  : () {
-                                                      if (!minesLogic
-                                                          .isGameOn) {
-                                                        if (balance
-                                                                .currentBalance <
-                                                            double.parse(betFormatter
-                                                                .getUnformattedValue()
-                                                                .toString())) {
-                                                          return;
-                                                        }
 
-                                                        minesLogic.startGame(
-                                                            context: context,
-                                                            bet: double.parse(
-                                                                betFormatter
-                                                                    .getUnformattedValue()
-                                                                    .toString()));
-                                                      } else {
-                                                        minesLogic.cashout();
+                                                  minesLogic.startGame(
+                                                    context: context,
+                                                  );
+                                                } else {
+                                                  minesLogic.cashout();
+                                                }
+                                              }
+                                            : minesLogic.openedIndexes.isEmpty
+                                                ? null
+                                                : () {
+                                                    if (!minesLogic.isGameOn) {
+                                                      if (balance
+                                                              .currentBalance <
+                                                          minesLogic.bet) {
+                                                        return;
                                                       }
-                                                    },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            backgroundColor: Colors.green,
-                                            shape:
-                                                const RoundedRectangleBorder(),
-                                          ),
-                                          child: AutoSizeText(
-                                            !minesLogic.isGameOn
-                                                ? 'СТАВКА'
-                                                : 'ЗАБРАТЬ',
-                                            maxLines: 1,
-                                            style: GoogleFonts.roboto(
-                                                color: !minesLogic.isGameOn
-                                                    ? Colors.white
-                                                    : minesLogic.openedIndexes
-                                                            .isNotEmpty
-                                                        ? Colors.white
-                                                        : Colors.white
-                                                            .withOpacity(0.4),
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.w900),
-                                          ),
+
+                                                      minesLogic.startGame(
+                                                        context: context,
+                                                      );
+                                                    } else {
+                                                      minesLogic.cashout();
+                                                    }
+                                                  },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 0,
+                                          backgroundColor: Colors.green,
+                                          shape: const RoundedRectangleBorder(),
+                                        ),
+                                        child: AutoSizeText(
+                                          !minesLogic.isGameOn
+                                              ? 'СТАВКА'
+                                              : 'ЗАБРАТЬ',
+                                          maxLines: 1,
+                                          style: GoogleFonts.roboto(
+                                              color: !minesLogic.isGameOn
+                                                  ? Colors.white
+                                                  : minesLogic.openedIndexes
+                                                          .isNotEmpty
+                                                      ? Colors.white
+                                                      : Colors.white
+                                                          .withOpacity(0.4),
+                                              fontSize: 20.0,
+                                              fontWeight: FontWeight.w900),
                                         ),
                                       ),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ],

@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicy extends StatelessWidget {
   const PrivacyPolicy({super.key});
@@ -80,12 +82,35 @@ class PrivacyPolicy extends StatelessWidget {
                       """We will retain your information for as long as necessary to fulfill the purposes described in this privacy policy, unless a longer retention period is required or permitted by law. We take reasonable measures to protect the information we collect from unauthorized access, disclosure, alteration, or destruction.""",
                 ),
                 const SizedBox(height: 30.0),
-                text(
-                  context: context,
-                  title: '6. Contact Us',
-                  content:
-                      """If you have any questions or concerns about our privacy practices, please contact us at develope14000@gmail.com.""",
-                ),
+                Text('6. Contact Us',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 5.0),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                    text:
+                        'If you have any questions or concerns about our privacy practices, please contact us at ',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Colors.white70,
+                        ),
+                  ),
+                  TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        final Uri emailLaunchUri =
+                            Uri.parse('mailto:develope14000@gmail.com');
+
+                        if (!await launchUrl(emailLaunchUri,
+                            mode: LaunchMode.externalApplication)) {
+                          throw Exception('Could not launch $emailLaunchUri}');
+                        }
+                      },
+                    text: 'develope14000@gmail.com.',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Colors.blue,
+                        ),
+                  )
+                ])),
                 const SizedBox(height: 30.0),
                 text(
                   context: context,

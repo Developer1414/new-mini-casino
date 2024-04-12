@@ -24,7 +24,6 @@ class CrashRound {
 class CrashLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isWin = false;
-  bool isShowInputBet = false;
 
   CrashStatus crashStatus = CrashStatus.idle;
 
@@ -42,17 +41,14 @@ class CrashLogic extends ChangeNotifier {
 
   late BuildContext context;
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
   void startGame(
-      {required BuildContext context,
-      required double bet,
-      required double targetCoefficient}) {
+      {required BuildContext context, required double targetCoefficient}) {
     if (AutoclickerSecure.isCanPlay) {
-      this.bet = bet;
       this.targetCoefficient = targetCoefficient;
       this.context = context;
 
@@ -82,7 +78,7 @@ class CrashLogic extends ChangeNotifier {
     CommonFunctions.callOnProfit(
       context: context,
       bet: bet,
-      gameName: 'crash',
+      gameName: 'Crash',
       profit: profit,
     );
 
@@ -100,7 +96,8 @@ class CrashLogic extends ChangeNotifier {
     notifyListeners();
 
     if (Provider.of<SettingsController>(context, listen: false)
-        .isEnabledConfetti) {
+            .isEnabledConfetti &&
+        winCoefficient >= 10.0) {
       confettiController.play();
     }
 
@@ -130,9 +127,7 @@ class CrashLogic extends ChangeNotifier {
 
     crashStatus = CrashStatus.loss;
 
-    animationController
-      ..stop()
-      ..reset();
+    animationController.stop();
 
     GameStatisticController.updateGameStatistic(
         gameName: 'crash',
@@ -156,17 +151,17 @@ class CrashLogic extends ChangeNotifier {
 
     double speed = 0.005;
 
-    if (temp < 45.0) {
+    if (temp < 60.0) {
       maxCoefficient = generateDouble(1.0, 1.5);
-    } else if (temp >= 45.0 && temp < 70) {
+    } else if (temp >= 60.0 && temp < 70) {
+      maxCoefficient = generateDouble(1.0, 5.0);
+    } else if (temp >= 70.0 && temp < 85) {
       maxCoefficient = generateDouble(1.0, 10.0);
-    } else if (temp >= 70.0 && temp < 80) {
-      maxCoefficient = generateDouble(1.0, 15.0);
-    } else if (temp >= 80.0 && temp < 90) {
-      maxCoefficient = generateDouble(1.0, 20.0);
-    } else if (temp >= 90.0 && temp < 95.0) {
-      maxCoefficient = generateDouble(1.0, 40.0);
-    } else if (temp >= 95.0) {
+    } else if (temp >= 85.0 && temp < 95) {
+      maxCoefficient = generateDouble(1.0, 50.0);
+    } else if (temp >= 95.0 && temp < 98.0) {
+      maxCoefficient = generateDouble(1.0, 80.0);
+    } else if (temp >= 98.0) {
       maxCoefficient = generateDouble(1.0, 100.0);
     }
 

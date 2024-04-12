@@ -119,11 +119,12 @@ class PromocodeManager extends ChangeNotifier {
       await SupabaseController.supabase!
           .from('users')
           .select('*')
-          .eq('uid',
-              SupabaseController.supabase?.auth.currentUser!.id) // newyear
+          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+          .select('promocodes')
           .then((value) async {
-        Map<String, dynamic> promocodes =
-            jsonDecode((value as List<dynamic>).first['promocodes']);
+        Map<String, dynamic> promocodes = value[0]['promocodes'] == null
+            ? {}
+            : jsonDecode(value[0]['promocodes'] ?? '');
 
         if (promocodes.containsKey(title)) {
           alertDialogError(

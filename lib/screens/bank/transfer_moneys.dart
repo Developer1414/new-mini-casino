@@ -140,7 +140,7 @@ class TransferMoneys extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(35.0),
+                          padding: const EdgeInsets.all(15.0),
                           child: Column(
                             children: [
                               Column(
@@ -243,27 +243,7 @@ class TransferMoneys extends StatelessWidget {
                                   smallHelperPanel(
                                     context: context,
                                     text:
-                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)} за 12 часов!',
-                                  ),
-                                  const SizedBox(height: 15.0),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.orange.withOpacity(0.3),
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        border: Border.all(
-                                            color: Colors.orangeAccent,
-                                            width: 3.0)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Text(
-                                          'Прежде чем перевести деньги игроку, сообщите ему об этом, так как на их получение у него будет всего 5 минут!',
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(fontSize: 12.0)),
-                                    ),
+                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за 12 часов!',
                                   ),
                                 ],
                               ),

@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +12,7 @@ import 'package:new_mini_casino/games_logic/crash_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -21,16 +20,6 @@ import 'package:screenshot/screenshot.dart';
 
 class Crash extends StatefulWidget {
   const Crash({super.key});
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   static TextEditingController targetCoefficient =
       TextEditingController(text: '2.0');
@@ -101,8 +90,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                AutoSizeText(
-                                    'Прибыль (${crashLogic.winCoefficient.toStringAsFixed(2)}x):',
+                                AutoSizeText('Прибыль:',
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
@@ -196,198 +184,147 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      Row(
-                        children: [
-                          crashLogic.isGameOn
-                              ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () => crashLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      crashLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: SizedBox(
+                          height: 50.0,
+                          child: TextField(
+                            controller: Crash.targetCoefficient,
+                            readOnly: crashLogic.isGameOn,
+                            keyboardType: TextInputType.number,
+                            textAlign: TextAlign.center,
+                            onTap: () {
+                              Crash.targetCoefficient.selection = TextSelection(
+                                  baseOffset: 0,
+                                  extentOffset:
+                                      Crash.targetCoefficient.text.length);
+                            },
+                            onSubmitted: (value) {
+                              if (double.parse(value) < 1.1) {
+                                Crash.targetCoefficient.text = '1.1';
+                              }
+                            },
+                            decoration: InputDecoration(
+                                suffix: Padding(
+                                  padding: const EdgeInsets.only(right: 5.0),
+                                  child: Text(
+                                    'X',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall!
+                                        .copyWith(fontSize: 20.0),
                                   ),
                                 ),
-                          Visibility(
-                            visible: crashLogic.isShowInputBet,
-                            child: Expanded(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      child: customTextField(
-                                          currencyTextInputFormatter:
-                                              Crash.betFormatter,
-                                          textInputFormatter:
-                                              Crash.betFormatter,
-                                          keyboardType: TextInputType.number,
-                                          isBetInput: true,
-                                          controller: Crash.betController,
-                                          context: context,
-                                          hintText: 'Ставка...'),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      child: TextField(
-                                        controller: Crash.targetCoefficient,
-                                        readOnly: crashLogic.isGameOn,
-                                        keyboardType: TextInputType.number,
-                                        textAlign: TextAlign.center,
-                                        onTap: () {
-                                          Crash.targetCoefficient.selection =
-                                              TextSelection(
-                                                  baseOffset: 0,
-                                                  extentOffset: Crash
-                                                      .targetCoefficient
-                                                      .text
-                                                      .length);
-                                        },
-                                        onSubmitted: (value) {
-                                          if (double.parse(value) < 1.1) {
-                                            Crash.targetCoefficient.text =
-                                                '1.1';
-                                          }
-                                        },
-                                        decoration: InputDecoration(
-                                            hintText: 'Коэффициент...',
-                                            hintStyle: Theme.of(context)
-                                                .textTheme
-                                                .displaySmall!
-                                                .copyWith(
-                                                    color: Theme.of(context)
-                                                        .textTheme
-                                                        .displaySmall!
-                                                        .color!
-                                                        .withOpacity(0.5)),
-                                            enabledBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .enabledBorder,
-                                            focusedBorder: Theme.of(context)
-                                                .inputDecorationTheme
-                                                .focusedBorder),
-                                        style: Theme.of(context)
+                                hintText: 'Целевой коэффициент...',
+                                hintStyle: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
                                             .textTheme
                                             .displaySmall!
-                                            .copyWith(fontSize: 20.0),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                            .color!
+                                            .withOpacity(0.5)),
+                                enabledBorder: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .enabledBorder,
+                                focusedBorder: Theme.of(context)
+                                    .inputDecorationTheme
+                                    .focusedBorder),
+                            style: Theme.of(context)
+                                .textTheme
+                                .displaySmall!
+                                .copyWith(fontSize: 20.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: gameBetCount(
+                          context: context,
+                          gameLogic: crashLogic,
+                          bet: crashLogic.bet,
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      SizedBox(
+                        height: 60.0,
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 5.0)
+                          ], color: Theme.of(context).cardColor),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              if (!crashLogic.isGameOn) {
+                                if (balance.currentBalance < crashLogic.bet) {
+                                  return;
+                                }
+
+                                if (Crash.targetCoefficient.text.isEmpty ||
+                                    double.parse(Crash.targetCoefficient.text)
+                                        .isNegative ||
+                                    double.parse(Crash.targetCoefficient.text) <
+                                        1) {
+                                  return;
+                                }
+
+                                if (double.parse(Crash.targetCoefficient.text) <
+                                    1.1) {
+                                  alertDialogError(
+                                    context: context,
+                                    title: 'Ошибка',
+                                    text: 'Минимальный коэффициент: 1.1',
+                                    confirmBtnText: 'Окей',
+                                  );
+
+                                  return;
+                                }
+
+                                crashLogic.startGame(
+                                    context: context,
+                                    targetCoefficient: double.parse(
+                                        Crash.targetCoefficient.text));
+                              } else {
+                                if (crashLogic.crashStatus ==
+                                    CrashStatus.idle) {
+                                  crashLogic.cashout();
+                                } else if (crashLogic.crashStatus ==
+                                    CrashStatus.win) {
+                                  crashLogic.stop();
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: crashLogic.timer.isActive &&
+                                      crashLogic.crashStatus == CrashStatus.win
+                                  ? Colors.redAccent
+                                  : crashLogic.isGameOn &&
+                                          crashLogic.timer.isActive
+                                      ? Colors.blueAccent
+                                      : Colors.green,
+                              shape: const RoundedRectangleBorder(),
+                            ),
+                            child: AutoSizeText(
+                              crashLogic.timer.isActive &&
+                                      crashLogic.crashStatus == CrashStatus.win
+                                  ? 'СТОП'
+                                  : crashLogic.isGameOn &&
+                                          crashLogic.timer.isActive
+                                      ? 'ЗАБРАТЬ'
+                                      : 'СТАВКА',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                  color: Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
-                          Visibility(
-                            visible: !crashLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 5.0)
-                                  ], color: Theme.of(context).cardColor),
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      if (!crashLogic.isGameOn) {
-                                        if (balance.currentBalance <
-                                            double.parse(Crash.betFormatter
-                                                .getUnformattedValue()
-                                                .toStringAsFixed(2))) {
-                                          return;
-                                        }
-
-                                        if (Crash.targetCoefficient.text
-                                                .isEmpty ||
-                                            double.parse(Crash
-                                                    .targetCoefficient.text)
-                                                .isNegative ||
-                                            double.parse(Crash
-                                                    .targetCoefficient.text) <
-                                                1) {
-                                          return;
-                                        }
-
-                                        if (double.parse(
-                                                Crash.targetCoefficient.text) <
-                                            1.1) {
-                                          alertDialogError(
-                                            context: context,
-                                            title: 'Ошибка',
-                                            text:
-                                                'Минимальный коэффициент: 1.1',
-                                            confirmBtnText: 'Окей',
-                                          );
-
-                                          return;
-                                        }
-
-                                        crashLogic.startGame(
-                                            context: context,
-                                            targetCoefficient: double.parse(
-                                                Crash.targetCoefficient.text),
-                                            bet: double.parse(Crash.betFormatter
-                                                .getUnformattedValue()
-                                                .toString()));
-                                      } else {
-                                        if (crashLogic.crashStatus ==
-                                            CrashStatus.idle) {
-                                          crashLogic.cashout();
-                                        } else if (crashLogic.crashStatus ==
-                                            CrashStatus.win) {
-                                          crashLogic.stop();
-                                        }
-                                      }
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 0,
-                                      backgroundColor:
-                                          crashLogic.timer.isActive &&
-                                                  crashLogic.crashStatus ==
-                                                      CrashStatus.win
-                                              ? Colors.redAccent
-                                              : crashLogic.isGameOn &&
-                                                      crashLogic.timer.isActive
-                                                  ? Colors.blueAccent
-                                                  : Colors.green,
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: AutoSizeText(
-                                      crashLogic.timer.isActive &&
-                                              crashLogic.crashStatus ==
-                                                  CrashStatus.win
-                                          ? 'СТОП'
-                                          : crashLogic.isGameOn &&
-                                                  crashLogic.timer.isActive
-                                              ? 'ЗАБРАТЬ'
-                                              : 'СТАВКА',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w900),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   );
@@ -491,46 +428,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                 confettiController: confettiController,
                 blastDirectionality: BlastDirectionality.explosive)
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget mathButton(String buttonTitle, String mathOperator) {
-    return SizedBox(
-      child: ElevatedButton(
-        onPressed: () {
-          if (mathOperator == '/') {
-            double n = (double.parse(
-                        Crash.betFormatter.getUnformattedValue().toString()) /
-                    2) *
-                10;
-            Crash.betController.text = Crash.betFormatter.format(n.toString());
-          } else if (mathOperator == '*') {
-            Crash.betController.text = Crash.betFormatter.format((double.parse(
-                        (Crash.betFormatter.getUnformattedValue() * 10)
-                            .toString()) *
-                    2)
-                .toString());
-          }
-        },
-        style: ElevatedButton.styleFrom(
-          elevation: 5,
-          backgroundColor: Colors.redAccent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-        ),
-        child: Center(
-          child: AutoSizeText(
-            buttonTitle,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.roboto(
-                color: Colors.white,
-                fontSize: 12.0,
-                fontWeight: FontWeight.w700),
-          ),
         ),
       ),
     );

@@ -57,8 +57,11 @@ class GameStatistic extends StatelessWidget {
 
               return statistic.gameStatisticModel == null
                   ? Center(
-                      child: smallHelperPanel(
-                          context: context, text: 'Статистики пока нет'),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: smallHelperPanel(
+                            context: context, text: 'Статистики пока нет'),
+                      ),
                     )
                   : SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
@@ -161,8 +164,7 @@ class GameStatistic extends StatelessWidget {
                           .format(number)
                   : isPercent
                       ? '${number.toInt()}%'
-                      : NumberFormat.compact(locale: ui.Platform.localeName)
-                          .format(number),
+                      : NumberFormat.compact(locale: 'en_US').format(number),
               maxLines: 1,
               textAlign: TextAlign.center,
               style: Theme.of(context)

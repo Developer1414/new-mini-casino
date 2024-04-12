@@ -1,4 +1,5 @@
 import 'dart:io' as ui;
+import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -16,7 +17,6 @@ import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
-import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -32,6 +32,7 @@ class AllGames extends StatefulWidget {
     '/leader-board': 'Лидер дня',
     '/promocode': 'Промокод',
     '/local-bonuses': 'Мои бонусы',
+    '/latest-max-wins': 'Крупные выигрыши',
   };
 
   @override
@@ -47,25 +48,10 @@ class _AllGamesState extends State<AllGames> {
     });
   }
 
-  Future checkOnEngineeringWorks() async {
-    await SupabaseController.supabase!
-        .from('settings')
-        .select('*')
-        .eq('setting', 'engineeringWorks')
-        .then((value) {
-      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
-
-      if (map['value'] as bool) {
-        showEngineeringWorksAlertDialog(context);
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
     checkDailyBonus();
-    checkOnEngineeringWorks();
   }
 
   @override
@@ -346,42 +332,53 @@ class _AllGamesState extends State<AllGames> {
                                         context.beamToNamed(GamesController
                                             .games[index].nextScreen);
                                       },
-                                      buttonColor: GamesController
-                                          .games[index].buttonColor,
+                                      buttonColor:
+                                          // Color.fromARGB(255, 136, 71, 126),
+                                          GamesController
+                                              .games[index].buttonColor,
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(25.0)))
                                   : index == GamesController.games.length
-                                      ? Container(
-                                          decoration: BoxDecoration(
-                                              color: const Color.fromARGB(
-                                                  80, 42, 171, 238),
-                                              borderRadius:
-                                                  BorderRadius.circular(15.0),
-                                              border: Border.all(
-                                                  color: const Color.fromARGB(
-                                                      255, 42, 171, 238),
-                                                  width: 2.0)),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                FaIcon(
-                                                  FontAwesomeIcons.lock,
-                                                  color: Theme.of(context)
-                                                      .appBarTheme
-                                                      .iconTheme!
-                                                      .color,
-                                                  size: 30.0,
-                                                ),
-                                                const SizedBox(height: 10.0),
-                                                Text('Здесь будет новая игра!',
-                                                    textAlign: TextAlign.center,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .bodySmall),
-                                              ],
+                                      ? GlassContainer(
+                                          blur: 8,
+                                          color: const Color.fromARGB(
+                                                  80, 42, 171, 238)
+                                              .withOpacity(0.1),
+                                          borderRadius:
+                                              BorderRadius.circular(15.0),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                                border: Border.all(
+                                                    color: const Color.fromARGB(
+                                                        255, 42, 171, 238),
+                                                    width: 2.0)),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  FaIcon(
+                                                    FontAwesomeIcons.lock,
+                                                    color: Theme.of(context)
+                                                        .appBarTheme
+                                                        .iconTheme!
+                                                        .color,
+                                                    size: 30.0,
+                                                  ),
+                                                  const SizedBox(height: 10.0),
+                                                  Text(
+                                                      'Здесь будет новая игра!',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodySmall),
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         )
@@ -405,6 +402,42 @@ class _AllGamesState extends State<AllGames> {
                                               Radius.circular(25.0))),
                             ),
                           ),
+                          const SizedBox(height: 15.0),
+                          buttonModel(
+                            context: context,
+                            icon: FontAwesomeIcons.shuffle,
+                            buttonName: 'Случайная игра',
+                            color: const Color.fromARGB(255, 101, 42, 238),
+                            onPressed: () {
+                              List<String> availableGames = [];
+
+                              if (SupabaseController.isPremium) {
+                                for (int i = 0;
+                                    i < GamesController.games.length;
+                                    i++) {
+                                  availableGames
+                                      .add(GamesController.games[i].nextScreen);
+                                }
+                              } else {
+                                for (int i = 0;
+                                    i <
+                                        GamesController.games
+                                            .where((element) =>
+                                                element.forPremium == false)
+                                            .length;
+                                    i++) {
+                                  availableGames.add(GamesController.games
+                                      .where((element) =>
+                                          element.forPremium == false)
+                                      .toList()[i]
+                                      .nextScreen);
+                                }
+                              }
+
+                              context.beamToNamed(availableGames[
+                                  Random().nextInt(availableGames.length)]);
+                            },
+                          ),
                           Padding(
                             padding: const EdgeInsets.only(top: 15.0),
                             child: GlassContainer(
@@ -414,7 +447,6 @@ class _AllGamesState extends State<AllGames> {
                               borderRadius: BorderRadius.circular(15.0),
                               child: Container(
                                 decoration: BoxDecoration(
-                                    //color: const Color.fromARGB(80, 42, 171, 238),
                                     borderRadius: BorderRadius.circular(15.0),
                                     border: Border.all(
                                         color: const Color.fromARGB(
@@ -540,11 +572,14 @@ class _AllGamesState extends State<AllGames> {
                               ? Container()
                               : Padding(
                                   padding: const EdgeInsets.only(top: 15.0),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: const AppodealBanner(
-                                        adSize: AppodealBannerSize.BANNER,
-                                        placement: "default"),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: const AppodealBanner(
+                                          adSize: AppodealBannerSize.BANNER,
+                                          placement: "default"),
+                                    ),
                                   ),
                                 )
                         ]),
@@ -560,11 +595,7 @@ class _AllGamesState extends State<AllGames> {
           height: 60.0,
           child: ElevatedButton(
             onPressed: () async {
-              context.beamToNamed('/premium'); // premium // raffle-info
-
-              /* showSimpleAlertDialog(
-                  context: context,
-                  text: 'Покупка Premium временно недоступна!');*/
+              context.beamToNamed('/premium');
             },
             style: ElevatedButton.styleFrom(
               elevation: 5,

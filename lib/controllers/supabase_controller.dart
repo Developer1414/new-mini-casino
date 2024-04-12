@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:math';
 
@@ -9,7 +11,7 @@ import 'package:new_mini_casino/controllers/friend_code_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
-import 'package:new_mini_casino/services/freerasp_service.dart';
+import 'package:new_mini_casino/services/google_sign_in_service.dart';
 import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/src/provider.dart' as provider;
@@ -21,9 +23,9 @@ import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:platform_device_id/platform_device_id.dart';
 import 'package:restart_app/restart_app.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
 
 enum AuthorizationAction { login, register }
 
@@ -66,8 +68,6 @@ class SupabaseController extends ChangeNotifier {
       required String password,
       String friendCode = '',
       required String name}) async {
-    String? deviceId = await PlatformDeviceId.getDeviceId;
-
     bool isFriendCodeFinded = false;
 
     loading(true);
@@ -95,62 +95,123 @@ class SupabaseController extends ChangeNotifier {
       return;
     }
 
-    await SupabaseController.supabase!
-        .from('users')
-        .select('*')
-        .eq('deviceId', deviceId)
-        .then((value) {
-      if (value.isNotEmpty) {
-        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+    await checkNameOnAvailability(name: name).then((isExist) async {
+      if (!isExist) {
+        try {
+          userName = name;
 
-        loading(false);
+          await SupabaseController.supabase!.auth
+              .signUp(
+            email: email.trim(),
+            password: password,
+          )
+              .then((value) {
+            loading(false);
+            context.beamToReplacementNamed('/verify-email/$email/false');
+          });
+        } on AuthException catch (e) {
+          loading(false);
 
-        alertDialogError(
-            context: context,
-            title: 'Ошибка',
-            confirmBtnText: 'Окей',
-            text:
-                'Нельзя создавать несколько аккаунтов! Ваш прошлый аккаунт: ${map['name']}');
-      } else {
-        checkNameOnAvailability(name: name).then((isExist) async {
-          if (!isExist) {
-            try {
-              userName = name;
-
-              await SupabaseController.supabase!.auth
-                  .signUp(
-                email: email.trim(),
-                password: password,
-              )
-                  .then((value) {
-                loading(false);
-                context.beamToReplacementNamed('/verify-email/$email/false');
-              });
-            } on AuthException catch (e) {
-              loading(false);
-
-              if (e.statusCode == '429') {
-                if (context.mounted) {
-                  alertDialogError(
-                      context: context,
-                      title: 'Ошибка',
-                      confirmBtnText: 'Окей',
-                      text:
-                          'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
-                }
-              }
-
-              if (kDebugMode) {
-                print('signUp: $e');
-              }
+          if (e.statusCode == '429') {
+            if (context.mounted) {
+              alertDialogError(
+                  context: context,
+                  title: 'Ошибка',
+                  confirmBtnText: 'Окей',
+                  text:
+                      'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
             }
-          } else {
-            AccountExceptionController.showException(
-                context: context, code: 'nickname_already_exist');
           }
-        });
+
+          if (kDebugMode) {
+            print('signUp: $e');
+          }
+        }
+      } else {
+        AccountExceptionController.showException(
+            context: context, code: 'nickname_already_exist');
       }
     });
+  }
+
+  Future signInWithGoogle() async {
+    loading(true);
+
+    try {
+      await GoogleSignInService.signInWithGoogle();
+
+      final res = await SupabaseController.supabase!
+          .from('users')
+          .select(
+            'uid',
+            const FetchOptions(
+              count: CountOption.exact,
+            ),
+          )
+          .eq('uid', supabase!.auth.currentUser!.id);
+
+      int count = res.count;
+
+      if (count == 1) {
+        if (context.mounted) {
+          alertDialogSuccess(
+              context: context,
+              title: 'Уведомление',
+              confirmBtnText: 'Перезайти',
+              text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
+              onConfirmBtnTap: () => Restart.restartApp());
+        }
+      } else {
+        await supabase!.auth.signOut();
+
+        if (context.mounted) {
+          alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            text:
+                'Вы не можете войти в этот аккаунт, т.к. он ещё не зарегистрирован!',
+          );
+        }
+      }
+    } on AuthException catch (e) {
+      if (kDebugMode) {
+        print('GoogleAuthExcexption: ${e.message}');
+      }
+    }
+
+    loading(false);
+  }
+
+  Future signUpWithGoogle(String name) async {
+    loading(true);
+
+    await checkNameOnAvailability(name: name).then((isExist) async {
+      if (!isExist) {
+        try {
+          userName = name;
+
+          try {
+            await GoogleSignInService.signInWithGoogle();
+            await createUserDates(name: name);
+          } on AuthException catch (e) {
+            if (kDebugMode) {
+              print('GoogleAuthExcexption: ${e.message}');
+            }
+          }
+        } on AuthException catch (e) {
+          loading(false);
+
+          if (kDebugMode) {
+            print('signUp: $e');
+          }
+        }
+      } else {
+        AccountExceptionController.showException(
+            context: context, code: 'nickname_already_exist');
+      }
+    });
+
+    loading(false);
   }
 
   Future sendCodeToResetPassword(
@@ -359,15 +420,12 @@ class SupabaseController extends ChangeNotifier {
     try {
       loading(true);
 
-      String? deviceId = await PlatformDeviceId.getDeviceId;
-
       double startBalance = SupabaseController.friendCode.isEmpty
           ? 500
           : Random().nextInt(10000).toDouble() + 10000;
 
       await SupabaseController.supabase!.from('users').insert({
         'name': name,
-        'deviceId': deviceId,
         'balance': startBalance,
         'totalGames': 0,
         'level': 1.0,
@@ -434,10 +492,9 @@ class SupabaseController extends ChangeNotifier {
   }
 
   Future totalGamesUp() async {
-    double value = ProfileController.profileModel.level +
-        1.0 / (log(ProfileController.profileModel.level + 2) / log(2) * 10);
-
-    ProfileController.profileModel.level = value;
+    double growthRate = 10.0;
+    ProfileController.profileModel.level +=
+        1 / (ProfileController.profileModel.level * growthRate);
 
     await SupabaseController.supabase!
         .from('users')
@@ -523,12 +580,26 @@ class SupabaseController extends ChangeNotifier {
     return androidInfo.isPhysicalDevice; // && !kDebugMode
   }
 
-  Future loadGameServices(BuildContext context) async {
-    if (!kDebugMode) {
-      await FreeraspService().initSecurityState(context);
-    }
+  Future<bool> checkOnEngineeringWorks() async {
+    bool result = false;
 
-    // ignore: use_build_context_synchronously
+    await SupabaseController.supabase!
+        .from('settings')
+        .select('*')
+        .eq('setting', 'engineeringWorks')
+        .then((value) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+      result = map['value'] as bool;
+    });
+
+    return result;
+  }
+
+  Future loadGameServices(BuildContext context) async {
+    // if (!kDebugMode) {
+    //   await FreeraspService().initSecurityState(context);
+    // }
+
     await checkAccountForFreezing(context).then((frozen) async {
       if (frozen) {
         showSimpleAlertDialog(
@@ -536,32 +607,35 @@ class SupabaseController extends ChangeNotifier {
             text: 'Ваш аккаунт временно заморожен!',
             isCanPop: false);
       } else {
-        // ignore: use_build_context_synchronously
-        await checkPremiumAvailability(context);
+        await checkOnEngineeringWorks().then((isEngineeringWorksEnabled) async {
+          if (isEngineeringWorksEnabled) {
+            showEngineeringWorksAlertDialog(context);
+          } else {
+            await checkPremiumAvailability(context);
 
-        // ignore: use_build_context_synchronously
-        await ProfileController.getUserProfile(context);
+            await ProfileController.getUserProfile(context);
 
-        // ignore: use_build_context_synchronously
-        await provider.Provider.of<Balance>(context, listen: false)
-            .loadBalance(context);
+            await provider.Provider.of<Balance>(context, listen: false)
+                .loadBalance(context);
 
-        // ignore: use_build_context_synchronously
-        await provider.Provider.of<MoneyStorageManager>(context, listen: false)
-            .loadBalance(context);
+            await provider.Provider.of<MoneyStorageManager>(context,
+                    listen: false)
+                .loadBalance(context);
 
-        // ignore: use_build_context_synchronously
-        await provider.Provider.of<TaxManager>(context, listen: false).getTax();
+            await provider.Provider.of<TaxManager>(context, listen: false)
+                .getTax();
 
-        await LocalPromocodes().initializeMyPromocodes();
+            await LocalPromocodes().initializeMyPromocodes();
 
-        // ignore: use_build_context_synchronously
-        await provider.Provider.of<SettingsController>(context, listen: false)
-            .loadSettings();
+            await provider.Provider.of<SettingsController>(context,
+                    listen: false)
+                .loadSettings(context);
 
-        await AdService.loadCountBet();
+            await AdService.loadCountBet();
 
-        await AudioController.initializeAudios();
+            await AudioController.initializeAudios();
+          }
+        });
       }
     });
   }

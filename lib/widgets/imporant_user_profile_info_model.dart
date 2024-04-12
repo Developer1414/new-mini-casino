@@ -6,36 +6,42 @@ Widget importantUserProfileInfo(
     {required BuildContext context,
     required String content,
     required String title}) {
-  return GlassContainer(
-    width: double.infinity,
-    blur: 8,
-    color: Colors.white.withOpacity(0.1),
-    borderRadius: BorderRadius.circular(10.0),
-    child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
-      child: Column(
-        children: [
-          AutoSizeText(
-            content,
-            maxLines: 1,
-            textAlign: TextAlign.center,
-            style: Theme.of(context)
-                .appBarTheme
-                .titleTextStyle!
-                .copyWith(fontSize: 25.0),
-          ),
-          const SizedBox(height: 5.0),
-          AutoSizeText(title,
+  return Container(
+    decoration: BoxDecoration(
+      border: Border.all(color: Colors.blueAccent, width: 3.0),
+      borderRadius: BorderRadius.circular(15.0),
+    ),
+    child: GlassContainer(
+      width: double.infinity,
+      blur: 8,
+      color: Colors.white.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12.0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        child: Column(
+          children: [
+            AutoSizeText(
+              content,
               maxLines: 1,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                  fontSize: 12.0,
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodySmall!
-                      .color!
-                      .withOpacity(0.7))),
-        ],
+              style: Theme.of(context)
+                  .appBarTheme
+                  .titleTextStyle!
+                  .copyWith(fontSize: 25.0),
+            ),
+            const SizedBox(height: 5.0),
+            AutoSizeText(title,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                    fontSize: 12.0,
+                    color: Theme.of(context)
+                        .textTheme
+                        .bodySmall!
+                        .color!
+                        .withOpacity(0.7))),
+          ],
+        ),
       ),
     ),
   );

@@ -1,7 +1,7 @@
 name: new_mini_casino
 description: A new Flutter project.
 publish_to: 'none'
-version: 1.3.0+48
+version: 1.3.2+54
 environment:
   sdk: '>=2.19.3 <3.0.0'
 
@@ -37,9 +37,8 @@ dependencies:
   gif: ^2.3.0
   shaky_animated_listview: ^0.0.5
   dropdown_button2: ^2.1.2
-  freerasp: ^6.3.0
+  #freerasp: ^6.3.0
   blur: ^3.1.0
-  platform_device_id: ^1.0.1
   get_ip_address: ^0.0.5
   flutter_native_splash: ^2.2.19
   yookassa_payments_flutter: ^1.2.2

@@ -1,34 +1,22 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:io' as ui;
-
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
+import 'dart:io' as ui;
 
 class Blackjack extends StatelessWidget {
   const Blackjack({super.key});
-
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +43,48 @@ class Blackjack extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          const SizedBox(height: 15.0),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 15.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    AutoSizeText('Прибыль:',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 12.0)),
+                                    AutoSizeText(
+                                        blackjackLogic.profit < 1000000
+                                            ? NumberFormat.simpleCurrency(
+                                                    locale:
+                                                        ui.Platform.localeName)
+                                                .format(blackjackLogic.profit)
+                                            : NumberFormat
+                                                    .compactSimpleCurrency(
+                                                        locale: ui.Platform
+                                                            .localeName)
+                                                .format(blackjackLogic.profit),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 12.0)),
+                                  ],
+                                ),
+                                const SizedBox(height: 10.0),
+                                gameBetCount(
+                                  context: context,
+                                  gameLogic: blackjackLogic,
+                                  bet: blackjackLogic.bet,
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 15.0),
                           blackjackLogic.isGameOn &&
                                   blackjackLogic.blackjackType ==
                                       BlackjackType.start
@@ -102,158 +132,89 @@ class Blackjack extends StatelessWidget {
                                   children: [
                                     blackjackLogic.isGameOn
                                         ? Container()
-                                        : Row(
-                                            children: [
-                                              SizedBox(
-                                                height: 60.0,
-                                                width: 80.0,
-                                                child: ElevatedButton(
-                                                  onPressed: () =>
-                                                      blackjackLogic
-                                                          .showInputBet(),
-                                                  style:
-                                                      ElevatedButton.styleFrom(
-                                                    elevation: 5,
-                                                    backgroundColor:
-                                                        const Color(0xFF366ecc),
-                                                    shape:
-                                                        const RoundedRectangleBorder(),
-                                                  ),
-                                                  child: FaIcon(
-                                                    blackjackLogic
-                                                            .isShowInputBet
-                                                        ? FontAwesomeIcons
-                                                            .arrowLeft
-                                                        : FontAwesomeIcons
-                                                            .keyboard,
-                                                    color: Colors.white,
-                                                    size: 25.0,
-                                                  ),
-                                                ),
-                                              ),
-                                              blackjackLogic.isShowInputBet
-                                                  ? Container()
-                                                  : SizedBox(
-                                                      height: 60.0,
-                                                      width: 80.0,
-                                                      child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                                color: Colors
-                                                                    .black
-                                                                    .withOpacity(
-                                                                        0.2),
-                                                                blurRadius: 5.0)
-                                                          ],
-                                                          color: const Color(
-                                                              0xFF3d7ce6),
-                                                        ),
-                                                        child: Switch(
-                                                          value: blackjackLogic
-                                                              .gameWithInsurance,
-                                                          onChanged: (value) {
-                                                            blackjackLogic
-                                                                .changeInsuranceValue(
-                                                                    value);
-
-                                                            if (blackjackLogic
-                                                                .gameWithInsurance) {
-                                                              alertDialogSuccess(
-                                                                context:
-                                                                    context,
-                                                                title: 'Успех',
-                                                                confirmBtnText:
-                                                                    'Окей',
-                                                                text:
-                                                                    'Страховка включена!',
-                                                              );
-                                                            }
-                                                          },
-                                                        ),
-                                                      ),
-                                                    ),
-                                            ],
-                                          ),
-                                    Visibility(
-                                      visible: blackjackLogic.isShowInputBet,
-                                      child: Expanded(
-                                        child: SizedBox(
-                                          height: 60.0,
-                                          child: customTextField(
-                                              currencyTextInputFormatter:
-                                                  betFormatter,
-                                              textInputFormatter: betFormatter,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              isBetInput: true,
-                                              controller: betController,
-                                              context: context,
-                                              hintText: 'Ставка...'),
-                                        ),
-                                      ),
-                                    ),
-                                    Visibility(
-                                      visible: !blackjackLogic.isShowInputBet,
-                                      child: Expanded(
-                                        child: SizedBox(
-                                          height: 60.0,
-                                          child: Container(
-                                            decoration: BoxDecoration(
+                                        : SizedBox(
+                                            height: 60.0,
+                                            width: 80.0,
+                                            child: Container(
+                                              decoration: BoxDecoration(
                                                 boxShadow: [
                                                   BoxShadow(
                                                       color: Colors.black
                                                           .withOpacity(0.2),
                                                       blurRadius: 5.0)
                                                 ],
-                                                color: Theme.of(context)
-                                                    .cardColor),
-                                            child: ElevatedButton(
-                                              onPressed: blackjackLogic
-                                                          .isGameOn &&
-                                                      blackjackLogic
-                                                              .blackjackType ==
-                                                          BlackjackType.idle
-                                                  ? null
-                                                  : () {
-                                                      if (!blackjackLogic
-                                                          .isGameOn) {
-                                                        if (balance
-                                                                .currentBalance <
-                                                            double.parse(betFormatter
-                                                                .getUnformattedValue()
-                                                                .toStringAsFixed(
-                                                                    2))) {
-                                                          return;
-                                                        }
+                                                color: const Color(0xFF3d7ce6),
+                                              ),
+                                              child: Switch(
+                                                value: blackjackLogic
+                                                    .gameWithInsurance,
+                                                onChanged: (value) {
+                                                  blackjackLogic
+                                                      .changeInsuranceValue(
+                                                          value);
 
-                                                        blackjackLogic.startGame(
-                                                            context: context,
-                                                            bet: double.parse(
-                                                                betFormatter
-                                                                    .getUnformattedValue()
-                                                                    .toString()));
+                                                  if (blackjackLogic
+                                                      .gameWithInsurance) {
+                                                    alertDialogSuccess(
+                                                      context: context,
+                                                      title: 'Успех',
+                                                      confirmBtnText: 'Окей',
+                                                      text:
+                                                          'Страховка включена!',
+                                                    );
+                                                  }
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 60.0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 5.0)
+                                              ],
+                                              color:
+                                                  Theme.of(context).cardColor),
+                                          child: ElevatedButton(
+                                            onPressed: blackjackLogic
+                                                        .isGameOn &&
+                                                    blackjackLogic
+                                                            .blackjackType ==
+                                                        BlackjackType.idle
+                                                ? null
+                                                : () {
+                                                    if (!blackjackLogic
+                                                        .isGameOn) {
+                                                      if (balance
+                                                              .currentBalance <
+                                                          blackjackLogic.bet) {
+                                                        return;
                                                       }
-                                                    },
-                                              style: ElevatedButton.styleFrom(
-                                                elevation: 0,
-                                                backgroundColor: Colors.green,
-                                                shape:
-                                                    const RoundedRectangleBorder(),
-                                              ),
-                                              child: AutoSizeText(
-                                                'СТАВКА',
-                                                maxLines: 1,
-                                                style: GoogleFonts.roboto(
-                                                    color:
-                                                        blackjackLogic.isGameOn
-                                                            ? Colors.white30
-                                                            : Colors.white,
-                                                    fontSize: 20.0,
-                                                    fontWeight:
-                                                        FontWeight.w900),
-                                              ),
+
+                                                      blackjackLogic.startGame(
+                                                          context: context);
+                                                    }
+                                                  },
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 0,
+                                              backgroundColor: Colors.green,
+                                              shape:
+                                                  const RoundedRectangleBorder(),
+                                            ),
+                                            child: AutoSizeText(
+                                              'СТАВКА',
+                                              maxLines: 1,
+                                              style: GoogleFonts.roboto(
+                                                  color: blackjackLogic.isGameOn
+                                                      ? Colors.white30
+                                                      : Colors.white,
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.w900),
                                             ),
                                           ),
                                         ),
@@ -373,7 +334,7 @@ class Blackjack extends StatelessWidget {
                                                           ],
                                                         ),
                                                         child: Image.asset(
-                                                            height: 130,
+                                                            height: 110,
                                                             'assets/blackjack/${blackjackLogic.lastDealerMoves.length == 2 && i == 1 && blackjackLogic.isGameOn ? 'ShirtCard' : blackjackLogic.lastDealerMoves[i]}.png'),
                                                       ),
                                                   ],
@@ -488,7 +449,7 @@ class Blackjack extends StatelessWidget {
                                                     ],
                                                   ),
                                                   child: Image.asset(
-                                                      height: 130,
+                                                      height: 110,
                                                       'assets/blackjack/${blackjackLogic.lastPlayerMoves[i]}.png'),
                                                 ),
                                             ],

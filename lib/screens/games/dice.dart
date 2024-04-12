@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
-import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gif/gif.dart';
@@ -11,7 +10,7 @@ import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/widgets/text_field_model.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -20,17 +19,7 @@ import 'package:screenshot/screenshot.dart';
 class Dice extends StatefulWidget {
   const Dice({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
-    locale: ui.Platform.localeName,
-    enableNegative: false,
-    symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .currencySymbol,
-  );
-
   static bool isFetchCompleted = false;
-
-  static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
 
   @override
   State<Dice> createState() => _DiceState();
@@ -56,8 +45,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
     final balance = Provider.of<Balance>(context, listen: false);
 
     void makeBet(DiceLogic diceLogic) {
-      if (balance.currentBalance <
-          double.parse(Dice.betFormatter.getUnformattedValue().toString())) {
+      if (balance.currentBalance < diceLogic.bet) {
         return;
       }
 
@@ -67,10 +55,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
         return;
       }
 
-      diceLogic.startGame(
-          context: context,
-          bet:
-              double.parse(Dice.betFormatter.getUnformattedValue().toString()));
+      diceLogic.startGame(context: context);
 
       _gifController.reset();
       _gifController.forward().whenComplete(() {
@@ -253,84 +238,47 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                         ],
                       ),
                       const SizedBox(height: 15.0),
-                      Row(
-                        children: [
-                          diceLogic.isGameOn
-                              ? Container()
-                              : SizedBox(
-                                  height: 60.0,
-                                  width: 80.0,
-                                  child: ElevatedButton(
-                                    onPressed: () => diceLogic.showInputBet(),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 5,
-                                      backgroundColor: const Color(0xFF366ecc),
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: FaIcon(
-                                      diceLogic.isShowInputBet
-                                          ? FontAwesomeIcons.arrowLeft
-                                          : FontAwesomeIcons.keyboard,
-                                      color: Colors.white,
-                                      size: 25.0,
-                                    ),
-                                  ),
-                                ),
-                          Visibility(
-                            visible: diceLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: customTextField(
-                                    currencyTextInputFormatter:
-                                        Dice.betFormatter,
-                                    textInputFormatter: Dice.betFormatter,
-                                    keyboardType: TextInputType.number,
-                                    isBetInput: true,
-                                    controller: Dice.betController,
-                                    context: context,
-                                    hintText: 'Ставка...'),
-                              ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: gameBetCount(
+                          context: context,
+                          gameLogic: diceLogic,
+                          bet: diceLogic.bet,
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      SizedBox(
+                        height: 60.0,
+                        width: double.infinity,
+                        child: Container(
+                          decoration: BoxDecoration(boxShadow: [
+                            BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 5.0)
+                          ], color: Theme.of(context).cardColor),
+                          child: ElevatedButton(
+                            onPressed:
+                                diceLogic.isGameOn || !Dice.isFetchCompleted
+                                    ? null
+                                    : () => makeBet(diceLogic),
+                            style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              backgroundColor: Colors.green,
+                              shape: const RoundedRectangleBorder(),
+                            ),
+                            child: AutoSizeText(
+                              'СТАВКА',
+                              maxLines: 1,
+                              style: GoogleFonts.roboto(
+                                  color: diceLogic.isGameOn ||
+                                          !Dice.isFetchCompleted
+                                      ? Colors.white.withOpacity(0.4)
+                                      : Colors.white,
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.w900),
                             ),
                           ),
-                          Visibility(
-                            visible: !diceLogic.isShowInputBet,
-                            child: Expanded(
-                              child: SizedBox(
-                                height: 60.0,
-                                child: Container(
-                                  decoration: BoxDecoration(boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black.withOpacity(0.2),
-                                        blurRadius: 5.0)
-                                  ], color: Theme.of(context).cardColor),
-                                  child: ElevatedButton(
-                                    onPressed: diceLogic.isGameOn ||
-                                            !Dice.isFetchCompleted
-                                        ? null
-                                        : () => makeBet(diceLogic),
-                                    style: ElevatedButton.styleFrom(
-                                      elevation: 0,
-                                      backgroundColor: Colors.green,
-                                      shape: const RoundedRectangleBorder(),
-                                    ),
-                                    child: AutoSizeText(
-                                      'СТАВКА',
-                                      maxLines: 1,
-                                      style: GoogleFonts.roboto(
-                                          color: diceLogic.isGameOn ||
-                                                  !Dice.isFetchCompleted
-                                              ? Colors.white.withOpacity(0.4)
-                                              : Colors.white,
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w900),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ],
                   );

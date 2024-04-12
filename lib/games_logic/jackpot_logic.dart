@@ -12,7 +12,6 @@ import 'package:provider/provider.dart';
 
 class JackpotLogic extends ChangeNotifier {
   bool isGameOn = false;
-  bool isShowInputBet = false;
 
   double coefficient = 0.0;
   double bet = 0.0;
@@ -39,8 +38,8 @@ class JackpotLogic extends ChangeNotifier {
   late BuildContext context;
   late Timer timer = Timer(const Duration(seconds: 1), () {});
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -49,11 +48,10 @@ class JackpotLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context, required double bet}) {
+  void startGame({required BuildContext context}) {
     isGameOn = true;
 
     this.context = context;
-    this.bet = bet;
 
     CommonFunctions.callOnStart(
         context: context, bet: bet, gameName: 'jackpot');
@@ -77,7 +75,7 @@ class JackpotLogic extends ChangeNotifier {
     CommonFunctions.callOnProfit(
       context: context,
       bet: bet,
-      gameName: 'jackpot',
+      gameName: 'Jackpot',
       profit: profit,
     );
 
@@ -89,7 +87,7 @@ class JackpotLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
   }
 
-  void loss({required double bet, required BuildContext context}) {
+  void loss({required BuildContext context}) {
     if (isGameOn) {
       GameStatisticController.updateGameStatistic(
           gameName: 'jackpot',

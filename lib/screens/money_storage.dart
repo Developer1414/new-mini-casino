@@ -3,7 +3,6 @@ import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:new_mini_casino/widgets/button_model.dart';
 import 'dart:io' as ui;
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -124,57 +123,137 @@ class MoneyStorage extends StatelessWidget {
                     child: Container(
                       margin: const EdgeInsets.only(
                           left: 15.0, right: 15.0, bottom: 15.0),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                        child: Center(
-                          child: SingleChildScrollView(
-                            child: Column(
-                              children: [
-                                Column(
-                                  children: [
-                                    customTextField(
-                                        currencyTextInputFormatter:
-                                            betFormatter,
-                                        textInputFormatter: betFormatter,
-                                        keyboardType: TextInputType.number,
-                                        controller: betController,
-                                        context: context,
-                                        hintText: 'Количество...'),
-                                    const SizedBox(height: 20.0),
-                                    buttonModel(
-                                        context: context,
-                                        buttonName: 'В хранилище',
-                                        icon: FontAwesomeIcons.arrowUp,
-                                        onPressed: () =>
-                                            storageManager.transferToStorage(
-                                                amount: double.parse(
-                                                    betFormatter
-                                                        .getUnformattedValue()
-                                                        .toString()),
-                                                context: context),
-                                        color: Colors.blueAccent),
-                                    const SizedBox(height: 20.0),
-                                    buttonModel(
-                                        context: context,
-                                        buttonName: 'На основной счёт',
-                                        icon: FontAwesomeIcons.arrowDown,
-                                        onPressed: () => storageManager
-                                            .transferToMainAccount(
-                                                amount: double.parse(
-                                                    betFormatter
-                                                        .getUnformattedValue()
-                                                        .toString()),
-                                                context: context),
-                                        color: Colors.blueAccent),
-                                    const SizedBox(height: 15.0),
-                                    smallHelperPanel(
-                                        context: context,
-                                        text:
-                                            'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
-                                  ],
-                                ),
-                              ],
-                            ),
+                      child: Center(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              Column(
+                                children: [
+                                  customTextField(
+                                      currencyTextInputFormatter: betFormatter,
+                                      textInputFormatter: betFormatter,
+                                      keyboardType: TextInputType.number,
+                                      controller: betController,
+                                      context: context,
+                                      hintText: 'Количество...'),
+                                  const SizedBox(height: 15.0),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: 100.0,
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () => storageManager
+                                                .transferToStorage(
+                                                    context: context,
+                                                    amount: double.parse(
+                                                        betFormatter
+                                                            .getUnformattedValue()
+                                                            .toString())),
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 5,
+                                              shadowColor: Colors.blueAccent
+                                                  .withOpacity(0.8),
+                                              backgroundColor:
+                                                  Colors.blueAccent,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const FaIcon(
+                                                  FontAwesomeIcons.coins,
+                                                  color: Colors.white,
+                                                  size: 20.0,
+                                                ),
+                                                const SizedBox(height: 3.0),
+                                                AutoSizeText(
+                                                  'В хранилище',
+                                                  maxLines: 1,
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium!
+                                                      .copyWith(
+                                                        fontSize: 15.0,
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium!
+                                                            .color,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 15.0),
+                                      Expanded(
+                                        child: SizedBox(
+                                          height: 100.0,
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () => storageManager
+                                                .transferToMainAccount(
+                                                    context: context,
+                                                    amount: double.parse(
+                                                        betFormatter
+                                                            .getUnformattedValue()
+                                                            .toString())),
+                                            style: ElevatedButton.styleFrom(
+                                              elevation: 5,
+                                              shadowColor:
+                                                  Colors.green.withOpacity(0.8),
+                                              backgroundColor: Colors.green,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(15.0),
+                                              ),
+                                            ),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                const FaIcon(
+                                                  FontAwesomeIcons.solidUser,
+                                                  color: Colors.white,
+                                                  size: 20.0,
+                                                ),
+                                                const SizedBox(height: 3.0),
+                                                AutoSizeText(
+                                                  'На основной счёт',
+                                                  textAlign: TextAlign.center,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium!
+                                                      .copyWith(
+                                                        fontSize: 15.0,
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium!
+                                                            .color,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 15.0),
+                                  smallHelperPanel(
+                                      context: context,
+                                      text:
+                                          'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       ),

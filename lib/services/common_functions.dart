@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -5,8 +7,21 @@ import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/local_bonuse_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
+import 'package:new_mini_casino/controllers/latest_max_wins_controller.dart';
 import 'package:new_mini_casino/controllers/leader_day_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
+import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
+import 'package:new_mini_casino/games_logic/crash_logic.dart';
+import 'package:new_mini_casino/games_logic/dice_classic_logic.dart';
+import 'package:new_mini_casino/games_logic/dice_logic.dart';
+import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
+import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
+import 'package:new_mini_casino/games_logic/keno_logic.dart';
+import 'package:new_mini_casino/games_logic/limbo_logic.dart';
+import 'package:new_mini_casino/games_logic/mines_logic.dart';
+import 'package:new_mini_casino/games_logic/slots_logic.dart';
+import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/balance_secure.dart';
 import 'package:new_mini_casino/widgets/no_internet_connection_dialog.dart';
@@ -20,7 +35,6 @@ class CommonFunctions {
       bool isPlaceBet = true}) async {
     final connectivityResult = await (Connectivity().checkConnectivity());
 
-    // ignore: use_build_context_synchronously
     final balance = Provider.of<Balance>(context, listen: false);
 
     if (connectivityResult == ConnectivityResult.none) {
@@ -59,6 +73,22 @@ class CommonFunctions {
     }
   }
 
+  static void setDefaultGamesMinBet(
+      {required BuildContext context, required double defaultMinBet}) {
+    Provider.of<DiceClassicLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<LimboLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<BlackjackLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<StairsLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<JackpotLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<MinesLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<DiceLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<CoinflipLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<FortuneWheelLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<CrashLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<KenoLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<SlotsLogic>(context, listen: false).bet = defaultMinBet;
+  }
+
   static void callOnProfit({
     required BuildContext context,
     required double bet,
@@ -71,5 +101,14 @@ class CommonFunctions {
       profit: profit,
       gameName: gameName,
     );
+
+    if ((profit / bet - 1) * 100 >= 500) {
+      await LatestMaxWinsController.addMaxWin(
+        context: context,
+        bet: bet,
+        profit: profit,
+        gameName: gameName,
+      );
+    }
   }
 }

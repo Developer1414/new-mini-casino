@@ -9,7 +9,7 @@ class AudioController {
     final player = AudioPlayer();
 
     await player.setAudioSource(
-        AudioSource.uri(Uri.parse('asset:///assets/audios/$audioName.mp3')),
+        AudioSource.asset('assets/audios/$audioName.mp3'),
         initialPosition: Duration.zero,
         preload: true);
 

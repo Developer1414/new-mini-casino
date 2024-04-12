@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
@@ -60,8 +60,8 @@ void giftPremiumAlert(
   showDialog(
     context: mainContext,
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: StatefulBuilder(
           builder: (context, setState) {
             return isLoading
@@ -70,7 +70,7 @@ void giftPremiumAlert(
                     backgroundColor: Colors.black.withOpacity(0.2),
                     body: Center(
                       child: Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 40.0),
+                        margin: const EdgeInsets.symmetric(horizontal: 15.0),
                         decoration: BoxDecoration(
                           color: Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(15),
@@ -94,7 +94,7 @@ void giftPremiumAlert(
                                         fontWeight: FontWeight.w800,
                                       ),
                                     ),
-                                    const SizedBox(height: 10.0),
+                                    const SizedBox(height: 5.0),
                                     AutoSizeText(
                                       'Учитывайте регистр!',
                                       textAlign: TextAlign.center,
@@ -105,10 +105,8 @@ void giftPremiumAlert(
                                     ),
                                     const SizedBox(height: 20.0),
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 30.0,
-                                          right: 30.0,
-                                          bottom: 10.0),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15.0, vertical: 10.0),
                                       child: TextField(
                                         controller: controller,
                                         keyboardType: TextInputType.text,
@@ -143,18 +141,16 @@ void giftPremiumAlert(
                                       ),
                                     ),
                                     Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 30.0,
-                                          right: 30.0,
-                                          bottom: 10.0),
+                                      padding: const EdgeInsets.symmetric(vertical: 10.0),
                                       child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: [
                                           AutoSizeText('Месяц',
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodyMedium!),
-                                          const SizedBox(width: 5.0),
+                                          const SizedBox(width: 8.0),
                                           Switch(
                                             value: paymentController
                                                 .isYearSubscription,
@@ -166,7 +162,7 @@ void giftPremiumAlert(
                                               });
                                             },
                                           ),
-                                          const SizedBox(width: 5.0),
+                                          const SizedBox(width: 8.0),
                                           AutoSizeText('Год',
                                               textAlign: TextAlign.center,
                                               style: Theme.of(context)

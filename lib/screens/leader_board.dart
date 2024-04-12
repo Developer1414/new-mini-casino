@@ -75,6 +75,8 @@ class _LeaderBoardState extends State<LeaderBoard> {
             String gameName =
                 '${map['game'][0].toUpperCase()}${map['game'].toString().substring(1)}';
 
+            gameName = gameName == 'FortuneWheel' ? 'Fortune Wheel' : gameName;
+
             DateTime leaderDate = DateTime.parse('${map['date']}Z').toLocal();
             DateTime leaderDateUTC = DateTime.parse('${map['date']}');
 
@@ -98,187 +100,182 @@ class _LeaderBoardState extends State<LeaderBoard> {
                     width: double.infinity,
                     height: double.infinity,
                     decoration: BoxDecoration(
-                        color: GamesController.games
-                            .where((element) => element.title == gameName)
-                            .first
-                            .buttonColor
-                            .withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(15.0),
-                        border: Border.all(
-                            color: GamesController.games
-                                .where((element) => element.title == gameName)
-                                .first
-                                .buttonColor
-                                .withOpacity(0.7),
-                            width: 2.0)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Stack(
-                        alignment: AlignmentDirectional.center,
-                        children: [
-                          GlassContainer(
-                            blur: 8,
-                            color: Colors.white.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12.0),
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(12.0),
-                                    topRight: Radius.circular(12.0)),
-                                gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      GamesController.games
-                                          .where((element) =>
-                                              element.title == gameName)
-                                          .first
-                                          .buttonColor
-                                          .withOpacity(0.7),
-                                      Colors.transparent,
-                                    ]),
-                              ),
+                      color: GamesController.games
+                          .where((element) => element.title == gameName)
+                          .first
+                          .buttonColor
+                          .withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                          color: GamesController.games
+                              .where((element) => element.title == gameName)
+                              .first
+                              .buttonColor
+                              .withOpacity(0.7),
+                          width: 2.0),
+                    ),
+                    child: Stack(
+                      alignment: AlignmentDirectional.center,
+                      children: [
+                        GlassContainer(
+                          blur: 8,
+                          borderRadius: BorderRadius.circular(13.0),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(12.0),
+                                  topRight: Radius.circular(12.0)),
+                              gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    GamesController.games
+                                        .where((element) =>
+                                            element.title == gameName)
+                                        .first
+                                        .buttonColor
+                                        .withOpacity(0.7),
+                                    Colors.transparent,
+                                  ]),
                             ),
                           ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const SizedBox(height: 15.0),
-                              AutoSizeText(
-                                map['name'],
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                  color: Colors.white,
-                                  fontSize: 30.0,
-                                  letterSpacing: 0.5,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 15.0),
+                            AutoSizeText(
+                              map['name'],
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 30.0,
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w900,
                               ),
-                              AutoSizeText(
-                                double.parse(map['profit'].toString()) < 1000000
-                                    ? NumberFormat.simpleCurrency(
-                                            locale: ui.Platform.localeName)
-                                        .format(double.parse(
-                                            map['profit'].toString()))
-                                    : NumberFormat.compactSimpleCurrency(
-                                            locale: ui.Platform.localeName)
-                                        .format(double.parse(
-                                            map['profit'].toString())),
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                  color: Colors.white,
-                                  fontSize: 18.0,
-                                  letterSpacing: 0.5,
-                                  fontWeight: FontWeight.w900,
-                                ),
+                            ),
+                            AutoSizeText(
+                              double.parse(map['profit'].toString()) < 1000000
+                                  ? NumberFormat.simpleCurrency(
+                                          locale: ui.Platform.localeName)
+                                      .format(double.parse(
+                                          map['profit'].toString()))
+                                  : NumberFormat.compactSimpleCurrency(
+                                          locale: ui.Platform.localeName)
+                                      .format(double.parse(
+                                          map['profit'].toString())),
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: 18.0,
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w900,
                               ),
-                              AutoSizeText(
-                                'Выигрыш',
-                                textAlign: TextAlign.center,
-                                style: GoogleFonts.roboto(
-                                  color: Colors.white60,
-                                  fontSize: 10.0,
-                                  letterSpacing: 0.5,
-                                  fontWeight: FontWeight.w800,
-                                ),
+                            ),
+                            AutoSizeText(
+                              'Выигрыш',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white60,
+                                fontSize: 10.0,
+                                letterSpacing: 0.5,
+                                fontWeight: FontWeight.w800,
                               ),
-                              const SizedBox(height: 15.0),
-                              Expanded(
-                                flex: 2,
-                                child: CachedNetworkImage(
-                                    imageUrl: imageURL,
-                                    cacheKey: DateTime.now()
-                                        .millisecondsSinceEpoch
-                                        .toString(),
-                                    imageBuilder: (context, imageProvider) {
-                                      return Container(
-                                        decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                            image: imageProvider,
-                                            fit: BoxFit.contain,
+                            ),
+                            const SizedBox(height: 15.0),
+                            Expanded(
+                              flex: 2,
+                              child: CachedNetworkImage(
+                                  imageUrl: imageURL,
+                                  cacheKey: DateTime.now()
+                                      .millisecondsSinceEpoch
+                                      .toString(),
+                                  imageBuilder: (context, imageProvider) {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                          image: imageProvider,
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  placeholder: (context, url) => const Center(
+                                        child: SizedBox(
+                                          width: 40.0,
+                                          height: 40.0,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 6.0,
+                                            color: Color.fromARGB(
+                                                255, 179, 242, 31),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    placeholder: (context, url) => const Center(
-                                          child: SizedBox(
-                                            width: 40.0,
-                                            height: 40.0,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 6.0,
-                                              color: Color.fromARGB(
-                                                  255, 179, 242, 31),
+                                      ),
+                                  errorWidget: (context, url, error) => Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          const FaIcon(
+                                            FontAwesomeIcons.circleExclamation,
+                                            color: Colors.redAccent,
+                                            size: 50.0,
+                                          ),
+                                          const SizedBox(height: 5.0),
+                                          AutoSizeText(
+                                            'Ошибка при загрузке изображения',
+                                            textAlign: TextAlign.center,
+                                            style: GoogleFonts.roboto(
+                                              color: Colors.white,
+                                              fontSize: 10.0,
+                                              letterSpacing: 0.5,
+                                              fontWeight: FontWeight.w800,
                                             ),
                                           ),
-                                        ),
-                                    errorWidget: (context, url, error) =>
-                                        Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            const FaIcon(
-                                              FontAwesomeIcons
-                                                  .circleExclamation,
-                                              color: Colors.redAccent,
-                                              size: 50.0,
-                                            ),
-                                            const SizedBox(height: 5.0),
-                                            AutoSizeText(
-                                              'Ошибка при загрузке изображения',
-                                              textAlign: TextAlign.center,
-                                              style: GoogleFonts.roboto(
-                                                color: Colors.white,
-                                                fontSize: 10.0,
-                                                letterSpacing: 0.5,
-                                                fontWeight: FontWeight.w800,
-                                              ),
-                                            ),
-                                          ],
-                                        )),
+                                        ],
+                                      )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 15.0, horizontal: 10.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  AutoSizeText(
+                                    'Игра: $gameName',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 10.0,
+                                      letterSpacing: 0.5,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  AutoSizeText(
+                                    'Ставка: ${double.parse(map['bet'].toString()) < 100000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString())) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString()))}',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 10.0,
+                                      letterSpacing: 0.5,
+                                      fontWeight: FontWeight.w800,
+                                    ),
+                                  ),
+                                  AutoSizeText(
+                                    'Опубликовано в ${DateFormat.jm(ui.Platform.localeName).format(leaderDate)}',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white60,
+                                      fontSize: 3.0,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 15.0, horizontal: 10.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    AutoSizeText(
-                                      'Игра: $gameName',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 10.0,
-                                        letterSpacing: 0.5,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                    AutoSizeText(
-                                      'Ставка: ${double.parse(map['bet'].toString()) < 100000 ? NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString())) : NumberFormat.compactSimpleCurrency(locale: ui.Platform.localeName).format(double.parse(map['bet'].toString()))}',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 10.0,
-                                        letterSpacing: 0.5,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                    AutoSizeText(
-                                      'Опубликовано в ${DateFormat.jm(ui.Platform.localeName).format(leaderDate)}',
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white60,
-                                        fontSize: 3.0,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   );
           }),

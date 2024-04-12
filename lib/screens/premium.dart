@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/gift_premium_alert.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:ntp/ntp.dart';
@@ -48,27 +49,6 @@ class PremiumInfo extends StatelessWidget {
                 ? loading(context: context, text: paymentController.loadingText)
                 : Scaffold(
                     resizeToAvoidBottomInset: false,
-                    floatingActionButton: SizedBox(
-                      height: 60.0,
-                      width: 60.0,
-                      child: Opacity(
-                        opacity: 0.7,
-                        child: FloatingActionButton(
-                            backgroundColor: Colors.redAccent,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12.0)),
-                            onPressed: () {
-                              giftPremiumAlert(
-                                  mainContext: context,
-                                  paymentController: paymentController);
-                            },
-                            child: const FaIcon(
-                              FontAwesomeIcons.gift,
-                              color: Colors.white,
-                              size: 30.0,
-                            )),
-                      ),
-                    ),
                     bottomNavigationBar: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       mainAxisSize: MainAxisSize.min,
@@ -93,7 +73,7 @@ class PremiumInfo extends StatelessWidget {
                                       Container(
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(15.0),
+                                                BorderRadius.circular(12.0),
                                             color: Colors.black87),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
@@ -258,7 +238,7 @@ class PremiumInfo extends StatelessWidget {
                             const SizedBox(width: 5.0),
                             Container(
                               decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15.0),
+                                  borderRadius: BorderRadius.circular(12.0),
                                   color: Colors.black87),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 5.0, horizontal: 10.0),
@@ -326,11 +306,11 @@ class PremiumInfo extends StatelessWidget {
                                       Container(
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(15.0),
+                                                BorderRadius.circular(18.0),
                                             color: Colors.black87),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
-                                              vertical: 5.0, horizontal: 10.0),
+                                              vertical: 5.0, horizontal: 15.0),
                                           child: AutoSizeText(
                                             'PREMIUM',
                                             textAlign: TextAlign.center,
@@ -552,6 +532,19 @@ class PremiumInfo extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 12.0),
+                              buttonModel(
+                                context: context,
+                                color: Colors.redAccent,
+                                icon: FontAwesomeIcons.gift,
+                                iconColor: Colors.white,
+                                buttonName: 'Подарить Premium',
+                                onPressed: () {
+                                  giftPremiumAlert(
+                                      mainContext: context,
+                                      paymentController: paymentController);
+                                },
+                              ),
+                              const SizedBox(height: 12.0),
                               RichText(
                                   textAlign: TextAlign.center,
                                   text: TextSpan(children: [
@@ -563,8 +556,14 @@ class PremiumInfo extends StatelessWidget {
                                             .copyWith(fontSize: 12.0)),
                                     TextSpan(
                                       recognizer: TapGestureRecognizer()
-                                        ..onTap = () => context
-                                            .beamToNamed('/user-agreement'),
+                                        ..onTap = () {
+                                          paymentController
+                                              .changeOffsetScrollController(
+                                                  0.0);
+
+                                          context
+                                              .beamToNamed('/user-agreement');
+                                        },
                                       text: 'Пользовательским Соглашением',
                                       style: GoogleFonts.roboto(
                                           textStyle: const TextStyle(

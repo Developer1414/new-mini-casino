@@ -94,30 +94,13 @@ class Tax extends StatelessWidget {
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(vertical: 15.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  FaIcon(
-                                    FontAwesomeIcons.moneyBill,
-                                    color: Theme.of(context)
-                                        .appBarTheme
-                                        .iconTheme!
-                                        .color,
-                                    size: Theme.of(context)
-                                        .appBarTheme
-                                        .iconTheme!
-                                        .size,
-                                  ),
-                                  const SizedBox(width: 10.0),
-                                  AutoSizeText(
-                                    'Оплатить',
-                                    maxLines: 1,
-                                    style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 22.0,
-                                        fontWeight: FontWeight.w800),
-                                  )
-                                ],
+                              child: AutoSizeText(
+                                'Оплатить',
+                                maxLines: 1,
+                                style: GoogleFonts.roboto(
+                                    color: Colors.white,
+                                    fontSize: 22.0,
+                                    fontWeight: FontWeight.w800),
                               ),
                             ),
                           ),
@@ -141,7 +124,7 @@ class Tax extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Padding(
-                                padding: const EdgeInsets.all(35.0),
+                                padding: const EdgeInsets.all(15.0),
                                 child: Center(
                                   child: SingleChildScrollView(
                                     child: Column(

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
@@ -13,14 +12,13 @@ import 'package:provider/provider.dart';
 
 class MinesLogic extends ChangeNotifier {
   double sliderValue = 1;
-  double bet = 0.0;
+  double bet = SettingsController().minBet;
   double currentCoefficient = 0.0;
   double profit = 0.0;
 
   int countMines = 1;
 
   bool isGameOn = false;
-  bool isShowInputBet = false;
 
   late BuildContext context;
 
@@ -28,14 +26,14 @@ class MinesLogic extends ChangeNotifier {
   List<int> brilliantsIndex = [];
   List<int> openedIndexes = [];
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
-    notifyListeners();
-  }
-
   void changeSliderValue(double value) {
     sliderValue = value;
     countMines = value.round();
+    notifyListeners();
+  }
+
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -73,7 +71,7 @@ class MinesLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
   }
 
-  void startGame({double bet = 0.0, required BuildContext context}) {
+  void startGame({required BuildContext context}) {
     if (AutoclickerSecure.isCanPlay) {
       isGameOn = true;
 
@@ -84,7 +82,6 @@ class MinesLogic extends ChangeNotifier {
       profit = 0.0;
       currentCoefficient = 0;
 
-      this.bet = bet;
       this.context = context;
 
       int rand = 0;
@@ -133,18 +130,12 @@ class MinesLogic extends ChangeNotifier {
         gameStatisticModel:
             GameStatisticModel(winningsMoneys: profit, maxWin: profit));
 
-    try {
-      CommonFunctions.callOnProfit(
-        context: context,
-        bet: bet,
-        gameName: 'mines',
-        profit: profit,
-      );
-    } on Exception catch (e) {
-      if (kDebugMode) {
-        print('ERROR: ${e.toString()}');
-      }
-    }
+    CommonFunctions.callOnProfit(
+      context: context,
+      bet: bet,
+      gameName: 'Mines',
+      profit: profit,
+    );
 
     notifyListeners();
 

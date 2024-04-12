@@ -3,10 +3,13 @@ import 'dart:io';
 
 import 'package:beamer/beamer.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/models/background_model.dart';
+import 'package:new_mini_casino/screens/settings.dart';
+import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +26,7 @@ class SettingsController extends ChangeNotifier {
 
   double customBackgroundBlur = 5.0;
   double defaultBackgroundBlur = 5.0;
+  double minBet = 100.0;
 
   late SharedPreferences prefs;
 
@@ -65,21 +69,54 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeMinimumBet(
+      {required double value, required BuildContext context}) async {
+    minBet = value;
+
+    prefs.setDouble('minBet', minBet);
+
+    CommonFunctions.setDefaultGamesMinBet(
+        context: context, defaultMinBet: minBet);
+
+    Settings.minBetController.text =
+        Settings.minBetFormatter.format(minBet.toStringAsFixed(2));
+
+    notifyListeners();
+  }
+
   Future getConfettiSetting() async {
     if (!prefs.containsKey('isEnabledConfetti')) {
       isEnabledConfetti = true;
     } else {
-      isEnabledConfetti = prefs.getBool('isEnabledConfetti') ?? true;
+      isEnabledConfetti = prefs.getBool('isEnabledConfetti')!;
     }
 
     notifyListeners();
   }
 
-  Future loadSettings() async {
+  Future getMinimumBetSetting(BuildContext context) async {
+    if (!prefs.containsKey('minBet')) {
+      minBet = 100.0;
+    } else {
+      minBet = prefs.getDouble('minBet')!;
+    }
+
+    Settings.minBetController.text =
+        Settings.minBetFormatter.format(minBet.toStringAsFixed(2));
+
+    CommonFunctions.setDefaultGamesMinBet(
+        context: context, defaultMinBet: minBet);
+
+    notifyListeners();
+  }
+
+  Future loadSettings(BuildContext context) async {
     prefs = await SharedPreferences.getInstance();
 
     await getBackground();
     await getConfettiSetting();
+    // ignore: use_build_context_synchronously
+    await getMinimumBetSetting(context);
   }
 
   Future signOut(BuildContext context) async {
@@ -145,19 +182,22 @@ class SettingsController extends ChangeNotifier {
     if (prefs.containsKey('background')) {
       Map<String, dynamic> json = jsonDecode(prefs.getString('background')!);
 
-      if (json['isCustomBackground'] as bool == false) {
-        isCutomBackground = false;
+      bool isCustomBackground = json['isCustomBackground'] as bool;
 
-        defaultBackgroundBlur = double.parse(json['blur'].toString());
-
-        currentDefaultBackgrond =
-            int.parse(json['defaultBackgroundIndex'].toString());
-      } else {
+      if (isCustomBackground == true && SupabaseController.isPremium) {
         isCutomBackground = true;
 
         customBackgroundBlur = double.parse(json['blur'].toString());
 
         currentCustomBackgrond = File(json['customBackgroundPath'].toString());
+      } else {
+        isCutomBackground = false;
+
+        defaultBackgroundBlur = double.parse(json['blur'].toString());
+
+        currentDefaultBackgrond = isCustomBackground
+            ? 0
+            : int.parse(json['defaultBackgroundIndex'].toString());
       }
     } else {
       isCutomBackground = false;

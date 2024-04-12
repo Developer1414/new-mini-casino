@@ -132,9 +132,11 @@ class OwnPromocodeManager extends ChangeNotifier {
               .from('users')
               .select('*')
               .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+              .select('promocodes')
               .then((value) async {
-            Map<String, dynamic> promocodes =
-                jsonDecode((value as List<dynamic>).first['promocodes']);
+            Map<String, dynamic> promocodes = value[0]['promocodes'] == null
+                ? {}
+                : jsonDecode(value[0]['promocodes'] ?? '');
 
             promocodes.addAll({name: prize.toString()});
 

@@ -8,12 +8,14 @@ import 'package:currency_text_input_formatter/currency_text_input_formatter.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:glassmorphism_ui/glassmorphism_ui.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/games_logic/slots_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
@@ -21,7 +23,7 @@ import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/background_model.dart';
-import 'package:new_mini_casino/widgets/bottom_game_navigation.dart';
+import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -48,6 +50,8 @@ class _SlotsState extends State<Slots> {
 
   int time = 0;
   int startIndex = 0;
+
+  double profit = 0.0;
 
   List<String> reelItems = [
     'apple',
@@ -97,12 +101,6 @@ class _SlotsState extends State<Slots> {
     super.initState();
 
     choosedReels = List.generate(3, (index) => 'question');
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    confettiController.dispose();
   }
 
   int getWinnerCoefficient() {
@@ -166,18 +164,20 @@ class _SlotsState extends State<Slots> {
   void makeBet(BuildContext context) async {
     if (isSpinning) return;
 
-    if (Provider.of<Balance>(context, listen: false).currentBalance <
-        double.parse(
-            Slots.betFormatter.getUnformattedValue().toStringAsFixed(2))) {
+    double bet = Provider.of<SlotsLogic>(context, listen: false).bet;
+
+    if (Provider.of<Balance>(context, listen: false).currentBalance < bet) {
       return;
     }
 
-    double bet = Slots.betFormatter.getUnformattedValue().toDouble();
+    Provider.of<SlotsLogic>(context, listen: false).changeGameStatus(true);
 
     CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'slots');
 
     setState(() {
       isSpinning = true;
+
+      profit = 0.0;
 
       coefficientsIndexWinner = -1;
 
@@ -253,8 +253,7 @@ class _SlotsState extends State<Slots> {
             }
           }
 
-          double profit =
-              bet * reelWinners.values.toList()[coefficientsIndexWinner];
+          profit = bet * reelWinners.values.toList()[coefficientsIndexWinner];
 
           Provider.of<Balance>(context, listen: false).cashout(profit);
 
@@ -283,6 +282,8 @@ class _SlotsState extends State<Slots> {
             isAutoBets = false;
           });
         }
+
+        Provider.of<SlotsLogic>(context, listen: false).changeGameStatus(false);
 
         AdService.showInterstitialAd(context: context);
       }
@@ -323,33 +324,120 @@ class _SlotsState extends State<Slots> {
             backgroundModel(),
             Scaffold(
               resizeToAvoidBottomInset: false,
-              bottomNavigationBar: bottomGameNavigation(
-                  context: context,
-                  betFormatter: Slots.betFormatter,
-                  betController: Slots.betController,
-                  isAutoBets: isAutoBets,
-                  isPlaying: isSpinning,
-                  switchValue: isFast,
-                  isCanSwitch: true,
-                  onSwitched: (value) {
-                    if (isSpinning) {
-                      return;
-                    }
+              bottomNavigationBar: Consumer<SlotsLogic>(
+                builder: (context, slotsLogic, child) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                AutoSizeText('Прибыль:',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 12.0)),
+                                AutoSizeText(
+                                    profit < 1000000
+                                        ? NumberFormat.simpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(profit)
+                                        : NumberFormat.compactSimpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(profit),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium!
+                                        .copyWith(fontSize: 12.0)),
+                              ],
+                            ),
+                            const SizedBox(height: 10.0),
+                            gameBetCount(
+                              context: context,
+                              gameLogic: slotsLogic,
+                              bet: slotsLogic.bet,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 15.0),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: 60.0,
+                            width: 80.0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 5.0)
+                                ],
+                                color: const Color(0xFF3d7ce6),
+                              ),
+                              child: Switch(
+                                value: isFast,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isFast = !isFast;
+                                  });
 
-                    setState(() {
-                      isFast = !isFast;
-                    });
-
-                    if (isFast) {
-                      alertDialogSuccess(
-                        context: context,
-                        title: 'Успех',
-                        confirmBtnText: 'Окей',
-                        text: 'Быстрый режим включен!',
-                      );
-                    }
-                  },
-                  onPressed: () => makeBet(context)),
+                                  if (isFast) {
+                                    alertDialogSuccess(
+                                      context: context,
+                                      title: 'Успех',
+                                      confirmBtnText: 'Окей',
+                                      text: 'Быстрый режим включен!',
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: SizedBox(
+                              height: 60.0,
+                              child: Container(
+                                decoration: BoxDecoration(boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 5.0)
+                                ], color: Theme.of(context).cardColor),
+                                child: ElevatedButton(
+                                  onPressed: isSpinning || isAutoBets
+                                      ? null
+                                      : () {
+                                          makeBet(context);
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    elevation: 0,
+                                    backgroundColor: Colors.green,
+                                    shape: const RoundedRectangleBorder(),
+                                  ),
+                                  child: AutoSizeText(
+                                    'СТАВКА',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: isSpinning || isAutoBets
+                                            ? Colors.white30
+                                            : Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
               appBar: AppBar(
                 toolbarHeight: 76.0,
                 elevation: 0,

@@ -28,12 +28,17 @@ import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
+import 'package:new_mini_casino/games_logic/dice_classic_logic.dart';
 import 'package:new_mini_casino/games_logic/dice_logic.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
+import 'package:new_mini_casino/games_logic/limbo_logic.dart';
 import 'package:new_mini_casino/games_logic/plinko_logic.dart';
+import 'package:new_mini_casino/games_logic/roulette_logic.dart';
+import 'package:new_mini_casino/games_logic/slots_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
+import 'package:new_mini_casino/games_logic/trading_logic.dart';
 import 'package:new_mini_casino/screens/bank/bank.dart';
 import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
 import 'package:new_mini_casino/screens/bank/purchasing_game_currency.dart';
@@ -45,14 +50,19 @@ import 'package:new_mini_casino/screens/games/blackjack.dart';
 import 'package:new_mini_casino/screens/games/coinflip.dart';
 import 'package:new_mini_casino/screens/games/crash.dart';
 import 'package:new_mini_casino/screens/games/dice.dart';
+import 'package:new_mini_casino/screens/games/dice_classic.dart';
 import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
 import 'package:new_mini_casino/screens/games/jackpot.dart';
 import 'package:new_mini_casino/screens/games/keno.dart';
+import 'package:new_mini_casino/screens/games/limbo.dart';
 import 'package:new_mini_casino/screens/games/mines.dart';
 import 'package:new_mini_casino/screens/games/plinko.dart';
+import 'package:new_mini_casino/screens/games/roulette_wheel.dart';
 import 'package:new_mini_casino/screens/games/slots.dart';
 import 'package:new_mini_casino/screens/games/stairs.dart';
+import 'package:new_mini_casino/screens/games/trading.dart';
 import 'package:new_mini_casino/screens/home.dart';
+import 'package:new_mini_casino/screens/latest_max_wins.dart';
 import 'package:new_mini_casino/screens/login.dart';
 import 'package:new_mini_casino/screens/leader_board.dart';
 import 'package:new_mini_casino/screens/menu.dart';
@@ -78,6 +88,7 @@ import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/themes/dark_theme.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:new_mini_casino/themes/light_theme.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/background_model.dart';
 import 'package:screenshot/screenshot.dart';
@@ -87,6 +98,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ScreenshotController screenshotController = ScreenshotController();
 ConfettiController confettiController =
@@ -115,6 +127,8 @@ void main() async {
     initializeDateFormatting('ru_RU', null)
         .then((value) => runApp(const MainApp()));
   });
+
+  //SupabaseController.supabase!.auth.signOut();
 }
 
 class MainApp extends StatefulWidget {
@@ -136,6 +150,22 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
         if (_updateInfo?.updateAvailability ==
             UpdateAvailability.updateAvailable) {
+          alertDialogSuccess(
+              context: context,
+              title: 'Новая версия',
+              confirmBtnText: 'Установить',
+              barrierDismissible: false,
+              text: 'Доступна новая версия игры!',
+              onConfirmBtnTap: () async {
+                if (!await launchUrl(
+                    Uri.parse(
+                        'https://play.google.com/store/apps/details?id=com.revens.mini.casino'),
+                    mode: LaunchMode.externalNonBrowserApplication)) {
+                  throw Exception(
+                      'Could not launch ${Uri.parse('https://play.google.com/store/apps/details?id=com.revens.mini.casino')}');
+                }
+              });
+
           InAppUpdate.startFlexibleUpdate().then((_) {
             InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
               if (kDebugMode) {
@@ -189,6 +219,24 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               children: [
                 backgroundModel(),
                 const Notifications(),
+              ],
+            ),
+        '/limbo': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Limbo(),
+              ],
+            ),
+        '/dice-classic': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const DiceClassic(),
+              ],
+            ),
+        '/trading': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const Trading(),
               ],
             ),
         '/settings': (context, state, data) => Stack(
@@ -301,6 +349,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 const Crash(),
               ],
             ),
+        '/roulette-wheel': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const RouletteWheel(),
+              ],
+            ),
         '/stairs': (context, state, data) => Stack(
               children: [
                 backgroundModel(),
@@ -348,6 +402,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
               children: [
                 backgroundModel(),
                 const MoneyStorage(),
+              ],
+            ),
+        '/latest-max-wins': (context, state, data) => Stack(
+              children: [
+                backgroundModel(),
+                const LatestMaxWins(),
               ],
             ),
         '/fortuneWheel': (context, state, data) => Stack(
@@ -453,14 +513,18 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(
             create: (ctx) => PurchasingGameCurrencyController()),
         ChangeNotifierProvider(create: (ctx) => SupabaseController()),
+        ChangeNotifierProvider(create: (ctx) => LimboLogic()),
         ChangeNotifierProvider(create: (ctx) => SettingsController()),
         ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
         ChangeNotifierProvider(create: (ctx) => AutoBetsController()),
         ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
         ChangeNotifierProvider(create: (ctx) => NotificationController()),
         ChangeNotifierProvider(create: (ctx) => TaxManager()),
+        ChangeNotifierProvider(create: (ctx) => DiceClassicLogic()),
+        ChangeNotifierProvider(create: (ctx) => TradingLogic()),
         ChangeNotifierProvider(create: (ctx) => PlinkoLogic()),
         ChangeNotifierProvider(create: (ctx) => MinesLogic()),
+        ChangeNotifierProvider(create: (ctx) => RouletteLogic()),
         ChangeNotifierProvider(create: (ctx) => BankManager()),
         ChangeNotifierProvider(create: (ctx) => BlackjackLogic()),
         ChangeNotifierProvider(create: (ctx) => Payment()),
@@ -480,6 +544,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
         ChangeNotifierProvider(create: (ctx) => JackpotLogic()),
         ChangeNotifierProvider(create: (ctx) => Balance()),
         ChangeNotifierProvider(create: (ctx) => GameStatisticController()),
+        ChangeNotifierProvider(create: (ctx) => SlotsLogic()),
       ],
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
