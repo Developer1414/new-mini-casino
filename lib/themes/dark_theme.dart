@@ -67,11 +67,11 @@ ThemeData darkThemeData(BuildContext context) {
               fontWeight: FontWeight.w800)),
       inputDecorationTheme: InputDecorationTheme(
           enabledBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(12.0)),
               borderSide:
                   BorderSide(width: 2.5, color: Colors.white.withOpacity(0.3))),
           focusedBorder: OutlineInputBorder(
-              borderRadius: const BorderRadius.all(Radius.circular(0.0)),
+              borderRadius: const BorderRadius.all(Radius.circular(12.0)),
               borderSide: BorderSide(
                   width: 2.5, color: Colors.white.withOpacity(0.5)))));
 }

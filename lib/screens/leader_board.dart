@@ -3,7 +3,6 @@ import 'package:beamer/beamer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:io' as ui;
@@ -89,7 +88,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                       child: smallHelperPanel(
                           context: context,
                           icon: FontAwesomeIcons.circleXmark,
-                          iconColor: Colors.redAccent,
+                          iconColor: Colors.white.withOpacity(0.5),
                           text:
                               'Лидер дня ещё не выбран. Продолжайте играть и становитесь лучшим – возможно, именно вы займёте этот почетный статус!'),
                     ),
@@ -117,28 +116,24 @@ class _LeaderBoardState extends State<LeaderBoard> {
                     child: Stack(
                       alignment: AlignmentDirectional.center,
                       children: [
-                        GlassContainer(
-                          blur: 8,
-                          borderRadius: BorderRadius.circular(13.0),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12.0),
-                                  topRight: Radius.circular(12.0)),
-                              gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    GamesController.games
-                                        .where((element) =>
-                                            element.title == gameName)
-                                        .first
-                                        .buttonColor
-                                        .withOpacity(0.7),
-                                    Colors.transparent,
-                                  ]),
-                            ),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(12.0),
+                                topRight: Radius.circular(12.0)),
+                            gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  GamesController.games
+                                      .where((element) =>
+                                          element.title == gameName)
+                                      .first
+                                      .buttonColor
+                                      .withOpacity(0.7),
+                                  Colors.transparent,
+                                ]),
                           ),
                         ),
                         Column(

@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
@@ -64,7 +63,6 @@ class GameStatistic extends StatelessWidget {
                       ),
                     )
                   : SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         children: [
                           Padding(
@@ -144,10 +142,13 @@ class GameStatistic extends StatelessWidget {
       required double number,
       bool isMoneys = true,
       bool isPercent = false}) {
-    return GlassContainer(
-      blur: 8,
-      color: Colors.white.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(10.0),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10.0),
+        border: Border.all(
+            color:  Colors.white.withOpacity(0.5), width: 2.3),
+      ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

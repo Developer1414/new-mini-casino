@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/imporant_user_profile_info_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:new_mini_casino/widgets/text_field_model.dart';
@@ -29,7 +30,7 @@ class MoneyStorage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final storageManager =
-        Provider.of<MoneyStorageManager>(context, listen: false);
+        Provider.of<MoneyStorageManager>(context, listen: true);
 
     return GestureDetector(
       onTap: () {
@@ -80,44 +81,11 @@ class MoneyStorage extends StatelessWidget {
                       padding: const EdgeInsets.all(20.0),
                       child: Consumer<MoneyStorageManager>(
                           builder: (ctx, balance, _) {
-                        return Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15.0),
-                            color: Theme.of(context).cardColor,
-                            border: Border.all(
-                                color: Theme.of(context)
-                                    .buttonTheme
-                                    .colorScheme!
-                                    .background,
-                                width: 3.0),
-                          ),
-                          child: Column(
-                            children: [
-                              AutoSizeText(balance.currentBalanceString,
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .appBarTheme
-                                      .titleTextStyle!),
-                              const SizedBox(height: 5.0),
-                              AutoSizeText('Баланс',
-                                  maxLines: 1,
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall!
-                                      .copyWith(
-                                          fontSize: 12.0,
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .color!
-                                              .withOpacity(0.7))),
-                            ],
-                          ),
-                        );
+                        return importantUserProfileInfo(
+                            context: context,
+                            color: const Color.fromARGB(255, 226, 153, 57),
+                            content: balance.currentBalanceString,
+                            title: 'Баланс');
                       })),
                   Expanded(
                     child: Container(

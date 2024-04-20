@@ -26,6 +26,7 @@ class BlackjackLogic extends ChangeNotifier {
 
   double profit = 0.0;
   double bet = 0.0;
+  double startBet = 0.0;
   double insurance = 0.0;
 
   Map<String, int> cards = {
@@ -64,11 +65,14 @@ class BlackjackLogic extends ChangeNotifier {
 
   void changeBet(double value) {
     bet = value;
+    startBet = bet;
     notifyListeners();
   }
 
   void startGame({required BuildContext context}) {
     this.context = context;
+
+    startBet = bet;
 
     dealerValue = 0;
     playerValue = 0;
@@ -381,6 +385,8 @@ class BlackjackLogic extends ChangeNotifier {
           lossesMoneys: bet,
         ));
 
+    bet = startBet;
+
     notifyListeners();
   }
 
@@ -410,6 +416,8 @@ class BlackjackLogic extends ChangeNotifier {
       confettiController.play();
     }
 
+    bet = startBet;
+
     notifyListeners();
   }
 
@@ -418,6 +426,8 @@ class BlackjackLogic extends ChangeNotifier {
     blackjackType = BlackjackType.draft;
 
     Provider.of<Balance>(context, listen: false).cashout(bet);
+
+    bet = startBet;
 
     notifyListeners();
   }

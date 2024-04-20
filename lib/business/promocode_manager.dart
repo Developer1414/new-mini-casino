@@ -55,13 +55,13 @@ class PromocodeManager extends ChangeNotifier {
       return;
     }
 
-    if (ProfileController.profileModel.totalGame < 2000) {
+    if (ProfileController.profileModel.totalGame < 500) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Промокоды можно использовать от 2000 игр! У вас: ${ProfileController.profileModel.totalGame}',
+            'Промокоды можно использовать от 500 игр! У вас: ${ProfileController.profileModel.totalGame}',
       );
 
       return;

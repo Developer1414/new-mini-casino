@@ -7,7 +7,6 @@ import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 
@@ -566,47 +565,42 @@ class _SlotsState extends State<Slots> {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 5.0),
-                                  child: GlassContainer(
-                                    blur: 8,
-                                    color: Colors.white.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: Container(
-                                      height: 150.0,
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                          border: Border.all(
-                                              color: Colors.lightBlueAccent
-                                                  .withOpacity(0.7),
-                                              width: 4.0)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 15.0),
-                                        child: isReelsSpinning[i] == false
-                                            ? Image.asset(
-                                                'assets/slots/${choosedReels[i]}.png',
-                                              )
-                                            : AnimatedSwitcher(
-                                                duration: const Duration(
-                                                    milliseconds: 100),
-                                                child: ListView.separated(
-                                                  key: ValueKey<String>(
-                                                      '${choosedReels[i]}${Random().nextInt(10000)}'),
-                                                  itemCount: 100,
-                                                  physics:
-                                                      const NeverScrollableScrollPhysics(),
-                                                  controller: controllers[i],
-                                                  itemBuilder:
-                                                      (context, index) =>
-                                                          Image.asset(
-                                                    'assets/slots/${choosedReels[i]}.png',
-                                                  ),
-                                                  separatorBuilder:
-                                                      (context, index) =>
-                                                          const SizedBox(
-                                                              height: 15.0),
-                                                )),
-                                      ),
+                                  child: Container(
+                                    height: 150.0,
+                                    decoration: BoxDecoration(
+                                        color: Colors.white.withOpacity(0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                            color: Colors.lightBlueAccent
+                                                .withOpacity(0.7),
+                                            width: 3.0)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 15.0),
+                                      child: isReelsSpinning[i] == false
+                                          ? Image.asset(
+                                              'assets/slots/${choosedReels[i]}.png',
+                                            )
+                                          : AnimatedSwitcher(
+                                              duration: const Duration(
+                                                  milliseconds: 100),
+                                              child: ListView.separated(
+                                                key: ValueKey<String>(
+                                                    '${choosedReels[i]}${Random().nextInt(10000)}'),
+                                                itemCount: 100,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                controller: controllers[i],
+                                                itemBuilder: (context, index) =>
+                                                    Image.asset(
+                                                  'assets/slots/${choosedReels[i]}.png',
+                                                ),
+                                                separatorBuilder:
+                                                    (context, index) =>
+                                                        const SizedBox(
+                                                            height: 15.0),
+                                              )),
                                     ),
                                   ),
                                 ),
@@ -666,52 +660,48 @@ class _SlotsState extends State<Slots> {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
-        child: GlassContainer(
-          blur: 8,
-          color: Colors.white.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15.0),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
-            decoration: BoxDecoration(
-                color: isSelected
-                    ? const Color.fromARGB(50, 76, 175, 80)
-                    : Colors
-                        .transparent, // Theme.of(context).cardColor.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(15.0),
-                border: Border.all(
-                    color: isSelected
-                        ? Colors.green
-                        : Colors
-                            .transparent, //const Color.fromARGB(200, 83, 91, 121),
-                    width: 3.0)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int i = 0; i < icons.length; i++)
-                      Image.asset(
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10.0),
+          decoration: BoxDecoration(
+              color: isSelected
+                  ? const Color.fromARGB(50, 76, 175, 80)
+                  : Colors.white.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(12.0),
+              border: Border.all(
+                  color: isSelected
+                      ? Colors.green
+                      : Colors.white.withOpacity(0.12),
+                  width: 2.0)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 0; i < icons.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 1.0),
+                      child: Image.asset(
                         'assets/slots/${icons[i] != '?' ? icons[i] : 'question'}.png',
                         color: icons[i] == '?' ? Colors.grey.shade400 : null,
                         width: 12.0,
                         height: 12.0,
                       ),
-                  ],
-                ),
-                const SizedBox(height: 5.0),
-                AutoSizeText('${coefficient.toStringAsFixed(2)}x',
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontSize: 5.0,
-                        color: Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .color!
-                            .withOpacity(0.7))),
-              ],
-            ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 5.0),
+              AutoSizeText('${coefficient.toStringAsFixed(2)}x',
+                  maxLines: 1,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                      fontSize: 5.0,
+                      color: Theme.of(context)
+                          .textTheme
+                          .bodySmall!
+                          .color!
+                          .withOpacity(0.7))),
+            ],
           ),
         ),
       ),

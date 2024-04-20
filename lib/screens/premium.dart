@@ -3,7 +3,6 @@ import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
@@ -326,208 +325,194 @@ class PremiumInfo extends StatelessWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 15.0),
-                                  GlassContainer(
-                                    blur: 8,
-                                    color: Colors.white.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(15.0),
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(15.0),
-                                        // color: Theme.of(context).cardColor,
-                                        border: Border.all(
-                                            color: const Color.fromARGB(
-                                                255, 179, 242, 31),
-                                            width: 3.0),
-                                      ),
-                                      child: AutoSizeText(
-                                          'Попробуйте Premium всего за 149 руб. в месяц или 1499 руб. в год!',
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium!
-                                              .copyWith(fontSize: 12.0)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 15.0),
-                              GlassContainer(
-                                blur: 8,
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(15.0),
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
+                                  Container(
+                                    padding: const EdgeInsets.all(15.0),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(15.0),
+                                      // color: Theme.of(context).cardColor,
                                       border: Border.all(
                                           color: const Color.fromARGB(
                                               255, 179, 242, 31),
                                           width: 3.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.3),
-                                            blurRadius: 5.0,
-                                            offset: const Offset(0, 3.0),
-                                            spreadRadius: 0.5)
-                                      ]),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Stack(
-                                      alignment: AlignmentDirectional.topEnd,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Premium план',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium!
-                                                    .copyWith(
-                                                        color: const Color
-                                                            .fromARGB(255, 179,
-                                                            242, 31))),
-                                            const SizedBox(height: 5.0),
-                                            Text(
-                                                '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000000)}\n• Возможность установить кастомный фон\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация бонусов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Доступны игры с пометкой «Premium».',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall!
-                                                    .copyWith(
-                                                      height: 1.4,
-                                                    )),
-                                          ],
-                                        ),
-                                        !SupabaseController.isPremium
-                                            ? Container()
-                                            : Container(
-                                                width: 80.0,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10.0,
-                                                        horizontal: 10.0),
-                                                decoration: const BoxDecoration(
-                                                    color: Colors.black,
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(15.0),
-                                                      topRight:
-                                                          Radius.circular(12.0),
-                                                      bottomRight:
-                                                          Radius.circular(5.0),
-                                                      topLeft:
-                                                          Radius.circular(5.0),
-                                                    )),
-                                                child: Center(
-                                                  child: AutoSizeText(
-                                                    'Текущий',
-                                                    maxLines: 1,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium!
-                                                        .copyWith(
-                                                            fontSize: 12.0,
-                                                            color: const Color
-                                                                .fromARGB(255,
-                                                                179, 242, 31)),
-                                                  ),
+                                    ),
+                                    child: AutoSizeText(
+                                        'Попробуйте Premium всего за 149 руб. в месяц или 1499 руб. в год!',
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(fontSize: 12.0)),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 15.0),
+                              Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: const Color.fromARGB(
+                                            255, 179, 242, 31),
+                                        width: 3.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 5.0,
+                                          offset: const Offset(0, 3.0),
+                                          spreadRadius: 0.5)
+                                    ]),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Stack(
+                                    alignment: AlignmentDirectional.topEnd,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Premium план',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium!
+                                                  .copyWith(
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              179,
+                                                              242,
+                                                              31))),
+                                          const SizedBox(height: 5.0),
+                                          Text(
+                                              '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000000)}\n• Возможность установить кастомный фон\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация бонусов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Доступны игры с пометкой «Premium».',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                    height: 1.4,
+                                                  )),
+                                        ],
+                                      ),
+                                      !SupabaseController.isPremium
+                                          ? Container()
+                                          : Container(
+                                              width: 80.0,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 10.0),
+                                              decoration: const BoxDecoration(
+                                                  color: Colors.black,
+                                                  borderRadius:
+                                                      BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(15.0),
+                                                    topRight:
+                                                        Radius.circular(12.0),
+                                                    bottomRight:
+                                                        Radius.circular(5.0),
+                                                    topLeft:
+                                                        Radius.circular(5.0),
+                                                  )),
+                                              child: Center(
+                                                child: AutoSizeText(
+                                                  'Текущий',
+                                                  maxLines: 1,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(
+                                                          fontSize: 12.0,
+                                                          color: const Color
+                                                              .fromARGB(255,
+                                                              179, 242, 31)),
                                                 ),
                                               ),
-                                      ],
-                                    ),
+                                            ),
+                                    ],
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 15.0),
-                              GlassContainer(
-                                blur: 8,
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(15.0),
-                                child: Container(
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                      //color: Theme.of(context).cardColor,
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      border: Border.all(
-                                          color: Theme.of(context)
-                                              .buttonTheme
-                                              .colorScheme!
-                                              .background,
-                                          width: 3.0),
-                                      boxShadow: [
-                                        BoxShadow(
-                                            color:
-                                                Colors.black.withOpacity(0.3),
-                                            blurRadius: 5.0,
-                                            offset: const Offset(0, 3.0),
-                                            spreadRadius: 0.5)
-                                      ]),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(15.0),
-                                    child: Stack(
-                                      alignment: AlignmentDirectional.topEnd,
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Бесплатный план',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .titleMedium),
-                                            const SizedBox(height: 5.0),
-                                            Text(
-                                                '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}\n• Игры с пометкой «Premium» не доступны.',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall!
-                                                    .copyWith(
-                                                      height: 1.4,
-                                                    )),
-                                          ],
-                                        ),
-                                        SupabaseController.isPremium
-                                            ? Container()
-                                            : Container(
-                                                width: 80.0,
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        vertical: 10.0,
-                                                        horizontal: 10.0),
-                                                decoration: BoxDecoration(
-                                                    color: Theme.of(context)
-                                                        .buttonTheme
-                                                        .colorScheme!
-                                                        .background,
-                                                    borderRadius:
-                                                        const BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(15.0),
-                                                      topRight:
-                                                          Radius.circular(12.0),
-                                                      bottomRight:
-                                                          Radius.circular(5.0),
-                                                      topLeft:
-                                                          Radius.circular(5.0),
-                                                    )),
-                                                child: Center(
-                                                  child: AutoSizeText(
-                                                    'Текущий',
-                                                    maxLines: 1,
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium!
-                                                        .copyWith(
-                                                            fontSize: 12.0),
-                                                  ),
+                              Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(15.0),
+                                    border: Border.all(
+                                        color: Theme.of(context)
+                                            .buttonTheme
+                                            .colorScheme!
+                                            .background,
+                                        width: 3.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 5.0,
+                                          offset: const Offset(0, 3.0),
+                                          spreadRadius: 0.5)
+                                    ]),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Stack(
+                                    alignment: AlignmentDirectional.topEnd,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text('Бесплатный план',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleMedium),
+                                          const SizedBox(height: 5.0),
+                                          Text(
+                                              '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}\n• Игры с пометкой «Premium» не доступны.',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                    height: 1.4,
+                                                  )),
+                                        ],
+                                      ),
+                                      SupabaseController.isPremium
+                                          ? Container()
+                                          : Container(
+                                              width: 80.0,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 10.0,
+                                                      horizontal: 10.0),
+                                              decoration: BoxDecoration(
+                                                  color: Theme.of(context)
+                                                      .buttonTheme
+                                                      .colorScheme!
+                                                      .background,
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                    bottomLeft:
+                                                        Radius.circular(15.0),
+                                                    topRight:
+                                                        Radius.circular(12.0),
+                                                    bottomRight:
+                                                        Radius.circular(5.0),
+                                                    topLeft:
+                                                        Radius.circular(5.0),
+                                                  )),
+                                              child: Center(
+                                                child: AutoSizeText(
+                                                  'Текущий',
+                                                  maxLines: 1,
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium!
+                                                      .copyWith(fontSize: 12.0),
                                                 ),
                                               ),
-                                      ],
-                                    ),
+                                            ),
+                                    ],
                                   ),
                                 ),
                               ),

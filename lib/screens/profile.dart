@@ -174,10 +174,7 @@ class _ProfileState extends State<Profile> {
                                   const EdgeInsets.symmetric(horizontal: 25.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15.0),
-                                color: Theme.of(context)
-                                    .buttonTheme
-                                    .colorScheme!
-                                    .background,
+                                color: Colors.white.withOpacity(0.3)
                               ),
                             ),
                             const SizedBox(height: 15.0),
@@ -185,10 +182,7 @@ class _ProfileState extends State<Profile> {
                                 context: context,
                                 icon: FontAwesomeIcons.coins,
                                 buttonName: 'Хранилище',
-                                color: Theme.of(context)
-                                    .buttonTheme
-                                    .colorScheme!
-                                    .background,
+                                color: const Color.fromARGB(255, 226, 153, 57),
                                 onPressed: () =>
                                     context.beamToNamed('/money-storage')),
                             const SizedBox(height: 15.0),

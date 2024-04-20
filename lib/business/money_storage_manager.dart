@@ -47,20 +47,23 @@ class MoneyStorageManager extends ChangeNotifier {
     }
   }
 
-  void removeFromStorage(double amount) {
+  Future removeFromStorage(double amount) async {
     balance -= amount;
 
-    updateStorageBalance();
+    await updateStorageBalance();
+
     notifyListeners();
   }
 
-  void addToStorage(double amount) {
+  Future addToStorage(double amount) async {
     balance += amount;
-    updateStorageBalance();
+
+    await updateStorageBalance();
+
     notifyListeners();
   }
 
-  void updateStorageBalance() async {
+  Future updateStorageBalance() async {
     BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
 
     await SupabaseController.supabase!
@@ -90,16 +93,24 @@ class MoneyStorageManager extends ChangeNotifier {
       return;
     }
 
+    showLoading(true);
+
     mainBalance.placeBet(amount);
-    addToStorage(amount);
+    await addToStorage(amount);
 
-    alertDialogSuccess(
-        context: context,
-        title: 'Успех',
-        text:
-            'Вы успешно перевели ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} в хранилище!');
+    if (context.mounted) {
+      alertDialogSuccess(
+          context: context,
+          title: 'Успех',
+          text:
+              'Вы успешно перевели ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} в хранилище!');
+    }
 
-    AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    showLoading(false);
+
+    if (context.mounted) {
+      AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    }
   }
 
   void transferToMainAccount(
@@ -120,15 +131,23 @@ class MoneyStorageManager extends ChangeNotifier {
       return;
     }
 
+    showLoading(true);
+
     mainBalance.cashout(amount);
-    removeFromStorage(amount);
+    await removeFromStorage(amount);
 
-    alertDialogSuccess(
-        context: context,
-        title: 'Успех',
-        text:
-            'Вы успешно перевели ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} на основной счёт!');
+    if (context.mounted) {
+      alertDialogSuccess(
+          context: context,
+          title: 'Успех',
+          text:
+              'Вы успешно перевели ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} на основной счёт!');
+    }
 
-    AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    showLoading(false);
+
+    if (context.mounted) {
+      AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
+    }
   }
 }

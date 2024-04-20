@@ -102,7 +102,7 @@ class CommonFunctions {
       gameName: gameName,
     );
 
-    if ((profit / bet - 1) * 100 >= 500) {
+    if ((profit / bet - 1) * 100 >= 700) {
       await LatestMaxWinsController.addMaxWin(
         context: context,
         bet: bet,

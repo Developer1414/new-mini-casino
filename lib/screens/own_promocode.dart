@@ -244,31 +244,25 @@ class OwnPromocode extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  AutoSizeText('Кол. активаций:',
+                                  AutoSizeText('Активаций:',
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodySmall!
-                                          .copyWith(fontSize: 18.0)),
+                                          .displaySmall),
+                                  Slider(
+                                    value: value.countActivation,
+                                    max: 50,
+                                    min: 1,
+                                    divisions: 49,
+                                    onChanged: (double v) {
+                                      value.onCountActivationChanged(v);
+                                    },
+                                  ),
                                   AutoSizeText(
                                       value.countActivation.round().toString(),
                                       style: Theme.of(context)
                                           .textTheme
-                                          .bodySmall!
-                                          .copyWith(fontSize: 20.0)),
+                                          .displaySmall),
                                 ],
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: Slider(
-                                value: value.countActivation,
-                                max: 50,
-                                min: 1,
-                                divisions: 49,
-                                onChanged: (double v) {
-                                  value.onCountActivationChanged(v);
-                                },
                               ),
                             ),
                             SupabaseController.isPremium

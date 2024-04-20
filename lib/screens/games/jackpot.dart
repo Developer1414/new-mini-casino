@@ -6,7 +6,6 @@ import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -344,138 +343,125 @@ class _JackpotState extends State<Jackpot> {
                         builder: (context, jackpotLogic, child) {
                       return Padding(
                         padding: const EdgeInsets.all(15.0),
-                        child: GlassContainer(
-                          blur: 8,
-                          color: Colors.lightBlueAccent.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(15.0),
-                          child: Container(
-                              height: 40.0,
-                              decoration: BoxDecoration(
-                                  //color: Colors.lightBlueAccent.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  border: Border.all(
-                                      color: Colors.lightBlueAccent
-                                          .withOpacity(0.7),
-                                      width: 2.0)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Jackpot.items.isEmpty
-                                    ? Center(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            AutoSizeText('Сделайте ставку',
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall),
-                                            AutoSizeText(
-                                                'Чем больше ваша ставка, тем больше ставка ботов',
-                                                textAlign: TextAlign.center,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodySmall!
-                                                    .copyWith(
-                                                        fontSize: 12.0,
-                                                        color: Theme.of(context)
-                                                            .textTheme
-                                                            .bodySmall!
-                                                            .color!
-                                                            .withOpacity(0.6))),
-                                          ],
-                                        ),
-                                      )
-                                    : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                        child: Container(
+                            height: 40.0,
+                            decoration: BoxDecoration(
+                                color: Colors.lightBlueAccent.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(15.0),
+                                border: Border.all(
+                                    color:
+                                        Colors.lightBlueAccent.withOpacity(0.7),
+                                    width: 2.0)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: Jackpot.items.isEmpty
+                                  ? Center(
+                                      child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
                                         children: [
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              AutoSizeText(
-                                                  'Участников: ${Jackpot.playersCount}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall),
-                                              const SizedBox(height: 5.0),
-                                              AutoSizeText(
-                                                  'Баланс: ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(Jackpot.currentBalance)}',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 15.0),
-                                          Screenshot(
-                                            controller: screenshotController,
-                                            child: FortuneBar(
-                                              height: 235,
-                                              animateFirst: false,
-                                              onAnimationEnd: () async {
-                                                jackpotLogic
-                                                    .onAnimationStopped();
-
-                                                if (context.mounted) {
-                                                  setState(() {
-                                                    if (Jackpot.players[Jackpot
-                                                            .winnedPlayerIndex] ==
-                                                        'user') {
-                                                      Jackpot.profit = Jackpot
-                                                          .currentBalance;
-
-                                                      jackpotLogic.win(
-                                                          profit:
-                                                              Jackpot.profit);
-                                                    } else {
-                                                      jackpotLogic.loss(
-                                                          context: context);
-                                                    }
-                                                  });
-                                                }
-
-                                                if (context.mounted) {
-                                                  setState(() {
-                                                    Jackpot.isBlockButton =
-                                                        false;
-                                                  });
-                                                }
-
-                                                jackpotLogic
-                                                    .onAnimationStopped();
-                                              },
-                                              physics: NoPanPhysics(),
-                                              styleStrategy:
-                                                  UniformStyleStrategy(
-                                                      borderColor:
-                                                          Colors.blueAccent,
-                                                      color: Colors
-                                                          .lightBlueAccent
-                                                          .withOpacity(0.7),
-                                                      borderWidth: 0.0),
-                                              selected:
-                                                  Jackpot.controller.stream,
-                                              items: Jackpot.items,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 15.0),
-                                          Jackpot.currentTimeBeforePlaying == 0
-                                              ? Container()
-                                              : Center(
-                                                  child: AutoSizeText(
-                                                      'Старт через ${Jackpot.currentTimeBeforePlaying} сек.',
-                                                      style: Theme.of(context)
+                                          AutoSizeText('Сделайте ставку',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                          AutoSizeText(
+                                              'Чем больше ваша ставка, тем больше ставка ботов',
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall!
+                                                  .copyWith(
+                                                      fontSize: 12.0,
+                                                      color: Theme.of(context)
                                                           .textTheme
-                                                          .bodyMedium!
-                                                          .copyWith(
-                                                              fontSize: 20.0)),
-                                                ),
+                                                          .bodySmall!
+                                                          .color!
+                                                          .withOpacity(0.6))),
                                         ],
                                       ),
-                              )),
-                        ),
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            AutoSizeText(
+                                                'Участников: ${Jackpot.playersCount}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall),
+                                            const SizedBox(height: 5.0),
+                                            AutoSizeText(
+                                                'Баланс: ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(Jackpot.currentBalance)}',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 15.0),
+                                        Screenshot(
+                                          controller: screenshotController,
+                                          child: FortuneBar(
+                                            height: 235,
+                                            animateFirst: false,
+                                            onAnimationEnd: () async {
+                                              jackpotLogic.onAnimationStopped();
+
+                                              if (context.mounted) {
+                                                setState(() {
+                                                  if (Jackpot.players[Jackpot
+                                                          .winnedPlayerIndex] ==
+                                                      'user') {
+                                                    Jackpot.profit =
+                                                        Jackpot.currentBalance;
+
+                                                    jackpotLogic.win(
+                                                        profit: Jackpot.profit);
+                                                  } else {
+                                                    jackpotLogic.loss(
+                                                        context: context);
+                                                  }
+                                                });
+                                              }
+
+                                              if (context.mounted) {
+                                                setState(() {
+                                                  Jackpot.isBlockButton = false;
+                                                });
+                                              }
+
+                                              jackpotLogic.onAnimationStopped();
+                                            },
+                                            physics: NoPanPhysics(),
+                                            styleStrategy: UniformStyleStrategy(
+                                                borderColor: Colors.blueAccent,
+                                                color: Colors.lightBlueAccent
+                                                    .withOpacity(0.7),
+                                                borderWidth: 0.0),
+                                            selected: Jackpot.controller.stream,
+                                            items: Jackpot.items,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 15.0),
+                                        Jackpot.currentTimeBeforePlaying == 0
+                                            ? Container()
+                                            : Center(
+                                                child: AutoSizeText(
+                                                    'Старт через ${Jackpot.currentTimeBeforePlaying} сек.',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium!
+                                                        .copyWith(
+                                                            fontSize: 20.0)),
+                                              ),
+                                      ],
+                                    ),
+                            )),
                       );
                     }),
                   )

@@ -84,19 +84,19 @@ class OwnPromocodeManager extends ChangeNotifier {
       return;
     }
 
-    if (ProfileController.profileModel.totalGame < 5000) {
+    if (ProfileController.profileModel.totalGame < 1000) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
         confirmBtnText: 'Окей',
         text:
-            'Промокод можно создать от 5000 игр! У вас: ${ProfileController.profileModel.totalGame}',
+            'Промокод можно создать от 1000 игр! У вас: ${ProfileController.profileModel.totalGame}',
       );
 
       return;
     }
 
-    if (name.length < 4) {
+    if (name.trim().length < 4) {
       alertDialogError(
         context: context,
         title: 'Ошибка',
@@ -134,9 +134,8 @@ class OwnPromocodeManager extends ChangeNotifier {
               .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
               .select('promocodes')
               .then((value) async {
-            Map<String, dynamic> promocodes = value[0]['promocodes'] == null
-                ? {}
-                : jsonDecode(value[0]['promocodes'] ?? '');
+            Map<String, dynamic> promocodes = Map<String, dynamic>.from(
+                value.toList()[0]['promocodes'] ?? {});
 
             promocodes.addAll({name: prize.toString()});
 

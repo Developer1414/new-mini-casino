@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/notification_controller.dart';
 import 'dart:io' as ui;
@@ -18,11 +17,12 @@ Widget transferMoneysModel(
 
   return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15.0),
-      child: GlassContainer(
+      child: Container(
         width: double.infinity,
-        blur: 8,
-        color: Colors.white.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10.0),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(

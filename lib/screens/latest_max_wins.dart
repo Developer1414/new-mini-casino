@@ -2,7 +2,6 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
@@ -17,6 +16,12 @@ class LatestMaxWins extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final stream = SupabaseController.supabase!
+        .from('latest_max_wins')
+        .stream(primaryKey: ['id'])
+        .order('date', ascending: false)
+        .limit(100);
+
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
@@ -44,43 +49,38 @@ class LatestMaxWins extends StatelessWidget {
         ),
       ),
       body: StreamBuilder(
-          stream: SupabaseController.supabase!
-              .from('latest_max_wins')
-              .select('*')
-              .limit(100)
-              .asStream(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return loading(context: context);
-            }
+        stream: stream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return loading(context: context);
+          }
 
-            List<dynamic> list = snapshot.data;
-            list = list.reversed.toList();
+          List<Map<String, dynamic>> list = snapshot.data ?? [];
+          //List<dynamic> list = snapshot.data;
 
-            return list.isEmpty
-                ? Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                      child: smallHelperPanel(
-                          context: context,
-                          icon: FontAwesomeIcons.circleXmark,
-                          iconColor: Colors.redAccent,
-                          text: 'Крупные выигрыши ещё не определены!'),
-                    ),
-                  )
-                : ListView.separated(
-                    itemBuilder: (context, index) {
-                      String gameName =
-                          '${list[index]['game'][0].toUpperCase()}${list[index]['game'].toString().substring(1)}';
+          return list.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: smallHelperPanel(
+                        context: context,
+                        icon: FontAwesomeIcons.circleXmark,
+                        iconColor: Colors.redAccent,
+                        text: 'Крупные выигрыши ещё не определены!'),
+                  ),
+                )
+              : ListView.separated(
+                  itemBuilder: (context, index) {
+                    String gameName =
+                        '${list[index]['game'][0].toUpperCase()}${list[index]['game'].toString().substring(1)}';
 
-                      gameName = gameName == 'FortuneWheel'
-                          ? 'Fortune Wheel'
-                          : gameName;
+                    gameName =
+                        gameName == 'FortuneWheel' ? 'Fortune Wheel' : gameName;
 
-                      DateTime date =
-                          DateTime.parse('${list[index]['date']}Z').toLocal();
+                    DateTime date =
+                        DateTime.parse('${list[index]['date']}Z').toLocal();
 
-                      return Container(
+                    return Container(
                         margin: EdgeInsets.only(
                             left: 15.0,
                             right: 15.0,
@@ -100,137 +100,129 @@ class LatestMaxWins extends StatelessWidget {
                                   .withOpacity(0.7),
                               width: 2.0),
                         ),
-                        child: GlassContainer(
-                          blur: 8,
-                          borderRadius: BorderRadius.circular(13.0),
-                          child: Container(
-                            padding: const EdgeInsets.all(15.0),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12.0),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AutoSizeText(
-                                      list[index]['name'],
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 20.0,
-                                        letterSpacing: 0.5,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                    AutoSizeText(
-                                      gameName,
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 15.0,
-                                        letterSpacing: 0.5,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    AutoSizeText(
-                                      double.parse(list[index]['bet'].toString()) <
-                                              100000
-                                          ? NumberFormat.simpleCurrency(
-                                                  locale:
-                                                      ui.Platform.localeName)
-                                              .format(double.parse(list[index]
-                                                      ['bet']
-                                                  .toString()))
-                                          : NumberFormat.compactSimpleCurrency(
-                                                  locale:
-                                                      ui.Platform.localeName)
-                                              .format(double.parse(
-                                                  list[index]['bet'].toString())),
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: Colors.white,
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                    Column(
-                                      children: [
-                                        FaIcon(
-                                          FontAwesomeIcons.arrowRightLong,
-                                          color: Theme.of(context)
-                                              .appBarTheme
-                                              .iconTheme!
-                                              .color,
-                                          size: 18.0,
-                                        ),
-                                        Text(
-                                          '${(double.parse(list[index]['win'].toString()) / double.parse(list[index]['bet'].toString())).toStringAsFixed(2)}x',
-                                          textAlign: TextAlign.center,
-                                          style: GoogleFonts.roboto(
-                                            color: Colors.white,
-                                            fontSize: 12.0,
-                                            letterSpacing: 0.5,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    AutoSizeText(
-                                      double.parse(list[index]['win'].toString()) <
-                                              100000
-                                          ? NumberFormat.simpleCurrency(
-                                                  locale:
-                                                      ui.Platform.localeName)
-                                              .format(double.parse(list[index]
-                                                      ['win']
-                                                  .toString()))
-                                          : NumberFormat.compactSimpleCurrency(
-                                                  locale:
-                                                      ui.Platform.localeName)
-                                              .format(double.parse(
-                                                  list[index]['win'].toString())),
-                                      textAlign: TextAlign.center,
-                                      style: GoogleFonts.roboto(
-                                        color: const Color.fromARGB(
-                                            255, 88, 201, 92),
-                                        fontSize: 15.0,
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: AutoSizeText(
-                                    '${DateFormat.MMMd(ui.Platform.localeName).format(date)} в ${DateFormat.jm(ui.Platform.localeName).format(date)}',
+                        child: Container(
+                          padding: const EdgeInsets.all(15.0),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AutoSizeText(
+                                    list[index]['name'],
+                                    textAlign: TextAlign.center,
                                     style: GoogleFonts.roboto(
-                                      color: Colors.white60,
-                                      fontSize: 3.0,
-                                      fontWeight: FontWeight.w600,
+                                      color: Colors.white,
+                                      fontSize: 20.0,
+                                      letterSpacing: 0.5,
+                                      fontWeight: FontWeight.w900,
                                     ),
                                   ),
+                                  AutoSizeText(
+                                    gameName,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 15.0,
+                                      letterSpacing: 0.5,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AutoSizeText(
+                                    double.parse(
+                                                list[index]['bet'].toString()) <
+                                            100000
+                                        ? NumberFormat.simpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(double.parse(
+                                                list[index]['bet'].toString()))
+                                        : NumberFormat.compactSimpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(double.parse(
+                                                list[index]['bet'].toString())),
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: Colors.white,
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      FaIcon(
+                                        FontAwesomeIcons.arrowRightLong,
+                                        color: Theme.of(context)
+                                            .appBarTheme
+                                            .iconTheme!
+                                            .color,
+                                        size: 18.0,
+                                      ),
+                                      Text(
+                                        '${(double.parse(list[index]['win'].toString()) / double.parse(list[index]['bet'].toString())).toStringAsFixed(2)}x',
+                                        textAlign: TextAlign.center,
+                                        style: GoogleFonts.roboto(
+                                          color: Colors.white,
+                                          fontSize: 12.0,
+                                          letterSpacing: 0.5,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  AutoSizeText(
+                                    double.parse(
+                                                list[index]['win'].toString()) <
+                                            100000
+                                        ? NumberFormat.simpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(double.parse(
+                                                list[index]['win'].toString()))
+                                        : NumberFormat.compactSimpleCurrency(
+                                                locale: ui.Platform.localeName)
+                                            .format(double.parse(
+                                                list[index]['win'].toString())),
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.roboto(
+                                      color: const Color.fromARGB(
+                                          255, 88, 201, 92),
+                                      fontSize: 15.0,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: AutoSizeText(
+                                  '${DateFormat.MMMd(ui.Platform.localeName).format(date)} в ${DateFormat.jm(ui.Platform.localeName).format(date)}',
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.white60,
+                                    fontSize: 3.0,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 15.0),
-                    itemCount: list.length,
-                  );
-          }),
+                        ));
+                  },
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 15.0),
+                  itemCount: list.length,
+                );
+        },
+      ),
     );
   }
 }

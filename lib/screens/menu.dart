@@ -6,7 +6,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -339,46 +338,38 @@ class _AllGamesState extends State<AllGames> {
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(25.0)))
                                   : index == GamesController.games.length
-                                      ? GlassContainer(
-                                          blur: 8,
-                                          color: const Color.fromARGB(
-                                                  80, 42, 171, 238)
-                                              .withOpacity(0.1),
-                                          borderRadius:
-                                              BorderRadius.circular(15.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
-                                                border: Border.all(
-                                                    color: const Color.fromARGB(
-                                                        255, 42, 171, 238),
-                                                    width: 2.0)),
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(8.0),
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  FaIcon(
-                                                    FontAwesomeIcons.lock,
-                                                    color: Theme.of(context)
-                                                        .appBarTheme
-                                                        .iconTheme!
-                                                        .color,
-                                                    size: 30.0,
-                                                  ),
-                                                  const SizedBox(height: 10.0),
-                                                  Text(
-                                                      'Здесь будет новая игра!',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodySmall),
-                                                ],
-                                              ),
+                                      ? Container(
+                                          decoration: BoxDecoration(
+                                              color: const Color.fromARGB(
+                                                      80, 42, 171, 238)
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(15.0),
+                                              border: Border.all(
+                                                  color: const Color.fromARGB(
+                                                      255, 42, 171, 238),
+                                                  width: 2.0)),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                FaIcon(
+                                                  FontAwesomeIcons.lock,
+                                                  color: Theme.of(context)
+                                                      .appBarTheme
+                                                      .iconTheme!
+                                                      .color,
+                                                  size: 30.0,
+                                                ),
+                                                const SizedBox(height: 10.0),
+                                                Text('Здесь будет новая игра!',
+                                                    textAlign: TextAlign.center,
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall),
+                                              ],
                                             ),
                                           ),
                                         )
@@ -440,130 +431,119 @@ class _AllGamesState extends State<AllGames> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 15.0),
-                            child: GlassContainer(
-                              blur: 8,
-                              color: const Color.fromARGB(80, 42, 171, 238)
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(15.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 42, 171, 238),
-                                        width: 2.0)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Telegram',
-                                          textAlign: TextAlign.left,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
-                                              .copyWith(fontSize: 22.0)),
-                                      Text(
-                                          'Подписывайтесь на наш телеграм канал, чтобы не пропускать новости и обновления!\n\nP.S. Раз в месяц там проходит розыгрыш на Premium!',
-                                          textAlign: TextAlign.left,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall),
-                                      const SizedBox(height: 15.0),
-                                      buttonModel(
-                                        context: context,
-                                        icon: FontAwesomeIcons.telegram,
-                                        buttonName: 'Mini Casino',
-                                        color: const Color.fromARGB(
-                                            255, 42, 171, 238),
-                                        onPressed: () async {
-                                          if (!await launchUrl(
-                                              Uri.parse(
-                                                  'https://t.me/mini_casino_info'),
-                                              mode: LaunchMode
-                                                  .externalNonBrowserApplication)) {
-                                            throw Exception(
-                                                'Could not launch ${Uri.parse('https://t.me/mini_casino_info')}');
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: const Color.fromARGB(80, 42, 171, 238)
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 42, 171, 238),
+                                      width: 2.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Telegram',
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(fontSize: 22.0)),
+                                    Text(
+                                        'Подписывайтесь на наш телеграм канал, чтобы не пропускать новости и обновления!\n\nP.S. Раз в месяц там проходит розыгрыш на Premium!',
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                    const SizedBox(height: 15.0),
+                                    buttonModel(
+                                      context: context,
+                                      icon: FontAwesomeIcons.telegram,
+                                      buttonName: 'Mini Casino',
+                                      color: const Color.fromARGB(
+                                          255, 42, 171, 238),
+                                      onPressed: () async {
+                                        if (!await launchUrl(
+                                            Uri.parse(
+                                                'https://t.me/mini_casino_info'),
+                                            mode: LaunchMode
+                                                .externalNonBrowserApplication)) {
+                                          throw Exception(
+                                              'Could not launch ${Uri.parse('https://t.me/mini_casino_info')}');
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 15.0),
-                            child: GlassContainer(
-                              blur: 8,
-                              color: const Color.fromARGB(80, 238, 104, 42)
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(15.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    //color: const Color.fromARGB(80, 238, 104, 42),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    border: Border.all(
-                                        color: const Color.fromARGB(
-                                            255, 238, 104, 42),
-                                        width: 2.0)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text('Приведите друга',
-                                          textAlign: TextAlign.left,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
-                                              .copyWith(fontSize: 22.0)),
-                                      Text(
-                                          'Вы и ваш друг, зарегистрировавшийся по вашему коду, получите вознаграждение! Вы до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}, а друг до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(20000)}',
-                                          textAlign: TextAlign.left,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall),
-                                      const SizedBox(height: 15.0),
-                                      buttonModel(
-                                        context: context,
-                                        icon: FontAwesomeIcons.share,
-                                        buttonName: 'Поделиться',
-                                        color: const Color.fromARGB(
-                                            255, 238, 104, 42),
-                                        onPressed: () async {
-                                          await Share.share(
-                                              'Привет! Скачивай игру Mini Casino (https://play.google.com/store/apps/details?id=com.revens.mini.casino), регистрируйся по моему коду (${SupabaseController.supabase?.auth.currentUser!.id}) и получай вознаграждение!');
-                                        },
-                                      ),
-                                      const SizedBox(height: 15.0),
-                                      buttonModel(
-                                        context: context,
-                                        icon: FontAwesomeIcons.solidCopy,
-                                        buttonName: 'Скопировать код',
-                                        color: const Color.fromARGB(
-                                            255, 238, 104, 42),
-                                        onPressed: () async {
-                                          await Clipboard.setData(ClipboardData(
-                                              text: SupabaseController.supabase!
-                                                  .auth.currentUser!.id));
+                            child: Container(
+                              decoration: BoxDecoration(
+                                  color: const Color.fromARGB(80, 238, 104, 42)
+                                      .withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  border: Border.all(
+                                      color: const Color.fromARGB(
+                                          255, 238, 104, 42),
+                                      width: 2.0)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(15.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Приведите друга',
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium!
+                                            .copyWith(fontSize: 22.0)),
+                                    Text(
+                                        'Вы и ваш друг, зарегистрировавшийся по вашему коду, получите вознаграждение! Вы до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000)}, а друг до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(20000)}',
+                                        textAlign: TextAlign.left,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall),
+                                    const SizedBox(height: 15.0),
+                                    buttonModel(
+                                      context: context,
+                                      icon: FontAwesomeIcons.share,
+                                      buttonName: 'Поделиться',
+                                      color: const Color.fromARGB(
+                                          255, 238, 104, 42),
+                                      onPressed: () async {
+                                        await Share.share(
+                                            'Привет! Скачивай игру Mini Casino (https://play.google.com/store/apps/details?id=com.revens.mini.casino), регистрируйся по моему коду (${SupabaseController.supabase?.auth.currentUser!.id}) и получай вознаграждение!');
+                                      },
+                                    ),
+                                    const SizedBox(height: 15.0),
+                                    buttonModel(
+                                      context: context,
+                                      icon: FontAwesomeIcons.solidCopy,
+                                      buttonName: 'Скопировать код',
+                                      color: const Color.fromARGB(
+                                          255, 238, 104, 42),
+                                      onPressed: () async {
+                                        await Clipboard.setData(ClipboardData(
+                                            text: SupabaseController.supabase!
+                                                .auth.currentUser!.id));
 
-                                          if (context.mounted) {
-                                            alertDialogSuccess(
-                                              context: context,
-                                              title: 'Поздравляем',
-                                              confirmBtnText: 'Окей!',
-                                              text:
-                                                  'Код скопирован! Теперь вы можете поделиться им с другом, и как только ваш друг зарегистрируется, вы оба получите награду!',
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ],
-                                  ),
+                                        if (context.mounted) {
+                                          alertDialogSuccess(
+                                            context: context,
+                                            title: 'Поздравляем',
+                                            confirmBtnText: 'Окей!',
+                                            text:
+                                                'Код скопирован! Теперь вы можете поделиться им с другом, и как только ваш друг зарегистрируется, вы оба получите награду!',
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
