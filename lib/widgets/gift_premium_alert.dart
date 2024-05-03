@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
@@ -151,17 +150,17 @@ void giftPremiumAlert(
                                                   .textTheme
                                                   .bodyMedium!),
                                           const SizedBox(width: 8.0),
-                                          Switch(
-                                            value: paymentController
-                                                .isYearSubscription,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                paymentController
-                                                    .chooseSubscriptionDuration(
-                                                        value);
-                                              });
-                                            },
-                                          ),
+                                          // Switch(
+                                          //   value: paymentController
+                                          //       .isYearSubscription,
+                                          //   onChanged: (value) {
+                                          //     setState(() {
+                                          //       paymentController
+                                          //           .chooseSubscriptionDuration(
+                                          //               value);
+                                          //     });
+                                          //   },
+                                          // ),
                                           const SizedBox(width: 8.0),
                                           AutoSizeText('Год',
                                               textAlign: TextAlign.center,

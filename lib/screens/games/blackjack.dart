@@ -190,12 +190,6 @@ class Blackjack extends StatelessWidget {
                                                 : () {
                                                     if (!blackjackLogic
                                                         .isGameOn) {
-                                                      if (balance
-                                                              .currentBalance <
-                                                          blackjackLogic.bet) {
-                                                        return;
-                                                      }
-
                                                       blackjackLogic.startGame(
                                                           context: context);
                                                     }

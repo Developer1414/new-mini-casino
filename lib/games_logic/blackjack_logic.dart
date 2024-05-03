@@ -69,34 +69,37 @@ class BlackjackLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context}) {
+  void startGame({required BuildContext context}) async {
     this.context = context;
 
-    startBet = bet;
-
-    dealerValue = 0;
-    playerValue = 0;
-    profit = 0.0;
-    insurance = 0.0;
-
-    resultPlayerValue = '';
-    resultDealerValue = '';
-
-    blackjackType = BlackjackType.idle;
-    insuranceType = Insurance.none;
-
-    lastDealerMoves.clear();
-    lastPlayerMoves.clear();
-
-    isGameOn = true;
-    isLoadingMove = false;
-
     CommonFunctions.callOnStart(
-        context: context, bet: bet, gameName: 'blackjack');
+        context: context,
+        bet: bet,
+        gameName: 'blackjack',
+        callback: () {
+          startBet = bet;
 
-    startDrawingCards();
+          dealerValue = 0;
+          playerValue = 0;
+          profit = 0.0;
+          insurance = 0.0;
 
-    notifyListeners();
+          resultPlayerValue = '';
+          resultDealerValue = '';
+
+          blackjackType = BlackjackType.idle;
+          insuranceType = Insurance.none;
+
+          lastDealerMoves.clear();
+          lastPlayerMoves.clear();
+
+          isGameOn = true;
+          isLoadingMove = false;
+
+          startDrawingCards();
+
+          notifyListeners();
+        });
   }
 
   void startDrawingCards({int count = 0}) {
@@ -130,7 +133,7 @@ class BlackjackLogic extends ChangeNotifier {
                 cancelBtnText: 'Нет',
                 onConfirmBtnTap: () {
                   Provider.of<Balance>(context, listen: false)
-                      .placeBet(bet / 2);
+                      .subtractMoney(bet / 2);
 
                   insurance = bet / 2;
 
@@ -194,7 +197,7 @@ class BlackjackLogic extends ChangeNotifier {
 
             if (insuranceType == Insurance.yes) {
               Provider.of<Balance>(context, listen: false)
-                  .cashout(bet + insurance);
+                  .addMoney(bet + insurance);
             }
           }
         }
@@ -364,7 +367,7 @@ class BlackjackLogic extends ChangeNotifier {
 
     isLoadingMove = true;
 
-    balance.placeBet(bet);
+    balance.subtractMoney(bet);
     bet *= 2;
     hitMove(isDouble: true);
     notifyListeners();
@@ -396,7 +399,7 @@ class BlackjackLogic extends ChangeNotifier {
 
     profit = isBlackjack ? bet * 2.5 : bet * 2;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'blackjack',
@@ -425,7 +428,7 @@ class BlackjackLogic extends ChangeNotifier {
     isGameOn = false;
     blackjackType = BlackjackType.draft;
 
-    Provider.of<Balance>(context, listen: false).cashout(bet);
+    Provider.of<Balance>(context, listen: false).addMoney(bet);
 
     bet = startBet;
 

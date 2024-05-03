@@ -34,27 +34,32 @@ class _FortuneWheelState extends State<FortuneWheel>
   late AnimationController _ctrl;
   late Animation _ani;
 
+  static Color maxWinColor = const Color(0xffff595e);
+  static Color aroundMaxWinColor = const Color(0xffffca3a);
+  static Color middleWinColor = const Color(0xff8ac926);
+  static Color smallWinColor = const Color(0xff1982c4);
+
   final List<Luck> _items = [
-    Luck("30x", Colors.green),
-    Luck("2x", Colors.blueGrey),
-    Luck("3x", Colors.orangeAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("5x", Colors.redAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("3x", Colors.orangeAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("5x", Colors.redAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("3x", Colors.orangeAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("5x", Colors.redAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("3x", Colors.orangeAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("5x", Colors.redAccent),
-    Luck("2x", Colors.blueGrey),
-    Luck("3x", Colors.orangeAccent),
-    Luck("2x", Colors.blueGrey),
+    Luck("50000", maxWinColor),
+    Luck("500", smallWinColor),
+    Luck("2000", middleWinColor),
+    Luck("500", smallWinColor),
+    Luck("10000", aroundMaxWinColor),
+    Luck("500", smallWinColor),
+    Luck("2000", middleWinColor),
+    Luck("500", smallWinColor),
+    Luck("10000", aroundMaxWinColor),
+    Luck("500", smallWinColor),
+    Luck("2000", middleWinColor),
+    Luck("500", smallWinColor),
+    Luck("10000", aroundMaxWinColor),
+    Luck("500", smallWinColor),
+    Luck("2000", middleWinColor),
+    Luck("500", smallWinColor),
+    Luck("10000", aroundMaxWinColor),
+    Luck("500", smallWinColor),
+    Luck("2000", middleWinColor),
+    Luck("500", smallWinColor),
   ];
 
   @override
@@ -67,11 +72,10 @@ class _FortuneWheelState extends State<FortuneWheel>
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
     final fortuneWheelLogic =
         Provider.of<FortuneWheelLogic>(context, listen: false);
 
-    _animation() {
+    animation() {
       if (!_ctrl.isAnimating) {
         var random = Random().nextDouble();
         _angle = 20 + Random().nextInt(5) + random;
@@ -83,13 +87,13 @@ class _FortuneWheelState extends State<FortuneWheel>
       }
     }
 
-    int _calIndex(value) {
+    int calIndex(value) {
       var base = (2 * pi / _items.length / 2) / (2 * pi);
       return (((base + value) % 1) * _items.length).floor();
     }
 
-    _buildResult(value) {
-      var index = _calIndex(value * _angle + _current);
+    buildResult(value) {
+      var index = calIndex(value * _angle + _current);
 
       if (!_ctrl.isAnimating) {
         Future.delayed(Duration.zero, () async {
@@ -102,16 +106,16 @@ class _FortuneWheelState extends State<FortuneWheel>
 
             switch (_items[index].value) {
               case '2x':
-                fortuneWheelLogic.setNewColor(Colors.blueGrey);
+                fortuneWheelLogic.setNewColor(smallWinColor);
                 break;
               case '3x':
-                fortuneWheelLogic.setNewColor(Colors.orangeAccent);
+                fortuneWheelLogic.setNewColor(middleWinColor);
                 break;
               case '5x':
-                fortuneWheelLogic.setNewColor(Colors.redAccent);
+                fortuneWheelLogic.setNewColor(aroundMaxWinColor);
                 break;
               case '30x':
-                fortuneWheelLogic.setNewColor(Colors.green);
+                fortuneWheelLogic.setNewColor(maxWinColor);
                 break;
             }
           }
@@ -135,14 +139,6 @@ class _FortuneWheelState extends State<FortuneWheel>
           ),
         ),
       );
-    }
-
-    selectX(String myX) async {
-      if (fortuneWheelLogic.isGameOn) {
-        return;
-      }
-
-      _animation();
     }
 
     return PopScope(
@@ -289,18 +285,15 @@ class _FortuneWheelState extends State<FortuneWheel>
                         onPressed: fortuneWheelLogic.isGameOn
                             ? null
                             : () {
-                                if (balance.currentBalance <
-                                    fortuneWheelLogic.bet) {
-                                  return;
-                                }
-
                                 if (fortuneWheelLogic.selectedNumber == 0) {
                                   return;
                                 }
 
-                                _animation();
-
-                                fortuneWheelLogic.startGame(context: context);
+                                fortuneWheelLogic.startGame(
+                                    context: context,
+                                    callback: () {
+                                      animation();
+                                    });
                               },
                         style: ElevatedButton.styleFrom(
                           elevation: 0,
@@ -388,7 +381,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                           children: <Widget>[
                             BoardView(
                                 items: _items, current: _current, angle: angle),
-                            _buildResult(wheelResult)
+                            buildResult(wheelResult)
                           ],
                         );
                       }),
@@ -407,13 +400,13 @@ class _FortuneWheelState extends State<FortuneWheel>
   Widget itemNumber(
       {int number = 1, required FortuneWheelLogic fortuneWheelLogic}) {
     Color currentColor = number == 2
-        ? Colors.blueGrey
+        ? smallWinColor
         : number == 3
-            ? Colors.orangeAccent
+            ? middleWinColor
             : number == 5
-                ? Colors.redAccent
+                ? aroundMaxWinColor
                 : number == 30
-                    ? Colors.green
+                    ? maxWinColor
                     : Colors.white;
 
     return Expanded(

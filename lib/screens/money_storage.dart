@@ -29,8 +29,8 @@ class MoneyStorage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final storageManager =
-        Provider.of<MoneyStorageManager>(context, listen: true);
+    // final storageManager =
+    //     Provider.of<MoneyStorageManager>(context, listen: true);
 
     return GestureDetector(
       onTap: () {
@@ -40,195 +40,210 @@ class MoneyStorage extends StatelessWidget {
           currentFocus.unfocus();
         }
       },
-      child: storageManager.isLoading
-          ? loading(context: context)
-          : Scaffold(
-              appBar: AppBar(
-                toolbarHeight: 76.0,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: IconButton(
-                      splashRadius: 25.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        Beamer.of(context).beamBack();
-                      },
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        size: Theme.of(context).appBarTheme.iconTheme!.size,
-                      )),
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      'Хранилище',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
+      child: Consumer<MoneyStorageManager>(
+        builder: (context, storageManager, child) {
+          return storageManager.isLoading
+              ? loading(context: context)
+              : Scaffold(
+                  appBar: AppBar(
+                    toolbarHeight: 76.0,
+                    elevation: 0,
+                    backgroundColor: Colors.transparent,
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: IconButton(
+                          splashRadius: 25.0,
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            Beamer.of(context).beamBack();
+                          },
+                          icon: FaIcon(
+                            FontAwesomeIcons.arrowLeft,
+                            color:
+                                Theme.of(context).appBarTheme.iconTheme!.color,
+                            size: Theme.of(context).appBarTheme.iconTheme!.size,
+                          )),
                     ),
-                    Consumer<Balance>(builder: (ctx, balance, _) {
-                      return currencyNormalFormat(
-                          context: context, moneys: balance.currentBalance);
-                    }),
-                  ],
-                ),
-              ),
-              body: Column(
-                children: [
-                  Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Consumer<MoneyStorageManager>(
-                          builder: (ctx, balance, _) {
-                        return importantUserProfileInfo(
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        AutoSizeText(
+                          'Хранилище',
+                          style: Theme.of(context).appBarTheme.titleTextStyle,
+                        ),
+                        Consumer<Balance>(builder: (ctx, balance, _) {
+                          return currencyNormalFormat(
+                              context: context, moneys: balance.currentBalance);
+                        }),
+                      ],
+                    ),
+                  ),
+                  body: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: importantUserProfileInfo(
                             context: context,
                             color: const Color.fromARGB(255, 226, 153, 57),
-                            content: balance.currentBalanceString,
-                            title: 'Баланс');
-                      })),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(
-                          left: 15.0, right: 15.0, bottom: 15.0),
-                      child: Center(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              Column(
+                            content: storageManager.currentBalanceString,
+                            title: 'Баланс'),
+                      ),
+                      Expanded(
+                        child: Container(
+                          margin: const EdgeInsets.only(
+                              left: 15.0, right: 15.0, bottom: 15.0),
+                          child: Center(
+                            child: SingleChildScrollView(
+                              child: Column(
                                 children: [
-                                  customTextField(
-                                      currencyTextInputFormatter: betFormatter,
-                                      textInputFormatter: betFormatter,
-                                      keyboardType: TextInputType.number,
-                                      controller: betController,
-                                      context: context,
-                                      hintText: 'Количество...'),
-                                  const SizedBox(height: 15.0),
-                                  Row(
+                                  Column(
                                     children: [
-                                      Expanded(
-                                        child: SizedBox(
-                                          height: 100.0,
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () => storageManager
-                                                .transferToStorage(
-                                                    context: context,
-                                                    amount: double.parse(
-                                                        betFormatter
-                                                            .getUnformattedValue()
-                                                            .toString())),
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 5,
-                                              shadowColor: Colors.blueAccent
-                                                  .withOpacity(0.8),
-                                              backgroundColor:
-                                                  Colors.blueAccent,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
+                                      customTextField(
+                                          currencyTextInputFormatter:
+                                              MoneyStorage.betFormatter,
+                                          textInputFormatter:
+                                              MoneyStorage.betFormatter,
+                                          keyboardType: TextInputType.number,
+                                          controller:
+                                              MoneyStorage.betController,
+                                          context: context,
+                                          hintText: 'Количество...'),
+                                      const SizedBox(height: 15.0),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 100.0,
+                                              width: double.infinity,
+                                              child: ElevatedButton(
+                                                onPressed: () => storageManager
+                                                    .transferToStorage(
+                                                        context: context,
+                                                        amount: double.parse(
+                                                            MoneyStorage
+                                                                .betFormatter
+                                                                .getUnformattedValue()
+                                                                .toString())),
+                                                style: ElevatedButton.styleFrom(
+                                                  elevation: 5,
+                                                  shadowColor: Colors.blueAccent
+                                                      .withOpacity(0.8),
+                                                  backgroundColor:
+                                                      Colors.blueAccent,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const FaIcon(
+                                                      FontAwesomeIcons.coins,
+                                                      color: Colors.white,
+                                                      size: 20.0,
+                                                    ),
+                                                    const SizedBox(height: 3.0),
+                                                    AutoSizeText(
+                                                      'В хранилище',
+                                                      maxLines: 1,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium!
+                                                          .copyWith(
+                                                            fontSize: 15.0,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium!
+                                                                .color,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const FaIcon(
-                                                  FontAwesomeIcons.coins,
-                                                  color: Colors.white,
-                                                  size: 20.0,
-                                                ),
-                                                const SizedBox(height: 3.0),
-                                                AutoSizeText(
-                                                  'В хранилище',
-                                                  maxLines: 1,
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!
-                                                      .copyWith(
-                                                        fontSize: 15.0,
-                                                        color: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!
-                                                            .color,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
                                           ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 15.0),
-                                      Expanded(
-                                        child: SizedBox(
-                                          height: 100.0,
-                                          width: double.infinity,
-                                          child: ElevatedButton(
-                                            onPressed: () => storageManager
-                                                .transferToMainAccount(
-                                                    context: context,
-                                                    amount: double.parse(
-                                                        betFormatter
-                                                            .getUnformattedValue()
-                                                            .toString())),
-                                            style: ElevatedButton.styleFrom(
-                                              elevation: 5,
-                                              shadowColor:
-                                                  Colors.green.withOpacity(0.8),
-                                              backgroundColor: Colors.green,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(15.0),
+                                          const SizedBox(width: 15.0),
+                                          Expanded(
+                                            child: SizedBox(
+                                              height: 100.0,
+                                              width: double.infinity,
+                                              child: ElevatedButton(
+                                                onPressed: () => storageManager
+                                                    .transferToMainAccount(
+                                                        context: context,
+                                                        amount: double.parse(
+                                                            MoneyStorage
+                                                                .betFormatter
+                                                                .getUnformattedValue()
+                                                                .toString())),
+                                                style: ElevatedButton.styleFrom(
+                                                  elevation: 5,
+                                                  shadowColor: Colors.green
+                                                      .withOpacity(0.8),
+                                                  backgroundColor: Colors.green,
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            15.0),
+                                                  ),
+                                                ),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    const FaIcon(
+                                                      FontAwesomeIcons
+                                                          .solidUser,
+                                                      color: Colors.white,
+                                                      size: 20.0,
+                                                    ),
+                                                    const SizedBox(height: 3.0),
+                                                    AutoSizeText(
+                                                      'На основной счёт',
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium!
+                                                          .copyWith(
+                                                            fontSize: 15.0,
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .textTheme
+                                                                .bodyMedium!
+                                                                .color,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                const FaIcon(
-                                                  FontAwesomeIcons.solidUser,
-                                                  color: Colors.white,
-                                                  size: 20.0,
-                                                ),
-                                                const SizedBox(height: 3.0),
-                                                AutoSizeText(
-                                                  'На основной счёт',
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!
-                                                      .copyWith(
-                                                        fontSize: 15.0,
-                                                        color: Theme.of(context)
-                                                            .textTheme
-                                                            .bodyMedium!
-                                                            .color,
-                                                      ),
-                                                ),
-                                              ],
-                                            ),
                                           ),
-                                        ),
+                                        ],
                                       ),
+                                      const SizedBox(height: 15.0),
+                                      smallHelperPanel(
+                                          context: context,
+                                          text:
+                                              'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
                                     ],
                                   ),
-                                  const SizedBox(height: 15.0),
-                                  smallHelperPanel(
-                                      context: context,
-                                      text:
-                                          'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
                                 ],
                               ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ],
-              )),
+                    ],
+                  ));
+        },
+      ),
     );
   }
 }

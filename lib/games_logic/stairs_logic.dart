@@ -47,46 +47,49 @@ class StairsLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context}) {
+  void startGame({required BuildContext context}) async {
     if (AutoclickerSecure.isCanPlay) {
       this.context = context;
 
-      isGameOn = true;
-      isGameOver = false;
-
-      stonesIndex.clear();
-      cellCount.clear();
-      openedColumnIndex.clear();
-
-      currentIndex = 9;
-      currentCoefficient = 0;
-      profit = 0;
-
-      List<List<int>> stones = List.generate(10, (_) => []);
-
-      for (int i = 0; i < 10; i++) {
-        int cells = Random.secure().nextInt(4) + 4;
-        cellCount.add(cells);
-      }
-
-      for (var i = 0; i < 10; i++) {
-        while (stones[i].length != countStones) {
-          int rand = Random.secure().nextInt(cellCount[i]);
-
-          if (!stones[i].contains(rand)) {
-            stones[i].add(rand);
-          }
-        }
-      }
-
-      for (int i = 0; i < 10; i++) {
-        stonesIndex.addAll({i: stones[i]});
-      }
-
       CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'stairs');
+          context: context,
+          bet: bet,
+          gameName: 'stairs',
+          callback: () {
+            isGameOn = true;
+            isGameOver = false;
 
-      notifyListeners();
+            stonesIndex.clear();
+            cellCount.clear();
+            openedColumnIndex.clear();
+
+            currentIndex = 9;
+            currentCoefficient = 0;
+            profit = 0;
+
+            List<List<int>> stones = List.generate(10, (_) => []);
+
+            for (int i = 0; i < 10; i++) {
+              int cells = Random.secure().nextInt(4) + 4;
+              cellCount.add(cells);
+            }
+
+            for (var i = 0; i < 10; i++) {
+              while (stones[i].length != countStones) {
+                int rand = Random.secure().nextInt(cellCount[i]);
+
+                if (!stones[i].contains(rand)) {
+                  stones[i].add(rand);
+                }
+              }
+            }
+
+            for (int i = 0; i < 10; i++) {
+              stonesIndex.addAll({i: stones[i]});
+            }
+
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -135,7 +138,7 @@ class StairsLogic extends ChangeNotifier {
     isGameOn = false;
     isGameOver = true;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'stairs',

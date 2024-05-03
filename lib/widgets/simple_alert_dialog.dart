@@ -11,8 +11,8 @@ void showSimpleAlertDialog(
   showDialog(
     context: context,
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => isCanPop ? true : false,
+      return PopScope(
+        canPop: isCanPop,
         child: GestureDetector(
           onTap: () => isCanPop ? Navigator.pop(context) : null,
           child: Scaffold(

@@ -22,8 +22,6 @@ class Mines extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
       canPop: !context.read<MinesLogic>().isGameOn,
       child: GestureDetector(
@@ -39,7 +37,6 @@ class Mines extends StatelessWidget {
           children: [
             Scaffold(
               key: scaffoldKey,
-              //resizeToAvoidBottomInset: false,
               bottomNavigationBar: Consumer<MinesLogic>(
                 builder: (context, minesLogic, child) {
                   return Column(
@@ -160,11 +157,6 @@ class Mines extends StatelessWidget {
                                         onPressed: !minesLogic.isGameOn
                                             ? () {
                                                 if (!minesLogic.isGameOn) {
-                                                  if (balance.currentBalance <
-                                                      minesLogic.bet) {
-                                                    return;
-                                                  }
-
                                                   minesLogic.startGame(
                                                     context: context,
                                                   );
@@ -176,12 +168,6 @@ class Mines extends StatelessWidget {
                                                 ? null
                                                 : () {
                                                     if (!minesLogic.isGameOn) {
-                                                      if (balance
-                                                              .currentBalance <
-                                                          minesLogic.bet) {
-                                                        return;
-                                                      }
-
                                                       minesLogic.startGame(
                                                         context: context,
                                                       );

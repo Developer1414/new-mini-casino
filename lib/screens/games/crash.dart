@@ -60,7 +60,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
 
     return PopScope(
       canPop: !context.read<CrashLogic>().isGameOn,
@@ -260,10 +259,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                           child: ElevatedButton(
                             onPressed: () {
                               if (!crashLogic.isGameOn) {
-                                if (balance.currentBalance < crashLogic.bet) {
-                                  return;
-                                }
-
                                 if (Crash.targetCoefficient.text.isEmpty ||
                                     double.parse(Crash.targetCoefficient.text)
                                         .isNegative ||

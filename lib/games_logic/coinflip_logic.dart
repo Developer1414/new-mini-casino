@@ -46,27 +46,35 @@ class CoinflipLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame(
-      {required BuildContext context,
-      required CoinflipStatus status}) {
-    isGameOn = true;
-
-    this.context = context;
-    userCoinflipStatus = status;
-
-    if (!isContinueGame) {
-      profit = 0.0;
-      Provider.of<Balance>(context, listen: false).placeBet(bet);
-    }
-
-    randomCoinflipStatus = Random.secure().nextInt(2) == 1
-        ? CoinflipStatus.dollar
-        : CoinflipStatus.nothing;
-
+  void startGame({
+    required BuildContext context,
+    required CoinflipStatus status,
+    required Function onStart,
+  }) async {
     CommonFunctions.callOnStart(
-        context: context, bet: bet, gameName: 'coinflip', isPlaceBet: false);
+        context: context,
+        bet: bet,
+        gameName: 'coinflip',
+        isPlaceBet: false,
+        callback: () {
+          randomCoinflipStatus = Random.secure().nextInt(2) == 1
+              ? CoinflipStatus.dollar
+              : CoinflipStatus.nothing;
 
-    notifyListeners();
+          onStart.call();
+
+          isGameOn = true;
+
+          this.context = context;
+          userCoinflipStatus = status;
+
+          if (!isContinueGame) {
+            profit = 0.0;
+            Provider.of<Balance>(context, listen: false).subtractMoney(bet);
+          }
+
+          notifyListeners();
+        });
   }
 
   void raiseWinnings() {
@@ -93,7 +101,7 @@ class CoinflipLogic extends ChangeNotifier {
 
     randomCoinflipStatus = CoinflipStatus.init;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'coinflip',

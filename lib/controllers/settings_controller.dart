@@ -19,6 +19,7 @@ class SettingsController extends ChangeNotifier {
   bool isCutomBackground = false;
 
   bool isEnabledConfetti = true;
+  bool isEnabledMaxWinNotification = true;
 
   int currentDefaultBackgrond = 0;
 
@@ -69,6 +70,14 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void changeMaxWinNotificationSetting(bool value) async {
+    isEnabledMaxWinNotification = value;
+
+    prefs.setBool('isEnabledMaxWinNotification', isEnabledMaxWinNotification);
+
+    notifyListeners();
+  }
+
   void changeMinimumBet(
       {required double value, required BuildContext context}) async {
     minBet = value;
@@ -94,11 +103,25 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future getMaxWinNotificationSetting() async {
+    if (!prefs.containsKey('isEnabledMaxWinNotification')) {
+      isEnabledMaxWinNotification = true;
+    } else {
+      isEnabledMaxWinNotification =
+          prefs.getBool('isEnabledMaxWinNotification')!;
+    }
+
+    notifyListeners();
+  }
+
   Future getMinimumBetSetting(BuildContext context) async {
     if (!prefs.containsKey('minBet')) {
       minBet = 100.0;
     } else {
-      minBet = prefs.getDouble('minBet')!;
+      minBet =
+          prefs.getDouble('minBet')! >= 1000000 && SupabaseController.isPremium
+              ? prefs.getDouble('minBet')!
+              : 1000000;
     }
 
     Settings.minBetController.text =
@@ -115,6 +138,7 @@ class SettingsController extends ChangeNotifier {
 
     await getBackground();
     await getConfettiSetting();
+    await getMaxWinNotificationSetting();
     // ignore: use_build_context_synchronously
     await getMinimumBetSetting(context);
   }

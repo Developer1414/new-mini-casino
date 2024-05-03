@@ -66,39 +66,48 @@ class TransferMoneysManager extends ChangeNotifier {
       return;
     }
 
-    if (balance.currentBalance < amountWithComission) {
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text: 'Недостаточно средств на балансе!',
-      );
+    showLoading(true);
 
-      return;
-    }
+    bool isExist = await provider.Provider.of<Balance>(context, listen: false)
+        .checkOnExistSpecificAmount(amountWithComission);
 
-    if (amount < 1000) {
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text:
-            'Перевод возможен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}!',
-      );
+    if (context.mounted) {
+      if (!isExist) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: 'Недостаточно средств на балансе!',
+        );
 
-      return;
-    }
+        showLoading(false);
 
-    if (amount > 5000000) {
-      alertDialogError(
-        context: context,
-        title: 'Ошибка',
-        confirmBtnText: 'Окей',
-        text:
-            'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(5000000)}!',
-      );
+        return;
+      }
 
-      return;
+      if (amount < 1000) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text:
+              'Перевод возможен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}!',
+        );
+
+        return;
+      }
+
+      if (amount > 5000000) {
+        alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text:
+              'Перевод возможен до ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(5000000)}!',
+        );
+
+        return;
+      }
     }
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -120,17 +129,17 @@ class TransferMoneysManager extends ChangeNotifier {
 
       if (currentSum >= 5000000) {
         if (dateTime.difference(dateTimeNow).inHours > 0) {
-          if (context.mounted) {
-            alertDialogError(
-              context: context,
-              title: 'Ошибка',
-              confirmBtnText: 'Окей',
-              text:
-                  'Достигнут дневной лимит переводов. Вы сможете осуществить перевод через ${dateTime.difference(dateTimeNow).inHours}ч.',
-            );
-          }
+          // if (context.mounted) {
+          //   alertDialogError(
+          //     context: context,
+          //     title: 'Ошибка',
+          //     confirmBtnText: 'Окей',
+          //     text:
+          //         'Достигнут дневной лимит переводов. Вы сможете осуществить перевод через ${dateTime.difference(dateTimeNow).inHours}ч.',
+          //   );
+          // }
 
-          return;
+          // return;
         } else {
           prefs.remove('transfer');
         }
@@ -166,7 +175,7 @@ class TransferMoneysManager extends ChangeNotifier {
             'date': dateTimeNow.toIso8601String(),
           });
 
-          balance.placeBet(amountWithComission);
+          await balance.subtractMoney(amountWithComission);
 
           showLoading(false);
 

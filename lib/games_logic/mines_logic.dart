@@ -71,33 +71,36 @@ class MinesLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
   }
 
-  void startGame({required BuildContext context}) {
+  void startGame({required BuildContext context}) async {
     if (AutoclickerSecure.isCanPlay) {
-      isGameOn = true;
-
-      minesIndex.clear();
-      openedIndexes.clear();
-      brilliantsIndex.clear();
-
-      profit = 0.0;
-      currentCoefficient = 0;
-
-      this.context = context;
-
-      int rand = 0;
-
-      while (minesIndex.length != countMines) {
-        rand = Random.secure().nextInt(25);
-
-        if (!minesIndex.contains(rand)) {
-          minesIndex.add(rand);
-        }
-      }
-
       CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'mines');
+          context: context,
+          bet: bet,
+          gameName: 'mines',
+          callback: () {
+            isGameOn = true;
 
-      notifyListeners();
+            minesIndex.clear();
+            openedIndexes.clear();
+            brilliantsIndex.clear();
+
+            profit = 0.0;
+            currentCoefficient = 0;
+
+            this.context = context;
+
+            int rand = 0;
+
+            while (minesIndex.length != countMines) {
+              rand = Random.secure().nextInt(25);
+
+              if (!minesIndex.contains(rand)) {
+                minesIndex.add(rand);
+              }
+            }
+
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -123,7 +126,7 @@ class MinesLogic extends ChangeNotifier {
     isGameOn = false;
 
     Provider.of<Balance>(context, listen: false)
-        .cashout(openedIndexes.isEmpty ? bet : profit);
+        .addMoney(openedIndexes.isEmpty ? bet : profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'mines',

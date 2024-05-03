@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserAgreement extends StatelessWidget {
   const UserAgreement({super.key});
@@ -94,12 +96,35 @@ class UserAgreement extends StatelessWidget {
                       """7.1. We reserve the right to change this Agreement at any time by posting an updated version of our User Agreement in the app.\n\n7.2. By continuing to use the in-app Purchases after a change to this Agreement, you agree to the updated version.""",
                 ),
                 const SizedBox(height: 30.0),
-                text(
-                  context: context,
-                  title: '8. Contact',
-                  content:
-                      """If you have any questions about this Agreement, you may contact us at "develope14000@gmail.com".""",
-                ),
+                Text('8. Contact Us',
+                    style: Theme.of(context).textTheme.bodyMedium),
+                const SizedBox(height: 5.0),
+                RichText(
+                    text: TextSpan(children: [
+                  TextSpan(
+                    text:
+                        'If you have any questions about this Agreement, you may contact us at ',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Colors.white70,
+                        ),
+                  ),
+                  TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () async {
+                        final Uri emailLaunchUri =
+                            Uri.parse('mailto:develope14000@gmail.com');
+
+                        if (!await launchUrl(emailLaunchUri,
+                            mode: LaunchMode.externalApplication)) {
+                          throw Exception('Could not launch $emailLaunchUri}');
+                        }
+                      },
+                    text: 'develope14000@gmail.com.',
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          color: Colors.blue,
+                        ),
+                  )
+                ])),
                 const SizedBox(height: 30.0),
                 Text(
                     """This User Agreement governs your use of the in-app Purchases. By using in-app Purchases, you agree to this Agreement and accept all of its terms. If you do not agree with any of the terms, do not use the in-app Purchases.""",

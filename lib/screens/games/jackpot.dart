@@ -149,10 +149,6 @@ class _JackpotState extends State<Jackpot> {
       required JackpotLogic jackpotLogic,
       required Balance balance}) {
     if (!jackpotLogic.isGameOn || Jackpot.isBlockButton) {
-      if (balance.currentBalance < jackpotLogic.bet) {
-        return;
-      }
-
       if (jackpotLogic.bet < 100.0) {
         alertDialogError(
           context: context,
@@ -164,21 +160,23 @@ class _JackpotState extends State<Jackpot> {
         return;
       }
 
-      createGame();
+      jackpotLogic.startGame(
+          context: context,
+          callback: () {
+            createGame();
 
-      Jackpot.playersCount++;
-      Jackpot.myBet = jackpotLogic.bet;
+            Jackpot.playersCount++;
+            Jackpot.myBet = jackpotLogic.bet;
 
-      Jackpot.players.add('user');
+            Jackpot.players.add('user');
 
-      jackpotLogic.startGame(context: context);
+            setState(() {
+              Jackpot.currentBalance += jackpotLogic.bet;
 
-      setState(() {
-        Jackpot.currentBalance += jackpotLogic.bet;
-
-        Jackpot.items.add(
-            fortuneItem(nickname: 'Вы', isBot: false, bet: jackpotLogic.bet));
-      });
+              Jackpot.items.add(fortuneItem(
+                  nickname: 'Вы', isBot: false, bet: jackpotLogic.bet));
+            });
+          });
     }
   }
 

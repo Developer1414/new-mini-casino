@@ -46,7 +46,7 @@ class NotificationController extends ChangeNotifier {
     DateTime dateTimeNow = await NTP.now();
     dateTimeNow = dateTimeNow.toUtc();
 
-    balance.cashout(amount);
+    balance.addMoney(amount);
 
     await SupabaseController.supabase!
         .from('notifications')

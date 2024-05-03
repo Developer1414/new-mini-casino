@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
-import 'package:new_mini_casino/services/balance_secure.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +23,7 @@ class MoneyStorageManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future loadBalance(BuildContext context) async {
+  Future<String> loadBalance(BuildContext context) async {
     try {
       await SupabaseController.supabase!
           .from('users')
@@ -34,7 +33,6 @@ class MoneyStorageManager extends ChangeNotifier {
         Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
         balance = double.parse(map['moneyStorage'].toString());
-        BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
       });
     } on Exception catch (e) {
       if (context.mounted) {
@@ -45,30 +43,55 @@ class MoneyStorageManager extends ChangeNotifier {
             text: '[MoneyStorageLoadError]: ${e.toString()}');
       }
     }
+
+    return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
+        .format(balance);
   }
 
-  Future removeFromStorage(double amount) async {
-    balance -= amount;
+  Future subtractFromStorage(double amount) async {
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-    await updateStorageBalance();
+      double serverStorageBalance =
+          double.parse(map['moneyStorage'].toString());
+
+      serverStorageBalance -= amount;
+      balance = serverStorageBalance;
+
+      await updateStorageBalance(serverStorageBalance);
+    });
 
     notifyListeners();
   }
 
   Future addToStorage(double amount) async {
-    balance += amount;
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-    await updateStorageBalance();
+      double serverStorageBalance =
+          double.parse(map['moneyStorage'].toString());
+
+      serverStorageBalance += amount;
+      balance = serverStorageBalance;
+
+      await updateStorageBalance(serverStorageBalance);
+    });
 
     notifyListeners();
   }
 
-  Future updateStorageBalance() async {
-    BalanceSecure().setLastBalance(balance, isMoneyStorage: true);
-
+  Future updateStorageBalance(double value) async {
     await SupabaseController.supabase!
         .from('users')
-        .update({'moneyStorage': balance}).eq(
+        .update({'moneyStorage': value}).eq(
             'uid', SupabaseController.supabase?.auth.currentUser!.id);
   }
 
@@ -85,18 +108,27 @@ class MoneyStorageManager extends ChangeNotifier {
       return;
     }
 
-    if (mainBalance.currentBalance < amount) {
-      alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          text: 'Сумма списания превышает сумму на основном счету!');
+    showLoading(true);
+
+    bool isCanTransfer = await mainBalance.checkOnExistSpecificAmount(amount);
+
+    if (!isCanTransfer) {
+      if (context.mounted) {
+        alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            text: 'Сумма списания превышает сумму на основном счету!');
+      }
+
+      showLoading(false);
+
       return;
     }
 
-    showLoading(true);
-
-    mainBalance.placeBet(amount);
+    await mainBalance.subtractMoney(amount);
     await addToStorage(amount);
+
+    showLoading(false);
 
     if (context.mounted) {
       alertDialogSuccess(
@@ -105,8 +137,6 @@ class MoneyStorageManager extends ChangeNotifier {
           text:
               'Вы успешно перевели ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(amount)} в хранилище!');
     }
-
-    showLoading(false);
 
     if (context.mounted) {
       AdService.showInterstitialAd(context: context, func: () {}, isBet: false);
@@ -125,16 +155,10 @@ class MoneyStorageManager extends ChangeNotifier {
       return;
     }
 
-    if (balance.truncateToDouble() !=
-        BalanceSecure().getLastMoneyStorageBalance().truncateToDouble()) {
-      BalanceSecure().banUser(context);
-      return;
-    }
-
     showLoading(true);
 
-    mainBalance.cashout(amount);
-    await removeFromStorage(amount);
+    mainBalance.addMoney(amount);
+    await subtractFromStorage(amount);
 
     if (context.mounted) {
       alertDialogSuccess(

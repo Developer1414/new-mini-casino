@@ -35,8 +35,6 @@ class _StairsState extends State<Stairs> {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
       canPop: !context.read<StairsLogic>().isGameOn,
       child: GestureDetector(
@@ -139,8 +137,7 @@ class _StairsState extends State<Stairs> {
                                         style: ElevatedButton.styleFrom(
                                           elevation: 5,
                                           backgroundColor: Colors.blueAccent,
-                                          shape:
-                                              const RoundedRectangleBorder(),
+                                          shape: const RoundedRectangleBorder(),
                                         ),
                                         child: AutoSizeText(
                                           'АВТО',
@@ -166,11 +163,6 @@ class _StairsState extends State<Stairs> {
                                   onPressed: !stairsLogic.isGameOn
                                       ? () {
                                           if (!stairsLogic.isGameOn) {
-                                            if (balance.currentBalance <
-                                                stairsLogic.bet) {
-                                              return;
-                                            }
-                      
                                             stairsLogic.startGame(
                                                 context: context);
                                           } else {
@@ -181,11 +173,6 @@ class _StairsState extends State<Stairs> {
                                           ? null
                                           : () {
                                               if (!stairsLogic.isGameOn) {
-                                                if (balance.currentBalance <
-                                                    stairsLogic.bet) {
-                                                  return;
-                                                }
-                      
                                                 stairsLogic.startGame(
                                                     context: context);
                                               } else {
@@ -206,8 +193,7 @@ class _StairsState extends State<Stairs> {
                                         color: stairsLogic.isGameOn
                                             ? stairsLogic
                                                     .openedColumnIndex.isEmpty
-                                                ? Colors.white
-                                                    .withOpacity(0.4)
+                                                ? Colors.white.withOpacity(0.4)
                                                 : Colors.white
                                             : Colors.white,
                                         fontSize: 20.0,

@@ -33,8 +33,8 @@ class _CoinflipState extends State<Coinflip>
   int randAngle = 540;
 
   String imageCoin(x) {
-    int _t = (-x ~/ (pi / 2)) % 4;
-    return _t == 0 || _t == 3 || _t == 4 ? frontCoin : backCoint;
+    int t = (-x ~/ (pi / 2)) % 4;
+    return t == 0 || t == 3 || t == 4 ? frontCoin : backCoint;
   }
 
   @override
@@ -78,8 +78,6 @@ class _CoinflipState extends State<Coinflip>
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
         canPop: !context.read<CoinflipLogic>().isGameOn &&
             !Provider.of<CoinflipLogic>(context, listen: false).isContinueGame,
@@ -313,27 +311,24 @@ class _CoinflipState extends State<Coinflip>
                                                 _controller.status !=
                                                     AnimationStatus.forward
                                             ? () {
-                                                if (balance.currentBalance <
-                                                    coinflipLogic.bet) {
-                                                  return;
-                                                }
-
                                                 coinflipLogic.startGame(
                                                     context: context,
                                                     status:
-                                                        CoinflipStatus.dollar);
+                                                        CoinflipStatus.dollar,
+                                                    onStart: () {
+                                                      if (coinflipLogic
+                                                              .randomCoinflipStatus ==
+                                                          CoinflipStatus
+                                                              .nothing) {
+                                                        randAngle = 540;
+                                                      } else {
+                                                        randAngle = 760;
+                                                      }
 
-                                                if (coinflipLogic
-                                                        .randomCoinflipStatus ==
-                                                    CoinflipStatus.nothing) {
-                                                  randAngle = 540;
-                                                } else {
-                                                  randAngle = 760;
-                                                }
-
-                                                _controller
-                                                  ..reset()
-                                                  ..forward(from: 0);
+                                                      _controller
+                                                        ..reset()
+                                                        ..forward(from: 0);
+                                                    });
                                               }
                                             : null,
                                         style: ElevatedButton.styleFrom(
@@ -369,27 +364,24 @@ class _CoinflipState extends State<Coinflip>
                                                 _controller.status !=
                                                     AnimationStatus.forward
                                             ? () {
-                                                if (balance.currentBalance <
-                                                    coinflipLogic.bet) {
-                                                  return;
-                                                }
-
                                                 coinflipLogic.startGame(
                                                     context: context,
                                                     status:
-                                                        CoinflipStatus.nothing);
+                                                        CoinflipStatus.nothing,
+                                                    onStart: () {
+                                                      if (coinflipLogic
+                                                              .randomCoinflipStatus ==
+                                                          CoinflipStatus
+                                                              .nothing) {
+                                                        randAngle = 540;
+                                                      } else {
+                                                        randAngle = 760;
+                                                      }
 
-                                                if (coinflipLogic
-                                                        .randomCoinflipStatus ==
-                                                    CoinflipStatus.nothing) {
-                                                  randAngle = 540;
-                                                } else {
-                                                  randAngle = 760;
-                                                }
-
-                                                _controller
-                                                  ..reset()
-                                                  ..forward(from: 0);
+                                                      _controller
+                                                        ..reset()
+                                                        ..forward(from: 0);
+                                                    });
                                               }
                                             : null,
                                         style: ElevatedButton.styleFrom(

@@ -23,8 +23,6 @@ class DiceClassic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
       canPop: !context.read<DiceClassicLogic>().isGameOn,
       child: GestureDetector(
@@ -276,12 +274,7 @@ class DiceClassic extends StatelessWidget {
                                       color: Colors.redAccent,
                                       icon: FontAwesomeIcons.arrowDown,
                                       context: context,
-                                      function: () {
-                                        if (balance.currentBalance <
-                                            diceClassicLogic.bet) {
-                                          return;
-                                        }
-
+                                      function: () async {
                                         diceClassicLogic.less(context: context);
                                       }),
                                 ),
@@ -293,12 +286,7 @@ class DiceClassic extends StatelessWidget {
                                       color: Colors.green,
                                       icon: FontAwesomeIcons.arrowUp,
                                       context: context,
-                                      function: () {
-                                        if (balance.currentBalance <
-                                            diceClassicLogic.bet) {
-                                          return;
-                                        }
-
+                                      function: () async {
                                         diceClassicLogic.more(context: context);
                                       }),
                                 ),

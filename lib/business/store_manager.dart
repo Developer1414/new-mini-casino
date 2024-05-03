@@ -139,7 +139,7 @@ class StoreManager extends ChangeNotifier {
 
     showLoading(true);
 
-    balance.placeBet(realPrice);
+    balance.subtractMoney(realPrice);
 
     /* await FirebaseFirestore.instance
         .collection('users')

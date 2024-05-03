@@ -59,7 +59,7 @@ class TaxManager extends ChangeNotifier {
       return;
     }
 
-    balance.placeBet(currentTax);
+    balance.subtractMoney(currentTax);
     prefs.remove('gamblingTax');
 
     if (context.mounted) {

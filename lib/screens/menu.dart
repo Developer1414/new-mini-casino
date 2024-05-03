@@ -10,6 +10,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
+import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
@@ -39,69 +40,112 @@ class AllGames extends StatefulWidget {
 }
 
 class _AllGamesState extends State<AllGames> {
-  Future checkDailyBonus() async {
-    await DailyBonusManager().checkDailyBonus().then((value) {
-      if (value) {
-        Beamer.of(context).beamToNamed('/daily-bonus');
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    checkDailyBonus();
+    Provider.of<DailyBonusManager>(context, listen: false)
+        .checkDailyBonus(context);
+    Provider.of<RaffleManager>(context, listen: false).checkOnExistRaffle();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        bottomNavigationBar: Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.beamToNamed('/bank');
-                    },
-                    style: ElevatedButton.styleFrom(
-                      elevation: 5,
-                      backgroundColor: Colors.blue.shade700,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(25.0),
-                            topRight: Radius.circular(25.0)),
+        bottomNavigationBar: Consumer<RaffleManager>(
+          builder: (context, raffleManager, child) {
+            return !raffleManager.isRaffleExist
+                ? Container(height: 0.0)
+                : SizedBox(
+                    height: 70.0,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (raffleManager.isLoading) return;
+
+                        await raffleManager.loadRaffleDates().whenComplete(() {
+                          context.beamToNamed('/raffle-info');
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 5,
+                        backgroundColor: Colors.redAccent,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(0.0)),
+                        ),
                       ),
+                      child: raffleManager.isLoading
+                          ? const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 15.0),
+                              child: SizedBox(
+                                width: 35.0,
+                                height: 35.0,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 5.5,
+                                  color: Colors.white,
+                                  strokeCap: StrokeCap.round,
+                                ),
+                              ),
+                            )
+                          : Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 15.0),
+                              child: !raffleManager.isRaffleStarted
+                                  ? AutoSizeText(
+                                      !raffleManager.isSummarized
+                                          ? 'ПОДВЕДЕНИЕ ИТОГОВ'
+                                          : 'РЕЗУЛЬТАТЫ РОЗЫГРЫША',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 22.0,
+                                        letterSpacing: 0.5,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    )
+                                  : Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        AutoSizeText(
+                                          'РОЗЫГРЫШ',
+                                          textAlign: TextAlign.center,
+                                          style: GoogleFonts.roboto(
+                                            color: Colors.white,
+                                            fontSize: 22.0,
+                                            letterSpacing: 0.5,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10.0),
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(15.0),
+                                              color: Colors.black87),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5.0,
+                                                horizontal: 10.0),
+                                            child: AutoSizeText(
+                                              RaffleManager.format(
+                                                  raffleManager.lastTime),
+                                              textAlign: TextAlign.center,
+                                              style: GoogleFonts.roboto(
+                                                color: Colors.white,
+                                                fontSize: 22.0,
+                                                letterSpacing: 0.5,
+                                                fontWeight: FontWeight.w900,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                            ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FaIcon(
-                            FontAwesomeIcons.buildingColumns,
-                            color:
-                                Theme.of(context).appBarTheme.iconTheme!.color,
-                            size: Theme.of(context).appBarTheme.iconTheme!.size,
-                          ),
-                          const SizedBox(width: 10.0),
-                          AutoSizeText(
-                            'Банк',
-                            maxLines: 1,
-                            style: GoogleFonts.roboto(
-                                color: Colors.white,
-                                fontSize: 22.0,
-                                fontWeight: FontWeight.w800),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )),
+                  );
+          },
+        ),
         appBar: AppBar(
           toolbarHeight: 76.0,
           elevation: 0,
@@ -139,6 +183,19 @@ class _AllGamesState extends State<AllGames> {
             ],
           ),
           actions: [
+            IconButton(
+                splashRadius: 25.0,
+                padding: EdgeInsets.zero,
+                onPressed: () => context.beamToNamed('/bank'),
+                icon: FaIcon(
+                  FontAwesomeIcons.buildingColumns,
+                  color: Colors.orangeAccent,
+                  size: Theme.of(context)
+                      .appBarTheme
+                      .iconTheme!
+                      .copyWith(size: 25.0)
+                      .size,
+                )),
             IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
@@ -248,9 +305,11 @@ class _AllGamesState extends State<AllGames> {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
+          padding: const EdgeInsets.only(left: 15.0, right: 15.0),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(15.0),
+            borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(15.0),
+                topRight: Radius.circular(15.0)),
             child: !provider.Provider.of<TaxManager>(context, listen: true)
                         .isCanPlay &&
                     !SupabaseController.isPremium
@@ -481,7 +540,8 @@ class _AllGamesState extends State<AllGames> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.only(top: 15.0),
+                            padding:
+                                const EdgeInsets.only(top: 15.0, bottom: 15.0),
                             child: Container(
                               decoration: BoxDecoration(
                                   color: const Color.fromARGB(80, 238, 104, 42)
@@ -551,7 +611,7 @@ class _AllGamesState extends State<AllGames> {
                           SupabaseController.isPremium
                               ? Container()
                               : Padding(
-                                  padding: const EdgeInsets.only(top: 15.0),
+                                  padding: const EdgeInsets.only(bottom: 15.0),
                                   child: Align(
                                     alignment: Alignment.center,
                                     child: ClipRRect(

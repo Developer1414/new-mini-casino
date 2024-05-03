@@ -21,8 +21,6 @@ class Keno extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
       canPop: !context.read<KenoLogic>().isGameOn,
       child: GestureDetector(
@@ -155,7 +153,7 @@ class Keno extends StatelessWidget {
                                         backgroundColor: Colors.blueAccent,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(15.0),
+                                              BorderRadius.circular(12.0),
                                         ),
                                       ),
                                       child: Row(
@@ -193,7 +191,7 @@ class Keno extends StatelessWidget {
                                       backgroundColor: Colors.redAccent,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
-                                            BorderRadius.circular(15.0),
+                                            BorderRadius.circular(12.0),
                                       ),
                                     ),
                                     child: const FaIcon(
@@ -232,11 +230,6 @@ class Keno extends StatelessWidget {
                                     kenoLogic.isGameOn
                                 ? null
                                 : () {
-                                    if (balance.currentBalance <
-                                        kenoLogic.bet) {
-                                      return;
-                                    }
-
                                     kenoLogic.startGame(context: context);
                                   },
                             style: ElevatedButton.styleFrom(
@@ -245,7 +238,8 @@ class Keno extends StatelessWidget {
                               shape: const RoundedRectangleBorder(),
                             ),
                             child: AutoSizeText(
-                              'СТАВКА',
+                              kenoLogic.userNumbersList.isEmpty ? 
+                              'ВЫБЕРИТЕ ЯЧЕЙКИ' : 'СТАВКА',
                               maxLines: 1,
                               style: GoogleFonts.roboto(
                                   color: kenoLogic.userNumbersList.isEmpty ||

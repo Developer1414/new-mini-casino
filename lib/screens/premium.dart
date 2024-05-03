@@ -8,8 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
-import 'package:new_mini_casino/widgets/gift_premium_alert.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
+import 'package:new_mini_casino/widgets/premium_period_alert.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -113,102 +113,22 @@ class PremiumInfo extends StatelessWidget {
                                   ),
                                 ),
                               )
-                            : Row(
-                                children: [
-                                  Row(
-                                    children: [
-                                      SizedBox(
-                                        height: 60.0,
-                                        //width: 80.0,
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                  color: Colors.black
-                                                      .withOpacity(0.2),
-                                                  blurRadius: 5.0)
-                                            ],
-                                            color: const Color(0xFF3d7ce6),
-                                          ),
-                                          child: Row(
-                                            children: [
-                                              AutoSizeText('Месяц',
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!),
-                                              const SizedBox(width: 5.0),
-                                              Switch(
-                                                value: paymentController
-                                                    .isYearSubscription,
-                                                onChanged: (value) {
-                                                  paymentController
-                                                      .chooseSubscriptionDuration(
-                                                          value);
-                                                },
-                                              ),
-                                              const SizedBox(width: 5.0),
-                                              AutoSizeText('Год',
-                                                  textAlign: TextAlign.center,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium!),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Expanded(
-                                    child: SizedBox(
-                                      height: 60.0,
-                                      child: Container(
-                                        decoration: BoxDecoration(boxShadow: [
-                                          BoxShadow(
-                                              color:
-                                                  Colors.black.withOpacity(0.2),
-                                              blurRadius: 5.0)
-                                        ], color: Theme.of(context).cardColor),
-                                        child: ElevatedButton(
-                                          onPressed: () {
-                                            paymentController.getPremium(
-                                                context: context);
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            elevation: 0,
-                                            backgroundColor:
-                                                const Color.fromARGB(
-                                                    255, 179, 242, 31),
-                                            shape:
-                                                const RoundedRectangleBorder(),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 15.0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                AutoSizeText(
-                                                  'Подключить',
-                                                  maxLines: 1,
-                                                  style: GoogleFonts.roboto(
-                                                    color: const Color.fromARGB(
-                                                        255, 5, 2, 1),
-                                                    fontSize: 25.0,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                            : Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: buttonModel(
+                                  context: context,
+                                  color:
+                                      const Color.fromARGB(255, 179, 242, 31),
+                                  icon: FontAwesomeIcons.crown,
+                                  iconColor: const Color.fromARGB(255, 5, 2, 1),
+                                  textColor: const Color.fromARGB(255, 5, 2, 1),
+                                  buttonName: 'Подключить Premium',
+                                  onPressed: () {
+                                    periodPremiumAlert(
+                                        mainContext: context,
+                                        paymentController: paymentController);
+                                  },
+                                ),
                               ),
                       ],
                     ),
@@ -515,19 +435,6 @@ class PremiumInfo extends StatelessWidget {
                                     ],
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 12.0),
-                              buttonModel(
-                                context: context,
-                                color: Colors.redAccent,
-                                icon: FontAwesomeIcons.gift,
-                                iconColor: Colors.white,
-                                buttonName: 'Подарить Premium',
-                                onPressed: () {
-                                  giftPremiumAlert(
-                                      mainContext: context,
-                                      paymentController: paymentController);
-                                },
                               ),
                               const SizedBox(height: 12.0),
                               RichText(

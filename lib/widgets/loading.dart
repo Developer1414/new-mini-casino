@@ -15,6 +15,7 @@ Widget loading({required BuildContext context, String text = ''}) {
               height: 40.0,
               child: CircularProgressIndicator(
                 strokeWidth: 6.0,
+                strokeCap: StrokeCap.round,
                 color: Color.fromARGB(255, 179, 242, 31),
               ),
             ),

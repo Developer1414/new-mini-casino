@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 
 import 'package:intl/intl.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 
 Future<double> getCustomBet(BuildContext context) async {
   TextEditingController controller = TextEditingController();
@@ -74,13 +75,24 @@ Future<double> getCustomBet(BuildContext context) async {
                                       return;
                                     }
 
-                                    if (controllerFormatter
-                                            .getUnformattedValue()
-                                            .toDouble()
-                                            .truncate() >
-                                        100000000) {
-                                      controller.text = controllerFormatter
-                                          .format('100000000.00');
+                                    if (SupabaseController.isPremium) {
+                                      if (controllerFormatter
+                                              .getUnformattedValue()
+                                              .toDouble()
+                                              .truncate() >
+                                          100000000) {
+                                        controller.text = controllerFormatter
+                                            .format('100000000.00');
+                                      }
+                                    } else {
+                                      if (controllerFormatter
+                                              .getUnformattedValue()
+                                              .toDouble()
+                                              .truncate() >=
+                                          1000000) {
+                                        controller.text = controllerFormatter
+                                            .format('1000000.00');
+                                      }
                                     }
                                   },
                                   decoration: InputDecoration(

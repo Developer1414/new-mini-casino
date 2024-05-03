@@ -79,24 +79,27 @@ class DiceClassicLogic extends ChangeNotifier {
     moreNumber = 1000000 - (selectedChanceWinning.toInt() * 10000);
   }
 
-  void startGame({
+  Future startGame({
     required BuildContext context,
     required bool more,
-  }) {
+  }) async {
     if (AutoclickerSecure.isCanPlay) {
-      this.context = context;
+      await CommonFunctions.callOnStart(
+          context: context,
+          bet: bet,
+          gameName: 'dice-classic',
+          callback: () {
+            this.context = context;
 
-      isGameOn = true;
+            isGameOn = true;
 
-      targetCoefficient = 0;
-      profit = 0.0;
+            targetCoefficient = 0;
+            profit = 0.0;
 
-      CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'dice-classic');
+            incrementCoefficient(more);
 
-      incrementCoefficient(more);
-
-      notifyListeners();
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -110,41 +113,43 @@ class DiceClassicLogic extends ChangeNotifier {
     startGame(context: context, more: false);
   }
 
-  void cashout() {
+  Future cashout() async {
     profit = bet * double.parse(textFieldCoefficient.text);
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    await Provider.of<Balance>(context, listen: false)
+        .addMoney(profit)
+        .whenComplete(() {
+      GameStatisticController.updateGameStatistic(
+          gameName: 'dice-classic',
+          gameStatisticModel:
+              GameStatisticModel(winningsMoneys: profit, maxWin: profit));
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'dice-classic',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      lastCoefficients.add(DiceClassicRound(
+          coefficient: targetCoefficient.toString(), isWin: true));
 
-    lastCoefficients.add(DiceClassicRound(
-        coefficient: targetCoefficient.toString(), isWin: true));
+      diceClassicStatus = DiceClassicStatus.win;
 
-    diceClassicStatus = DiceClassicStatus.win;
+      CommonFunctions.callOnProfit(
+        context: context,
+        bet: bet,
+        gameName: 'Dice Classic',
+        profit: profit,
+      );
 
-    CommonFunctions.callOnProfit(
-      context: context,
-      bet: bet,
-      gameName: 'Dice Classic',
-      profit: profit,
-    );
+      AdService.showInterstitialAd(context: context, func: () {});
 
-    AdService.showInterstitialAd(context: context, func: () {});
+      isGameOn = false;
 
-    isGameOn = false;
+      notifyListeners();
 
-    notifyListeners();
+      if (Provider.of<SettingsController>(context, listen: false)
+              .isEnabledConfetti &&
+          selectedChanceWinning <= 10.0) {
+        confettiController.play();
+      }
 
-    if (Provider.of<SettingsController>(context, listen: false)
-            .isEnabledConfetti &&
-        selectedChanceWinning <= 10.0) {
-      confettiController.play();
-    }
-
-    AutoclickerSecure().checkAutoclicker();
+      AutoclickerSecure().checkAutoclicker();
+    });
   }
 
   void loss() {

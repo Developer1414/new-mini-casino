@@ -48,15 +48,23 @@ class JackpotLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context}) {
-    isGameOn = true;
-
-    this.context = context;
-
+  void startGame({
+    required BuildContext context,
+    required VoidCallback callback,
+  }) async {
     CommonFunctions.callOnStart(
-        context: context, bet: bet, gameName: 'jackpot');
+        context: context,
+        bet: bet,
+        gameName: 'jackpot',
+        callback: () {
+          isGameOn = true;
 
-    notifyListeners();
+          this.context = context;
+
+          callback.call();
+
+          notifyListeners();
+        });
   }
 
   void onAnimationStopped() {
@@ -65,7 +73,7 @@ class JackpotLogic extends ChangeNotifier {
   }
 
   void win({required double profit}) {
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'jackpot',

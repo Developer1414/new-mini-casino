@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' as ui;
 import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,63 +8,75 @@ import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
+import 'package:scratcher/scratcher.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' as ui;
 
 class DailyBonusManager extends ChangeNotifier {
   bool isLoading = false;
-  bool isClickableButton = true;
-  bool isActiveFortuneWheel = false;
-  bool isCanSpinAgain = false;
 
   int dailyCountBets = 0;
+  int choosedIndex = -1;
 
-  void spin(bool isActive) async {
-    isActiveFortuneWheel = isActive;
+  List<double> bonuses = [10000, 2000, 2000, 2000, 500, 500, 500, 500, 500];
 
-    if (!isActive) {
-      isCanSpinAgain = true;
-    }
-
-    DateTime dateTimeNow = await NTP.now();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString('dailyBonus', dateTimeNow.toString());
-
-    notifyListeners();
-  }
+  List<GlobalKey<ScratcherState>> scratchKeys =
+      List.generate(9, (index) => GlobalKey<ScratcherState>());
 
   void showLoading(bool isActive) {
     isLoading = isActive;
     notifyListeners();
   }
 
+  void changeBonuses() {
+    bonuses.shuffle();
+    notifyListeners();
+  }
+
+  Future chooseIndex(int index) async {
+    choosedIndex = index;
+    notifyListeners();
+  }
+
   Future spinAgain(
       {required BuildContext context,
       required VoidCallback voidCallback}) async {
-    await AdService.showInterstitialAd(
-        context: context, func: voidCallback, isDailyBonus: true);
+    await AdService.showRewardedAd(context: context, func: voidCallback);
   }
 
-  Future<bool> checkDailyBonus() async {
-    bool result = false;
-
+  Future checkDailyBonus(BuildContext context) async {
     DateTime lastBonusDate = await NTP.now();
-    DateTime dateTimeNow = await NTP.now();
+    DateTime dateTimeUTC = lastBonusDate.toUtc();
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    changeBonuses();
 
-    if (prefs.containsKey('dailyBonus')) {
-      lastBonusDate = DateTime.parse(prefs.getString('dailyBonus').toString());
-    }
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase!.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-    if (dateTimeNow.day != lastBonusDate.day ||
-        !prefs.containsKey('dailyBonus')) {
-      result = true;
-    }
+      if (map['bonusTime'] == null ||
+          (DateTime.parse('${map['bonusTime']}'))
+                  .difference(dateTimeUTC)
+                  .inHours <=
+              0) {
+        DateTime lastBonusDate = await NTP.now();
+        DateTime myTime = lastBonusDate.toUtc();
 
-    notifyListeners();
-
-    return result;
+        await SupabaseController.supabase!
+            .from('users')
+            .update({
+              'bonusTime':
+                  myTime.add(const Duration(hours: 24)).toIso8601String(),
+            })
+            .eq('uid', SupabaseController.supabase!.auth.currentUser!.id)
+            .whenComplete(() {
+              Beamer.of(context).beamToNamed('/daily-bonus');
+            });
+      }
+    });
   }
 
   Future updateDailyBetsCount() async {
@@ -83,37 +94,42 @@ class DailyBonusManager extends ChangeNotifier {
 
   Future getBonus(
       {required BuildContext context, required double bonus}) async {
-    if (!isClickableButton) return;
-
-    isActiveFortuneWheel = false;
-
-    DateTime dateTimeNow = await NTP.now();
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    notifyListeners();
-
-    isClickableButton = false;
-
     double resultBonus = bonus * (SupabaseController.isPremium ? 2 : 1);
-
-    notifyListeners();
-
-    await prefs.setString('dailyBonus', dateTimeNow.toString());
-    await prefs.remove('dailyCountBets');
 
     if (!context.mounted) return;
 
-    Provider.of<Balance>(context, listen: false).cashout(resultBonus);
+    Provider.of<Balance>(context, listen: false).addMoney(resultBonus);
 
-    alertDialogSuccess(
-        context: context,
-        barrierDismissible: false,
-        title: 'Поздравляем',
-        confirmBtnText: 'Спасибо',
-        text:
-            'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(resultBonus)}!',
-        onConfirmBtnTap: () {
-          context.beamBack();
-        });
+    bool isEnd = true;
+
+    await alertDialogConfirm(
+      context: context,
+      barrierDismissible: false,
+      title: 'Поздравляем',
+      confirmBtnText: 'Спасибо',
+      cancelBtnText: 'Ещё раз',
+      text:
+          'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(resultBonus)}!',
+      onConfirmBtnTap: () {
+        Navigator.of(context, rootNavigator: true).pop();
+      },
+      onCancelBtnTap: () async {
+        await AdService.showRewardedAd(
+            context: context,
+            func: () {
+              isEnd = false;
+
+              Navigator.of(context, rootNavigator: true).pop();
+
+              for (var element in scratchKeys) {
+                element.currentState?.reset();
+              }
+
+              choosedIndex = -1;
+
+              changeBonuses();
+            });
+      },
+    ).whenComplete(() => isEnd ? context.beamBack() : null);
   }
 }

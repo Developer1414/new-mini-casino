@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -23,33 +24,75 @@ import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:new_mini_casino/games_logic/slots_logic.dart';
 import 'package:new_mini_casino/games_logic/stairs_logic.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
-import 'package:new_mini_casino/services/balance_secure.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/no_internet_connection_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:quickalert/models/quickalert_type.dart';
 
 class CommonFunctions {
-  static void callOnStart(
+  static Future showErrorAlertNoBalance(BuildContext context) async {
+    await alertDialogConfirm(
+      context: context,
+      title: 'Ошибка',
+      text: 'Недостаточно средств на балансе!',
+      barrierDismissible: false,
+      type: QuickAlertType.error,
+      confirmBtnText: 'Купить',
+      cancelBtnText: 'Отмена',
+      onConfirmBtnTap: () {
+        Navigator.of(context, rootNavigator: true).pop();
+        context.beamToNamed('/purchasing-game-currency');
+      },
+      onCancelBtnTap: () => Navigator.of(context, rootNavigator: true).pop(),
+    );
+  }
+
+  static Future<ConnectivityResult> checkConnectivity() async {
+    return await (Connectivity().checkConnectivity());
+  }
+
+  static Future<bool> checkOnExistSpecificAmount(
+      BuildContext context, double bet) async {
+    return await Provider.of<Balance>(context, listen: false)
+        .checkOnExistSpecificAmount(bet);
+  }
+
+  static Future callOnStart(
       {required BuildContext context,
       required double bet,
       required String gameName,
+      required VoidCallback callback,
       bool isPlaceBet = true}) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-
     final balance = Provider.of<Balance>(context, listen: false);
 
-    if (connectivityResult == ConnectivityResult.none) {
-      if (context.mounted) {
-        showBadInternetConnectionDialog(context);
-      }
-    }
+    bool isError = false;
 
-    if (balance.currentBalance.truncateToDouble() !=
-        BalanceSecure().getLastBalance().truncateToDouble()) {
-      if (context.mounted) {
-        BalanceSecure().banUser(context);
+    await Future.wait([
+      checkConnectivity(),
+      checkOnExistSpecificAmount(context, bet),
+    ]).then((result) async {
+      if (result[0] == ConnectivityResult.none) {
+        isError = true;
+
+        await showBadInternetConnectionDialog(context);
+
+        return;
       }
-      return;
-    }
+
+      if (result[1] == false) {
+        isError = true;
+
+        Provider.of<Balance>(context, listen: false).loadBalance(context);
+
+        await showErrorAlertNoBalance(context);
+
+        return;
+      }
+    });
+
+    if (isError) return;
+
+    callback.call();
 
     if (context.mounted) {
       LocalPromocodes().getPromocode(context);
@@ -68,7 +111,7 @@ class CommonFunctions {
 
     if (isPlaceBet) {
       if (context.mounted) {
-        balance.placeBet(bet);
+        await balance.subtractMoney(bet);
       }
     }
   }

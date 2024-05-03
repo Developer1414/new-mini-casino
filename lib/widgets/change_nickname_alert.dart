@@ -174,7 +174,7 @@ void changeNicknameAlert({required BuildContext context}) {
                                                     SupabaseController.supabase
                                                         ?.auth.currentUser!.id);
 
-                                            balance.placeBet(100000);
+                                            balance.subtractMoney(100000);
 
                                             setState(() {
                                               isLoading = false;

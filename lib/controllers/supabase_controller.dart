@@ -431,7 +431,7 @@ class SupabaseController extends ChangeNotifier {
         'level': 1.0,
         'premium': DateTime.now()
             .toUtc()
-            .add(const Duration(days: 8))
+            .add(const Duration(days: 3))
             .toIso8601String(),
         'moneyStorage': 0.0,
         'promocodes': SupabaseController.friendCode.isEmpty

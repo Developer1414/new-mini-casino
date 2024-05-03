@@ -3,18 +3,18 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-void showBadInternetConnectionDialog(BuildContext context) {
+Future showBadInternetConnectionDialog(BuildContext context) async {
   Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
     if (result != ConnectivityResult.none) {
       Navigator.pop(context);
     }
   });
 
-  showDialog(
+  await showDialog(
     context: context,
     builder: (BuildContext context) {
-      return WillPopScope(
-        onWillPop: () async => false,
+      return PopScope(
+        canPop: false,
         child: Scaffold(
           backgroundColor: Colors.black.withOpacity(0.2),
           body: Center(

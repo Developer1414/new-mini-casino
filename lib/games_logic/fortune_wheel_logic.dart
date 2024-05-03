@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
@@ -38,17 +39,25 @@ class FortuneWheelLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context}) {
-    isGameOn = true;
-
-    this.context = context;
-
-    profit = 0.0;
-
+  void startGame({
+    required BuildContext context,
+    required VoidCallback callback,
+  }) async {
     CommonFunctions.callOnStart(
-        context: context, bet: bet, gameName: 'fortuneWheel');
+        context: context,
+        bet: bet,
+        gameName: 'fortuneWheel',
+        callback: () {
+          isGameOn = true;
 
-    notifyListeners();
+          this.context = context;
+
+          profit = 0.0;
+
+          callback.call();
+
+          notifyListeners();
+        });
   }
 
   void setNewColor(Color color) {
@@ -61,7 +70,7 @@ class FortuneWheelLogic extends ChangeNotifier {
 
     profit = bet * selectedNumber;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'fortuneWheel',

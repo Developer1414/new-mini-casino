@@ -50,24 +50,28 @@ class LimboLogic extends ChangeNotifier {
   }
 
   void startGame(
-      {required BuildContext context, required double selectedCoefficient}) {
+      {required BuildContext context,
+      required double selectedCoefficient}) async {
     if (AutoclickerSecure.isCanPlay) {
-      this.selectedCoefficient = selectedCoefficient;
-      this.context = context;
-
-      isGameOn = true;
-
-      targetCoefficient = 1.0;
-      profit = 0.0;
-
-      crashStatus = LimboStatus.idle;
-
       CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'limbo');
+          context: context,
+          bet: bet,
+          gameName: 'limbo',
+          callback: () {
+            this.selectedCoefficient = selectedCoefficient;
+            this.context = context;
 
-      incrementCoefficient();
+            isGameOn = true;
 
-      notifyListeners();
+            targetCoefficient = 1.0;
+            profit = 0.0;
+
+            crashStatus = LimboStatus.idle;
+
+            incrementCoefficient();
+
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -78,7 +82,7 @@ class LimboLogic extends ChangeNotifier {
 
     profit = bet * selectedCoefficient;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'limbo',
@@ -139,30 +143,17 @@ class LimboLogic extends ChangeNotifier {
   }
 
   void incrementCoefficient() {
-    int temp = Random.secure().nextInt(100);
-    int time = 2;
+    int time = 3;
 
     double maxCoefficient = 0.0;
     double speed = 0.01;
 
-    if (temp < 60.0) {
-      maxCoefficient = generateDouble(1.0, 1.5);
-    } else if (temp >= 60.0 && temp < 70) {
-      maxCoefficient = generateDouble(1.0, 5.0);
-    } else if (temp >= 70.0 && temp < 85) {
-      maxCoefficient = generateDouble(1.0, 10.0);
-    } else if (temp >= 85.0 && temp < 95) {
-      maxCoefficient = generateDouble(1.0, 50.0);
-    } else if (temp >= 95.0 && temp < 98.0) {
-      maxCoefficient = generateDouble(1.0, 80.0);
-    } else if (temp >= 98.0) {
-      maxCoefficient = generateDouble(1.0, 100.0);
-    }
+    double randomNumber = Random().nextDouble();
+    double scaledNumber = -log(randomNumber) * 2.8;
+    maxCoefficient = scaledNumber.clamp(1.0, 100.0);
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (targetCoefficient < maxCoefficient) {
-        targetCoefficient += speed;
-
         speed += maxCoefficient >= 50
             ? 0.02
             : maxCoefficient >= 10
@@ -170,6 +161,8 @@ class LimboLogic extends ChangeNotifier {
                 : maxCoefficient < 10 && maxCoefficient > 2
                     ? 0.005
                     : 0.0001;
+
+        targetCoefficient += speed;
       } else {
         timer.cancel();
         targetCoefficient = maxCoefficient;

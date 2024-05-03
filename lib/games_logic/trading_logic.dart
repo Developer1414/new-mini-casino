@@ -49,17 +49,20 @@ class TradingLogic extends ChangeNotifier {
       this.selectedCoefficient = selectedCoefficient;
       this.context = context;
 
-      isGameOn = true;
-
-      targetCoefficient = 1.0;
-      profit = 0.0;
-
       CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'limbo');
+          context: context,
+          bet: bet,
+          gameName: 'trading',
+          callback: () {
+            isGameOn = true;
 
-      incrementCoefficient();
+            targetCoefficient = 1.0;
+            profit = 0.0;
 
-      notifyListeners();
+            incrementCoefficient();
+
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -75,7 +78,7 @@ class TradingLogic extends ChangeNotifier {
 
     profit = bet * selectedCoefficient;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'limbo',

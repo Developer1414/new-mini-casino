@@ -47,28 +47,32 @@ class CrashLogic extends ChangeNotifier {
   }
 
   void startGame(
-      {required BuildContext context, required double targetCoefficient}) {
+      {required BuildContext context,
+      required double targetCoefficient}) async {
     if (AutoclickerSecure.isCanPlay) {
-      this.targetCoefficient = targetCoefficient;
-      this.context = context;
-
-      winCoefficient = 1.00;
-      maxCoefficient = 0.0;
-
-      isGameOn = true;
-
-      crashStatus = CrashStatus.idle;
-
-      animationController
-        ..reset()
-        ..forward();
-
-      incrementCoefficient();
-
       CommonFunctions.callOnStart(
-          context: context, bet: bet, gameName: 'crash');
+          context: context,
+          bet: bet,
+          gameName: 'crash',
+          callback: () {
+            this.targetCoefficient = targetCoefficient;
+            this.context = context;
 
-      notifyListeners();
+            winCoefficient = 1.00;
+            maxCoefficient = 0.0;
+
+            isGameOn = true;
+
+            crashStatus = CrashStatus.idle;
+
+            animationController
+              ..reset()
+              ..forward();
+
+            incrementCoefficient();
+
+            notifyListeners();
+          });
     } else {
       AutoclickerSecure().checkClicksBeforeCanPlay(context);
     }
@@ -84,7 +88,7 @@ class CrashLogic extends ChangeNotifier {
 
     crashStatus = CrashStatus.win;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'crash',
@@ -146,24 +150,13 @@ class CrashLogic extends ChangeNotifier {
   }
 
   void incrementCoefficient() {
-    int temp = Random.secure().nextInt(100);
     int time = 10;
 
     double speed = 0.005;
 
-    if (temp < 60.0) {
-      maxCoefficient = generateDouble(1.0, 1.5);
-    } else if (temp >= 60.0 && temp < 70) {
-      maxCoefficient = generateDouble(1.0, 5.0);
-    } else if (temp >= 70.0 && temp < 85) {
-      maxCoefficient = generateDouble(1.0, 10.0);
-    } else if (temp >= 85.0 && temp < 95) {
-      maxCoefficient = generateDouble(1.0, 50.0);
-    } else if (temp >= 95.0 && temp < 98.0) {
-      maxCoefficient = generateDouble(1.0, 80.0);
-    } else if (temp >= 98.0) {
-      maxCoefficient = generateDouble(1.0, 100.0);
-    }
+    double randomNumber = Random().nextDouble();
+    double scaledNumber = -log(randomNumber) * 2.5;
+    maxCoefficient = scaledNumber.clamp(1.0, 100.0);
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (winCoefficient < maxCoefficient) {

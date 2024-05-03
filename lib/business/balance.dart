@@ -1,8 +1,8 @@
+import 'dart:async';
 import 'dart:io' as ui;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
-import 'package:new_mini_casino/services/balance_secure.dart';
 
 class Balance extends ChangeNotifier {
   double balance = 500.0;
@@ -13,18 +13,58 @@ class Balance extends ChangeNotifier {
       NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
           .format(balance);
 
-  void placeBet(double bet) {
-    if (balance >= bet) {
-      balance -= bet;
-      updateBalance();
-    }
+  Future subtractMoney(double bet) async {
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      double currentServerBalance = double.parse(map['balance'].toString());
+
+      if (bet > currentServerBalance) {
+        return;
+      } else {
+        currentServerBalance -= bet;
+
+        await updateBalance(currentServerBalance);
+      }
+    });
 
     notifyListeners();
   }
 
-  void cashout(double profit) {
-    balance += profit;
-    updateBalance();
+  Future<bool> checkOnExistSpecificAmount(double amount) async {
+    double currentServerBalance = 0.0;
+
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+      currentServerBalance = double.parse(map['balance'].toString());
+    });
+
+    return amount <= currentServerBalance;
+  }
+
+  Future addMoney(double profit) async {
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      double currentServerBalance = double.parse(map['balance'].toString());
+
+      currentServerBalance += profit;
+
+      await updateBalance(currentServerBalance);
+    });
+
     notifyListeners();
   }
 
@@ -37,16 +77,19 @@ class Balance extends ChangeNotifier {
       Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
       balance = double.parse(map['balance'].toString());
-      BalanceSecure().setLastBalance(balance);
     });
+
+    notifyListeners();
   }
 
-  void updateBalance() async {
-    BalanceSecure().setLastBalance(balance);
-
+  Future updateBalance(double value) async {
     await SupabaseController.supabase!
         .from('users')
-        .update({'balance': balance}).eq(
+        .update({'balance': value}).eq(
             'uid', SupabaseController.supabase?.auth.currentUser!.id);
+
+    balance = value;
+
+    notifyListeners();
   }
 }

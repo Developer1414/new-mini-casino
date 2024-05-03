@@ -37,7 +37,7 @@ class BonusManager extends ChangeNotifier {
 
   void getReward(
       {required BuildContext context, required double rewardCount}) async {
-    Provider.of<Balance>(context, listen: false).cashout(rewardCount);
+    Provider.of<Balance>(context, listen: false).addMoney(rewardCount);
 
     alertDialogSuccess(
       context: context,

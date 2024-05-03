@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData lightThemeData(BuildContext context) {
   return ThemeData(
+      bottomSheetTheme:
+          const BottomSheetThemeData(backgroundColor: Colors.transparent),
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       }),

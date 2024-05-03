@@ -24,8 +24,6 @@ class Limbo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     return PopScope(
       canPop: !context.read<LimboLogic>().isGameOn,
       child: GestureDetector(
@@ -229,11 +227,6 @@ class Limbo extends StatelessWidget {
                                       ? null
                                       : () {
                                           if (!limboLogic.isGameOn) {
-                                            if (balance.currentBalance <
-                                                limboLogic.bet) {
-                                              return;
-                                            }
-
                                             if (Limbo.targetCoefficient.text
                                                     .isEmpty ||
                                                 double.parse(Limbo

@@ -40,17 +40,20 @@ class RouletteLogic extends ChangeNotifier {
   }
 
   void startGame({required BuildContext context, required double bet}) {
-    isGameOn = true;
-
-    this.bet = bet;
-    this.context = context;
-
-    profit = 0.0;
-
     CommonFunctions.callOnStart(
-        context: context, bet: bet, gameName: 'fortuneWheel');
+        context: context,
+        bet: bet,
+        gameName: 'fortuneWheel',
+        callback: () {
+          isGameOn = true;
 
-    notifyListeners();
+          this.bet = bet;
+          this.context = context;
+
+          profit = 0.0;
+
+          notifyListeners();
+        });
   }
 
   void setNewColor(Color color) {
@@ -63,7 +66,7 @@ class RouletteLogic extends ChangeNotifier {
 
     profit = bet * selectedNumber;
 
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
         gameName: 'fortuneWheel',

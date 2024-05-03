@@ -165,139 +165,143 @@ class _SlotsState extends State<Slots> {
 
     double bet = Provider.of<SlotsLogic>(context, listen: false).bet;
 
-    if (Provider.of<Balance>(context, listen: false).currentBalance < bet) {
-      return;
-    }
+    CommonFunctions.callOnStart(
+        context: context,
+        bet: bet,
+        gameName: 'Slots',
+        callback: () {
+          Provider.of<SlotsLogic>(context, listen: false)
+              .changeGameStatus(true);
 
-    Provider.of<SlotsLogic>(context, listen: false).changeGameStatus(true);
-
-    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'slots');
-
-    setState(() {
-      isSpinning = true;
-
-      profit = 0.0;
-
-      coefficientsIndexWinner = -1;
-
-      for (int i = 0; i < 3; i++) {
-        isReelsSpinning[i] = true;
-      }
-    });
-
-    time = 0;
-    startIndex = 0;
-
-    Timer.periodic(const Duration(milliseconds: 100), (timer) async {
-      time++;
-
-      if (!isFast) {
-        for (int i = startIndex; i < 3; i++) {
-          choosedReels[i] = reelItems[Random().nextInt(reelItems.length)];
-          controllers[i].animateTo(100,
-              duration: const Duration(milliseconds: 100),
-              curve: Curves.linear);
-        }
-
-        if (time == 10) {
-          startIndex++;
-          choosedReels[0] =
-              reelItems[Random.secure().nextInt(reelItems.length)];
-          isReelsSpinning[0] = false;
-        }
-
-        if (time == 20) {
-          startIndex++;
-          choosedReels[1] =
-              reelItems[Random.secure().nextInt(reelItems.length)];
-          isReelsSpinning[1] = false;
-        }
-
-        if (time == 30) {
-          choosedReels[2] =
-              reelItems[Random.secure().nextInt(reelItems.length)];
-          isReelsSpinning[2] = false;
-
-          timer.cancel();
-          isSpinning = false;
-
-          coefficientsIndexWinner = getWinnerCoefficient();
-        }
-      } else {
-        for (int i = 0; i < choosedReels.length; i++) {
-          choosedReels[i] =
-              reelItems[Random.secure().nextInt(reelItems.length)];
-        }
-
-        if (time == 5) {
-          for (int i = 0; i < choosedReels.length; i++) {
-            choosedReels[i] =
-                reelItems[Random.secure().nextInt(reelItems.length)];
-            isReelsSpinning[i] = false;
-          }
-
-          timer.cancel();
-          isSpinning = false;
-
-          coefficientsIndexWinner = getWinnerCoefficient();
-        }
-      }
-
-      if (!timer.isActive) {
-        if (coefficientsIndexWinner != -1) {
-          if (reelWinners.values.toList()[coefficientsIndexWinner] >= 2.0) {
-            if (Provider.of<SettingsController>(context, listen: false)
-                .isEnabledConfetti) {
-              confettiController.play();
-            }
-          }
-
-          profit = bet * reelWinners.values.toList()[coefficientsIndexWinner];
-
-          Provider.of<Balance>(context, listen: false).cashout(profit);
-
-          GameStatisticController.updateGameStatistic(
-              gameName: 'slots',
-              gameStatisticModel:
-                  GameStatisticModel(winningsMoneys: profit, maxWin: profit));
-
-          CommonFunctions.callOnProfit(
-            context: context,
-            bet: bet,
-            gameName: 'slots',
-            profit: profit,
-          );
-        } else {
-          GameStatisticController.updateGameStatistic(
-              gameName: 'slots',
-              gameStatisticModel: GameStatisticModel(
-                maxLoss: bet,
-                lossesMoneys: bet,
-              ));
-        }
-
-        if (AdService.countBet == 49) {
           setState(() {
-            isAutoBets = false;
+            isSpinning = true;
+
+            profit = 0.0;
+
+            coefficientsIndexWinner = -1;
+
+            for (int i = 0; i < 3; i++) {
+              isReelsSpinning[i] = true;
+            }
           });
-        }
 
-        Provider.of<SlotsLogic>(context, listen: false).changeGameStatus(false);
+          time = 0;
+          startIndex = 0;
 
-        AdService.showInterstitialAd(context: context);
-      }
+          Timer.periodic(const Duration(milliseconds: 100), (timer) async {
+            time++;
 
-      setState(() {});
+            if (!isFast) {
+              for (int i = startIndex; i < 3; i++) {
+                choosedReels[i] = reelItems[Random().nextInt(reelItems.length)];
+                controllers[i].animateTo(100,
+                    duration: const Duration(milliseconds: 100),
+                    curve: Curves.linear);
+              }
 
-      if (isAutoBets && !timer.isActive) {
-        await Future.delayed(const Duration(milliseconds: 800))
-            .whenComplete(() {
-          if (isAutoBets) {
-            makeBet(context);
-          }
+              if (time == 10) {
+                startIndex++;
+                choosedReels[0] =
+                    reelItems[Random.secure().nextInt(reelItems.length)];
+                isReelsSpinning[0] = false;
+              }
+
+              if (time == 20) {
+                startIndex++;
+                choosedReels[1] =
+                    reelItems[Random.secure().nextInt(reelItems.length)];
+                isReelsSpinning[1] = false;
+              }
+
+              if (time == 30) {
+                choosedReels[2] =
+                    reelItems[Random.secure().nextInt(reelItems.length)];
+                isReelsSpinning[2] = false;
+
+                timer.cancel();
+                isSpinning = false;
+
+                coefficientsIndexWinner = getWinnerCoefficient();
+              }
+            } else {
+              for (int i = 0; i < choosedReels.length; i++) {
+                choosedReels[i] =
+                    reelItems[Random.secure().nextInt(reelItems.length)];
+              }
+
+              if (time == 5) {
+                for (int i = 0; i < choosedReels.length; i++) {
+                  choosedReels[i] =
+                      reelItems[Random.secure().nextInt(reelItems.length)];
+                  isReelsSpinning[i] = false;
+                }
+
+                timer.cancel();
+                isSpinning = false;
+
+                coefficientsIndexWinner = getWinnerCoefficient();
+              }
+            }
+
+            if (!timer.isActive) {
+              if (coefficientsIndexWinner != -1) {
+                if (reelWinners.values.toList()[coefficientsIndexWinner] >=
+                    2.0) {
+                  if (Provider.of<SettingsController>(context, listen: false)
+                      .isEnabledConfetti) {
+                    confettiController.play();
+                  }
+                }
+
+                profit =
+                    bet * reelWinners.values.toList()[coefficientsIndexWinner];
+
+                Provider.of<Balance>(context, listen: false).addMoney(profit);
+
+                GameStatisticController.updateGameStatistic(
+                    gameName: 'slots',
+                    gameStatisticModel: GameStatisticModel(
+                        winningsMoneys: profit, maxWin: profit));
+
+                CommonFunctions.callOnProfit(
+                  context: context,
+                  bet: bet,
+                  gameName: 'Slots',
+                  profit: profit,
+                );
+              } else {
+                GameStatisticController.updateGameStatistic(
+                    gameName: 'slots',
+                    gameStatisticModel: GameStatisticModel(
+                      maxLoss: bet,
+                      lossesMoneys: bet,
+                    ));
+              }
+
+              if (AdService.countBet == 49) {
+                setState(() {
+                  isAutoBets = false;
+                });
+              }
+
+              Provider.of<SlotsLogic>(context, listen: false)
+                  .changeGameStatus(false);
+
+              AdService.showInterstitialAd(context: context);
+            }
+
+            setState(() {});
+
+            if (isAutoBets && !timer.isActive) {
+              await Future.delayed(const Duration(milliseconds: 800))
+                  .whenComplete(() {
+                if (isAutoBets) {
+                  makeBet(context);
+                }
+              });
+            }
+          });
         });
-      }
-    });
   }
 
   @override
@@ -381,6 +385,8 @@ class _SlotsState extends State<Slots> {
                               child: Switch(
                                 value: isFast,
                                 onChanged: (value) {
+                                  if (isSpinning) return;
+
                                   setState(() {
                                     isFast = !isFast;
                                   });

@@ -33,7 +33,7 @@ class PromocodeManager extends ChangeNotifier {
         .first
         .value;
 
-    provider.Provider.of<Balance>(context, listen: false).cashout(prize);
+    provider.Provider.of<Balance>(context, listen: false).addMoney(prize);
 
     alertDialogSuccess(
       context: context,
@@ -158,7 +158,7 @@ class PromocodeManager extends ChangeNotifier {
 
           if (context.mounted) {
             provider.Provider.of<Balance>(context, listen: false)
-                .cashout(prize);
+                .addMoney(prize);
 
             alertDialogSuccess(
               context: context,

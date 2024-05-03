@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
@@ -8,95 +7,18 @@ import 'package:flutter/services.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:new_mini_casino/business/bank_manager.dart';
-import 'package:new_mini_casino/business/bonus_manager.dart';
-import 'package:new_mini_casino/business/daily_bonus_manager.dart';
-import 'package:new_mini_casino/business/get_premium_version.dart';
-import 'package:new_mini_casino/business/loan_moneys_manager.dart';
-import 'package:new_mini_casino/business/money_storage_manager.dart';
-import 'package:new_mini_casino/business/own_promocode_manager.dart';
-import 'package:new_mini_casino/business/promocode_manager.dart';
-import 'package:new_mini_casino/business/purchasing_game_currency_controller.dart';
-import 'package:new_mini_casino/business/raffle_manager.dart';
-import 'package:new_mini_casino/business/store_manager.dart';
-import 'package:new_mini_casino/business/tax_manager.dart';
-import 'package:new_mini_casino/business/transfer_moneys_manager.dart';
-import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
-import 'package:new_mini_casino/controllers/notification_controller.dart';
-import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
-import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
-import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
-import 'package:new_mini_casino/games_logic/crash_logic.dart';
-import 'package:new_mini_casino/games_logic/dice_classic_logic.dart';
-import 'package:new_mini_casino/games_logic/dice_logic.dart';
-import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
-import 'package:new_mini_casino/games_logic/jackpot_logic.dart';
-import 'package:new_mini_casino/games_logic/keno_logic.dart';
-import 'package:new_mini_casino/games_logic/limbo_logic.dart';
-import 'package:new_mini_casino/games_logic/plinko_logic.dart';
-import 'package:new_mini_casino/games_logic/roulette_logic.dart';
-import 'package:new_mini_casino/games_logic/slots_logic.dart';
-import 'package:new_mini_casino/games_logic/stairs_logic.dart';
-import 'package:new_mini_casino/games_logic/trading_logic.dart';
-import 'package:new_mini_casino/screens/bank/bank.dart';
-import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
-import 'package:new_mini_casino/screens/bank/purchasing_game_currency.dart';
-import 'package:new_mini_casino/screens/bank/tax.dart';
-import 'package:new_mini_casino/screens/bank/transfer_moneys.dart';
-import 'package:new_mini_casino/screens/daily_bonus.dart';
-import 'package:new_mini_casino/screens/game_statistic.dart';
-import 'package:new_mini_casino/screens/games/blackjack.dart';
-import 'package:new_mini_casino/screens/games/coinflip.dart';
-import 'package:new_mini_casino/screens/games/crash.dart';
-import 'package:new_mini_casino/screens/games/dice.dart';
-import 'package:new_mini_casino/screens/games/dice_classic.dart';
-import 'package:new_mini_casino/screens/games/fortune_wheel.dart';
-import 'package:new_mini_casino/screens/games/jackpot.dart';
-import 'package:new_mini_casino/screens/games/keno.dart';
-import 'package:new_mini_casino/screens/games/limbo.dart';
-import 'package:new_mini_casino/screens/games/mines.dart';
-import 'package:new_mini_casino/screens/games/plinko.dart';
-import 'package:new_mini_casino/screens/games/roulette_wheel.dart';
-import 'package:new_mini_casino/screens/games/slots.dart';
-import 'package:new_mini_casino/screens/games/stairs.dart';
-import 'package:new_mini_casino/screens/games/trading.dart';
-import 'package:new_mini_casino/screens/home.dart';
-import 'package:new_mini_casino/screens/latest_max_wins.dart';
-import 'package:new_mini_casino/screens/login.dart';
-import 'package:new_mini_casino/screens/leader_board.dart';
-import 'package:new_mini_casino/screens/menu.dart';
-import 'package:new_mini_casino/screens/money_storage.dart';
-import 'package:new_mini_casino/screens/local_bonuses.dart';
-import 'package:new_mini_casino/screens/no_internet_connection.dart';
-import 'package:new_mini_casino/screens/notifications.dart';
-import 'package:new_mini_casino/screens/other_user_profile.dart';
-import 'package:new_mini_casino/screens/own_promocode.dart';
-import 'package:new_mini_casino/screens/premium.dart';
-import 'package:new_mini_casino/screens/privacy_policy.dart';
-import 'package:new_mini_casino/screens/profile.dart';
-import 'package:new_mini_casino/screens/promocode.dart';
-import 'package:new_mini_casino/screens/raffle_info.dart';
-import 'package:new_mini_casino/screens/settings.dart';
-import 'package:new_mini_casino/screens/store/store.dart';
-import 'package:new_mini_casino/screens/store/store_items.dart';
-import 'package:new_mini_casino/screens/store/store_product_review.dart';
-import 'package:new_mini_casino/screens/user_agreement.dart';
-import 'package:new_mini_casino/screens/verify_number.dart';
-import 'package:new_mini_casino/screens/welcome.dart';
+import 'package:new_mini_casino/models/provider_list.dart';
+import 'package:new_mini_casino/models/route_list.dart';
 import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/themes/dark_theme.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:new_mini_casino/themes/light_theme.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
-import 'package:new_mini_casino/widgets/auto_bets.dart';
-import 'package:new_mini_casino/widgets/background_model.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:stack_appodeal_flutter/stack_appodeal_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -127,8 +49,6 @@ void main() async {
     initializeDateFormatting('ru_RU', null)
         .then((value) => runApp(const MainApp()));
   });
-
-  //SupabaseController.supabase!.auth.signOut();
 }
 
 class MainApp extends StatefulWidget {
@@ -145,12 +65,12 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   Future<void> checkForUpdate() async {
     InAppUpdate.checkForUpdate().then((info) {
-      setState(() {
+      setState(() async {
         _updateInfo = info;
 
         if (_updateInfo?.updateAvailability ==
             UpdateAvailability.updateAvailable) {
-          alertDialogSuccess(
+          await alertDialogSuccess(
               context: context,
               title: 'Новая версия',
               confirmBtnText: 'Установить',
@@ -166,7 +86,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
                 }
               });
 
-          InAppUpdate.startFlexibleUpdate().then((_) {
+          await InAppUpdate.startFlexibleUpdate().then((_) {
             InAppUpdate.completeFlexibleUpdate().then((_) {}).catchError((e) {
               if (kDebugMode) {
                 print(e.toString());
@@ -207,284 +127,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
 
   final routerDelegate = BeamerDelegate(
     locationBuilder: RoutesLocationBuilder(
-      routes: {
-        '/': (context, state, data) => const Home(),
-        '/games': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const AllGames(),
-              ],
-            ),
-        '/notifications': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Notifications(),
-              ],
-            ),
-        '/limbo': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Limbo(),
-              ],
-            ),
-        '/dice-classic': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const DiceClassic(),
-              ],
-            ),
-        '/trading': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Trading(),
-              ],
-            ),
-        '/settings': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Settings(),
-              ],
-            ),
-        '/transfer-moneys': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const TransferMoneys(),
-              ],
-            ),
-        '/tax': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Tax(),
-              ],
-            ),
-        '/loan-moneys': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const LoanMoneys(),
-              ],
-            ),
-        '/no-internet': (context, state, data) => const NoInternetConnection(),
-        '/premium': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const PremiumInfo(),
-              ],
-            ),
-        '/local-bonuses': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const LocalBonuses(),
-              ],
-            ),
-        '/own-promocode': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const OwnPromocode(),
-              ],
-            ),
-        '/welcome': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Welcome(),
-              ],
-            ),
-        '/daily-bonus': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const DailyBonus(),
-              ],
-            ),
-        '/login': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Login(),
-              ],
-            ),
-        '/bank': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Bank(),
-              ],
-            ),
-        '/store-items': (context, state, data) => const StoreItems(),
-        '/profile': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Profile(),
-              ],
-            ),
-        '/raffle-info': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const RaffleInfo(),
-              ],
-            ),
-        '/mines': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Mines(),
-              ],
-            ),
-        '/dice': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Dice(),
-              ],
-            ),
-        '/blackjack': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Blackjack(),
-              ],
-            ),
-        '/promocode': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Promocode(),
-              ],
-            ),
-        '/crash': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Crash(),
-              ],
-            ),
-        '/roulette-wheel': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const RouletteWheel(),
-              ],
-            ),
-        '/stairs': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Stairs(),
-              ],
-            ),
-        '/jackpot': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Jackpot(),
-              ],
-            ),
-        '/plinko': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Plinko(),
-              ],
-            ),
-        '/keno': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Keno(),
-              ],
-            ),
-        '/slots': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Slots(),
-              ],
-            ),
-        '/coinflip': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const Coinflip(),
-              ],
-            ),
-        '/purchasing-game-currency': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const PurchasingGameCurrency(),
-              ],
-            ),
-        '/product-review': (context, state, data) => const StoreProductReview(),
-        '/money-storage': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const MoneyStorage(),
-              ],
-            ),
-        '/latest-max-wins': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const LatestMaxWins(),
-              ],
-            ),
-        '/fortuneWheel': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const FortuneWheel(),
-              ],
-            ),
-        '/privacy-policy': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const PrivacyPolicy(),
-              ],
-            ),
-        '/user-agreement': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const UserAgreement(),
-              ],
-            ),
-        '/leader-board': (context, state, data) => Stack(
-              children: [
-                backgroundModel(),
-                const LeaderBoard(),
-              ],
-            ),
-        '/other-user-profile/:userName/:userid/:pinId': (context, state, data) {
-          final userName = state.pathParameters['userName']!;
-          final userid = state.pathParameters['userid']!;
-          final pinId = state.pathParameters['pinId']!;
-
-          return BeamPage(
-            child: OtherUserProfile(
-                userName: userName,
-                userId: userid,
-                pinId: int.parse(pinId.toString())),
-          );
-        },
-        '/store/:storeName/:path/:models': (context, state, data) {
-          final storeName = state.pathParameters['storeName']!;
-          final path = state.pathParameters['path']!;
-          List<StoreItemModel> models =
-              (jsonDecode(state.pathParameters['models']!) as List)
-                  .map((modelMap) => StoreItemModel.fromJson(modelMap))
-                  .toList()
-                ..sort((a, b) => a.price.compareTo(b.price));
-
-          return BeamPage(
-            child: Store(storeName: storeName, path: path, models: models),
-          );
-        },
-        '/game-statistic/:game': (context, state, data) {
-          final game = state.pathParameters['game']!;
-          return BeamPage(
-            child: Stack(
-              children: [
-                backgroundModel(),
-                GameStatistic(game: game),
-              ],
-            ),
-          );
-        },
-        '/verify-email/:email/:isResetPassword': (context, state, data) {
-          final email = state.pathParameters['email']!;
-          bool isResetPassword =
-              state.pathParameters['isResetPassword']! == 'true' ? true : false;
-          return BeamPage(
-            child: Stack(
-              children: [
-                backgroundModel(),
-                VerifyPhoneNumber(
-                    email: email, isResetPassword: isResetPassword),
-              ],
-            ),
-          );
-        },
-      },
+      routes: routeList,
     ),
   );
 
@@ -508,44 +151,7 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (ctx) => DarkThemeProvider()),
-        ChangeNotifierProvider(
-            create: (ctx) => PurchasingGameCurrencyController()),
-        ChangeNotifierProvider(create: (ctx) => SupabaseController()),
-        ChangeNotifierProvider(create: (ctx) => LimboLogic()),
-        ChangeNotifierProvider(create: (ctx) => SettingsController()),
-        ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
-        ChangeNotifierProvider(create: (ctx) => AutoBetsController()),
-        ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
-        ChangeNotifierProvider(create: (ctx) => NotificationController()),
-        ChangeNotifierProvider(create: (ctx) => TaxManager()),
-        ChangeNotifierProvider(create: (ctx) => DiceClassicLogic()),
-        ChangeNotifierProvider(create: (ctx) => TradingLogic()),
-        ChangeNotifierProvider(create: (ctx) => PlinkoLogic()),
-        ChangeNotifierProvider(create: (ctx) => MinesLogic()),
-        ChangeNotifierProvider(create: (ctx) => RouletteLogic()),
-        ChangeNotifierProvider(create: (ctx) => BankManager()),
-        ChangeNotifierProvider(create: (ctx) => BlackjackLogic()),
-        ChangeNotifierProvider(create: (ctx) => Payment()),
-        ChangeNotifierProvider(create: (ctx) => MoneyStorageManager()),
-        ChangeNotifierProvider(create: (ctx) => RaffleManager()),
-        ChangeNotifierProvider(create: (ctx) => DailyBonusManager()),
-        ChangeNotifierProvider(create: (ctx) => PromocodeManager()),
-        ChangeNotifierProvider(create: (ctx) => BonusManager()),
-        ChangeNotifierProvider(create: (ctx) => OwnPromocodeManager()),
-        ChangeNotifierProvider(create: (ctx) => CoinflipLogic()),
-        ChangeNotifierProvider(create: (ctx) => StoreManager()),
-        ChangeNotifierProvider(create: (ctx) => CrashLogic()),
-        ChangeNotifierProvider(create: (ctx) => KenoLogic()),
-        ChangeNotifierProvider(create: (ctx) => StairsLogic()),
-        ChangeNotifierProvider(create: (ctx) => FortuneWheelLogic()),
-        ChangeNotifierProvider(create: (ctx) => DiceLogic()),
-        ChangeNotifierProvider(create: (ctx) => JackpotLogic()),
-        ChangeNotifierProvider(create: (ctx) => Balance()),
-        ChangeNotifierProvider(create: (ctx) => GameStatisticController()),
-        ChangeNotifierProvider(create: (ctx) => SlotsLogic()),
-      ],
+      providers: providerList,
       child: Consumer<DarkThemeProvider>(
         builder: (context, value, child) {
           return MaterialApp.router(

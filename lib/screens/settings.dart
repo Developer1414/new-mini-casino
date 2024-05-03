@@ -1,10 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/premium_badge.dart';
@@ -23,6 +26,43 @@ class Settings extends StatelessWidget {
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
         .currencySymbol,
   );
+
+  Widget switchSetting({
+    required String title,
+    required BuildContext context,
+    required bool value,
+    required void Function(bool)? onChanged,
+  }) {
+    return Container(
+      height: 60.0,
+      width: double.infinity,
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        border: Border.all(color: Colors.blueAccent, width: 3.0),
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: AutoSizeText(
+              '$title:',
+              maxLines: 1,
+              style: Theme.of(context)
+                  .appBarTheme
+                  .titleTextStyle!
+                  .copyWith(fontSize: 20.0),
+            ),
+          ),
+          Switch(
+            value: value,
+            onChanged: onChanged,
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -245,36 +285,23 @@ class Settings extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 15.0),
-                        Container(
-                          height: 60.0,
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(15.0),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            border: Border.all(
-                                color: Colors.blueAccent, width: 3.0),
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              AutoSizeText(
-                                'Конфетти:',
-                                maxLines: 1,
-                                style: Theme.of(context)
-                                    .appBarTheme
-                                    .titleTextStyle!
-                                    .copyWith(fontSize: 20.0),
-                              ),
-                              Switch(
-                                value: settingsController.isEnabledConfetti,
-                                onChanged: (value) {
-                                  settingsController
-                                      .changeConfettiSetting(value);
-                                },
-                              ),
-                            ],
-                          ),
+                        switchSetting(
+                          title: 'Конфетти',
+                          context: context,
+                          value: settingsController.isEnabledConfetti,
+                          onChanged: (value) {
+                            settingsController.changeConfettiSetting(value);
+                          },
+                        ),
+                        const SizedBox(height: 15.0),
+                        switchSetting(
+                          title: 'Уведомления о крупном выигрыше',
+                          context: context,
+                          value: settingsController.isEnabledMaxWinNotification,
+                          onChanged: (value) {
+                            settingsController
+                                .changeMaxWinNotificationSetting(value);
+                          },
                         ),
                         const SizedBox(height: 15.0),
                         Container(
@@ -322,22 +349,42 @@ class Settings extends StatelessWidget {
                                       return;
                                     }
 
-                                    if (minBetFormatter
-                                            .getUnformattedValue()
-                                            .toDouble()
-                                            .truncate() >
-                                        100000000) {
-                                      settingsController.changeMinimumBet(
-                                        value: 100000000,
-                                        context: context,
-                                      );
+                                    if (SupabaseController.isPremium) {
+                                      if (minBetFormatter
+                                              .getUnformattedValue()
+                                              .toDouble()
+                                              .truncate() >
+                                          100000000) {
+                                        settingsController.changeMinimumBet(
+                                          value: 100000000,
+                                          context: context,
+                                        );
+                                      } else {
+                                        settingsController.changeMinimumBet(
+                                          value: minBetFormatter
+                                              .getUnformattedValue()
+                                              .toDouble(),
+                                          context: context,
+                                        );
+                                      }
                                     } else {
-                                      settingsController.changeMinimumBet(
-                                        value: minBetFormatter
-                                            .getUnformattedValue()
-                                            .toDouble(),
-                                        context: context,
-                                      );
+                                      if (minBetFormatter
+                                              .getUnformattedValue()
+                                              .toDouble()
+                                              .truncate() >
+                                          1000000) {
+                                        settingsController.changeMinimumBet(
+                                          value: 1000000,
+                                          context: context,
+                                        );
+                                      } else {
+                                        settingsController.changeMinimumBet(
+                                          value: minBetFormatter
+                                              .getUnformattedValue()
+                                              .toDouble(),
+                                          context: context,
+                                        );
+                                      }
                                     }
                                   },
                                   style: Theme.of(context)

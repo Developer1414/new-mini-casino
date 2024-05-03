@@ -145,7 +145,7 @@ class OwnPromocodeManager extends ChangeNotifier {
                     'uid', SupabaseController.supabase?.auth.currentUser!.id);
           });
 
-          balance.placeBet(totalPrize);
+          balance.subtractMoney(totalPrize);
 
           loading(false);
 

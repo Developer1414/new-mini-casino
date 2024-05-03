@@ -31,7 +31,7 @@ class Plinko extends StatelessWidget {
   const Plinko({super.key});
 
   void cashout(BuildContext context, double profit) {
-    Provider.of<Balance>(context, listen: false).cashout(profit);
+    Provider.of<Balance>(context, listen: false).addMoney(profit);
   }
 
   void addCoefficient(BuildContext context, double coefficient) {
@@ -52,19 +52,18 @@ class Plinko extends StatelessWidget {
       TextEditingController(text: betFormatter.format('10000'));
 
   void makeBet(BuildContext context) {
-    if (Provider.of<Balance>(context, listen: false).currentBalance <
-        double.parse(betFormatter.getUnformattedValue().toStringAsFixed(2))) {
-      return;
-    }
-
     double bet = betFormatter.getUnformattedValue().toDouble();
 
-    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'plinko');
-
-    if (MyGame.instance != null) {
-      MyGame.instance!.createNewBall(context, bet);
-      AutoclickerSecure().checkAutoclicker();
-    }
+    CommonFunctions.callOnStart(
+        context: context,
+        bet: bet,
+        gameName: 'Plinko',
+        callback: () {
+          if (MyGame.instance != null) {
+            MyGame.instance!.createNewBall(context, bet);
+            AutoclickerSecure().checkAutoclicker();
+          }
+        });
   }
 
   @override

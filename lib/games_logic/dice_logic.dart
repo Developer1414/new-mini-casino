@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
@@ -76,7 +77,7 @@ class DiceLogic extends ChangeNotifier {
     numberFromToType = NumberFromToButtonType.empty;
 
     selectedNumber = number;
-    coefficient = 6.0;
+    coefficient = 5.9;
 
     notifyListeners();
   }
@@ -88,17 +89,26 @@ class DiceLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startGame({required BuildContext context}) {
-    isGameOn = true;
+  void startGame({
+    required BuildContext context,
+    required VoidCallback callback,
+  }) async {
+    CommonFunctions.callOnStart(
+        context: context,
+        bet: bet,
+        gameName: 'dice',
+        callback: () {
+          isGameOn = true;
 
-    this.context = context;
+          this.context = context;
 
-    randomNumber = Random.secure().nextInt(6) + 1;
-    profit = 0.0;
+          randomNumber = Random.secure().nextInt(6) + 1;
+          profit = 0.0;
 
-    CommonFunctions.callOnStart(context: context, bet: bet, gameName: 'dice');
+          callback.call();
 
-    notifyListeners();
+          notifyListeners();
+        });
   }
 
   void cashout() {
@@ -113,7 +123,7 @@ class DiceLogic extends ChangeNotifier {
             fourToSixList.contains(randomNumber)) {
       profit = bet * coefficient;
 
-      Provider.of<Balance>(context, listen: false).cashout(profit);
+      Provider.of<Balance>(context, listen: false).addMoney(profit);
 
       GameStatisticController.updateGameStatistic(
           gameName: 'dice',

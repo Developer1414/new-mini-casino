@@ -69,7 +69,7 @@ class LoanMoneysManager extends ChangeNotifier {
       return;
     }
 
-    balance.cashout(amount);
+    balance.addMoney(amount);
 
     userLoan = UserLoan(
       percent: 10,
@@ -131,20 +131,20 @@ class LoanMoneysManager extends ChangeNotifier {
     double loanAmount =
         userLoan!.amount + (userLoan!.amount * userLoan!.percent / 100);
 
-    if (balance.currentBalance < loanAmount) {
-      if (context.mounted) {
-        alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: 'Недостаточно средств на балансе!',
-        );
-      }
+    // if (balance.currentBalance < loanAmount) {
+    //   if (context.mounted) {
+    //     alertDialogError(
+    //       context: context,
+    //       title: 'Ошибка',
+    //       confirmBtnText: 'Окей',
+    //       text: 'Недостаточно средств на балансе!',
+    //     );
+    //   }
 
-      return;
-    }
+    //   return;
+    // }
 
-    balance.placeBet(loanAmount);
+    balance.subtractMoney(loanAmount);
     prefs.remove('loan');
 
     userLoan = null;

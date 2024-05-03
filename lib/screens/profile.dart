@@ -6,6 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
@@ -173,9 +174,8 @@ class _ProfileState extends State<Profile> {
                               margin:
                                   const EdgeInsets.symmetric(horizontal: 25.0),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15.0),
-                                color: Colors.white.withOpacity(0.3)
-                              ),
+                                  borderRadius: BorderRadius.circular(15.0),
+                                  color: Colors.white.withOpacity(0.3)),
                             ),
                             const SizedBox(height: 15.0),
                             buttonModel(
@@ -183,8 +183,23 @@ class _ProfileState extends State<Profile> {
                                 icon: FontAwesomeIcons.coins,
                                 buttonName: 'Хранилище',
                                 color: const Color.fromARGB(255, 226, 153, 57),
-                                onPressed: () =>
-                                    context.beamToNamed('/money-storage')),
+                                onPressed: () async {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+
+                                  await Provider.of<MoneyStorageManager>(
+                                          context,
+                                          listen: false)
+                                      .loadBalance(context)
+                                      .whenComplete(() {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+
+                                    context.beamToNamed('/money-storage');
+                                  });
+                                }),
                             const SizedBox(height: 15.0),
                           ],
                         ),

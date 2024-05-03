@@ -3,11 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 ThemeData darkThemeData(BuildContext context) {
   return ThemeData(
+      bottomSheetTheme:
+          const BottomSheetThemeData(backgroundColor: Colors.transparent),
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
       }),
-      scaffoldBackgroundColor:
-          Colors.transparent, //const Color.fromARGB(255, 35, 38, 51),
+      scaffoldBackgroundColor: Colors.transparent,
       textTheme: Theme.of(context).textTheme.copyWith(
             displaySmall: GoogleFonts.roboto(
                 color: Colors.grey.shade100,

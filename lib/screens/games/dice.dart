@@ -42,25 +42,21 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final balance = Provider.of<Balance>(context, listen: false);
-
     void makeBet(DiceLogic diceLogic) {
-      if (balance.currentBalance < diceLogic.bet) {
-        return;
-      }
-
       if (diceLogic.evenOrOddType == EvenOrOddButtonType.empty &&
           diceLogic.numberFromToType == NumberFromToButtonType.empty &&
           diceLogic.selectedNumber == 0) {
         return;
       }
 
-      diceLogic.startGame(context: context);
-
-      _gifController.reset();
-      _gifController.forward().whenComplete(() {
-        diceLogic.cashout();
-      });
+      diceLogic.startGame(
+          context: context,
+          callback: () {
+            _gifController.reset();
+            _gifController.forward().whenComplete(() {
+              diceLogic.cashout();
+            });
+          });
     }
 
     return PopScope(
@@ -432,7 +428,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                             diceLogic.selectedNumber == number ? 1.0 : 0.4)),
                   ),
                   AutoSizeText(
-                    'x6.0',
+                    'x5.9',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodySmall!.copyWith(
