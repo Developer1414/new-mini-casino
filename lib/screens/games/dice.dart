@@ -262,17 +262,28 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                               backgroundColor: Colors.green,
                               shape: const RoundedRectangleBorder(),
                             ),
-                            child: AutoSizeText(
-                              'СТАВКА',
-                              maxLines: 1,
-                              style: GoogleFonts.roboto(
-                                  color: diceLogic.isGameOn ||
-                                          !Dice.isFetchCompleted
-                                      ? Colors.white.withOpacity(0.4)
-                                      : Colors.white,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w900),
-                            ),
+                            child: Provider.of<Balance>(context, listen: true)
+                                    .isLoading
+                                ? const SizedBox(
+                                    width: 30.0,
+                                    height: 30.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5.0,
+                                      color: Colors.white,
+                                      strokeCap: StrokeCap.round,
+                                    ),
+                                  )
+                                : AutoSizeText(
+                                    'СТАВКА',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: diceLogic.isGameOn ||
+                                                !Dice.isFetchCompleted
+                                            ? Colors.white.withOpacity(0.4)
+                                            : Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
                           ),
                         ),
                       ),

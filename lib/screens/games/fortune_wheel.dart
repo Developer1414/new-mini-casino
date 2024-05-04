@@ -40,26 +40,26 @@ class _FortuneWheelState extends State<FortuneWheel>
   static Color smallWinColor = const Color(0xff1982c4);
 
   final List<Luck> _items = [
-    Luck("50000", maxWinColor),
-    Luck("500", smallWinColor),
-    Luck("2000", middleWinColor),
-    Luck("500", smallWinColor),
-    Luck("10000", aroundMaxWinColor),
-    Luck("500", smallWinColor),
-    Luck("2000", middleWinColor),
-    Luck("500", smallWinColor),
-    Luck("10000", aroundMaxWinColor),
-    Luck("500", smallWinColor),
-    Luck("2000", middleWinColor),
-    Luck("500", smallWinColor),
-    Luck("10000", aroundMaxWinColor),
-    Luck("500", smallWinColor),
-    Luck("2000", middleWinColor),
-    Luck("500", smallWinColor),
-    Luck("10000", aroundMaxWinColor),
-    Luck("500", smallWinColor),
-    Luck("2000", middleWinColor),
-    Luck("500", smallWinColor),
+    Luck("30x", maxWinColor),
+    Luck("2x", smallWinColor),
+    Luck("3x", middleWinColor),
+    Luck("2x", smallWinColor),
+    Luck("5x", aroundMaxWinColor),
+    Luck("2x", smallWinColor),
+    Luck("3x", middleWinColor),
+    Luck("2x", smallWinColor),
+    Luck("5x", aroundMaxWinColor),
+    Luck("2x", smallWinColor),
+    Luck("3x", middleWinColor),
+    Luck("2x", smallWinColor),
+    Luck("5x", aroundMaxWinColor),
+    Luck("2x", smallWinColor),
+    Luck("3x", middleWinColor),
+    Luck("2x", smallWinColor),
+    Luck("5x", aroundMaxWinColor),
+    Luck("2x", smallWinColor),
+    Luck("3x", middleWinColor),
+    Luck("2x", smallWinColor),
   ];
 
   @override
@@ -300,16 +300,27 @@ class _FortuneWheelState extends State<FortuneWheel>
                           backgroundColor: Colors.green,
                           shape: const RoundedRectangleBorder(),
                         ),
-                        child: AutoSizeText(
-                          'СТАВКА',
-                          maxLines: 1,
-                          style: GoogleFonts.roboto(
-                              color: !fortuneWheelLogic.isGameOn
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.4),
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.w900),
-                        ),
+                        child: Provider.of<Balance>(context, listen: true)
+                                .isLoading
+                            ? const SizedBox(
+                                width: 30.0,
+                                height: 30.0,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 5.0,
+                                  color: Colors.white,
+                                  strokeCap: StrokeCap.round,
+                                ),
+                              )
+                            : AutoSizeText(
+                                'СТАВКА',
+                                maxLines: 1,
+                                style: GoogleFonts.roboto(
+                                    color: !fortuneWheelLogic.isGameOn
+                                        ? Colors.white
+                                        : Colors.white.withOpacity(0.4),
+                                    fontSize: 20.0,
+                                    fontWeight: FontWeight.w900),
+                              ),
                       ),
                     ),
                   ),

@@ -30,6 +30,8 @@ import 'package:provider/provider.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 
 class CommonFunctions {
+  static bool isLoading = false;
+
   static Future showErrorAlertNoBalance(BuildContext context) async {
     await alertDialogConfirm(
       context: context,
@@ -65,6 +67,8 @@ class CommonFunctions {
       bool isPlaceBet = true}) async {
     final balance = Provider.of<Balance>(context, listen: false);
 
+    balance.showLoading(true);
+
     bool isError = false;
 
     await Future.wait([
@@ -82,6 +86,8 @@ class CommonFunctions {
       if (result[1] == false) {
         isError = true;
 
+        balance.showLoading(false);
+
         Provider.of<Balance>(context, listen: false).loadBalance(context);
 
         await showErrorAlertNoBalance(context);
@@ -92,27 +98,32 @@ class CommonFunctions {
 
     if (isError) return;
 
-    callback.call();
+    if (!isLoading) {
+      isLoading = true;
 
-    if (context.mounted) {
-      LocalPromocodes().getPromocode(context);
-      Provider.of<TaxManager>(context, listen: false).addTax(bet);
-    }
-
-    SupabaseController().levelUp();
-    DailyBonusManager().updateDailyBetsCount();
-
-    GameStatisticController.updateGameStatistic(
-        gameName: gameName,
-        incrementTotalGames: true,
-        gameStatisticModel: GameStatisticModel());
-
-    //AudioController.play(AudioType.bet);
-
-    if (isPlaceBet) {
       if (context.mounted) {
-        await balance.subtractMoney(bet);
+        LocalPromocodes().getPromocode(context);
+        Provider.of<TaxManager>(context, listen: false).addTax(bet);
       }
+
+      SupabaseController().levelUp();
+      DailyBonusManager().updateDailyBetsCount();
+
+      GameStatisticController.updateGameStatistic(
+          gameName: gameName,
+          incrementTotalGames: true,
+          gameStatisticModel: GameStatisticModel());
+
+      //AudioController.play(AudioType.bet);
+
+      if (isPlaceBet) {
+        if (context.mounted) {
+          await balance.subtractMoney(bet);
+          callback.call();
+        }
+      }
+
+      isLoading = false;
     }
   }
 

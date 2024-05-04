@@ -55,7 +55,7 @@ class CoinflipLogic extends ChangeNotifier {
         context: context,
         bet: bet,
         gameName: 'coinflip',
-        isPlaceBet: false,
+        isPlaceBet: true,
         callback: () {
           randomCoinflipStatus = Random.secure().nextInt(2) == 1
               ? CoinflipStatus.dollar

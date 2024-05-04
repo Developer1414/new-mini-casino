@@ -24,6 +24,7 @@ class DiceClassicRound {
 class DiceClassicLogic extends ChangeNotifier {
   bool isGameOn = false;
   bool isShowInputBet = false;
+  bool isProfitTaked = false;
 
   double profit = 0.0;
   double bet = 0.0;
@@ -43,11 +44,6 @@ class DiceClassicLogic extends ChangeNotifier {
 
   TextEditingController textFieldCoefficient =
       TextEditingController(text: '2.0');
-
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
-    notifyListeners();
-  }
 
   void changeBet(double value) {
     bet = value;
@@ -83,12 +79,12 @@ class DiceClassicLogic extends ChangeNotifier {
     required BuildContext context,
     required bool more,
   }) async {
-    if (AutoclickerSecure.isCanPlay) {
+    if (AutoclickerSecure.isCanPlay && !isProfitTaked) {
       await CommonFunctions.callOnStart(
           context: context,
           bet: bet,
           gameName: 'dice-classic',
-          callback: () {
+          callback: () async {
             this.context = context;
 
             isGameOn = true;
@@ -105,16 +101,18 @@ class DiceClassicLogic extends ChangeNotifier {
     }
   }
 
-  void more({required BuildContext context}) {
-    startGame(context: context, more: true);
+  void more({required BuildContext context}) async {
+    await startGame(context: context, more: true);
   }
 
-  void less({required BuildContext context}) {
-    startGame(context: context, more: false);
+  void less({required BuildContext context}) async {
+    await startGame(context: context, more: false);
   }
 
   Future cashout() async {
     profit = bet * double.parse(textFieldCoefficient.text);
+
+    isProfitTaked = true;
 
     await Provider.of<Balance>(context, listen: false)
         .addMoney(profit)
@@ -150,6 +148,8 @@ class DiceClassicLogic extends ChangeNotifier {
 
       AutoclickerSecure().checkAutoclicker();
     });
+
+    isProfitTaked = false;
   }
 
   void loss() {
@@ -173,20 +173,20 @@ class DiceClassicLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  void incrementCoefficient(bool more) {
+  Future incrementCoefficient(bool more) async {
     targetCoefficient = Random.secure().nextInt(1000001);
 
     isGameOn = false;
 
     if (more) {
       if (targetCoefficient >= moreNumber && targetCoefficient <= 999999) {
-        cashout();
+        await cashout();
       } else {
         loss();
       }
     } else {
       if (targetCoefficient >= 0 && targetCoefficient <= lessNumber) {
-        cashout();
+        await cashout();
       } else {
         loss();
       }

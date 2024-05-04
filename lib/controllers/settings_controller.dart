@@ -118,10 +118,11 @@ class SettingsController extends ChangeNotifier {
     if (!prefs.containsKey('minBet')) {
       minBet = 100.0;
     } else {
-      minBet =
-          prefs.getDouble('minBet')! >= 1000000 && SupabaseController.isPremium
+      minBet = prefs.getDouble('minBet')! > 1000000
+          ? SupabaseController.isPremium
               ? prefs.getDouble('minBet')!
-              : 1000000;
+              : 1000000
+          : prefs.getDouble('minBet')!;
     }
 
     Settings.minBetController.text =

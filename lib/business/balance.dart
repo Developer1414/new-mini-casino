@@ -7,33 +7,18 @@ import 'package:new_mini_casino/controllers/supabase_controller.dart';
 class Balance extends ChangeNotifier {
   double balance = 500.0;
 
+  bool isLoading = false;
+
+  void showLoading(bool isActive) {
+    isLoading = isActive;
+    notifyListeners();
+  }
+
   double get currentBalance => balance;
 
   String get currentBalanceString =>
       NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
           .format(balance);
-
-  Future subtractMoney(double bet) async {
-    await SupabaseController.supabase!
-        .from('users')
-        .select('*')
-        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-        .then((value) async {
-      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
-
-      double currentServerBalance = double.parse(map['balance'].toString());
-
-      if (bet > currentServerBalance) {
-        return;
-      } else {
-        currentServerBalance -= bet;
-
-        await updateBalance(currentServerBalance);
-      }
-    });
-
-    notifyListeners();
-  }
 
   Future<bool> checkOnExistSpecificAmount(double amount) async {
     double currentServerBalance = 0.0;
@@ -48,6 +33,31 @@ class Balance extends ChangeNotifier {
     });
 
     return amount <= currentServerBalance;
+  }
+
+  Future subtractMoney(double bet) async {
+    showLoading(true);
+
+    await SupabaseController.supabase!
+        .from('users')
+        .select()
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      double currentServerBalance = double.parse(map['balance'].toString());
+
+      if (bet > currentServerBalance) {
+        showLoading(false);
+        return;
+      } else {
+        currentServerBalance -= bet;
+
+        await updateBalance(currentServerBalance);
+      }
+    });
+
+    notifyListeners();
   }
 
   Future addMoney(double profit) async {
@@ -89,6 +99,8 @@ class Balance extends ChangeNotifier {
             'uid', SupabaseController.supabase?.auth.currentUser!.id);
 
     balance = value;
+
+    showLoading(false);
 
     notifyListeners();
   }

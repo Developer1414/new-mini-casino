@@ -71,6 +71,20 @@ class MinesLogic extends ChangeNotifier {
     AdService.showInterstitialAd(context: context, func: () {});
   }
 
+  List<int> generateMinesList(int mines) {
+    List<int> mineIndexes = [];
+    Random random = Random.secure();
+
+    while (mineIndexes.length < mines) {
+      int index = random.nextInt(25);
+      if (!mineIndexes.contains(index)) {
+        mineIndexes.add(index);
+      }
+    }
+
+    return mineIndexes;
+  }
+
   void startGame({required BuildContext context}) async {
     if (AutoclickerSecure.isCanPlay) {
       CommonFunctions.callOnStart(
@@ -89,15 +103,7 @@ class MinesLogic extends ChangeNotifier {
 
             this.context = context;
 
-            int rand = 0;
-
-            while (minesIndex.length != countMines) {
-              rand = Random.secure().nextInt(25);
-
-              if (!minesIndex.contains(rand)) {
-                minesIndex.add(rand);
-              }
-            }
+            minesIndex = generateMinesList(countMines);
 
             notifyListeners();
           });

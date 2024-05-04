@@ -268,7 +268,17 @@ class DiceClassic extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: buttonModel(
-                                      title: 'Меньше',
+                                      title: Provider.of<Balance>(context, listen: true).isLoading
+                                          ? const SizedBox(
+                                                    width: 30.0,
+                                              height: 30.0,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 5.5,
+                                                color: Colors.white,
+                                                strokeCap: StrokeCap.round,
+                                              ),
+                                            )
+                                          : 'Меньше',
                                       subtitle:
                                           ' 0 - ${diceClassicLogic.lessNumber}',
                                       color: Colors.redAccent,
@@ -280,7 +290,17 @@ class DiceClassic extends StatelessWidget {
                                 ),
                                 Expanded(
                                   child: buttonModel(
-                                      title: 'Больше',
+                                      title: Provider.of<Balance>(context, listen: true).isLoading
+                                          ? const SizedBox(
+                                              width: 30.0,
+                                              height: 30.0,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 5.0,
+                                                color: Colors.white,
+                                                strokeCap: StrokeCap.round,
+                                              ),
+                                            )
+                                          : 'Больше',
                                       subtitle:
                                           '${diceClassicLogic.moreNumber} - 999999',
                                       color: Colors.green,
@@ -391,7 +411,7 @@ class DiceClassic extends StatelessWidget {
   }
 
   Widget buttonModel(
-      {required String title,
+      {required dynamic title,
       required String subtitle,
       required Color color,
       required IconData? icon,
@@ -413,17 +433,24 @@ class DiceClassic extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AutoSizeText(title,
-                  maxLines: 1,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 20.0,
-                      color: Theme.of(context).textTheme.bodyMedium!.color)),
-              Text(subtitle,
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 10.0,
-                      color: Theme.of(context).textTheme.bodyMedium!.color)),
+              title.runtimeType == String
+                  ? AutoSizeText(title,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 20.0,
+                          color: Theme.of(context).textTheme.bodyMedium!.color))
+                  : title.runtimeType == SizedBox
+                      ? title
+                      : Container(),
+              title.runtimeType == SizedBox
+                  ? Container()
+                  : Text(subtitle,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 10.0,
+                          color:
+                              Theme.of(context).textTheme.bodyMedium!.color)),
             ],
           ),
         ),

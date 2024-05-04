@@ -60,7 +60,6 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-
     return PopScope(
       canPop: !context.read<CrashLogic>().isGameOn,
       child: GestureDetector(
@@ -304,20 +303,32 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                       : Colors.green,
                               shape: const RoundedRectangleBorder(),
                             ),
-                            child: AutoSizeText(
-                              crashLogic.timer.isActive &&
-                                      crashLogic.crashStatus == CrashStatus.win
-                                  ? 'СТОП'
-                                  : crashLogic.isGameOn &&
-                                          crashLogic.timer.isActive
-                                      ? 'ЗАБРАТЬ'
-                                      : 'СТАВКА',
-                              maxLines: 1,
-                              style: GoogleFonts.roboto(
-                                  color: Colors.white,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w900),
-                            ),
+                            child: Provider.of<Balance>(context, listen: true)
+                                    .isLoading
+                                ? const SizedBox(
+                                    width: 30.0,
+                                    height: 30.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5.0,
+                                      color: Colors.white,
+                                      strokeCap: StrokeCap.round,
+                                    ),
+                                  )
+                                : AutoSizeText(
+                                    crashLogic.timer.isActive &&
+                                            crashLogic.crashStatus ==
+                                                CrashStatus.win
+                                        ? 'СТОП'
+                                        : crashLogic.isGameOn &&
+                                                crashLogic.timer.isActive
+                                            ? 'ЗАБРАТЬ'
+                                            : 'СТАВКА',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color: Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
                           ),
                         ),
                       ),

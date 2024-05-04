@@ -25,16 +25,25 @@ class Coinflip extends StatefulWidget {
 class _CoinflipState extends State<Coinflip>
     with SingleTickerProviderStateMixin {
   String frontCoin = "assets/coinflip/coinFront.png";
-  String backCoint = "assets/coinflip/coinBack.png";
+  String backCoin = "assets/coinflip/coinBack.png";
 
   late final AnimationController _controller;
   late final Animation flipAnimation;
 
   int randAngle = 540;
 
-  String imageCoin(x) {
-    int t = (-x ~/ (pi / 2)) % 4;
-    return t == 0 || t == 3 || t == 4 ? frontCoin : backCoint;
+  bool imageCoin(double x) {
+    // Задаём критический угол
+    double criticalAngle = pi / 4;
+
+    // Приводим x к диапазону от 0 до 2π (от 0 до 360 градусов)
+    x %= (2 * pi);
+
+    // Определяем, на какой стороне монеты находится угол поворота
+    bool isFront = x < criticalAngle || x > 2 * pi - criticalAngle;
+
+    // Возвращаем путь к изображению монеты
+    return isFront;
   }
 
   @override
@@ -231,7 +240,7 @@ class _CoinflipState extends State<Coinflip>
                                                   child: Image.asset(
                                                       value[index]
                                                           ? frontCoin
-                                                          : backCoint),
+                                                          : backCoin),
                                                 ),
                                               );
                                             },
@@ -337,21 +346,35 @@ class _CoinflipState extends State<Coinflip>
                                               255, 98, 206, 107),
                                           shape: const RoundedRectangleBorder(),
                                         ),
-                                        child: Transform.translate(
-                                          offset: const Offset(0.0, 1.0),
-                                          child: Image.asset(frontCoin,
-                                              width: 38.0,
-                                              height: 38.0,
-                                              opacity: !coinflipLogic
-                                                          .isGameOn ||
-                                                      _controller.status !=
-                                                          AnimationStatus
-                                                              .forward
-                                                  ? const AlwaysStoppedAnimation(
-                                                      1.0)
-                                                  : const AlwaysStoppedAnimation(
-                                                      0.4)),
-                                        ),
+                                        child: Provider.of<Balance>(context,
+                                                    listen: true)
+                                                .isLoading
+                                            ? const SizedBox(
+                                                width: 30.0,
+                                                height: 30.0,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 5.0,
+                                                  color: Colors.white,
+                                                  strokeCap: StrokeCap.round,
+                                                ),
+                                              )
+                                            : Transform.translate(
+                                                offset: const Offset(0.0, 1.0),
+                                                child: Image.asset(frontCoin,
+                                                    width: 38.0,
+                                                    height: 38.0,
+                                                    opacity: !coinflipLogic
+                                                                .isGameOn ||
+                                                            _controller
+                                                                    .status !=
+                                                                AnimationStatus
+                                                                    .forward
+                                                        ? const AlwaysStoppedAnimation(
+                                                            1.0)
+                                                        : const AlwaysStoppedAnimation(
+                                                            0.4)),
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -390,21 +413,35 @@ class _CoinflipState extends State<Coinflip>
                                               255, 255, 102, 102),
                                           shape: const RoundedRectangleBorder(),
                                         ),
-                                        child: Transform.translate(
-                                          offset: const Offset(0.0, 1.0),
-                                          child: Image.asset(backCoint,
-                                              width: 38.0,
-                                              height: 38.0,
-                                              opacity: !coinflipLogic
-                                                          .isGameOn ||
-                                                      _controller.status !=
-                                                          AnimationStatus
-                                                              .forward
-                                                  ? const AlwaysStoppedAnimation(
-                                                      1.0)
-                                                  : const AlwaysStoppedAnimation(
-                                                      0.4)),
-                                        ),
+                                        child: Provider.of<Balance>(context,
+                                                    listen: true)
+                                                .isLoading
+                                            ? const SizedBox(
+                                                width: 30.0,
+                                                height: 30.0,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 5.0,
+                                                  color: Colors.white,
+                                                  strokeCap: StrokeCap.round,
+                                                ),
+                                              )
+                                            : Transform.translate(
+                                                offset: const Offset(0.0, 1.0),
+                                                child: Image.asset(backCoin,
+                                                    width: 38.0,
+                                                    height: 38.0,
+                                                    opacity: !coinflipLogic
+                                                                .isGameOn ||
+                                                            _controller
+                                                                    .status !=
+                                                                AnimationStatus
+                                                                    .forward
+                                                        ? const AlwaysStoppedAnimation(
+                                                            1.0)
+                                                        : const AlwaysStoppedAnimation(
+                                                            0.4)),
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -477,41 +514,37 @@ class _CoinflipState extends State<Coinflip>
                   controller: screenshotController,
                   child:
                       Consumer<CoinflipLogic>(builder: (ctx, coinflipLogic, _) {
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: Center(
-                              child: Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 15.0, right: 15.0),
-                                  child: AnimatedBuilder(
-                                      animation: _controller,
-                                      builder: (context, child) {
-                                        double x = -randAngle *
-                                            pi /
-                                            180 *
-                                            flipAnimation.value;
-                                        double y =
-                                            12 * pi / 180 * flipAnimation.value;
-                                        double z =
-                                            30 * pi / 180 * flipAnimation.value;
+                    return Center(
+                      child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (context, child) {
+                          double height = 100 * sin(flipAnimation.value * pi);
+                          double rotationAngle = 360.0 * flipAnimation.value;
 
-                                        return SizedBox(
-                                          height: 250,
-                                          width: 250,
-                                          child: Transform(
-                                            transform: Matrix4.identity()
-                                              ..setEntry(3, 2, 0.005)
-                                              ..rotateY(y)
-                                              ..rotateX(x)
-                                              ..rotateZ(z),
-                                            alignment: Alignment.center,
-                                            child: Image.asset(imageCoin(x)),
-                                          ),
-                                        );
-                                      }))),
-                        ),
-                      ],
+                          double x =
+                              -randAngle * pi / 180 * flipAnimation.value;
+
+                          return SizedBox(
+                            height: 150,
+                            width: 150,
+                            child: Transform(
+                              transform: Matrix4.identity()
+                                ..rotateX(rotationAngle * pi / 180),
+                              child: Transform.translate(
+                                offset: Offset(10.0, -height),
+                                child: AnimatedCrossFade(
+                                  duration: const Duration(milliseconds: 300),
+                                  crossFadeState: imageCoin(x)
+                                      ? CrossFadeState.showFirst
+                                      : CrossFadeState.showSecond,
+                                  firstChild: Image.asset(frontCoin),
+                                  secondChild: Image.asset(backCoin),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   }),
                 ),

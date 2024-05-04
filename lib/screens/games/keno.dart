@@ -237,18 +237,31 @@ class Keno extends StatelessWidget {
                               backgroundColor: Colors.green,
                               shape: const RoundedRectangleBorder(),
                             ),
-                            child: AutoSizeText(
-                              kenoLogic.userNumbersList.isEmpty ? 
-                              'ВЫБЕРИТЕ ЯЧЕЙКИ' : 'СТАВКА',
-                              maxLines: 1,
-                              style: GoogleFonts.roboto(
-                                  color: kenoLogic.userNumbersList.isEmpty ||
-                                          kenoLogic.isGameOn
-                                      ? Colors.white.withOpacity(0.4)
-                                      : Colors.white,
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.w900),
-                            ),
+                            child: Provider.of<Balance>(context, listen: true)
+                                    .isLoading
+                                ? const SizedBox(
+                                    width: 30.0,
+                                    height: 30.0,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 5.0,
+                                      color: Colors.white,
+                                      strokeCap: StrokeCap.round,
+                                    ),
+                                  )
+                                : AutoSizeText(
+                                    kenoLogic.userNumbersList.isEmpty
+                                        ? 'ВЫБЕРИТЕ ЯЧЕЙКИ'
+                                        : 'СТАВКА',
+                                    maxLines: 1,
+                                    style: GoogleFonts.roboto(
+                                        color:
+                                            kenoLogic.userNumbersList.isEmpty ||
+                                                    kenoLogic.isGameOn
+                                                ? Colors.white.withOpacity(0.4)
+                                                : Colors.white,
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w900),
+                                  ),
                           ),
                         ),
                       ),
