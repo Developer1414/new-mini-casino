@@ -1,6 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 Widget smallHelperPanel(
     {required BuildContext context,
@@ -13,43 +15,40 @@ Widget smallHelperPanel(
     Color? color}) {
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white.withOpacity(0.1),
-      border: Border.all(
-          color: borderColor ?? Colors.white.withOpacity(0.5), width: 2.3),
       borderRadius: BorderRadius.circular(12.0),
+      color: const Color(0xffffba08).withOpacity(0.1),
+      border: Border.all(
+        color: const Color(0xffffba08),
+        width: 2.0,
+      ),
     ),
     child: Padding(
       padding: const EdgeInsets.all(15.0),
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           icon == null
               ? Container()
               : Padding(
-                  padding: const EdgeInsets.only(
-                      left: 15.0, right: 15.0, bottom: 15.0),
+                  padding: const EdgeInsets.only(right: 10.0),
                   child: FaIcon(
                     icon,
-                    color: iconColor ??
-                        Theme.of(context)
-                            .textTheme
-                            .bodySmall!
-                            .color!
-                            .withOpacity(0.7),
-                    size: iconSize ?? 50.0,
+                    color:
+                        iconColor ?? const Color.fromARGB(255, 252, 237, 205),
+                    size: iconSize ?? 25.0,
                   ),
                 ),
-          AutoSizeText(text,
-              textAlign: TextAlign.center,
-              style: textStyle ??
-                  Theme.of(context).textTheme.displaySmall!.copyWith(
-                      fontSize: 12.0,
-                      letterSpacing: 0.1,
-                      color: Theme.of(context)
-                          .textTheme
-                          .displaySmall!
-                          .color!
-                          .withOpacity(0.7))),
+          Expanded(
+            child: AutoSizeText(text,
+                textAlign: TextAlign.center,
+                style: textStyle ??
+                    GoogleFonts.roboto(
+                        fontSize: 12.0,
+                        letterSpacing: 0.1,
+                        fontWeight: FontWeight.w600,
+                        color: const Color.fromARGB(255, 252, 237, 205))),
+          ),
         ],
       ),
     ),

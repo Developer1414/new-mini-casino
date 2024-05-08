@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/notification_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
@@ -10,7 +10,6 @@ import 'package:new_mini_casino/widgets/notifications/friend_code_moneys_model.d
 import 'package:new_mini_casino/widgets/notifications/news_model.dart';
 import 'package:new_mini_casino/widgets/notifications/premium_gift_model.dart';
 import 'package:new_mini_casino/widgets/notifications/transfer_moneys_model.dart';
-import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 
 class Notifications extends StatelessWidget {
@@ -39,7 +38,7 @@ class Notifications extends StatelessWidget {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                            Beamer.of(context).beamBack();
+                            Navigator.of(context).pop();
                           },
                           icon: const FaIcon(
                             FontAwesomeIcons.xmark,
@@ -69,12 +68,25 @@ class Notifications extends StatelessWidget {
                     return map.isEmpty
                         ? Center(
                             child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 15.0),
-                              child: smallHelperPanel(
-                                context: context,
-                                icon: FontAwesomeIcons.solidBellSlash,
-                                text: 'Новых уведомлений нет',
+                              padding: const EdgeInsets.all(15.0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const FaIcon(
+                                    FontAwesomeIcons.solidBellSlash,
+                                    color: Colors.white60,
+                                    size: 30.0,
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  AutoSizeText('Новых уведомлений нет',
+                                      textAlign: TextAlign.center,
+                                      style: GoogleFonts.roboto(
+                                        fontSize: 15.0,
+                                        letterSpacing: 0.1,
+                                        fontWeight: FontWeight.w700,
+                                        color: Colors.white60,
+                                      )),
+                                ],
                               ),
                             ),
                           )

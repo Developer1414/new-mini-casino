@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -289,6 +288,11 @@ class _FortuneWheelState extends State<FortuneWheel>
                                   return;
                                 }
 
+                                if (Provider.of<Balance>(context, listen: false)
+                                    .isLoading) {
+                                  return;
+                                }
+
                                 fortuneWheelLogic.startGame(
                                     context: context,
                                     callback: () {
@@ -338,7 +342,7 @@ class _FortuneWheelState extends State<FortuneWheel>
                       onPressed: context.watch<FortuneWheelLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -369,8 +373,9 @@ class _FortuneWheelState extends State<FortuneWheel>
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<FortuneWheelLogic>().isGameOn
                             ? null
-                            : () => context
-                                .beamToNamed('/game-statistic/fortuneWheel'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'fortuneWheel'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

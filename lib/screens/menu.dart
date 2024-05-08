@@ -1,7 +1,6 @@
 import 'dart:io' as ui;
 import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -63,7 +62,7 @@ class _AllGamesState extends State<AllGames> {
                         if (raffleManager.isLoading) return;
 
                         await raffleManager.loadRaffleDates().whenComplete(() {
-                          context.beamToNamed('/raffle-info');
+                          Navigator.of(context).pushNamed('/raffle-info');
                         });
                       },
                       style: ElevatedButton.styleFrom(
@@ -156,7 +155,7 @@ class _AllGamesState extends State<AllGames> {
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  context.beamToNamed('/profile');
+                  Navigator.of(context).pushNamed('/profile');
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.solidUser,
@@ -186,7 +185,7 @@ class _AllGamesState extends State<AllGames> {
             IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
-                onPressed: () => context.beamToNamed('/bank'),
+                onPressed: () => Navigator.of(context).pushNamed('/bank'),
                 icon: FaIcon(
                   FontAwesomeIcons.buildingColumns,
                   color: Colors.orangeAccent,
@@ -199,7 +198,8 @@ class _AllGamesState extends State<AllGames> {
             IconButton(
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
-                onPressed: () => context.beamToNamed('/notifications'),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed('/notifications'),
                 icon: StreamBuilder(
                     stream: SupabaseController.supabase
                         ?.from('notifications')
@@ -269,7 +269,7 @@ class _AllGamesState extends State<AllGames> {
                           ))
                       .toList(),
                   onChanged: (value) {
-                    context.beamToNamed(AllGames.items.entries
+                    Navigator.of(context).pushNamed(AllGames.items.entries
                         .where((element) => element.value == value)
                         .first
                         .key);
@@ -336,7 +336,6 @@ class _AllGamesState extends State<AllGames> {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            const SizedBox(height: 5.0),
                             AutoSizeText(
                               'Заплатите налог, чтобы продолжить играть',
                               textAlign: TextAlign.center,
@@ -345,15 +344,27 @@ class _AllGamesState extends State<AllGames> {
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.w600),
                             ),
+                            const SizedBox(height: 15.0),
+                            buttonModel(
+                                context: context,
+                                icon: FontAwesomeIcons.landmark,
+                                buttonName: 'Заплатить налог',
+                                color: Theme.of(context).canvasColor,
+                                onPressed: () {
+                                  Navigator.of(context).pushNamed('/tax');
+                                }),
                           ],
                         ),
-                        AutoSizeText(
-                          'P.S. а с Premium платить налоги не нужно :)',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.roboto(
-                              color: Colors.white.withOpacity(0.5),
-                              fontSize: 12.0,
-                              fontWeight: FontWeight.w600),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 15.0),
+                          child: AutoSizeText(
+                            'P.S. а с Premium платить налоги не нужно :)',
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.roboto(
+                                color: Colors.white.withOpacity(0.5),
+                                fontSize: 12.0,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ],
                     ),
@@ -387,8 +398,9 @@ class _AllGamesState extends State<AllGames> {
                                       buttonTitle:
                                           GamesController.games[index].title,
                                       onTap: () {
-                                        context.beamToNamed(GamesController
-                                            .games[index].nextScreen);
+                                        Navigator.of(context).pushNamed(
+                                            GamesController
+                                                .games[index].nextScreen);
                                       },
                                       buttonColor:
                                           // Color.fromARGB(255, 136, 71, 126),
@@ -443,8 +455,9 @@ class _AllGamesState extends State<AllGames> {
                                           buttonTitle: GamesController
                                               .games[index].title,
                                           onTap: () {
-                                            context.beamToNamed(GamesController
-                                                .games[index].nextScreen);
+                                            Navigator.of(context).pushNamed(
+                                                GamesController
+                                                    .games[index].nextScreen);
                                           },
                                           buttonColor: GamesController
                                               .games[index].buttonColor,
@@ -484,7 +497,7 @@ class _AllGamesState extends State<AllGames> {
                                 }
                               }
 
-                              context.beamToNamed(availableGames[
+                              Navigator.of(context).pushNamed(availableGames[
                                   Random().nextInt(availableGames.length)]);
                             },
                           ),
@@ -627,7 +640,6 @@ class _AllGamesState extends State<AllGames> {
           ),
         ));
   }
-
   Widget premiumButton() {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
@@ -635,7 +647,7 @@ class _AllGamesState extends State<AllGames> {
           height: 60.0,
           child: ElevatedButton(
             onPressed: () async {
-              context.beamToNamed('/premium');
+              Navigator.of(context).pushNamed('/premium');
             },
             style: ElevatedButton.styleFrom(
               elevation: 5,

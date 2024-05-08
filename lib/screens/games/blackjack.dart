@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -188,6 +187,13 @@ class Blackjack extends StatelessWidget {
                                                         BlackjackType.idle
                                                 ? null
                                                 : () {
+                                                    if (Provider.of<Balance>(
+                                                            context,
+                                                            listen: false)
+                                                        .isLoading) {
+                                                      return;
+                                                    }
+
                                                     if (!blackjackLogic
                                                         .isGameOn) {
                                                       blackjackLogic.startGame(
@@ -248,7 +254,7 @@ class Blackjack extends StatelessWidget {
                           onPressed: context.watch<BlackjackLogic>().isGameOn
                               ? null
                               : () {
-                                  Beamer.of(context).beamBack();
+                                  Navigator.of(context).pop();
                                 },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -280,8 +286,9 @@ class Blackjack extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             onPressed: context.watch<BlackjackLogic>().isGameOn
                                 ? null
-                                : () => context
-                                    .beamToNamed('/game-statistic/blackjack'),
+                                : () => Navigator.of(context).pushNamed(
+                                    '/game-statistic',
+                                    arguments: 'blackjack'),
                             icon: FaIcon(
                               FontAwesomeIcons.circleInfo,
                               color: Theme.of(context)

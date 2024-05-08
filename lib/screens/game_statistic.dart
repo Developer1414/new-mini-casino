@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -32,8 +31,7 @@ class GameStatistic extends StatelessWidget {
                   splashRadius: 25.0,
                   padding: EdgeInsets.zero,
                   onPressed: () {
-                    context.beamBack();
-                    //Beamer.of(context).beamBack();
+                    Navigator.of(context).pop();
                   },
                   icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
@@ -123,9 +121,10 @@ class GameStatistic extends StatelessWidget {
                             padding: const EdgeInsets.only(
                                 left: 15.0, right: 15.0, bottom: 15.0),
                             child: smallHelperPanel(
+                              icon: FontAwesomeIcons.circleInfo,
                               context: context,
                               text:
-                                  'Вся статистика хранится на вашем устройстве. Если вы удалите игру или очистите кеш, данные будут удалены.',
+                                  'Вся статистика хранится на вашем устройстве. Если Вы удалите игру или очистите кеш - данные будут удалены.',
                             ),
                           ),
                         ],
@@ -146,8 +145,7 @@ class GameStatistic extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(10.0),
-        border: Border.all(
-            color:  Colors.white.withOpacity(0.5), width: 2.3),
+        border: Border.all(color: Colors.white.withOpacity(0.5), width: 2.3),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

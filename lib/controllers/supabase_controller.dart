@@ -1,10 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:math';
-
-import 'package:beamer/beamer.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:in_app_review/in_app_review.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/audio_controller.dart';
 import 'package:new_mini_casino/controllers/friend_code_controller.dart';
@@ -24,8 +23,10 @@ import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:restart_app/restart_app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:new_mini_casino/widgets/engineering_works_alert_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum AuthorizationAction { login, register }
 
@@ -60,6 +61,7 @@ class SupabaseController extends ChangeNotifier {
   void loading(bool value, {String? text}) {
     isLoading = value;
     loadingText = text ?? 'Пожалуйста, подождите...';
+
     notifyListeners();
   }
 
@@ -100,34 +102,41 @@ class SupabaseController extends ChangeNotifier {
         try {
           userName = name;
 
-          await SupabaseController.supabase!.auth
-              .signUp(
+          await SupabaseController.supabase!.auth.signUp(
             email: email.trim(),
             password: password,
-          )
-              .then((value) {
-            loading(false);
-            context.beamToReplacementNamed('/verify-email/$email/false');
-          });
+          );
+
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              '/verify-email', (route) => false,
+              arguments: [email, false]);
         } on AuthException catch (e) {
           loading(false);
 
-          if (e.statusCode == '429') {
-            if (context.mounted) {
-              alertDialogError(
-                  context: context,
-                  title: 'Ошибка',
-                  confirmBtnText: 'Окей',
-                  text:
-                      'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
-            }
+          if (kDebugMode) {
+            print('signUp: ${e.message}');
           }
 
-          if (kDebugMode) {
-            print('signUp: $e');
+          if (e.statusCode == '409') {
+            alertDialogError(
+                context: context,
+                title: 'Ошибка',
+                confirmBtnText: 'Окей',
+                text: 'Адрес электронной почты уже существует!');
+          }
+
+          if (e.statusCode == '429') {
+            alertDialogError(
+                context: context,
+                title: 'Ошибка',
+                confirmBtnText: 'Окей',
+                text:
+                    'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
           }
         }
       } else {
+        loading(false);
+
         AccountExceptionController.showException(
             context: context, code: 'nickname_already_exist');
       }
@@ -224,7 +233,8 @@ class SupabaseController extends ChangeNotifier {
       );
 
       if (context.mounted) {
-        context.beamToNamed('/verify-email/$email/true');
+        Navigator.of(context)
+            .pushNamed('/verify-email', arguments: [email, true]);
       }
     } on AuthException catch (e) {
       if (e.statusCode == '429') {
@@ -262,7 +272,7 @@ class SupabaseController extends ChangeNotifier {
         alertDialogSuccess(
             context: context,
             title: 'Уведомление',
-            barrierDismissible: false,
+            canCloseAlert: false,
             confirmBtnText: 'Перезайти',
             text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
             onConfirmBtnTap: () => Restart.restartApp());
@@ -346,8 +356,6 @@ class SupabaseController extends ChangeNotifier {
   }
 
   Future<bool> checkNameOnAvailability({required String name}) async {
-    loading(true);
-
     int count = 0;
 
     try {
@@ -368,8 +376,6 @@ class SupabaseController extends ChangeNotifier {
       }
     }
 
-    loading(false);
-
     return count > 0;
   }
 
@@ -386,7 +392,11 @@ class SupabaseController extends ChangeNotifier {
 
       await createUserDates(name: userName);
     } on AuthException catch (e) {
-      if (e.statusCode == '401') {
+      if (kDebugMode) {
+        print('ErrorVerifyEmail: ${e.message}. Code: ${e.statusCode}');
+      }
+
+      if (e.statusCode == '403') {
         if (context.mounted) {
           alertDialogError(
               context: context,
@@ -463,7 +473,7 @@ class SupabaseController extends ChangeNotifier {
         alertDialogSuccess(
             context: context,
             title: 'Уведомление',
-            barrierDismissible: false,
+            canCloseAlert: false,
             confirmBtnText: 'Перезайти',
             text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
             onConfirmBtnTap: () => Restart.restartApp());
@@ -473,8 +483,14 @@ class SupabaseController extends ChangeNotifier {
     } on PostgrestException catch (e) {
       loading(false);
 
+      alertDialogError(
+          context: context,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: 'createUserDates: ${e.message} (Code: ${e.code})');
+
       if (kDebugMode) {
-        print('createUserDates: $e');
+        print('createUserDates: ${e.message} (Code: ${e.code})');
       }
     }
   }
@@ -595,6 +611,39 @@ class SupabaseController extends ChangeNotifier {
     return result;
   }
 
+  Future<bool> checkForUpdate() async {
+    bool result = false;
+
+    await InAppUpdate.checkForUpdate().then((info) async {
+      result = info.updateAvailability == UpdateAvailability.updateAvailable;
+    }).catchError((e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    });
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    final InAppReview inAppReview = InAppReview.instance;
+
+    if (prefs.containsKey('isFirstGameStarted')) {
+      if (!prefs.containsKey('requestReviewDate') ||
+          DateTime.now()
+                  .difference(
+                      DateTime.parse(prefs.getString('requestReviewDate')!))
+                  .inDays >=
+              30) {
+        if (await inAppReview.isAvailable()) {
+          inAppReview.requestReview().whenComplete(() {
+            prefs.setString('requestReviewDate', DateTime.now().toString());
+          });
+        }
+      }
+    }
+
+    return result;
+  }
+
   Future loadGameServices(BuildContext context) async {
     // if (!kDebugMode) {
     //   await FreeraspService().initSecurityState(context);
@@ -607,33 +656,54 @@ class SupabaseController extends ChangeNotifier {
             text: 'Ваш аккаунт временно заморожен!',
             isCanPop: false);
       } else {
-        await checkOnEngineeringWorks().then((isEngineeringWorksEnabled) async {
-          if (isEngineeringWorksEnabled) {
-            showEngineeringWorksAlertDialog(context);
+        await checkForUpdate().then((isExistUpdate) async {
+          if (isExistUpdate) {
+            await alertDialogSuccess(
+                context: context,
+                title: 'Новая версия',
+                confirmBtnText: 'Установить',
+                canCloseAlert: false,
+                text: 'Доступна новая версия игры!',
+                onConfirmBtnTap: () async {
+                  if (!await launchUrl(
+                      Uri.parse(
+                          'https://play.google.com/store/apps/details?id=com.revens.mini.casino'),
+                      mode: LaunchMode.externalNonBrowserApplication)) {
+                    throw Exception(
+                        'Could not launch ${Uri.parse('https://play.google.com/store/apps/details?id=com.revens.mini.casino')}');
+                  }
+                });
           } else {
-            await checkPremiumAvailability(context);
+            await checkOnEngineeringWorks()
+                .then((isEngineeringWorksEnabled) async {
+              if (isEngineeringWorksEnabled) {
+                showEngineeringWorksAlertDialog(context);
+              } else {
+                await checkPremiumAvailability(context);
 
-            await ProfileController.getUserProfile(context);
+                await ProfileController.getUserProfile(context);
 
-            await provider.Provider.of<Balance>(context, listen: false)
-                .loadBalance(context);
+                await provider.Provider.of<Balance>(context, listen: false)
+                    .loadBalance(context);
 
-            await provider.Provider.of<MoneyStorageManager>(context,
-                    listen: false)
-                .loadBalance(context);
+                await provider.Provider.of<MoneyStorageManager>(context,
+                        listen: false)
+                    .loadBalance(context);
 
-            await provider.Provider.of<TaxManager>(context, listen: false)
-                .getTax();
+                await provider.Provider.of<TaxManager>(context, listen: false)
+                    .getTax();
 
-            await LocalPromocodes().initializeMyPromocodes();
+                await LocalPromocodes().initializeMyPromocodes();
 
-            await provider.Provider.of<SettingsController>(context,
-                    listen: false)
-                .loadSettings(context);
+                await provider.Provider.of<SettingsController>(context,
+                        listen: false)
+                    .loadSettings(context);
 
-            await AdService.loadCountBet();
+                await AdService.loadCountBet();
 
-            await AudioController.initializeAudios();
+                await AudioController.initializeAudios();
+              }
+            });
           }
         });
       }

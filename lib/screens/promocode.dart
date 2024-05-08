@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -140,7 +139,7 @@ class _PromocodeState extends State<Promocode> {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                            Beamer.of(context).beamBack();
+                            Navigator.of(context).pop();
                           },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -159,8 +158,8 @@ class _PromocodeState extends State<Promocode> {
                         child: IconButton(
                             splashRadius: 25.0,
                             padding: EdgeInsets.zero,
-                            onPressed: () =>
-                                context.beamToNamed('/own-promocode'),
+                            onPressed: () => Navigator.of(context)
+                                .pushNamed('/own-promocode'),
                             icon: FaIcon(
                               FontAwesomeIcons.plus,
                               color: Theme.of(context)

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -120,13 +118,15 @@ class PromocodeManager extends ChangeNotifier {
           .from('users')
           .select('*')
           .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-          .select('promocodes')
           .then((value) async {
-        Map<String, dynamic> promocodes = value[0]['promocodes'] == null
-            ? {}
-            : jsonDecode(value[0]['promocodes'] ?? '');
+        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-        if (promocodes.containsKey(title)) {
+        String usedPromocodesString = map['usedPromocodes'].toString();
+
+        List<String> usedPromocodesList =
+            usedPromocodesString.isEmpty ? [] : usedPromocodesString.split(',');
+
+        if (usedPromocodesList.contains(title)) {
           alertDialogError(
             context: context,
             title: 'Ошибка',
@@ -136,11 +136,11 @@ class PromocodeManager extends ChangeNotifier {
 
           return;
         } else {
-          promocodes.addAll({title: prize});
+          usedPromocodesString += ',$title';
 
           await SupabaseController.supabase!
               .from('users')
-              .update({'promocodes': jsonEncode(promocodes)}).eq(
+              .update({'usedPromocodes': usedPromocodesString}).eq(
                   'uid', SupabaseController.supabase?.auth.currentUser!.id);
 
           if (activationCount <= 1) {

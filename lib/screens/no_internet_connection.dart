@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,8 +16,8 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: isLoading
           ? loading(context: context)
           : Scaffold(
@@ -34,7 +33,7 @@ class _NoInternetConnectionState extends State<NoInternetConnection> {
 
                       await Connectivity().checkConnectivity().then((value) {
                         if (value.index == 1) {
-                          Beamer.of(context).beamBack();
+                           Navigator.of(context).pop();
                         }
                       });
 

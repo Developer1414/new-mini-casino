@@ -1,9 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
@@ -77,7 +74,7 @@ class Settings extends StatelessWidget {
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  Beamer.of(context).beamBack();
+                  Navigator.of(context).pop();
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.arrowLeft,

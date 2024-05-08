@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:circle_progress_bar/circle_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -53,7 +52,7 @@ class _ProfileState extends State<Profile> {
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
                         onPressed: () {
-                          Beamer.of(context).beamBack();
+                          Navigator.of(context).pop();
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
@@ -77,7 +76,8 @@ class _ProfileState extends State<Profile> {
                       child: IconButton(
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
-                          onPressed: () => context.beamToNamed('/settings'),
+                          onPressed: () =>
+                              Navigator.of(context).pushNamed('/settings'),
                           icon: FaIcon(
                             FontAwesomeIcons.gear,
                             color: Colors.white,
@@ -197,7 +197,8 @@ class _ProfileState extends State<Profile> {
                                       isLoading = false;
                                     });
 
-                                    context.beamToNamed('/money-storage');
+                                    Navigator.of(context)
+                                        .pushNamed('/money-storage');
                                   });
                                 }),
                             const SizedBox(height: 15.0),

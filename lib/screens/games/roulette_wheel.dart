@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flame/components.dart';
@@ -295,6 +294,12 @@ class _RouletteWheelState extends State<RouletteWheel>
                                           return;
                                         }
 
+                                        if (Provider.of<Balance>(context,
+                                                listen: false)
+                                            .isLoading) {
+                                          return;
+                                        }
+
                                         fortuneWheelLogic.startGame(
                                             context: context,
                                             bet: double.parse(RouletteWheel
@@ -338,7 +343,7 @@ class _RouletteWheelState extends State<RouletteWheel>
                       onPressed: context.watch<RouletteLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -369,8 +374,9 @@ class _RouletteWheelState extends State<RouletteWheel>
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<RouletteLogic>().isGameOn
                             ? null
-                            : () => context
-                                .beamToNamed('/game-statistic/rouletteWheel'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'rouletteWheel'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

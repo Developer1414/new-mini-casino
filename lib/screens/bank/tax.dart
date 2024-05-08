@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -47,7 +46,7 @@ class Tax extends StatelessWidget {
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  Beamer.of(context).beamBack();
+                  Navigator.of(context).pop();
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.arrowLeft,
@@ -195,6 +194,7 @@ class Tax extends StatelessWidget {
                                         const SizedBox(height: 15.0),
                                         smallHelperPanel(
                                           context: context,
+                                          icon: FontAwesomeIcons.circleInfo,
                                           text:
                                               'Каждая ставка облагается налогом в размере 1% от ставки. Налог можно оплатить в любое время до истечения срока действия. Если вы не оплатите его вовремя, то не сможете продолжать играть в игры.\n\nP.S. Если у вас есть Premium-подписка, то налог платить не нужно!',
                                         ),

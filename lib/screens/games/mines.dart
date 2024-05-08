@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -156,6 +155,13 @@ class Mines extends StatelessWidget {
                                       child: ElevatedButton(
                                         onPressed: !minesLogic.isGameOn
                                             ? () {
+                                                if (Provider.of<Balance>(
+                                                        context,
+                                                        listen: false)
+                                                    .isLoading) {
+                                                  return;
+                                                }
+
                                                 if (!minesLogic.isGameOn) {
                                                   minesLogic.startGame(
                                                     context: context,
@@ -167,6 +173,13 @@ class Mines extends StatelessWidget {
                                             : minesLogic.openedIndexes.isEmpty
                                                 ? null
                                                 : () {
+                                                    if (Provider.of<Balance>(
+                                                            context,
+                                                            listen: false)
+                                                        .isLoading) {
+                                                      return;
+                                                    }
+
                                                     if (!minesLogic.isGameOn) {
                                                       minesLogic.startGame(
                                                         context: context,
@@ -237,7 +250,7 @@ class Mines extends StatelessWidget {
                       onPressed: context.watch<MinesLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -269,7 +282,9 @@ class Mines extends StatelessWidget {
                         onPressed: context.watch<MinesLogic>().isGameOn
                             ? null
                             : () {
-                                context.beamToNamed('/game-statistic/mines');
+                                Navigator.of(context).pushNamed(
+                                    '/game-statistic',
+                                    arguments: 'mines');
                               },
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,

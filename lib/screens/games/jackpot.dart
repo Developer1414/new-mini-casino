@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
@@ -160,6 +159,10 @@ class _JackpotState extends State<Jackpot> {
         return;
       }
 
+      if (Provider.of<Balance>(context, listen: false).isLoading) {
+        return;
+      }
+
       jackpotLogic.startGame(
           context: context,
           callback: () {
@@ -304,7 +307,7 @@ class _JackpotState extends State<Jackpot> {
                       onPressed: context.watch<JackpotLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -335,8 +338,9 @@ class _JackpotState extends State<Jackpot> {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<JackpotLogic>().isGameOn
                             ? null
-                            : () =>
-                                context.beamToNamed('/game-statistic/jackpot'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'jackpot'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

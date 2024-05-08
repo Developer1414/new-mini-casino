@@ -203,6 +203,9 @@ Widget customTextField({
         enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
         fillColor: Colors.lightBlueAccent.withOpacity(0.1),
         focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
+    onTapOutside: (event) {
+      FocusScope.of(context).unfocus();
+    },
     style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 18.0),
   );
 }

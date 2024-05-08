@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,7 +37,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                            Beamer.of(context).beamBack();
+                            Navigator.of(context).pop();
                           },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -65,6 +64,16 @@ class PurchasingGameCurrency extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 15.0, right: 15.0, bottom: 15.0),
+                        child: smallHelperPanel(
+                          context: context,
+                          icon: FontAwesomeIcons.circleInfo,
+                          text:
+                              'Покупка и продажа игровой валюты вне игры - запрещена!',
+                        ),
+                      ),
                       Padding(
                         padding: const EdgeInsets.only(
                             left: 15.0, right: 15.0, bottom: 15.0),
@@ -134,21 +143,35 @@ class PurchasingGameCurrency extends StatelessWidget {
                               children: [
                                 Column(
                                   children: [
-                                    SizedBox(
+                                    Container(
+                                      height: 100.0,
                                       width: double.infinity,
-                                      child: smallHelperPanel(
-                                        borderColor: const Color.fromARGB(
-                                            255, 179, 242, 31),
-                                        context: context,
-                                        textStyle: Theme.of(context)
-                                            .textTheme
-                                            .titleMedium!
-                                            .copyWith(fontSize: 20.0),
-                                        text: NumberFormat.simpleCurrency(
-                                                locale: ui.Platform.localeName)
-                                            .format(
-                                                purchasingGameCurrencyController
-                                                    .amountGameCurrency),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        color: const Color.fromARGB(
+                                                255, 179, 242, 31)
+                                            .withOpacity(0.1),
+                                        border: Border.all(
+                                          color: const Color.fromARGB(
+                                              255, 179, 242, 31),
+                                          width: 2.0,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: AutoSizeText(
+                                          NumberFormat.simpleCurrency(
+                                                  locale:
+                                                      ui.Platform.localeName)
+                                              .format(
+                                                  purchasingGameCurrencyController
+                                                      .amountGameCurrency),
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(fontSize: 25.0),
+                                        ),
                                       ),
                                     ),
                                     const SizedBox(height: 15.0),
@@ -229,12 +252,6 @@ class PurchasingGameCurrency extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    const SizedBox(height: 15.0),
-                                    smallHelperPanel(
-                                      context: context,
-                                      text:
-                                          'Покупка и продажа игровой валюты вне игры - запрещена!',
-                                    ),
                                   ],
                                 ),
                               ],
@@ -251,6 +268,9 @@ class PurchasingGameCurrency extends StatelessWidget {
                     ..setBackgroundColor(const Color(0x00000000))
                     ..setNavigationDelegate(
                       NavigationDelegate(
+                        onProgress: (int progress) {
+                          // Update loading bar.
+                        },
                         onPageStarted: (String url) {},
                         onPageFinished: (String url) {},
                         onWebResourceError: (WebResourceError error) {},

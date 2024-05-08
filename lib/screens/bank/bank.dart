@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -26,7 +25,7 @@ class Bank extends StatelessWidget {
                       splashRadius: 25.0,
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        Beamer.of(context).beamBack();
+                        Navigator.of(context).pop();
                       },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -63,22 +62,22 @@ class Bank extends StatelessWidget {
               padding: const EdgeInsets.only(left: 15.0, right: 15.0),
               child: Column(
                 children: [
-                  /*buttonModel(
-                      context: context,
-                      icon: FontAwesomeIcons.moneyBill,
-                      buttonName: 'Взять кредит',
-                      color: Theme.of(context).canvasColor,
-                      onPressed: () {
-                        context.beamToNamed('/loan-moneys');
-                      }),
-                  const SizedBox(height: 15.0),*/
+                  // buttonModel(
+                  //     context: context,
+                  //     icon: FontAwesomeIcons.moneyBill,
+                  //     buttonName: 'Взять кредит',
+                  //     color: Theme.of(context).canvasColor,
+                  //     onPressed: () {
+                  //       context.beamToNamed('/loan-moneys');
+                  //     }),
+                  // const SizedBox(height: 15.0),
                   buttonModel(
                       context: context,
                       icon: FontAwesomeIcons.landmark,
                       buttonName: 'Заплатить налог',
                       color: Theme.of(context).canvasColor,
                       onPressed: () {
-                        context.beamToNamed('/tax');
+                        Navigator.of(context).pushNamed('/tax');
                       }),
                   const SizedBox(height: 15.0),
                   buttonModel(
@@ -87,7 +86,7 @@ class Bank extends StatelessWidget {
                       buttonName: 'Перевести игроку',
                       color: Theme.of(context).canvasColor,
                       onPressed: () {
-                        context.beamToNamed('/transfer-moneys');
+                        Navigator.of(context).pushNamed('/transfer-moneys');
                       }),
                   const SizedBox(height: 15.0),
                   Consumer<BonusManager>(
@@ -136,7 +135,8 @@ class Bank extends StatelessWidget {
                       color: const Color.fromARGB(255, 179, 242, 31),
                       textColor: const Color.fromARGB(255, 5, 2, 1),
                       onPressed: () {
-                        context.beamToNamed('/purchasing-game-currency');
+                        Navigator.of(context)
+                            .pushNamed('/purchasing-game-currency');
                       }),
                 ],
               ),

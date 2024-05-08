@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -73,7 +72,7 @@ class DailyBonusManager extends ChangeNotifier {
             })
             .eq('uid', SupabaseController.supabase!.auth.currentUser!.id)
             .whenComplete(() {
-              Beamer.of(context).beamToNamed('/daily-bonus');
+              Navigator.of(context).pushNamed('/daily-bonus');
             });
       }
     });
@@ -130,6 +129,6 @@ class DailyBonusManager extends ChangeNotifier {
               changeBonuses();
             });
       },
-    ).whenComplete(() => isEnd ? context.beamBack() : null);
+    ).whenComplete(() => isEnd ? Navigator.of(context).pop() : null);
   }
 }

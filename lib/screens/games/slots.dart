@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -161,6 +160,10 @@ class _SlotsState extends State<Slots> {
   }
 
   void makeBet(BuildContext context) async {
+    if (Provider.of<Balance>(context, listen: false).isLoading) {
+      return;
+    }
+
     if (isSpinning) return;
 
     double bet = Provider.of<SlotsLogic>(context, listen: false).bet;
@@ -308,11 +311,6 @@ class _SlotsState extends State<Slots> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !isSpinning && !isAutoBets,
-      onPopInvoked: (isCan) {
-        if (isCan) {
-          context.beamBack();
-        }
-      },
       child: GestureDetector(
         onTap: () {
           FocusScopeNode currentFocus = FocusScope.of(context);
@@ -469,7 +467,7 @@ class _SlotsState extends State<Slots> {
 
                         if (isAutoBets) return;
 
-                        Beamer.of(context).beamBack();
+                        Navigator.of(context).pop();
                       },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -525,7 +523,8 @@ class _SlotsState extends State<Slots> {
 
                           if (isAutoBets) return;
 
-                          context.beamToNamed('/game-statistic/slots');
+                          Navigator.of(context)
+                              .pushNamed('/game-statistic', arguments: 'slots');
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,

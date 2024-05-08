@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:beamer/beamer.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +155,7 @@ class SettingsController extends ChangeNotifier {
 
           SupabaseController.supabase!.auth.signOut().whenComplete(() {
             Provider.of<Balance>(context, listen: false).balance = 0.0;
-            context.beamToReplacementNamed('/login');
+             Navigator.of(context).pushNamed('/login');
           });
         });
   }

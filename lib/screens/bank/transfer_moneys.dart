@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -52,7 +51,7 @@ class TransferMoneys extends StatelessWidget {
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
                         onPressed: () {
-                          Beamer.of(context).beamBack();
+                          Navigator.of(context).pop();
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
@@ -241,6 +240,7 @@ class TransferMoneys extends StatelessWidget {
                                         ),
                                   const SizedBox(height: 15.0),
                                   smallHelperPanel(
+                                    icon: FontAwesomeIcons.circleInfo,
                                     context: context,
                                     text:
                                         '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за 12 часов!',

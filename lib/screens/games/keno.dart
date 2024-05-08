@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -230,6 +229,12 @@ class Keno extends StatelessWidget {
                                     kenoLogic.isGameOn
                                 ? null
                                 : () {
+                                    if (Provider.of<Balance>(context,
+                                            listen: false)
+                                        .isLoading) {
+                                      return;
+                                    }
+
                                     kenoLogic.startGame(context: context);
                                   },
                             style: ElevatedButton.styleFrom(
@@ -281,7 +286,7 @@ class Keno extends StatelessWidget {
                       onPressed: context.watch<KenoLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -312,7 +317,9 @@ class Keno extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<KenoLogic>().isGameOn
                             ? null
-                            : () => context.beamToNamed('/game-statistic/keno'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'keno'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

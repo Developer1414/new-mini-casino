@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,8 +26,9 @@ class Store extends StatelessWidget {
     ScrollController controller =
         ScrollController(initialScrollOffset: StoreManager.scrollOffset);
 
-    return WillPopScope(
-      onWillPop: () async => Beamer.of(context).beamBack(),
+    return PopScope(
+      canPop: true,
+      onPopInvoked: (value) => Navigator.of(context).pop(),
       child: Consumer<StoreManager>(
         builder: (context, storeManager, _) {
           return storeManager.isLoading
@@ -45,7 +45,7 @@ class Store extends StatelessWidget {
                           padding: EdgeInsets.zero,
                           onPressed: () {
                             StoreManager.scrollOffset = 0.0;
-                            Beamer.of(context).beamBack();
+                            Navigator.of(context).pop();
                           },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -145,7 +145,7 @@ class Store extends StatelessWidget {
               onTap: () {
                 StoreManager.scrollOffset = controller.offset;
                 storeManager.selectStoreProduct(storeItemModel.imageId);
-                Beamer.of(context).beamToNamed('/product-review');
+                Navigator.of(context).pushNamed('/product-review');
               },
               child: Padding(
                 padding: const EdgeInsets.all(15.0),

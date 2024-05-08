@@ -7,6 +7,7 @@ ThemeData lightThemeData(BuildContext context) {
           const BottomSheetThemeData(backgroundColor: Colors.transparent),
       pageTransitionsTheme: const PageTransitionsTheme(builders: {
         TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
       }),
       scaffoldBackgroundColor: Colors.grey.shade50,
       textTheme: Theme.of(context).textTheme.copyWith(

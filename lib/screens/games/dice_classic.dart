@@ -1,6 +1,5 @@
 import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -268,9 +267,11 @@ class DiceClassic extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: buttonModel(
-                                      title: Provider.of<Balance>(context, listen: true).isLoading
+                                      title: Provider.of<Balance>(context,
+                                                  listen: true)
+                                              .isLoading
                                           ? const SizedBox(
-                                                    width: 30.0,
+                                              width: 30.0,
                                               height: 30.0,
                                               child: CircularProgressIndicator(
                                                 strokeWidth: 5.5,
@@ -285,12 +286,20 @@ class DiceClassic extends StatelessWidget {
                                       icon: FontAwesomeIcons.arrowDown,
                                       context: context,
                                       function: () async {
+                                        if (Provider.of<Balance>(context,
+                                                listen: false)
+                                            .isLoading) {
+                                          return;
+                                        }
+
                                         diceClassicLogic.less(context: context);
                                       }),
                                 ),
                                 Expanded(
                                   child: buttonModel(
-                                      title: Provider.of<Balance>(context, listen: true).isLoading
+                                      title: Provider.of<Balance>(context,
+                                                  listen: true)
+                                              .isLoading
                                           ? const SizedBox(
                                               width: 30.0,
                                               height: 30.0,
@@ -307,6 +316,12 @@ class DiceClassic extends StatelessWidget {
                                       icon: FontAwesomeIcons.arrowUp,
                                       context: context,
                                       function: () async {
+                                        if (Provider.of<Balance>(context,
+                                                listen: false)
+                                            .isLoading) {
+                                          return;
+                                        }
+
                                         diceClassicLogic.more(context: context);
                                       }),
                                 ),
@@ -331,7 +346,7 @@ class DiceClassic extends StatelessWidget {
                       onPressed: context.watch<DiceClassicLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -362,8 +377,9 @@ class DiceClassic extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<LimboLogic>().isGameOn
                             ? null
-                            : () => context
-                                .beamToNamed('/game-statistic/dice-classic'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'dice-classic'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

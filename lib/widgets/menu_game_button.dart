@@ -2,8 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/premium_badge.dart';
-import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
 
 Widget gameButtonModel(
     {required String buttonTitle,
@@ -26,9 +26,10 @@ Widget gameButtonModel(
           if (SupabaseController.isPremium) {
             await onTap.call();
           } else {
-            showSimpleAlertDialog(
+            alertDialogError(
               context: context,
-              text: 'Эта игра доступна только для\nPremium-подписчиков!',
+              title: 'Ошибка',
+              text: 'Эта игра доступна только Premium-подписчикам!',
             );
           }
         }

@@ -16,6 +16,9 @@ Widget loginCustomTextField(
     obscureText: isPassword,
     keyboardType: keyboardType,
     textAlign: TextAlign.center,
+    onTapOutside: (event) {
+      FocusScope.of(context).unfocus();
+    },
     inputFormatters: limitSymbols
         ? [
             LengthLimitingTextInputFormatter(12),

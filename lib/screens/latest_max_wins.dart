@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -85,7 +84,7 @@ class _LatestMaxWinsState extends State<LatestMaxWins> {
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
                         onPressed: () async {
-                          Beamer.of(context).beamBack();
+                          Navigator.of(context).pop();
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
@@ -126,10 +125,12 @@ class _LatestMaxWinsState extends State<LatestMaxWins> {
                               margin: EdgeInsets.only(
                                   left: 15.0,
                                   right: 15.0,
-                                  bottom:
-                                      index + 1 == users.entries.toList().length
-                                          ? 15.0
-                                          : 0.0),
+                                  bottom: index + 1 ==
+                                          (users.entries.toList().length > 100
+                                              ? 100
+                                              : users.entries.toList().length)
+                                      ? 15.0
+                                      : 0.0),
                               decoration: BoxDecoration(
                                 color: GamesController.games
                                     .where((element) =>

@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:beamer/beamer.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -43,7 +42,7 @@ class CommonFunctions {
       cancelBtnText: 'Отмена',
       onConfirmBtnTap: () {
         Navigator.of(context, rootNavigator: true).pop();
-        context.beamToNamed('/purchasing-game-currency');
+        Navigator.of(context).pushNamed('/purchasing-game-currency');
       },
       onCancelBtnTap: () => Navigator.of(context, rootNavigator: true).pop(),
     );

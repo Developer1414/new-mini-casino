@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,7 +20,7 @@ class UserAgreement extends StatelessWidget {
                 splashRadius: 25.0,
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  context.beamBack();
+                  Navigator.of(context).pop();
                 },
                 icon: FaIcon(
                   FontAwesomeIcons.arrowLeft,

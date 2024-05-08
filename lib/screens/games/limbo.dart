@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -226,6 +225,12 @@ class Limbo extends StatelessWidget {
                                           limboLogic.timer.isActive
                                       ? null
                                       : () {
+                                          if (Provider.of<Balance>(context,
+                                                  listen: false)
+                                              .isLoading) {
+                                            return;
+                                          }
+
                                           if (!limboLogic.isGameOn) {
                                             if (Limbo.targetCoefficient.text
                                                     .isEmpty ||
@@ -312,7 +317,7 @@ class Limbo extends StatelessWidget {
                       onPressed: context.watch<LimboLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -343,8 +348,9 @@ class Limbo extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<LimboLogic>().isGameOn
                             ? null
-                            : () =>
-                                context.beamToNamed('/game-statistic/limbo'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'limbo'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +52,7 @@ class Trading extends StatelessWidget {
             Scaffold(
               resizeToAvoidBottomInset: false,
               bottomNavigationBar: Consumer<LimboLogic>(
-                builder: (context, limboLogic, child) {
+                builder: (context, tradingLogic, child) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
@@ -71,13 +70,13 @@ class Trading extends StatelessWidget {
                                         .bodyMedium!
                                         .copyWith(fontSize: 12.0)),
                                 AutoSizeText(
-                                    limboLogic.profit < 1000000
+                                    tradingLogic.profit < 1000000
                                         ? NumberFormat.simpleCurrency(
                                                 locale: ui.Platform.localeName)
-                                            .format(limboLogic.profit)
+                                            .format(tradingLogic.profit)
                                         : NumberFormat.compactSimpleCurrency(
                                                 locale: ui.Platform.localeName)
-                                            .format(limboLogic.profit),
+                                            .format(tradingLogic.profit),
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium!
@@ -93,7 +92,7 @@ class Trading extends StatelessWidget {
                                 border: Border.all(
                                     color: Colors.lightBlueAccent, width: 2.0),
                               ),
-                              child: limboLogic.lastCoefficients.isEmpty
+                              child: tradingLogic.lastCoefficients.isEmpty
                                   ? Center(
                                       child: AutoSizeText('Ставок ещё нет',
                                           style: Theme.of(context)
@@ -111,7 +110,7 @@ class Trading extends StatelessWidget {
                                       child: ListView.separated(
                                           scrollDirection: Axis.horizontal,
                                           itemBuilder: (context, index) {
-                                            List<LimboRound> value = limboLogic
+                                            List<LimboRound> value = tradingLogic
                                                 .lastCoefficients.reversed
                                                 .toList();
 
@@ -121,7 +120,7 @@ class Trading extends StatelessWidget {
                                                   bottom: 5.0,
                                                   left: index == 0 ? 5.0 : 0.0,
                                                   right: index + 1 ==
-                                                          limboLogic
+                                                          tradingLogic
                                                               .lastCoefficients
                                                               .length
                                                       ? 5.0
@@ -152,7 +151,7 @@ class Trading extends StatelessWidget {
                                           },
                                           separatorBuilder: (context, index) =>
                                               const SizedBox(width: 5.0),
-                                          itemCount: limboLogic
+                                          itemCount: tradingLogic
                                               .lastCoefficients.length),
                                     ),
                             ),
@@ -165,7 +164,7 @@ class Trading extends StatelessWidget {
                           height: 50.0,
                           child: TextField(
                             controller: Trading.targetCoefficient,
-                            readOnly: limboLogic.isGameOn,
+                            readOnly: tradingLogic.isGameOn,
                             keyboardType: TextInputType.number,
                             textAlign: TextAlign.center,
                             onTap: () {
@@ -207,20 +206,20 @@ class Trading extends StatelessWidget {
                       const SizedBox(height: 15.0),
                       Row(
                         children: [
-                          limboLogic.isGameOn
+                          tradingLogic.isGameOn
                               ? Container()
                               : SizedBox(
                                   height: 60.0,
                                   width: 80.0,
                                   child: ElevatedButton(
-                                    onPressed: () => limboLogic.showInputBet(),
+                                    onPressed: () => tradingLogic.showInputBet(),
                                     style: ElevatedButton.styleFrom(
                                       elevation: 5,
                                       backgroundColor: const Color(0xFF366ecc),
                                       shape: const RoundedRectangleBorder(),
                                     ),
                                     child: FaIcon(
-                                      limboLogic.isShowInputBet
+                                      tradingLogic.isShowInputBet
                                           ? FontAwesomeIcons.arrowLeft
                                           : FontAwesomeIcons.keyboard,
                                       color: Colors.white,
@@ -229,7 +228,7 @@ class Trading extends StatelessWidget {
                                   ),
                                 ),
                           Visibility(
-                            visible: limboLogic.isShowInputBet,
+                            visible: tradingLogic.isShowInputBet,
                             child: Expanded(
                               child: SizedBox(
                                 height: 60.0,
@@ -246,7 +245,7 @@ class Trading extends StatelessWidget {
                             ),
                           ),
                           Visibility(
-                            visible: !limboLogic.isShowInputBet,
+                            visible: !tradingLogic.isShowInputBet,
                             child: Expanded(
                               child: SizedBox(
                                 height: 60.0,
@@ -257,11 +256,11 @@ class Trading extends StatelessWidget {
                                         blurRadius: 5.0)
                                   ], color: Theme.of(context).cardColor),
                                   child: ElevatedButton(
-                                    onPressed: limboLogic.isGameOn &&
-                                            limboLogic.timer.isActive
+                                    onPressed: tradingLogic.isGameOn &&
+                                            tradingLogic.timer.isActive
                                         ? null
                                         : () {
-                                            if (!limboLogic.isGameOn) {
+                                            if (!tradingLogic.isGameOn) {
                                               if (balance.currentBalance <
                                                   double.parse(Trading
                                                       .betFormatter
@@ -297,13 +296,19 @@ class Trading extends StatelessWidget {
                                                 return;
                                               }
 
-                                              limboLogic.startGame(
+                                              if (Provider.of<Balance>(context,
+                                                      listen: false)
+                                                  .isLoading) {
+                                                return;
+                                              }
+
+                                              tradingLogic.startGame(
                                                 context: context,
                                                 selectedCoefficient:
                                                     double.parse(Trading
                                                         .targetCoefficient
                                                         .text),
-                                            );
+                                              );
                                             }
                                           },
                                     style: ElevatedButton.styleFrom(
@@ -315,8 +320,8 @@ class Trading extends StatelessWidget {
                                       'СТАВКА',
                                       maxLines: 1,
                                       style: GoogleFonts.roboto(
-                                          color: limboLogic.isGameOn &&
-                                                  limboLogic.timer.isActive
+                                          color: tradingLogic.isGameOn &&
+                                                  tradingLogic.timer.isActive
                                               ? Colors.white.withOpacity(0.4)
                                               : Colors.white,
                                           fontSize: 20.0,
@@ -345,7 +350,7 @@ class Trading extends StatelessWidget {
                       onPressed: context.watch<LimboLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -376,8 +381,9 @@ class Trading extends StatelessWidget {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<LimboLogic>().isGameOn
                             ? null
-                            : () =>
-                                context.beamToNamed('/game-statistic/limbo'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'trading'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

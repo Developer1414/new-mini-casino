@@ -70,7 +70,6 @@ class CoinflipLogic extends ChangeNotifier {
 
           if (!isContinueGame) {
             profit = 0.0;
-            Provider.of<Balance>(context, listen: false).subtractMoney(bet);
           }
 
           notifyListeners();

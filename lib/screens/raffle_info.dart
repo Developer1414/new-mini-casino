@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -74,7 +73,7 @@ class RaffleInfo extends StatelessWidget {
                               splashRadius: 25.0,
                               padding: EdgeInsets.zero,
                               onPressed: () {
-                                Beamer.of(context).beamBack();
+                                Navigator.of(context).pop();
                               },
                               icon: const FaIcon(
                                 FontAwesomeIcons.xmark,

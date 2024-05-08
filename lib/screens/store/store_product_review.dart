@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -285,7 +284,7 @@ class StoreProductReview extends StatelessWidget {
                         splashRadius: 25.0,
                         padding: EdgeInsets.zero,
                         onPressed: () {
-                          Beamer.of(context).beamBack();
+                          Navigator.of(context).pop();
                         },
                         icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,

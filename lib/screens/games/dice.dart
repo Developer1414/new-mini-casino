@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -46,6 +45,10 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
       if (diceLogic.evenOrOddType == EvenOrOddButtonType.empty &&
           diceLogic.numberFromToType == NumberFromToButtonType.empty &&
           diceLogic.selectedNumber == 0) {
+        return;
+      }
+
+      if (Provider.of<Balance>(context, listen: false).isLoading) {
         return;
       }
 
@@ -303,7 +306,7 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                       onPressed: context.watch<DiceLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -346,7 +349,9 @@ class _DiceState extends State<Dice> with TickerProviderStateMixin {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<DiceLogic>().isGameOn
                             ? null
-                            : () => context.beamToNamed('/game-statistic/dice'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'dice'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

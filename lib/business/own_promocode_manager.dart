@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -132,16 +130,16 @@ class OwnPromocodeManager extends ChangeNotifier {
               .from('users')
               .select('*')
               .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-              .select('promocodes')
               .then((value) async {
-            Map<String, dynamic> promocodes = Map<String, dynamic>.from(
-                value.toList()[0]['promocodes'] ?? {});
+            Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-            promocodes.addAll({name: prize.toString()});
+            String usedPromocodesString = map['usedPromocodes'].toString();
+
+            usedPromocodesString += ',$name';
 
             await SupabaseController.supabase!
                 .from('users')
-                .update({'promocodes': jsonEncode(promocodes)}).eq(
+                .update({'usedPromocodes': usedPromocodesString}).eq(
                     'uid', SupabaseController.supabase?.auth.currentUser!.id);
           });
 

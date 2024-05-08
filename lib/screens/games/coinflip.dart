@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -33,16 +32,12 @@ class _CoinflipState extends State<Coinflip>
   int randAngle = 540;
 
   bool imageCoin(double x) {
-    // Задаём критический угол
     double criticalAngle = pi / 4;
 
-    // Приводим x к диапазону от 0 до 2π (от 0 до 360 градусов)
     x %= (2 * pi);
 
-    // Определяем, на какой стороне монеты находится угол поворота
     bool isFront = x < criticalAngle || x > 2 * pi - criticalAngle;
 
-    // Возвращаем путь к изображению монеты
     return isFront;
   }
 
@@ -318,7 +313,10 @@ class _CoinflipState extends State<Coinflip>
                                       child: ElevatedButton(
                                         onPressed: !coinflipLogic.isGameOn &&
                                                 _controller.status !=
-                                                    AnimationStatus.forward
+                                                    AnimationStatus.forward &&
+                                                !Provider.of<Balance>(context,
+                                                        listen: true)
+                                                    .isLoading
                                             ? () {
                                                 coinflipLogic.startGame(
                                                     context: context,
@@ -349,13 +347,14 @@ class _CoinflipState extends State<Coinflip>
                                         child: Provider.of<Balance>(context,
                                                     listen: true)
                                                 .isLoading
-                                            ? const SizedBox(
+                                            ? SizedBox(
                                                 width: 30.0,
                                                 height: 30.0,
                                                 child:
                                                     CircularProgressIndicator(
                                                   strokeWidth: 5.0,
-                                                  color: Colors.white,
+                                                  color: Colors.white
+                                                      .withOpacity(0.4),
                                                   strokeCap: StrokeCap.round,
                                                 ),
                                               )
@@ -383,9 +382,12 @@ class _CoinflipState extends State<Coinflip>
                                       color: Theme.of(context).cardColor,
                                       height: 60.0,
                                       child: ElevatedButton(
-                                        onPressed: !coinflipLogic.isGameOn ||
+                                        onPressed: !coinflipLogic.isGameOn &&
                                                 _controller.status !=
-                                                    AnimationStatus.forward
+                                                    AnimationStatus.forward &&
+                                                !Provider.of<Balance>(context,
+                                                        listen: true)
+                                                    .isLoading
                                             ? () {
                                                 coinflipLogic.startGame(
                                                     context: context,
@@ -416,13 +418,14 @@ class _CoinflipState extends State<Coinflip>
                                         child: Provider.of<Balance>(context,
                                                     listen: true)
                                                 .isLoading
-                                            ? const SizedBox(
+                                            ? SizedBox(
                                                 width: 30.0,
                                                 height: 30.0,
                                                 child:
                                                     CircularProgressIndicator(
                                                   strokeWidth: 5.0,
-                                                  color: Colors.white,
+                                                  color: Colors.white
+                                                      .withOpacity(0.4),
                                                   strokeCap: StrokeCap.round,
                                                 ),
                                               )
@@ -467,7 +470,7 @@ class _CoinflipState extends State<Coinflip>
                                 context.watch<CoinflipLogic>().isContinueGame
                             ? null
                             : () {
-                                Beamer.of(context).beamBack();
+                                Navigator.of(context).pop();
                               },
                         icon: FaIcon(
                           FontAwesomeIcons.arrowLeft,
@@ -499,8 +502,9 @@ class _CoinflipState extends State<Coinflip>
                           onPressed: context.watch<CoinflipLogic>().isGameOn ||
                                   context.watch<CoinflipLogic>().isContinueGame
                               ? null
-                              : () => context
-                                  .beamToNamed('/game-statistic/coinflip'),
+                              : () => Navigator.of(context).pushNamed(
+                                  '/game-statistic',
+                                  arguments: 'coinflip'),
                           icon: FaIcon(
                             FontAwesomeIcons.circleInfo,
                             color:

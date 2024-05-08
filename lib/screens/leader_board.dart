@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -43,7 +42,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
               padding: EdgeInsets.zero,
               onPressed: () async {
                 LeaderBoard.scrollOffset = 0.0;
-                Beamer.of(context).beamBack();
+                 Navigator.of(context).pop();
               },
               icon: FaIcon(
                 FontAwesomeIcons.arrowLeft,

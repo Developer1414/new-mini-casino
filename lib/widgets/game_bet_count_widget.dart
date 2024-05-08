@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/custom_bet_alert_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -41,6 +42,14 @@ Widget gameBetCount({
                     if (!SupabaseController.isPremium) {
                       if (gameLogic.bet >= 1000000) {
                         num = gameLogic.bet;
+
+                        alertDialogError(
+                          context: context,
+                          title: 'Ошибка',
+                          confirmBtnText: 'Окей',
+                          text:
+                              'Ставки более ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000000)} могут совершать только Premium-подписчики!',
+                        );
                       } else {
                         if (gameLogic.bet * 2 > 1000000) {
                           num = gameLogic.bet;
@@ -51,6 +60,14 @@ Widget gameBetCount({
                     } else {
                       if (gameLogic.bet >= 100000000) {
                         num = gameLogic.bet;
+
+                        alertDialogError(
+                          context: context,
+                          title: 'Ошибка',
+                          confirmBtnText: 'Окей',
+                          text:
+                              '${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(100000000)} - максимальная ставка в игре!',
+                        );
                       } else {
                         if (gameLogic.bet * 2 > 100000000) {
                           num = gameLogic.bet;
@@ -140,6 +157,8 @@ Widget gameBetCount({
                   splashRadius: 20.0,
                   padding: EdgeInsets.zero,
                   onPressed: () async {
+                    if (gameLogic.isGameOn) return;
+
                     double customBet = await getCustomBet(context);
 
                     if (customBet > 0.0) {

@@ -39,7 +39,7 @@ void showSimpleAlertDialog(
                                   .appBarTheme
                                   .iconTheme
                                   ?.color,
-                              size: 60.0,
+                              size: 50.0,
                             ),
                             const SizedBox(height: 10.0),
                             AutoSizeText(
@@ -47,7 +47,7 @@ void showSimpleAlertDialog(
                               textAlign: TextAlign.center,
                               style: GoogleFonts.roboto(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 15,
                                 fontWeight: FontWeight.w800,
                               ),
                             ),

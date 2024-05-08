@@ -34,12 +34,12 @@ void periodPremiumAlert(
             ]),
         child: Transform.translate(
           offset: const Offset(0, -1.5),
-          child: AutoSizeText(
+          child: Text(
             text,
             textAlign: TextAlign.center,
             style: GoogleFonts.roboto(
                 color: Colors.white,
-                fontSize: 12.0,
+                fontSize: 11.0,
                 fontWeight: FontWeight.w800),
           ),
         ),
@@ -125,8 +125,7 @@ void periodPremiumAlert(
                                           children: [
                                             buttonModel(
                                               context: context,
-                                              color: const Color.fromARGB(
-                                                  255, 240, 204, 96),
+                                              color: Color.fromARGB(255, 240, 190, 96),
                                               buttonName: 'Месяц - 149 руб.',
                                               titleFontSize: 18.0,
                                               onPressed: () => choosePeriod(

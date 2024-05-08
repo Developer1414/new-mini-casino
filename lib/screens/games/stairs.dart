@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -162,6 +161,12 @@ class _StairsState extends State<Stairs> {
                                 child: ElevatedButton(
                                   onPressed: !stairsLogic.isGameOn
                                       ? () {
+                                          if (Provider.of<Balance>(context,
+                                                  listen: false)
+                                              .isLoading) {
+                                            return;
+                                          }
+
                                           if (!stairsLogic.isGameOn) {
                                             stairsLogic.startGame(
                                                 context: context);
@@ -172,6 +177,12 @@ class _StairsState extends State<Stairs> {
                                       : stairsLogic.openedColumnIndex.isEmpty
                                           ? null
                                           : () {
+                                              if (Provider.of<Balance>(context,
+                                                      listen: false)
+                                                  .isLoading) {
+                                                return;
+                                              }
+
                                               if (!stairsLogic.isGameOn) {
                                                 stairsLogic.startGame(
                                                     context: context);
@@ -235,7 +246,7 @@ class _StairsState extends State<Stairs> {
                       onPressed: context.watch<StairsLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -267,7 +278,9 @@ class _StairsState extends State<Stairs> {
                         onPressed: context.watch<StairsLogic>().isGameOn
                             ? null
                             : () {
-                                context.beamToNamed('/game-statistic/stairs');
+                                Navigator.of(context).pushNamed(
+                                    '/game-statistic',
+                                    arguments: 'stairs');
                               },
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,

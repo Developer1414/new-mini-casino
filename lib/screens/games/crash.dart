@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -278,6 +277,11 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                   return;
                                 }
 
+                                if (Provider.of<Balance>(context, listen: false)
+                                    .isLoading) {
+                                  return;
+                                }
+
                                 crashLogic.startGame(
                                     context: context,
                                     targetCoefficient: double.parse(
@@ -348,7 +352,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                       onPressed: context.watch<CrashLogic>().isGameOn
                           ? null
                           : () {
-                              Beamer.of(context).beamBack();
+                              Navigator.of(context).pop();
                             },
                       icon: FaIcon(
                         FontAwesomeIcons.arrowLeft,
@@ -379,8 +383,9 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                         padding: EdgeInsets.zero,
                         onPressed: context.watch<CrashLogic>().isGameOn
                             ? null
-                            : () =>
-                                context.beamToNamed('/game-statistic/crash'),
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: 'crash'),
                         icon: FaIcon(
                           FontAwesomeIcons.circleInfo,
                           color: Theme.of(context).appBarTheme.iconTheme!.color,

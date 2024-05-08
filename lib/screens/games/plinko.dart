@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:confetti/confetti.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flame/collisions.dart';
@@ -54,6 +53,10 @@ class Plinko extends StatelessWidget {
   void makeBet(BuildContext context) {
     double bet = betFormatter.getUnformattedValue().toDouble();
 
+    if (Provider.of<Balance>(context, listen: false).isLoading) {
+      return;
+    }
+
     CommonFunctions.callOnStart(
         context: context,
         bet: bet,
@@ -97,7 +100,7 @@ class Plinko extends StatelessWidget {
                       return;
                     }
 
-                    Beamer.of(context).beamBack();
+                    Navigator.of(context).pop();
                   },
                   icon: FaIcon(
                     FontAwesomeIcons.arrowLeft,
@@ -134,7 +137,8 @@ class Plinko extends StatelessWidget {
                         return;
                       }
 
-                      context.beamToNamed('/game-statistic/plinko');
+                      Navigator.of(context)
+                          .pushNamed('/game-statistic', arguments: 'plinko');
                     },
                     icon: FaIcon(
                       FontAwesomeIcons.circleInfo,

@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:beamer/beamer.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -186,7 +185,7 @@ class PremiumInfo extends StatelessWidget {
                                     onPressed: () {
                                       paymentController
                                           .changeOffsetScrollController(0.0);
-                                      Beamer.of(context).beamBack();
+                                      Navigator.of(context).pop();
                                     },
                                     icon: const FaIcon(
                                       FontAwesomeIcons.xmark,
@@ -453,8 +452,7 @@ class PremiumInfo extends StatelessWidget {
                                               .changeOffsetScrollController(
                                                   0.0);
 
-                                          context
-                                              .beamToNamed('/user-agreement');
+                                               Navigator.of(context).pushNamed('/user-agreement');
                                         },
                                       text: 'Пользовательским Соглашением',
                                       style: GoogleFonts.roboto(

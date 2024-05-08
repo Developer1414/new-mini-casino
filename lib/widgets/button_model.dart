@@ -10,6 +10,7 @@ Widget buttonModel(
     Function()? onPressed,
     double? titleFontSize,
     Color? textColor,
+    Color? subtitleColor,
     Color? iconColor,
     IconData? icon}) {
   return SizedBox(
@@ -27,24 +28,24 @@ Widget buttonModel(
           borderRadius: BorderRadius.circular(15.0),
         ),
       ),
-      child: Row(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          icon == null
-              ? Container()
-              : FaIcon(
-                  icon,
-                  color: iconColor ?? Colors.grey.shade300,
-                  size: 22.0,
-                ),
-          icon == null
-              ? Container()
-              : buttonName == null
-                  ? Container()
-                  : const SizedBox(width: 10.0),
-          Column(
+          Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              icon == null
+                  ? Container()
+                  : FaIcon(
+                      icon,
+                      color: iconColor ?? Colors.grey.shade300,
+                      size: 22.0,
+                    ),
+              icon == null
+                  ? Container()
+                  : buttonName == null
+                      ? Container()
+                      : const SizedBox(width: 10.0),
               buttonName == null
                   ? Container()
                   : AutoSizeText(buttonName,
@@ -54,17 +55,20 @@ Widget buttonModel(
                           fontSize: titleFontSize ?? 20.0,
                           color: textColor ??
                               Theme.of(context).textTheme.bodyMedium!.color)),
-              subtitle == null
-                  ? Container()
-                  : AutoSizeText(subtitle,
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontSize: 15.0,
-                          color: textColor ??
-                              Theme.of(context).textTheme.bodyMedium!.color)),
             ],
           ),
+          subtitle == null
+              ? Container()
+              : Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: AutoSizeText(subtitle,
+                    maxLines: 1,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                        fontSize: 12.0,
+                        color: subtitleColor ??
+                            Theme.of(context).textTheme.bodySmall!.color)),
+              ),
         ],
       ),
     ),
