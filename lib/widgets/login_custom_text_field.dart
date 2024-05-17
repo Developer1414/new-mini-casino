@@ -27,15 +27,16 @@ Widget loginCustomTextField(
         : null,
     textInputAction: isLastInput ? TextInputAction.done : TextInputAction.next,
     decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
-            color: Theme.of(context)
-                .textTheme
-                .displaySmall!
-                .color!
-                .withOpacity(0.5)),
-        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
-        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder),
+      hintText: hintText,
+      hintStyle: Theme.of(context).textTheme.displaySmall!.copyWith(
+          color: Theme.of(context)
+              .textTheme
+              .displaySmall!
+              .color!
+              .withOpacity(0.5)),
+      enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+      focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
+    ),
     style: Theme.of(context).textTheme.displaySmall!.copyWith(fontSize: 20.0),
   );
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/screens/bank/bank.dart';
 import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
 import 'package:new_mini_casino/screens/bank/purchasing_game_currency.dart';
+import 'package:new_mini_casino/screens/bank/rakeback.dart';
 import 'package:new_mini_casino/screens/bank/tax.dart';
 import 'package:new_mini_casino/screens/bank/transfer_moneys.dart';
+import 'package:new_mini_casino/screens/banned_user.dart';
 import 'package:new_mini_casino/screens/daily_bonus.dart';
 import 'package:new_mini_casino/screens/game_statistic.dart';
 import 'package:new_mini_casino/screens/games/blackjack.dart';
@@ -160,6 +162,16 @@ class RouteController {
       case '/leader-board':
         return MaterialPageRoute(
             builder: (_) => buildScreen(const LeaderBoard()));
+      case '/rakeback':
+        return MaterialPageRoute(builder: (_) => buildScreen(const Rakeback()));
+      case '/ban':
+        List<dynamic> args = (settings.arguments as List<dynamic>);
+
+        return MaterialPageRoute(
+            builder: (_) => buildScreen(BannedUser(
+                  reason: args[0].toString(),
+                  date: args[1],
+                )));
       case '/game-statistic':
         return MaterialPageRoute(
             builder: (_) => buildScreen(GameStatistic(

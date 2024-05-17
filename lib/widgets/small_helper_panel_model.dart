@@ -16,38 +16,36 @@ Widget smallHelperPanel(
   return Container(
     decoration: BoxDecoration(
       borderRadius: BorderRadius.circular(12.0),
-      color: const Color(0xffffba08).withOpacity(0.1),
+      color: const Color(0xffffb300).withOpacity(0.1),
       border: Border.all(
-        color: const Color(0xffffba08),
-        width: 2.0,
+        color: const Color(0xffffb300),
+        width: 1.5,
       ),
     ),
     child: Padding(
       padding: const EdgeInsets.all(15.0),
       child: Row(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           icon == null
               ? Container()
               : Padding(
-                  padding: const EdgeInsets.only(right: 10.0),
+                  padding: const EdgeInsets.only(right: 15.0),
                   child: FaIcon(
                     icon,
-                    color:
-                        iconColor ?? const Color.fromARGB(255, 252, 237, 205),
-                    size: iconSize ?? 25.0,
+                    color: iconColor ?? const Color(0xffffb300),
+                    size: iconSize ?? 23.0,
                   ),
                 ),
           Expanded(
             child: AutoSizeText(text,
-                textAlign: TextAlign.center,
                 style: textStyle ??
                     GoogleFonts.roboto(
-                        fontSize: 12.0,
-                        letterSpacing: 0.1,
-                        fontWeight: FontWeight.w600,
-                        color: const Color.fromARGB(255, 252, 237, 205))),
+                      fontSize: 12.0,
+                      letterSpacing: 0.1,
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xffffb300),
+                    )),
           ),
         ],
       ),

@@ -10,34 +10,34 @@ class GamesController {
     //     nextScreen: '/trading'),
 
     GameButtonDetails(
-        title: 'Dice Classic',
-        gameLogo: 'DiceClassic',
-        forPremium: true,
-        buttonColor: const Color.fromARGB(255, 136, 71, 126),
-        nextScreen: '/dice-classic'),
+        title: 'Roulette',
+        gameLogo: 'RouletteLogo',
+        buttonColor: Color.fromARGB(255, 71, 136, 82),
+        nextScreen: '/roulette-wheel'),
 
-    GameButtonDetails(
-        title: 'Limbo',
-        gameLogo: 'Limbo',
-        buttonColor: const Color.fromARGB(255, 98, 64, 251),
-        nextScreen: '/limbo'),
-
-    // GameButtonDetails(
-    //     title: 'Roulette',
-    //     gameLogo: 'FortuneWheelLogo',
-    //     buttonColor: const Color.fromARGB(255, 64, 67, 251),
-    //     nextScreen: '/roulette-wheel'),
-    GameButtonDetails(
-        title: 'Slots',
-        gameLogo: 'Slots',
-        buttonColor: const Color.fromARGB(255, 221, 129, 75),
-        nextScreen: '/slots'),
     // GameButtonDetails(
     //     title: 'Plinko',
     //     gameLogo: 'PlinkoLogo',
     //     forPremium: true,
     //     buttonColor: Colors.deepPurple,
     //     nextScreen: '/plinko'),
+
+    GameButtonDetails(
+        title: 'Dice Classic',
+        gameLogo: 'DiceClassic',
+        forPremium: true,
+        buttonColor: const Color.fromARGB(255, 136, 71, 126),
+        nextScreen: '/dice-classic'),
+    GameButtonDetails(
+        title: 'Limbo',
+        gameLogo: 'Limbo',
+        buttonColor: const Color.fromARGB(255, 98, 64, 251),
+        nextScreen: '/limbo'),
+    GameButtonDetails(
+        title: 'Slots',
+        gameLogo: 'Slots',
+        buttonColor: const Color.fromARGB(255, 221, 129, 75),
+        nextScreen: '/slots'),
     GameButtonDetails(
         title: 'Blackjack',
         gameLogo: 'Blackjack',

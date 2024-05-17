@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
+import 'package:new_mini_casino/business/rakeback_manager.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:provider/provider.dart';
 
@@ -87,6 +88,18 @@ class Bank extends StatelessWidget {
                       color: Theme.of(context).canvasColor,
                       onPressed: () {
                         Navigator.of(context).pushNamed('/transfer-moneys');
+                      }),
+                  const SizedBox(height: 15.0),
+                  buttonModel(
+                      context: context,
+                      icon: FontAwesomeIcons.coins,
+                      buttonName: 'Рейкбек',
+                      color: Theme.of(context).canvasColor,
+                      onPressed: () {
+                        Provider.of<RakebackManager>(context, listen: false)
+                            .loadRakeback(context);
+
+                        Navigator.of(context).pushNamed('/rakeback');
                       }),
                   const SizedBox(height: 15.0),
                   Consumer<BonusManager>(

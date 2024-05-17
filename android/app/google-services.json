@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "242091631777",
+    "project_id": "mini-casino-8ee0f",
+    "storage_bucket": "mini-casino-8ee0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242091631777:android:0efed5c35875444b1b3ce0",
+        "android_client_info": {
+          "package_name": "com.example.new_mini_casino"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242091631777-pa6j76ajkkbgn9vl2rbmmtosek5849sm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN_BNNQbeIxnd2knl1V51i50oo1RHVFPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242091631777-2bup0eosrodueh37lki9foudqo2ln9l0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "242091631777-movu6j6pk033mo8m6ac23i3ief18lsbi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newMiniCasino"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:242091631777:android:b2fefab7952fb5f51b3ce0",
+        "android_client_info": {
+          "package_name": "com.revens.mini.casino"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "242091631777-pa6j76ajkkbgn9vl2rbmmtosek5849sm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN_BNNQbeIxnd2knl1V51i50oo1RHVFPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "242091631777-2bup0eosrodueh37lki9foudqo2ln9l0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "242091631777-movu6j6pk033mo8m6ac23i3ief18lsbi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newMiniCasino"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

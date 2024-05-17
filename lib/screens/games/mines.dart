@@ -2,14 +2,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'dart:io' as ui;
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:new_mini_casino/main.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -238,61 +237,10 @@ class Mines extends StatelessWidget {
                   );
                 },
               ),
-              appBar: AppBar(
-                toolbarHeight: 76.0,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: IconButton(
-                      splashRadius: 25.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: context.watch<MinesLogic>().isGameOn
-                          ? null
-                          : () {
-                              Navigator.of(context).pop();
-                            },
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        size: Theme.of(context).appBarTheme.iconTheme!.size,
-                      )),
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      'Mines',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
-                    ),
-                    Consumer<Balance>(
-                      builder: (context, value, _) {
-                        return currencyNormalFormat(
-                            context: context, moneys: value.currentBalance);
-                      },
-                    )
-                  ],
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: IconButton(
-                        splashRadius: 25.0,
-                        padding: EdgeInsets.zero,
-                        onPressed: context.watch<MinesLogic>().isGameOn
-                            ? null
-                            : () {
-                                Navigator.of(context).pushNamed(
-                                    '/game-statistic',
-                                    arguments: 'mines');
-                              },
-                        icon: FaIcon(
-                          FontAwesomeIcons.circleInfo,
-                          color: Theme.of(context).appBarTheme.iconTheme!.color,
-                          size: Theme.of(context).appBarTheme.iconTheme!.size,
-                        )),
-                  ),
-                ],
+              appBar: gameAppBarWidget(
+                context: context,
+                isGameOn: context.watch<MinesLogic>().isGameOn,
+                gameName: 'Mines',
               ),
               body: body(),
             ),

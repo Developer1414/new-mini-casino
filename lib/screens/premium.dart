@@ -46,6 +46,7 @@ class PremiumInfo extends StatelessWidget {
             paymentController.isLoading
                 ? loading(context: context, text: paymentController.loadingText)
                 : Scaffold(
+                    extendBody: true,
                     resizeToAvoidBottomInset: false,
                     bottomNavigationBar: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -256,7 +257,7 @@ class PremiumInfo extends StatelessWidget {
                                           width: 3.0),
                                     ),
                                     child: AutoSizeText(
-                                        'Попробуйте Premium всего за 149 руб. в месяц или 1499 руб. в год!',
+                                        'Попробуйте Premium всего за 59 рублей в неделю, 149 руб. в месяц или 1499 руб. в год!',
                                         textAlign: TextAlign.center,
                                         style: Theme.of(context)
                                             .textTheme
@@ -452,7 +453,8 @@ class PremiumInfo extends StatelessWidget {
                                               .changeOffsetScrollController(
                                                   0.0);
 
-                                               Navigator.of(context).pushNamed('/user-agreement');
+                                          Navigator.of(context)
+                                              .pushNamed('/user-agreement');
                                         },
                                       text: 'Пользовательским Соглашением',
                                       style: GoogleFonts.roboto(
@@ -465,6 +467,7 @@ class PremiumInfo extends StatelessWidget {
                                       )),
                                     )
                                   ])),
+                              const SizedBox(height: 70.0),
                             ],
                           ),
                         ),

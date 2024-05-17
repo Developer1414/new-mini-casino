@@ -1,9 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
 import 'dart:math';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
+import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/audio_controller.dart';
 import 'package:new_mini_casino/controllers/friend_code_controller.dart';
@@ -11,7 +12,7 @@ import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/google_sign_in_service.dart';
-import 'package:new_mini_casino/widgets/simple_alert_dialog.dart';
+import 'package:new_mini_casino/services/notification_service.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/src/provider.dart' as provider;
 import 'package:flutter/foundation.dart';
@@ -231,11 +232,6 @@ class SupabaseController extends ChangeNotifier {
       await SupabaseController.supabase?.auth.resetPasswordForEmail(
         email,
       );
-
-      if (context.mounted) {
-        Navigator.of(context)
-            .pushNamed('/verify-email', arguments: [email, true]);
-      }
     } on AuthException catch (e) {
       if (e.statusCode == '429') {
         if (context.mounted) {
@@ -285,6 +281,23 @@ class SupabaseController extends ChangeNotifier {
               title: 'Ошибка',
               confirmBtnText: 'Окей',
               text: 'Неверный код!');
+        }
+      } else if (e.statusCode == '403') {
+        if (context.mounted) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text:
+                  'Срок действия токена истек или он недействителен! Отправьте код повторно!');
+        }
+      } else if (e.statusCode == '422') {
+        if (context.mounted) {
+          alertDialogError(
+              context: context,
+              title: 'Ошибка',
+              confirmBtnText: 'Окей',
+              text: 'Новый пароль должен отличаться от старого!');
         }
       } else {
         if (context.mounted) {
@@ -444,9 +457,8 @@ class SupabaseController extends ChangeNotifier {
             .add(const Duration(days: 3))
             .toIso8601String(),
         'moneyStorage': 0.0,
-        'promocodes': SupabaseController.friendCode.isEmpty
-            ? {}
-            : {friendCode: startBalance}
+        'usedPromocodes':
+            SupabaseController.friendCode.isEmpty ? null : ',$friendCode'
       });
 
       if (SupabaseController.friendCode.isNotEmpty) {
@@ -469,29 +481,19 @@ class SupabaseController extends ChangeNotifier {
         });
       }
 
-      if (context.mounted) {
-        alertDialogSuccess(
-            context: context,
-            title: 'Уведомление',
-            canCloseAlert: false,
-            confirmBtnText: 'Перезайти',
-            text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
-            onConfirmBtnTap: () => Restart.restartApp());
-      }
-
       loading(false);
     } on PostgrestException catch (e) {
       loading(false);
+
+      if (kDebugMode) {
+        print('createUserDates: ${e.message} (Code: ${e.code})');
+      }
 
       alertDialogError(
           context: context,
           title: 'Ошибка',
           confirmBtnText: 'Окей',
           text: 'createUserDates: ${e.message} (Code: ${e.code})');
-
-      if (kDebugMode) {
-        print('createUserDates: ${e.message} (Code: ${e.code})');
-      }
     }
   }
 
@@ -571,9 +573,9 @@ class SupabaseController extends ChangeNotifier {
 
         result = map['freeze'] as bool;
       });
-    } on Exception catch (e) {
+    } on PostgrestException catch (e) {
       if (kDebugMode) {
-        print('checkAccountForFreezing: $e');
+        print('checkAccountForFreezing: $e, ${e.code}');
       }
 
       if (context.mounted) {
@@ -588,12 +590,45 @@ class SupabaseController extends ChangeNotifier {
     return result;
   }
 
-  Future<bool> checkOnEmulator() async {
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  Future<List<dynamic>> checkOnBanned() async {
+    List<dynamic> result = [];
 
-    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    try {
+      final res = await SupabaseController.supabase!
+          .from('banned_users')
+          .select(
+            '*',
+            const FetchOptions(
+              count: CountOption.exact,
+            ),
+          )
+          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id);
 
-    return androidInfo.isPhysicalDevice; // && !kDebugMode
+      if (res != null) {
+        PostgrestResponse<dynamic> resp = res as PostgrestResponse<dynamic>;
+
+        if (resp.count! > 0) {
+          result = [
+            resp.data.first['reason'].toString(),
+            DateTime.parse(resp.data.first['unblockDate']).toLocal()
+          ];
+        }
+      }
+    } on PostgrestException catch (e) {
+      if (kDebugMode) {
+        print('checkAccountOnBlock: $e, ${e.code}');
+      }
+
+      if (context.mounted) {
+        alertDialogError(
+            context: context,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text: '[checkAccountOnBlock]: ${e.toString()}');
+      }
+    }
+
+    return result;
   }
 
   Future<bool> checkOnEngineeringWorks() async {
@@ -613,6 +648,10 @@ class SupabaseController extends ChangeNotifier {
 
   Future<bool> checkForUpdate() async {
     bool result = false;
+
+    if (kDebugMode) {
+      return false;
+    }
 
     await InAppUpdate.checkForUpdate().then((info) async {
       result = info.updateAvailability == UpdateAvailability.updateAvailable;
@@ -645,63 +684,85 @@ class SupabaseController extends ChangeNotifier {
   }
 
   Future loadGameServices(BuildContext context) async {
-    // if (!kDebugMode) {
-    //   await FreeraspService().initSecurityState(context);
-    // }
-
-    await checkAccountForFreezing(context).then((frozen) async {
-      if (frozen) {
-        showSimpleAlertDialog(
+    await Connectivity()
+        .checkConnectivity()
+        .then((ConnectivityResult result) async {
+      if (result == ConnectivityResult.none) {
+        await alertDialogError(
             context: context,
-            text: 'Ваш аккаунт временно заморожен!',
-            isCanPop: false);
+            canCloseAlert: false,
+            title: 'Ошибка',
+            text: 'Проблемы с подключением к интернету!',
+            confirmBtnText: 'Переподключиться',
+            onConfirmBtnTap: () async {
+              Navigator.of(context).pop();
+              await loadGameServices(context);
+            });
       } else {
-        await checkForUpdate().then((isExistUpdate) async {
-          if (isExistUpdate) {
-            await alertDialogSuccess(
-                context: context,
-                title: 'Новая версия',
-                confirmBtnText: 'Установить',
-                canCloseAlert: false,
-                text: 'Доступна новая версия игры!',
-                onConfirmBtnTap: () async {
-                  if (!await launchUrl(
-                      Uri.parse(
-                          'https://play.google.com/store/apps/details?id=com.revens.mini.casino'),
-                      mode: LaunchMode.externalNonBrowserApplication)) {
-                    throw Exception(
-                        'Could not launch ${Uri.parse('https://play.google.com/store/apps/details?id=com.revens.mini.casino')}');
+        await checkOnBanned().then((blockValue) async {
+          if (blockValue.isNotEmpty) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                '/ban', (value) => false,
+                arguments: blockValue);
+          } else {
+            await checkForUpdate().then((isExistUpdate) async {
+              if (isExistUpdate) {
+                await alertDialogSuccess(
+                    context: context,
+                    title: 'Новая версия',
+                    confirmBtnText: 'Установить',
+                    canCloseAlert: false,
+                    text: 'Доступна новая версия игры!',
+                    onConfirmBtnTap: () async {
+                      if (!await launchUrl(
+                          Uri.parse(
+                              'https://play.google.com/store/apps/details?id=com.revens.mini.casino'),
+                          mode: LaunchMode.externalNonBrowserApplication)) {
+                        throw Exception(
+                            'Could not launch ${Uri.parse('https://play.google.com/store/apps/details?id=com.revens.mini.casino')}');
+                      }
+                    });
+              } else {
+                await checkOnEngineeringWorks()
+                    .then((isEngineeringWorksEnabled) async {
+                  if (isEngineeringWorksEnabled) {
+                    showEngineeringWorksAlertDialog(context);
+                  } else {
+                    await checkPremiumAvailability(context);
+
+                    await ProfileController.getUserProfile(context);
+
+                    await provider.Provider.of<Balance>(context, listen: false)
+                        .startListenBalance(context);
+
+                    await provider.Provider.of<MoneyStorageManager>(context,
+                            listen: false)
+                        .loadBalance(context);
+
+                    await provider.Provider.of<TaxManager>(context,
+                            listen: false)
+                        .getTax();
+
+                    await LocalPromocodes().initializeMyPromocodes();
+
+                    await provider.Provider.of<SettingsController>(context,
+                            listen: false)
+                        .loadSettings(context);
+
+                    await provider.Provider.of<DailyBonusManager>(context,
+                            listen: false)
+                        .checkDailyBonus(context);
+
+                    await AdService.loadCountBet();
+
+                    await AudioController.initializeAudios();
+
+                    await NotificationService.setToken(context);
+
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('/games', (route) => false);
                   }
                 });
-          } else {
-            await checkOnEngineeringWorks()
-                .then((isEngineeringWorksEnabled) async {
-              if (isEngineeringWorksEnabled) {
-                showEngineeringWorksAlertDialog(context);
-              } else {
-                await checkPremiumAvailability(context);
-
-                await ProfileController.getUserProfile(context);
-
-                await provider.Provider.of<Balance>(context, listen: false)
-                    .loadBalance(context);
-
-                await provider.Provider.of<MoneyStorageManager>(context,
-                        listen: false)
-                    .loadBalance(context);
-
-                await provider.Provider.of<TaxManager>(context, listen: false)
-                    .getTax();
-
-                await LocalPromocodes().initializeMyPromocodes();
-
-                await provider.Provider.of<SettingsController>(context,
-                        listen: false)
-                    .loadSettings(context);
-
-                await AdService.loadCountBet();
-
-                await AudioController.initializeAudios();
               }
             });
           }

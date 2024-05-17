@@ -17,7 +17,7 @@ dependencies:
   google_nav_bar: ^5.0.6
   google_sign_in: ^6.1.0
   http: ^1.2.1
-  intl: ^0.18.0
+  intl: ^0.19.0
   shared_preferences: ^2.0.15
   url_launcher: ^6.1.5
   auto_size_text: ^3.0.0
@@ -32,7 +32,7 @@ dependencies:
   #beamer: ^1.5.3
   lottie: ^2.3.2
   currency_text_input_formatter: ^2.1.9
-  stack_appodeal_flutter: ^3.0.2
+  stack_appodeal_flutter: ^3.3.0
   flutter_gif: ^0.0.4
   gif: ^2.3.0
   shaky_animated_listview: ^0.0.5
@@ -57,9 +57,9 @@ dependencies:
   pinput: ^3.0.1
   restart_app: ^1.2.1
   confetti: ^0.7.0
-  screenshot: ^2.1.0
+  screenshot: ^3.0.0
   path_provider: ^2.1.1
-  top_snackbar_flutter: ^3.1.0
+  in_app_notification: ^1.1.2
   cached_network_image: ^3.3.1
   device_info_plus: ^9.1.1
   glassmorphism_ui: ^0.3.0
@@ -67,6 +67,9 @@ dependencies:
   just_audio: ^0.9.36
   crypto: ^3.0.3
   scratcher: ^2.5.0
+  onesignal_flutter: ^5.1.6
+  firebase_core: ^2.31.0
+  firebase_messaging: ^14.9.2
 
 dev_dependencies:
   flutter_test:
@@ -90,6 +93,7 @@ flutter:
    - assets/slots/
    - assets/images/
    - assets/blackjack/
+   - assets/roulette/
    - assets/pins/
    - assets/stairs/
    - assets/animations/

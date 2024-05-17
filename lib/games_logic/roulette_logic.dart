@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
@@ -7,6 +9,13 @@ import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:provider/provider.dart';
+
+class RouletteRound {
+  final int coefficient;
+  final Color color;
+
+  RouletteRound({required this.coefficient, required this.color});
+}
 
 class RouletteLogic extends ChangeNotifier {
   bool isGameOn = false;
@@ -20,12 +29,15 @@ class RouletteLogic extends ChangeNotifier {
 
   List<int> buttonsCoefficient = [2, 3, 5, 30];
 
-  List<Color> lastColors = [];
+  List<RouletteRound> lastColors = [];
 
   late BuildContext context;
 
-  void showInputBet() {
-    isShowInputBet = !isShowInputBet;
+  double startRandomAngle = 0.0;
+  double countCircles = 0.0;
+
+  void changeBet(double value) {
+    bet = value;
     notifyListeners();
   }
 
@@ -40,54 +52,61 @@ class RouletteLogic extends ChangeNotifier {
   }
 
   void startGame({required BuildContext context, required double bet}) {
-    CommonFunctions.callOnStart(
-        context: context,
-        bet: bet,
-        gameName: 'fortuneWheel',
-        callback: () {
-          isGameOn = true;
+    //isGameOn = true;
+    notifyListeners(); //     double ballAngle = widget.currentPlusAngle * 2 * pi;
 
-          this.bet = bet;
-          this.context = context;
+    // CommonFunctions.callOnStart(
+    //     context: context,
+    //     bet: bet,
+    //     gameName: 'fortuneWheel',
+    //     callback: () {
+    //       isGameOn = true;
 
-          profit = 0.0;
+    //       this.bet = bet;
+    //       this.context = context;
 
-          notifyListeners();
-        });
+    //       profit = 0.0;
+
+    //       notifyListeners();
+    //     });
   }
 
-  void setNewColor(Color color) {
-    lastColors.add(color);
+  void setNewCoefficient({required int coefficient, required Color color}) {
+    lastColors.add(RouletteRound(coefficient: coefficient, color: color));
+    notifyListeners();
+  }
+
+  void checkResultNumber(int resultNumber) {
+    isGameOn = false;
+
     notifyListeners();
   }
 
   void cashout() {
-    isGameOn = false;
+    // profit = bet * selectedNumber;
 
-    profit = bet * selectedNumber;
+    // Provider.of<Balance>(context, listen: false).addMoney(profit);
 
-    Provider.of<Balance>(context, listen: false).addMoney(profit);
+    // GameStatisticController.updateGameStatistic(
+    //     gameName: 'fortuneWheel',
+    //     gameStatisticModel:
+    //         GameStatisticModel(winningsMoneys: profit, maxWin: profit));
 
-    GameStatisticController.updateGameStatistic(
-        gameName: 'fortuneWheel',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+    // CommonFunctions.callOnProfit(
+    //   context: context,
+    //   bet: bet,
+    //   gameName: 'fortuneWheel',
+    //   profit: profit,
+    // );
 
-    CommonFunctions.callOnProfit(
-      context: context,
-      bet: bet,
-      gameName: 'fortuneWheel',
-      profit: profit,
-    );
+    // notifyListeners();
 
-    notifyListeners();
+    // if (Provider.of<SettingsController>(context, listen: false)
+    //     .isEnabledConfetti) {
+    //   confettiController.play();
+    // }
 
-    if (Provider.of<SettingsController>(context, listen: false)
-        .isEnabledConfetti) {
-      confettiController.play();
-    }
-
-    AdService.showInterstitialAd(context: context, func: () {});
+    // AdService.showInterstitialAd(context: context, func: () {});
   }
 
   void loose() {

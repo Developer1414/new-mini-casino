@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
@@ -46,7 +45,7 @@ class FortuneWheelLogic extends ChangeNotifier {
     CommonFunctions.callOnStart(
         context: context,
         bet: bet,
-        gameName: 'fortuneWheel',
+        gameName: 'Fortune Wheel',
         callback: () {
           isGameOn = true;
 
@@ -73,9 +72,13 @@ class FortuneWheelLogic extends ChangeNotifier {
     Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'fortuneWheel',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'fortune-wheel',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     CommonFunctions.callOnProfit(
       context: context,
@@ -100,7 +103,7 @@ class FortuneWheelLogic extends ChangeNotifier {
     profit = 0.0;
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'fortuneWheel',
+        gameName: 'fortune-wheel',
         gameStatisticModel: GameStatisticModel(
           maxLoss: bet,
           lossesMoneys: bet,

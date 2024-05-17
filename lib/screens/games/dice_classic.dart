@@ -10,10 +10,10 @@ import 'dart:io' as ui;
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/dice_classic_logic.dart';
-import 'package:new_mini_casino/games_logic/limbo_logic.dart';
 import 'package:new_mini_casino/main.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
+import 'package:new_mini_casino/widgets/last_bets_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -69,77 +69,57 @@ class DiceClassic extends StatelessWidget {
                               ],
                             ),
                             const SizedBox(height: 15.0),
-                            Container(
-                              height: 40.0,
-                              decoration: BoxDecoration(
+                            lastBetsWidget(
+                              context: context,
+                              list: diceClassicLogic.lastCoefficients,
+                              child: ClipRRect(
                                 borderRadius: BorderRadius.circular(15.0),
-                                color: Colors.lightBlueAccent.withOpacity(0.1),
-                                border: Border.all(
-                                    color: Colors.lightBlueAccent, width: 2.0),
-                              ),
-                              child: diceClassicLogic.lastCoefficients.isEmpty
-                                  ? Center(
-                                      child: AutoSizeText('Ставок ещё нет',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodySmall!
-                                              .copyWith(
-                                                  color: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall!
-                                                      .color!
-                                                      .withOpacity(0.4))),
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                      child: ListView.separated(
-                                          scrollDirection: Axis.horizontal,
-                                          itemBuilder: (context, index) {
-                                            List<DiceClassicRound> value =
-                                                diceClassicLogic
-                                                    .lastCoefficients.reversed
-                                                    .toList();
+                                child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) {
+                                      List<DiceClassicRound> value =
+                                          diceClassicLogic
+                                              .lastCoefficients.reversed
+                                              .toList();
 
-                                            return Container(
-                                              margin: EdgeInsets.only(
-                                                  top: 5.0,
-                                                  bottom: 5.0,
-                                                  left: index == 0 ? 5.0 : 0.0,
-                                                  right: index + 1 ==
-                                                          diceClassicLogic
-                                                              .lastCoefficients
-                                                              .length
-                                                      ? 5.0
-                                                      : 0.0),
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          10.0),
-                                                  color: value[index].isWin
-                                                      ? Colors.green
-                                                      : Colors.redAccent),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 5.0),
-                                                child: Center(
-                                                  child: AutoSizeText(
-                                                    value[index].coefficient,
-                                                    style: GoogleFonts.roboto(
-                                                        color: Colors.white,
-                                                        fontSize: 10.0,
-                                                        fontWeight:
-                                                            FontWeight.w700),
-                                                  ),
-                                                ),
-                                              ),
-                                            );
-                                          },
-                                          separatorBuilder: (context, index) =>
-                                              const SizedBox(width: 5.0),
-                                          itemCount: diceClassicLogic
-                                              .lastCoefficients.length),
-                                    ),
+                                      return AnimatedContainer(
+                                        duration:
+                                            const Duration(milliseconds: 200),
+                                        margin: EdgeInsets.only(
+                                            top: 5.0,
+                                            bottom: 5.0,
+                                            left: index == 0 ? 5.0 : 0.0,
+                                            right: index + 1 ==
+                                                    diceClassicLogic
+                                                        .lastCoefficients.length
+                                                ? 5.0
+                                                : 0.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                            color: value[index].isWin
+                                                ? Colors.green
+                                                : Colors.redAccent),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: Center(
+                                            child: AutoSizeText(
+                                              value[index].coefficient,
+                                              style: GoogleFonts.roboto(
+                                                  color: Colors.white,
+                                                  fontSize: 10.0,
+                                                  fontWeight: FontWeight.w700),
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    separatorBuilder: (context, index) =>
+                                        const SizedBox(width: 5.0),
+                                    itemCount: diceClassicLogic
+                                        .lastCoefficients.length),
+                              ),
                             ),
                           ],
                         ),
@@ -334,59 +314,10 @@ class DiceClassic extends StatelessWidget {
                   );
                 },
               ),
-              appBar: AppBar(
-                toolbarHeight: 76.0,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: IconButton(
-                      splashRadius: 25.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: context.watch<DiceClassicLogic>().isGameOn
-                          ? null
-                          : () {
-                              Navigator.of(context).pop();
-                            },
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        size: Theme.of(context).appBarTheme.iconTheme!.size,
-                      )),
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      'Dice Classic',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
-                    ),
-                    Consumer<Balance>(
-                      builder: (context, value, _) {
-                        return currencyNormalFormat(
-                            context: context, moneys: value.currentBalance);
-                      },
-                    )
-                  ],
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: IconButton(
-                        splashRadius: 25.0,
-                        padding: EdgeInsets.zero,
-                        onPressed: context.watch<LimboLogic>().isGameOn
-                            ? null
-                            : () => Navigator.of(context).pushNamed(
-                                '/game-statistic',
-                                arguments: 'dice-classic'),
-                        icon: FaIcon(
-                          FontAwesomeIcons.circleInfo,
-                          color: Theme.of(context).appBarTheme.iconTheme!.color,
-                          size: Theme.of(context).appBarTheme.iconTheme!.size,
-                        )),
-                  ),
-                ],
+              appBar: gameAppBarWidget(
+                context: context,
+                isGameOn: context.watch<DiceClassicLogic>().isGameOn,
+                gameName: 'Dice Classic',
               ),
               body: Screenshot(
                 controller: screenshotController,

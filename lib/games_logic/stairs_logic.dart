@@ -141,9 +141,13 @@ class StairsLogic extends ChangeNotifier {
     Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'stairs',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'stairs',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     CommonFunctions.callOnProfit(
       context: context,

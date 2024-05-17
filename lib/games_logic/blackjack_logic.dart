@@ -402,9 +402,13 @@ class BlackjackLogic extends ChangeNotifier {
     Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'blackjack',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'blackjack',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     CommonFunctions.callOnProfit(
       context: context,

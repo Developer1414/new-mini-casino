@@ -118,9 +118,13 @@ class DiceClassicLogic extends ChangeNotifier {
         .addMoney(profit)
         .whenComplete(() {
       GameStatisticController.updateGameStatistic(
-          gameName: 'dice-classic',
-          gameStatisticModel:
-              GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+        gameName: 'dice-classic',
+        gameStatisticModel: GameStatisticModel(
+          winningsMoneys: profit,
+          lossesMoneys: bet,
+          maxWin: profit,
+        ),
+      );
 
       lastCoefficients.add(DiceClassicRound(
           coefficient: targetCoefficient.toString(), isWin: true));

@@ -20,7 +20,7 @@ class OwnPromocode extends StatelessWidget {
   static TextEditingController prizeController = TextEditingController();
   static TextEditingController countController = TextEditingController();
 
-  static CurrencyTextInputFormatter prizeFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter prizeFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)

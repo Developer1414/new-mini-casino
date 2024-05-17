@@ -91,9 +91,13 @@ class CrashLogic extends ChangeNotifier {
     Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'crash',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'crash',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     AdService.showInterstitialAd(context: context, func: () {});
 

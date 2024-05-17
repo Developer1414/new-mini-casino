@@ -16,7 +16,7 @@ import 'dart:io' as ui;
 class LoanMoneys extends StatelessWidget {
   const LoanMoneys({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -24,7 +24,7 @@ class LoanMoneys extends StatelessWidget {
   );
 
   static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('1000000'));
+      TextEditingController(text: betFormatter.formatString('1000000'));
 
   @override
   Widget build(BuildContext context) {

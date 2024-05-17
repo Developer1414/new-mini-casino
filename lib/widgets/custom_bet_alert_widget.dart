@@ -9,7 +9,8 @@ import 'package:new_mini_casino/controllers/supabase_controller.dart';
 Future<double> getCustomBet(BuildContext context) async {
   TextEditingController controller = TextEditingController();
 
-  CurrencyTextInputFormatter controllerFormatter = CurrencyTextInputFormatter(
+  CurrencyTextInputFormatter controllerFormatter =
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -30,7 +31,7 @@ Future<double> getCustomBet(BuildContext context) async {
                   margin: const EdgeInsets.symmetric(horizontal: 15.0),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(15),
+                    borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -47,7 +48,7 @@ Future<double> getCustomBet(BuildContext context) async {
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.roboto(
                                   color: Colors.white,
-                                  fontSize: 20,
+                                  fontSize: 20.0,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -70,7 +71,7 @@ Future<double> getCustomBet(BuildContext context) async {
                                             0.0 ||
                                         controller.text.isEmpty) {
                                       controller.text =
-                                          controllerFormatter.format('0.00');
+                                          controllerFormatter.formatString('0.00');
 
                                       return;
                                     }
@@ -82,7 +83,7 @@ Future<double> getCustomBet(BuildContext context) async {
                                               .truncate() >
                                           100000000) {
                                         controller.text = controllerFormatter
-                                            .format('100000000.00');
+                                            .formatString('100000000.00');
                                       }
                                     } else {
                                       if (controllerFormatter
@@ -91,7 +92,7 @@ Future<double> getCustomBet(BuildContext context) async {
                                               .truncate() >=
                                           1000000) {
                                         controller.text = controllerFormatter
-                                            .format('1000000.00');
+                                            .formatString('1000000.00');
                                       }
                                     }
                                   },
@@ -112,6 +113,9 @@ Future<double> getCustomBet(BuildContext context) async {
                                       focusedBorder: Theme.of(context)
                                           .inputDecorationTheme
                                           .focusedBorder),
+                                  onTapOutside: (event) {
+                                    FocusScope.of(context).unfocus();
+                                  },
                                   style: Theme.of(context)
                                       .textTheme
                                       .displaySmall!
@@ -124,7 +128,7 @@ Future<double> getCustomBet(BuildContext context) async {
                       ),
                       Container(
                         width: double.infinity,
-                        height: 2,
+                        height: 2.0,
                         decoration: const BoxDecoration(
                             color: Color.fromARGB(179, 84, 90, 104)),
                       ),
@@ -136,22 +140,22 @@ Future<double> getCustomBet(BuildContext context) async {
                               child: Material(
                                 color: Colors.green,
                                 borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(15.0),
+                                  bottomLeft: Radius.circular(12.0),
                                 ),
                                 clipBehavior: Clip.antiAlias,
                                 child: InkWell(
                                   onTap: () => Navigator.pop(context),
                                   child: Container(
-                                    width: 57,
-                                    height: 57,
+                                    width: 57.0,
+                                    height: 57.0,
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 8),
+                                        horizontal: 12.0, vertical: 8.0),
                                     child: Center(
                                       child: Text(
                                         'Применить',
                                         style: GoogleFonts.roboto(
                                           color: Colors.white,
-                                          fontSize: 20,
+                                          fontSize: 20.0,
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),
@@ -164,26 +168,26 @@ Future<double> getCustomBet(BuildContext context) async {
                               child: Material(
                                 color: Colors.redAccent,
                                 borderRadius: const BorderRadius.only(
-                                  bottomRight: Radius.circular(15.0),
+                                  bottomRight: Radius.circular(12.0),
                                 ),
                                 clipBehavior: Clip.antiAlias,
                                 child: InkWell(
                                   onTap: () {
                                     controller.clear();
-                                    controllerFormatter.format('0.00');
+                                    controllerFormatter.formatString('0.00');
                                     Navigator.pop(context);
                                   },
                                   child: Container(
-                                    width: 57,
-                                    height: 57,
+                                    width: 57.0,
+                                    height: 57.0,
                                     padding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 8),
+                                        horizontal: 12.0, vertical: 8.0),
                                     child: Center(
                                       child: Text(
                                         'Отмена',
                                         style: GoogleFonts.roboto(
                                           color: Colors.white,
-                                          fontSize: 20,
+                                          fontSize: 20.0,
                                           fontWeight: FontWeight.w800,
                                         ),
                                       ),

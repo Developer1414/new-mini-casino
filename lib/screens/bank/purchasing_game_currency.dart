@@ -177,79 +177,101 @@ class PurchasingGameCurrency extends StatelessWidget {
                                     const SizedBox(height: 15.0),
                                     Row(
                                       children: [
-                                        Expanded(
-                                          child: SizedBox(
-                                            height: 50.0,
-                                            child: ElevatedButton(
-                                              onPressed:
-                                                  purchasingGameCurrencyController
-                                                              .amountGameCurrency ==
-                                                          250000
-                                                      ? null
-                                                      : () {
-                                                          purchasingGameCurrencyController
-                                                              .changeCurrency(
-                                                                  -50000);
-                                                        },
-                                              style: ElevatedButton.styleFrom(
-                                                elevation: 5,
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 179, 242, 31),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15.0)),
+                                        purchasingGameCurrencyController
+                                                    .amountGameCurrency ==
+                                                100000
+                                            ? Container()
+                                            : Expanded(
+                                                child: SizedBox(
+                                                  height: 50.0,
+                                                  child: ElevatedButton(
+                                                    onPressed: () {
+                                                      purchasingGameCurrencyController
+                                                          .changeCurrency(
+                                                              -50000);
+                                                    },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      elevation: 5,
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              179,
+                                                              242,
+                                                              31),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.0)),
+                                                    ),
+                                                    child: FaIcon(
+                                                      FontAwesomeIcons.minus,
+                                                      color: purchasingGameCurrencyController
+                                                                  .amountGameCurrency ==
+                                                              100000
+                                                          ? Colors.white38
+                                                          : Colors.black,
+                                                      size: 25.0,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                              child: FaIcon(
-                                                FontAwesomeIcons.minus,
-                                                color: purchasingGameCurrencyController
-                                                            .amountGameCurrency ==
-                                                        250000
-                                                    ? Colors.white38
-                                                    : Colors.black,
-                                                size: 25.0,
+                                        purchasingGameCurrencyController
+                                                        .amountGameCurrency ==
+                                                    100000 ||
+                                                purchasingGameCurrencyController
+                                                        .amountGameCurrency ==
+                                                    10000000
+                                            ? Container()
+                                            : const SizedBox(width: 15.0),
+                                        purchasingGameCurrencyController
+                                                    .amountGameCurrency ==
+                                                10000000
+                                            ? Container()
+                                            : Expanded(
+                                                child: SizedBox(
+                                                  height: 50.0,
+                                                  child: ElevatedButton(
+                                                    onPressed:
+                                                        purchasingGameCurrencyController
+                                                                    .amountGameCurrency ==
+                                                                10000000
+                                                            ? null
+                                                            : () {
+                                                                purchasingGameCurrencyController
+                                                                    .changeCurrency(
+                                                                        50000);
+                                                              },
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      elevation: 5,
+                                                      backgroundColor:
+                                                          const Color.fromARGB(
+                                                              255,
+                                                              179,
+                                                              242,
+                                                              31),
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          15.0)),
+                                                    ),
+                                                    child: FaIcon(
+                                                      FontAwesomeIcons.plus,
+                                                      color: purchasingGameCurrencyController
+                                                                  .amountGameCurrency ==
+                                                              10000000
+                                                          ? Colors.white38
+                                                          : Colors.black,
+                                                      size: 25.0,
+                                                    ),
+                                                  ),
+                                                ),
                                               ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 15.0),
-                                        Expanded(
-                                          child: SizedBox(
-                                            height: 50.0,
-                                            child: ElevatedButton(
-                                              onPressed:
-                                                  purchasingGameCurrencyController
-                                                              .amountGameCurrency ==
-                                                          10000000
-                                                      ? null
-                                                      : () {
-                                                          purchasingGameCurrencyController
-                                                              .changeCurrency(
-                                                                  50000);
-                                                        },
-                                              style: ElevatedButton.styleFrom(
-                                                elevation: 5,
-                                                backgroundColor:
-                                                    const Color.fromARGB(
-                                                        255, 179, 242, 31),
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            15.0)),
-                                              ),
-                                              child: FaIcon(
-                                                FontAwesomeIcons.plus,
-                                                color: purchasingGameCurrencyController
-                                                            .amountGameCurrency ==
-                                                        10000000
-                                                    ? Colors.white38
-                                                    : Colors.black,
-                                                size: 25.0,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
                                       ],
                                     ),
                                   ],

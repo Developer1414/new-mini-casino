@@ -8,6 +8,7 @@ import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/premium_badge.dart';
+import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
 
@@ -17,7 +18,7 @@ class Settings extends StatelessWidget {
   static TextEditingController minBetController = TextEditingController();
 
   static CurrencyTextInputFormatter minBetFormatter =
-      CurrencyTextInputFormatter(
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -163,25 +164,10 @@ class Settings extends StatelessWidget {
                                 ],
                               ),
                               const SizedBox(height: 5.0),
-                              Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.orange.withOpacity(0.3),
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    border: Border.all(
-                                        color: Colors.orangeAccent,
-                                        width: 2.0)),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                      'Не ставьте яркие фоны, интерфейс с ним будет сливаться!',
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                            fontSize: 12.0,
-                                          )),
-                                ),
+                              smallHelperPanel(
+                                context: context,
+                                icon: FontAwesomeIcons.circleInfo,
+                                text: 'Не ставьте яркие фоны, интерфейс с ним будет сливаться!',
                               ),
                             ],
                           ),

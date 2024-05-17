@@ -122,7 +122,7 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                                 verifyCode: pinController.text,
                               );
 
-                              alertDialogSuccess(
+                              await alertDialogSuccess(
                                   context:
                                       _scaffoldKey.currentContext ?? context,
                                   title: 'Уведомление',
@@ -263,11 +263,22 @@ class _VerifyPhoneNumberState extends State<VerifyPhoneNumber> {
                                                     isLoading = true;
                                                   });
 
-                                                  await SupabaseController()
-                                                      .resendOTP(widget.email)
-                                                      .whenComplete(() {
-                                                    startTimer();
-                                                  });
+                                                  if (!widget.isResetPassword) {
+                                                    await SupabaseController()
+                                                        .resendOTP(widget.email)
+                                                        .whenComplete(() {
+                                                      startTimer();
+                                                    });
+                                                  } else {
+                                                    await SupabaseController()
+                                                        .sendCodeToResetPassword(
+                                                      context: context,
+                                                      email: widget.email,
+                                                    )
+                                                        .whenComplete(() {
+                                                      startTimer();
+                                                    });
+                                                  }
 
                                                   setState(() {
                                                     isLoading = false;

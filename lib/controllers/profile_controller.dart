@@ -18,7 +18,7 @@ class ProfileController extends ChangeNotifier {
           .from('users')
           .select('*')
           .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-          .then((value) {
+          .then((value) async {
         Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
         profileModel = ProfileModel(

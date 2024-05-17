@@ -1,14 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/main.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -242,64 +241,10 @@ class Blackjack extends StatelessWidget {
                       );
                     },
                   ),
-                  appBar: AppBar(
-                    toolbarHeight: 76.0,
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: IconButton(
-                          splashRadius: 25.0,
-                          padding: EdgeInsets.zero,
-                          onPressed: context.watch<BlackjackLogic>().isGameOn
-                              ? null
-                              : () {
-                                  Navigator.of(context).pop();
-                                },
-                          icon: FaIcon(
-                            FontAwesomeIcons.arrowLeft,
-                            color:
-                                Theme.of(context).appBarTheme.iconTheme!.color,
-                            size: Theme.of(context).appBarTheme.iconTheme!.size,
-                          )),
-                    ),
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        AutoSizeText(
-                          'Blackjack',
-                          style: Theme.of(context).appBarTheme.titleTextStyle,
-                        ),
-                        Consumer<Balance>(
-                          builder: (context, value, _) {
-                            return currencyNormalFormat(
-                                context: context, moneys: value.currentBalance);
-                          },
-                        )
-                      ],
-                    ),
-                    actions: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 15.0),
-                        child: IconButton(
-                            splashRadius: 25.0,
-                            padding: EdgeInsets.zero,
-                            onPressed: context.watch<BlackjackLogic>().isGameOn
-                                ? null
-                                : () => Navigator.of(context).pushNamed(
-                                    '/game-statistic',
-                                    arguments: 'blackjack'),
-                            icon: FaIcon(
-                              FontAwesomeIcons.circleInfo,
-                              color: Theme.of(context)
-                                  .appBarTheme
-                                  .iconTheme!
-                                  .color,
-                              size:
-                                  Theme.of(context).appBarTheme.iconTheme!.size,
-                            )),
-                      ),
-                    ],
+                  appBar: gameAppBarWidget(
+                    context: context,
+                    isGameOn: context.watch<BlackjackLogic>().isGameOn,
+                    gameName: 'Blackjack',
                   ),
                   body: Screenshot(
                     controller: screenshotController,

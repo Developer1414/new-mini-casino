@@ -9,7 +9,6 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 
@@ -19,11 +18,11 @@ import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/games_logic/plinko_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/models/game_statistic_model.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
 import 'package:new_mini_casino/services/autoclicker_secure.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/auto_bets.dart';
 import 'package:new_mini_casino/widgets/bottom_game_navigation.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:provider/provider.dart';
 
 class Plinko extends StatelessWidget {
@@ -40,7 +39,7 @@ class Plinko extends StatelessWidget {
 
   static MyGame myGame = MyGame();
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -48,7 +47,7 @@ class Plinko extends StatelessWidget {
   );
 
   static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
+      TextEditingController(text: betFormatter.formatString('10000'));
 
   void makeBet(BuildContext context) {
     double bet = betFormatter.getUnformattedValue().toDouble();
@@ -85,68 +84,11 @@ class Plinko extends StatelessWidget {
                       .exitGame(context),
               isCanSwitch: false,
               onPressed: () => makeBet(context)),
-          appBar: AppBar(
-            toolbarHeight: 76.0,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            leading: Padding(
-              padding: const EdgeInsets.only(left: 15.0),
-              child: IconButton(
-                  splashRadius: 25.0,
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    if (!Provider.of<AutoBetsController>(context, listen: false)
-                        .exitGame(context)) {
-                      return;
-                    }
-
-                    Navigator.of(context).pop();
-                  },
-                  icon: FaIcon(
-                    FontAwesomeIcons.arrowLeft,
-                    color: Theme.of(context).appBarTheme.iconTheme!.color,
-                    size: Theme.of(context).appBarTheme.iconTheme!.size,
-                  )),
-            ),
-            title: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  'Plinko',
-                  style: Theme.of(context).appBarTheme.titleTextStyle,
-                ),
-                Consumer<Balance>(
-                  builder: (context, value, _) {
-                    return currencyNormalFormat(
-                        context: context, moneys: value.currentBalance);
-                  },
-                )
-              ],
-            ),
-            actions: [
-              autoBetsModel(context: context, function: () => makeBet(context)),
-              Padding(
-                padding: const EdgeInsets.only(right: 15.0),
-                child: IconButton(
-                    splashRadius: 25.0,
-                    padding: EdgeInsets.zero,
-                    onPressed: () {
-                      if (!Provider.of<AutoBetsController>(context,
-                              listen: false)
-                          .exitGame(context)) {
-                        return;
-                      }
-
-                      Navigator.of(context)
-                          .pushNamed('/game-statistic', arguments: 'plinko');
-                    },
-                    icon: FaIcon(
-                      FontAwesomeIcons.circleInfo,
-                      color: Theme.of(context).appBarTheme.iconTheme!.color,
-                      size: Theme.of(context).appBarTheme.iconTheme!.size,
-                    )),
-              ),
-            ],
+          appBar: gameAppBarWidget(
+            context: context,
+            isGameOn: Provider.of<AutoBetsController>(context, listen: false)
+                .exitGame(context),
+            gameName: 'Plinko',
           ),
           body: Column(
             children: [
@@ -462,9 +404,13 @@ class Ball extends PositionComponent with CollisionCallbacks, HasGameRef {
             ));
       } else if (other.coefficient >= 2.0) {
         GameStatisticController.updateGameStatistic(
-            gameName: 'plinko',
-            gameStatisticModel:
-                GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+          gameName: 'plinko',
+          gameStatisticModel: GameStatisticModel(
+            winningsMoneys: profit,
+            lossesMoneys: bet,
+            maxWin: profit,
+          ),
+        );
       }
 
       gameRef.remove(this);

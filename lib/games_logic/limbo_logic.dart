@@ -85,9 +85,13 @@ class LimboLogic extends ChangeNotifier {
     Provider.of<Balance>(context, listen: false).addMoney(profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'limbo',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'limbo',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     lastCoefficients.add(LimboRound(
         coefficient: targetCoefficient.toStringAsFixed(2), isWin: true));

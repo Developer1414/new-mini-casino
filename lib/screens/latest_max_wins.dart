@@ -363,8 +363,9 @@ class _LatestMaxWinsState extends State<LatestMaxWins> {
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
+                                              const SizedBox(height: 10.0),
                                               AutoSizeText(
-                                                'Последние ставки:',
+                                                'Прошлые крупные выигрыши:',
                                                 style: GoogleFonts.roboto(
                                                   color: Colors.white,
                                                   fontSize: 15.0,

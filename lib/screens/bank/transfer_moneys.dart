@@ -16,7 +16,7 @@ import 'dart:io' as ui;
 class TransferMoneys extends StatelessWidget {
   const TransferMoneys({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -243,7 +243,7 @@ class TransferMoneys extends StatelessWidget {
                                     icon: FontAwesomeIcons.circleInfo,
                                     context: context,
                                     text:
-                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'} Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за 12 часов!',
+                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'}Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за день!',
                                   ),
                                 ],
                               ),

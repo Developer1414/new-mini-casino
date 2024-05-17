@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 import 'package:intl/intl.dart';
@@ -11,8 +10,9 @@ import 'package:new_mini_casino/fortune_wheel_preferences/board_view.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/model.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/main.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
+import 'package:new_mini_casino/widgets/last_bets_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 
@@ -187,58 +187,40 @@ class _FortuneWheelState extends State<FortuneWheel>
                           ],
                         ),
                         const SizedBox(height: 15.0),
-                        Container(
-                          height: 40.0,
-                          decoration: BoxDecoration(
+                        lastBetsWidget(
+                          context: context,
+                          list: fortuneWheelLogic.lastColors,
+                          child: ClipRRect(
                             borderRadius: BorderRadius.circular(15.0),
-                            color: Colors.lightBlueAccent.withOpacity(0.1),
-                            border: Border.all(
-                                color: Colors.lightBlueAccent, width: 2.0),
-                          ),
-                          child: fortuneWheelLogic.lastColors.isEmpty
-                              ? Center(
-                                  child: AutoSizeText('Ставок ещё нет',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodySmall!
-                                                  .color!
-                                                  .withOpacity(0.4))),
-                                )
-                              : ClipRRect(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                  child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemBuilder: (context, index) {
-                                        List<Color> value = fortuneWheelLogic
-                                            .lastColors.reversed
-                                            .toList();
+                            child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  List<Color> value = fortuneWheelLogic
+                                      .lastColors.reversed
+                                      .toList();
 
-                                        return Container(
-                                          width: 15.0,
-                                          margin: EdgeInsets.only(
-                                              top: 5.0,
-                                              bottom: 5.0,
-                                              left: index == 0 ? 5.0 : 0.0,
-                                              right: index + 1 ==
-                                                      fortuneWheelLogic
-                                                          .lastColors.length
-                                                  ? 5.0
-                                                  : 0.0),
-                                          decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(10.0),
-                                              color: value[index]),
-                                        );
-                                      },
-                                      separatorBuilder: (context, index) =>
-                                          const SizedBox(width: 5.0),
-                                      itemCount:
-                                          fortuneWheelLogic.lastColors.length),
-                                ),
+                                  return AnimatedContainer(
+                                    duration: const Duration(milliseconds: 200),
+                                    width: 15.0,
+                                    margin: EdgeInsets.only(
+                                        top: 5.0,
+                                        bottom: 5.0,
+                                        left: index == 0 ? 5.0 : 0.0,
+                                        right: index + 1 ==
+                                                fortuneWheelLogic
+                                                    .lastColors.length
+                                            ? 5.0
+                                            : 0.0),
+                                    decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                        color: value[index]),
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const SizedBox(width: 5.0),
+                                itemCount: fortuneWheelLogic.lastColors.length),
+                          ),
                         ),
                       ],
                     ),
@@ -330,59 +312,10 @@ class _FortuneWheelState extends State<FortuneWheel>
                   ),
                 ],
               ),
-              appBar: AppBar(
-                toolbarHeight: 76.0,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: IconButton(
-                      splashRadius: 25.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: context.watch<FortuneWheelLogic>().isGameOn
-                          ? null
-                          : () {
-                              Navigator.of(context).pop();
-                            },
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        size: Theme.of(context).appBarTheme.iconTheme!.size,
-                      )),
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      'Fortune Wheel',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
-                    ),
-                    Consumer<Balance>(
-                      builder: (context, value, _) {
-                        return currencyNormalFormat(
-                            context: context, moneys: value.currentBalance);
-                      },
-                    )
-                  ],
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: IconButton(
-                        splashRadius: 25.0,
-                        padding: EdgeInsets.zero,
-                        onPressed: context.watch<FortuneWheelLogic>().isGameOn
-                            ? null
-                            : () => Navigator.of(context).pushNamed(
-                                '/game-statistic',
-                                arguments: 'fortuneWheel'),
-                        icon: FaIcon(
-                          FontAwesomeIcons.circleInfo,
-                          color: Theme.of(context).appBarTheme.iconTheme!.color,
-                          size: Theme.of(context).appBarTheme.iconTheme!.size,
-                        )),
-                  ),
-                ],
+              appBar: gameAppBarWidget(
+                context: context,
+                isGameOn: context.watch<FortuneWheelLogic>().isGameOn,
+                gameName: 'Fortune Wheel',
               ),
               body: Screenshot(
                 controller: screenshotController,

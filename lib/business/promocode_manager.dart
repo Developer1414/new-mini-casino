@@ -19,8 +19,8 @@ class PromocodeManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void useLocalPromocode(
-      {required String myPromocode, required BuildContext context}) {
+  Future useLocalPromocode(
+      {required String myPromocode, required BuildContext context}) async {
     String promocode = LocalPromocodes.promocodes.entries
         .where((element) => element.key == myPromocode)
         .first
@@ -31,15 +31,21 @@ class PromocodeManager extends ChangeNotifier {
         .first
         .value;
 
-    provider.Provider.of<Balance>(context, listen: false).addMoney(prize);
+    showLoading(true);
 
-    alertDialogSuccess(
-      context: context,
-      title: 'Поздравляем!',
-      confirmBtnText: 'Спасибо!',
-      text:
-          'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(prize)}!',
-    );
+    await provider.Provider.of<Balance>(context, listen: false).addMoney(prize);
+
+    showLoading(false);
+
+    if (context.mounted) {
+      alertDialogSuccess(
+        context: context,
+        title: 'Поздравляем!',
+        confirmBtnText: 'Спасибо!',
+        text:
+            'Вам зачислено ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(prize)}!',
+      );
+    }
 
     LocalPromocodes().removePromocode(promocode);
 
@@ -68,7 +74,7 @@ class PromocodeManager extends ChangeNotifier {
     showLoading(true);
 
     final res = await SupabaseController.supabase!
-        .from('promocodes')
+        .from('all_promocodes')
         .select(
           'title',
           const FetchOptions(
@@ -94,13 +100,13 @@ class PromocodeManager extends ChangeNotifier {
     }
 
     await SupabaseController.supabase!
-        .from('promocodes')
+        .from('all_promocodes')
         .select('*')
         .eq('title', title)
         .then((value) async {
       Map<dynamic, dynamic> map = (value as List<dynamic>).first;
 
-      int activationCount = int.parse(map['count'].toString());
+      int activationCount = int.parse(map['activationCount'].toString());
       double prize = double.parse(map['prize'].toString());
 
       if (activationCount <= 0) {
@@ -145,15 +151,15 @@ class PromocodeManager extends ChangeNotifier {
 
           if (activationCount <= 1) {
             await SupabaseController.supabase!
-                .from('promocodes')
+                .from('all_promocodes')
                 .delete()
                 .eq('title', title);
           } else {
             activationCount -= 1;
 
             await SupabaseController.supabase!
-                .from('promocodes')
-                .update({'count': activationCount}).eq('title', title);
+                .from('all_promocodes')
+                .update({'activationCount': activationCount}).eq('title', title);
           }
 
           if (context.mounted) {

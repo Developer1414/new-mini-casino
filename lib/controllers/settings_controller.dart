@@ -86,7 +86,7 @@ class SettingsController extends ChangeNotifier {
         context: context, defaultMinBet: minBet);
 
     Settings.minBetController.text =
-        Settings.minBetFormatter.format(minBet.toStringAsFixed(2));
+        Settings.minBetFormatter.formatString(minBet.toStringAsFixed(2));
 
     notifyListeners();
   }
@@ -124,7 +124,7 @@ class SettingsController extends ChangeNotifier {
     }
 
     Settings.minBetController.text =
-        Settings.minBetFormatter.format(minBet.toStringAsFixed(2));
+        Settings.minBetFormatter.formatString(minBet.toStringAsFixed(2));
 
     CommonFunctions.setDefaultGamesMinBet(
         context: context, defaultMinBet: minBet);

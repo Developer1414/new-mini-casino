@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/services/notification_service.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
-import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class LatestMaxWinsController extends ChangeNotifier {
   bool isLoading = false;
@@ -42,11 +41,11 @@ class LatestMaxWinsController extends ChangeNotifier {
     if (context.mounted &&
         Provider.of<SettingsController>(context, listen: false)
             .isEnabledMaxWinNotification) {
-      showTopSnackBar(
-        Overlay.of(context),
-        const CustomSnackBar.success(
-          message: "Поздравляем! Вы попали в «Крупные выигрыши»!",
-        ),
+      NotificationService.showInAppNotification(
+        context: context,
+        title: 'Поздравляем!',
+        notificationType: NotificationType.success,
+        content: 'Вы попали в «Крупные выигрыши»!',
       );
     }
   }

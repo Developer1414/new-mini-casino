@@ -32,11 +32,13 @@ Future alertDialogError(
     {required BuildContext context,
     required String title,
     required String text,
+    bool canCloseAlert = true,
     String? confirmBtnText,
     Function? onConfirmBtnTap}) async {
   await QuickAlert.show(
       context: context,
-      barrierDismissible: false,
+      barrierDismissible: canCloseAlert,
+      disableBackBtn: !canCloseAlert,
       type: QuickAlertType.error,
       title: title,
       text: text,
@@ -68,4 +70,21 @@ Future alertDialogSuccess(
       onConfirmBtnTap: () =>
           onConfirmBtnTap?.call() ??
           Navigator.of(context, rootNavigator: true).pop());
+}
+
+Future showErrorAlertNoBalance(BuildContext context) async {
+  await alertDialogConfirm(
+    context: context,
+    title: 'Ошибка',
+    text: 'Недостаточно средств на балансе!',
+    barrierDismissible: false,
+    type: QuickAlertType.error,
+    confirmBtnText: 'Купить',
+    cancelBtnText: 'Отмена',
+    onConfirmBtnTap: () {
+      Navigator.of(context, rootNavigator: true).pop();
+      Navigator.of(context).pushNamed('/purchasing-game-currency');
+    },
+    onCancelBtnTap: () => Navigator.of(context, rootNavigator: true).pop(),
+  );
 }

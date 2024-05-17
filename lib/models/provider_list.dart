@@ -1,3 +1,4 @@
+import 'package:new_mini_casino/business/rakeback_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/latest_max_wins_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
@@ -74,4 +75,5 @@ List<SingleChildWidget> providerList = [
   ChangeNotifierProvider(create: (ctx) => GameStatisticController()),
   ChangeNotifierProvider(create: (ctx) => SlotsLogic()),
   ChangeNotifierProvider(create: (ctx) => LatestMaxWinsController()),
+  ChangeNotifierProvider(create: (ctx) => RakebackManager()),
 ];

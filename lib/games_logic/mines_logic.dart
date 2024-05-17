@@ -135,9 +135,13 @@ class MinesLogic extends ChangeNotifier {
         .addMoney(openedIndexes.isEmpty ? bet : profit);
 
     GameStatisticController.updateGameStatistic(
-        gameName: 'mines',
-        gameStatisticModel:
-            GameStatisticModel(winningsMoneys: profit, maxWin: profit));
+      gameName: 'mines',
+      gameStatisticModel: GameStatisticModel(
+        winningsMoneys: profit,
+        lossesMoneys: bet,
+        maxWin: profit,
+      ),
+    );
 
     CommonFunctions.callOnProfit(
       context: context,

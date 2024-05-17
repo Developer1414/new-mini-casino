@@ -8,12 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
-import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/services/notification_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
@@ -42,9 +43,8 @@ class _AllGamesState extends State<AllGames> {
   @override
   void initState() {
     super.initState();
-    Provider.of<DailyBonusManager>(context, listen: false)
-        .checkDailyBonus(context);
-    Provider.of<RaffleManager>(context, listen: false).checkOnExistRaffle();
+    //Provider.of<RaffleManager>(context, listen: false).checkOnExistRaffle();
+    NotificationService.listenNotifications(context);
   }
 
   @override
@@ -170,15 +170,12 @@ class _AllGamesState extends State<AllGames> {
                 'Игры',
                 style: Theme.of(context).appBarTheme.titleTextStyle,
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 0.0),
-                child: Consumer<Balance>(builder: (ctx, balance, _) {
-                  return AutoSizeText(
-                    balance.currentBalanceString,
-                    style: Theme.of(context).textTheme.displaySmall,
-                  );
-                }),
-              ),
+              Consumer<Balance>(
+                builder: (context, value, _) {
+                  return currencyNormalFormat(
+                      context: context, moneys: value.currentBalance);
+                },
+              )
             ],
           ),
           actions: [
@@ -292,8 +289,8 @@ class _AllGamesState extends State<AllGames> {
                       elevation: 8,
                       scrollbarTheme: ScrollbarThemeData(
                         radius: const Radius.circular(40),
-                        thickness: MaterialStateProperty.all(6),
-                        thumbVisibility: MaterialStateProperty.all(true),
+                        thickness: WidgetStateProperty.all(6),
+                        thumbVisibility: WidgetStateProperty.all(true),
                       )),
                   menuItemStyleData: const MenuItemStyleData(
                     height: 40,
@@ -402,10 +399,8 @@ class _AllGamesState extends State<AllGames> {
                                             GamesController
                                                 .games[index].nextScreen);
                                       },
-                                      buttonColor:
-                                          // Color.fromARGB(255, 136, 71, 126),
-                                          GamesController
-                                              .games[index].buttonColor,
+                                      buttonColor: GamesController
+                                          .games[index].buttonColor,
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(25.0)))
                                   : index == GamesController.games.length
@@ -640,6 +635,7 @@ class _AllGamesState extends State<AllGames> {
           ),
         ));
   }
+
   Widget premiumButton() {
     return Padding(
         padding: const EdgeInsets.only(bottom: 16.0),

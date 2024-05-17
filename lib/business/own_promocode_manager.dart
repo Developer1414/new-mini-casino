@@ -109,7 +109,7 @@ class OwnPromocodeManager extends ChangeNotifier {
 
     try {
       final res = await SupabaseController.supabase!
-          .from('promocodes')
+          .from('all_promocodes')
           .select(
             'title',
             const FetchOptions(
@@ -120,10 +120,11 @@ class OwnPromocodeManager extends ChangeNotifier {
 
       if (res.count == 0) {
         try {
-          await SupabaseController.supabase!.from('promocodes').insert({
+          await SupabaseController.supabase!.from('all_promocodes').insert({
             'prize': prize,
             'title': name,
-            'count': countActivation.round(),
+            'userName': ProfileController.profileModel.nickname,
+            'activationCount': countActivation.round(),
           });
 
           await SupabaseController.supabase!

@@ -12,8 +12,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
- // static bool isLoaded = false;
-
   Future showPremiumSubscription() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -55,57 +53,17 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    //if (!isLoaded) {
     final session = SupabaseController.supabase?.auth.currentSession;
 
     if (session != null) {
-      await SupabaseController().loadGameServices(context).whenComplete(() {
-        Navigator.of(context).pushNamed('/games');
-      });
-
-      //isLoaded = true;
-
-      // return Stack(
-      //   children: [
-      //     backgroundModel(),
-      //     const AllGames(),
-      //   ],
-      // );
+      await SupabaseController().loadGameServices(context);
     } else {
-      Navigator.of(context).pushNamed('/login');
-
-      // return Stack(
-      //   children: [
-      //     backgroundModel(),
-      //     const Login(),
-      //   ],
-      // );
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     }
-    // } else {
-    //   return Stack(
-    //     children: [
-    //       backgroundModel(),
-    //       const AllGames(),
-    //     ],
-    //   );
-    // }
   }
 
   @override
   Widget build(BuildContext context) {
     return loading(context: context);
-
-    // PopScope(
-    //     canPop: false,
-    //     child: FutureBuilder(
-    //       future: redirect(),
-    //       builder: (context, snapshot) {
-    //         if (snapshot.connectionState == ConnectionState.waiting) {
-    //           return loading(context: context);
-    //         }
-
-    //         return snapshot.data ?? Container();
-    //       },
-    //     ));
   }
 }

@@ -31,6 +31,12 @@ ThemeData darkThemeData(BuildContext context) {
               fontSize: 25,
               fontWeight: FontWeight.w800,
             )),
+            titleSmall: GoogleFonts.roboto(
+                textStyle: TextStyle(
+              color: Colors.grey.shade100,
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            )),
             bodySmall: GoogleFonts.roboto(
                 textStyle: TextStyle(
               color: Colors.grey.shade100,
@@ -51,8 +57,6 @@ ThemeData darkThemeData(BuildContext context) {
           onSecondary: Color.fromARGB(255, 72, 79, 105),
           error: Color.fromARGB(255, 72, 79, 105),
           onError: Color.fromARGB(255, 72, 79, 105),
-          background: Color.fromARGB(255, 72, 79, 105),
-          onBackground: Color.fromARGB(255, 72, 79, 105),
           surface: Color.fromARGB(255, 72, 79, 105),
           onSurface: Color.fromARGB(255, 72, 79, 105),
         ),
@@ -75,5 +79,5 @@ ThemeData darkThemeData(BuildContext context) {
           focusedBorder: OutlineInputBorder(
               borderRadius: const BorderRadius.all(Radius.circular(12.0)),
               borderSide: BorderSide(
-                  width: 2.5, color: Colors.white.withOpacity(0.5)))));
+                  width: 2.5, color: Colors.white.withOpacity(0.7)))));
 }

@@ -143,9 +143,13 @@ class KenoLogic extends ChangeNotifier {
                         ));
                   } else {
                     GameStatisticController.updateGameStatistic(
-                        gameName: 'keno',
-                        gameStatisticModel: GameStatisticModel(
-                            winningsMoneys: profit, maxWin: profit));
+                      gameName: 'keno',
+                      gameStatisticModel: GameStatisticModel(
+                        winningsMoneys: profit,
+                        lossesMoneys: bet,
+                        maxWin: profit,
+                      ),
+                    );
                   }
 
                   Provider.of<Balance>(context, listen: false).addMoney(profit);

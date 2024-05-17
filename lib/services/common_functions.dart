@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/local_bonuse_manager.dart';
+import 'package:new_mini_casino/business/rakeback_manager.dart';
 import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/latest_max_wins_controller.dart';
@@ -26,27 +27,9 @@ import 'package:new_mini_casino/models/game_statistic_model.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/no_internet_connection_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:quickalert/models/quickalert_type.dart';
 
 class CommonFunctions {
   static bool isLoading = false;
-
-  static Future showErrorAlertNoBalance(BuildContext context) async {
-    await alertDialogConfirm(
-      context: context,
-      title: 'Ошибка',
-      text: 'Недостаточно средств на балансе!',
-      barrierDismissible: false,
-      type: QuickAlertType.error,
-      confirmBtnText: 'Купить',
-      cancelBtnText: 'Отмена',
-      onConfirmBtnTap: () {
-        Navigator.of(context, rootNavigator: true).pop();
-        Navigator.of(context).pushNamed('/purchasing-game-currency');
-      },
-      onCancelBtnTap: () => Navigator.of(context, rootNavigator: true).pop(),
-    );
-  }
 
   static Future<ConnectivityResult> checkConnectivity() async {
     return await (Connectivity().checkConnectivity());
@@ -87,7 +70,8 @@ class CommonFunctions {
 
         balance.showLoading(false);
 
-        Provider.of<Balance>(context, listen: false).loadBalance(context);
+        Provider.of<Balance>(context, listen: false)
+            .startListenBalance(context);
 
         await showErrorAlertNoBalance(context);
 
@@ -109,7 +93,7 @@ class CommonFunctions {
       DailyBonusManager().updateDailyBetsCount();
 
       GameStatisticController.updateGameStatistic(
-          gameName: gameName,
+          gameName: gameName.toLowerCase().replaceAll(' ', '-'),
           incrementTotalGames: true,
           gameStatisticModel: GameStatisticModel());
 
@@ -118,6 +102,8 @@ class CommonFunctions {
       if (isPlaceBet) {
         if (context.mounted) {
           await balance.subtractMoney(bet);
+          Provider.of<RakebackManager>(context, listen: false)
+              .updateRakeback(bet);
           callback.call();
         }
       }

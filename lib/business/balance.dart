@@ -35,7 +35,7 @@ class Balance extends ChangeNotifier {
     return amount <= currentServerBalance;
   }
 
-  Future subtractMoney(double bet) async {
+  Future subtractMoney(double amount) async {
     showLoading(true);
 
     await SupabaseController.supabase!
@@ -47,11 +47,11 @@ class Balance extends ChangeNotifier {
 
       double currentServerBalance = double.parse(map['balance'].toString());
 
-      if (bet > currentServerBalance) {
+      if (amount > currentServerBalance) {
         showLoading(false);
         return;
       } else {
-        currentServerBalance -= bet;
+        currentServerBalance -= amount;
 
         await updateBalance(currentServerBalance);
       }
@@ -60,7 +60,7 @@ class Balance extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future addMoney(double profit) async {
+  Future addMoney(double amount) async {
     await SupabaseController.supabase!
         .from('users')
         .select('*')
@@ -70,7 +70,7 @@ class Balance extends ChangeNotifier {
 
       double currentServerBalance = double.parse(map['balance'].toString());
 
-      currentServerBalance += profit;
+      currentServerBalance += amount;
 
       await updateBalance(currentServerBalance);
     });
@@ -78,18 +78,15 @@ class Balance extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future loadBalance(BuildContext context) async {
-    await SupabaseController.supabase!
+  Future startListenBalance(BuildContext context) async {
+    SupabaseController.supabase!
         .from('users')
-        .select('*')
+        .stream(primaryKey: ['id'])
         .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-        .then((value) {
-      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
-
-      balance = double.parse(map['balance'].toString());
-    });
-
-    notifyListeners();
+        .listen((List<Map<String, dynamic>> data) {
+          balance = double.parse(data.first['balance'].toString());
+          notifyListeners();
+        });
   }
 
   Future updateBalance(double value) async {
@@ -98,7 +95,7 @@ class Balance extends ChangeNotifier {
         .update({'balance': value}).eq(
             'uid', SupabaseController.supabase?.auth.currentUser!.id);
 
-    balance = value;
+    //balance = value;
 
     showLoading(false);
 

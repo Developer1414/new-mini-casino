@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/keno_logic.dart';
 import 'package:new_mini_casino/main.dart';
-import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
 import 'dart:io' as ui;
@@ -94,44 +94,48 @@ class Keno extends StatelessWidget {
                                           const SizedBox(width: 10.0),
                                       itemBuilder: (context, index) {
                                         return Center(
-                                          child: Container(
+                                          child: AnimatedContainer(
+                                            duration: const Duration(
+                                                milliseconds: 200),
                                             decoration: BoxDecoration(
                                               color: index <=
                                                       kenoLogic
                                                               .currentCoefficient -
                                                           1
-                                                  ? Colors.lightBlueAccent
+                                                  ? Colors.grey.shade100
                                                       .withOpacity(0.1)
-                                                  : Colors.lightBlueAccent
+                                                  : Colors.grey.shade100
                                                       .withOpacity(0.1),
                                               borderRadius:
-                                                  BorderRadius.circular(15.0),
+                                                  BorderRadius.circular(12.0),
                                               border: Border.all(
                                                   color: index <=
                                                           kenoLogic
                                                                   .currentCoefficient -
                                                               1
-                                                      ? Colors.lightBlueAccent
-                                                      : Colors.lightBlueAccent
+                                                      ? Colors.redAccent
+                                                      : Colors.grey.shade100
                                                           .withOpacity(0.4),
                                                   width: 2.0),
                                             ),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.all(8.0),
-                                              child: Text(
-                                                  '${kenoLogic.coefficients[index]}x',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodySmall!
-                                                      .copyWith(
-                                                          color: Colors.white
-                                                              .withOpacity(index <=
-                                                                      kenoLogic
-                                                                              .currentCoefficient -
-                                                                          1
-                                                                  ? 1.0
-                                                                  : 0.4))),
+                                              child: AnimatedOpacity(
+                                                duration: const Duration(
+                                                    milliseconds: 200),
+                                                opacity: index <=
+                                                        kenoLogic
+                                                                .currentCoefficient -
+                                                            1
+                                                    ? 1.0
+                                                    : 0.4,
+                                                child: Text(
+                                                    '${kenoLogic.coefficients[index]}x',
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .bodySmall!),
+                                              ),
                                             ),
                                           ),
                                         );
@@ -274,59 +278,10 @@ class Keno extends StatelessWidget {
                   );
                 },
               ),
-              appBar: AppBar(
-                toolbarHeight: 76.0,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                leading: Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: IconButton(
-                      splashRadius: 25.0,
-                      padding: EdgeInsets.zero,
-                      onPressed: context.watch<KenoLogic>().isGameOn
-                          ? null
-                          : () {
-                              Navigator.of(context).pop();
-                            },
-                      icon: FaIcon(
-                        FontAwesomeIcons.arrowLeft,
-                        color: Theme.of(context).appBarTheme.iconTheme!.color,
-                        size: Theme.of(context).appBarTheme.iconTheme!.size,
-                      )),
-                ),
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    AutoSizeText(
-                      'Keno',
-                      style: Theme.of(context).appBarTheme.titleTextStyle,
-                    ),
-                    Consumer<Balance>(
-                      builder: (context, value, _) {
-                        return currencyNormalFormat(
-                            context: context, moneys: value.currentBalance);
-                      },
-                    )
-                  ],
-                ),
-                actions: [
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15.0),
-                    child: IconButton(
-                        splashRadius: 25.0,
-                        padding: EdgeInsets.zero,
-                        onPressed: context.watch<KenoLogic>().isGameOn
-                            ? null
-                            : () => Navigator.of(context).pushNamed(
-                                '/game-statistic',
-                                arguments: 'keno'),
-                        icon: FaIcon(
-                          FontAwesomeIcons.circleInfo,
-                          color: Theme.of(context).appBarTheme.iconTheme!.color,
-                          size: Theme.of(context).appBarTheme.iconTheme!.size,
-                        )),
-                  ),
-                ],
+              appBar: gameAppBarWidget(
+                context: context,
+                isGameOn: context.watch<KenoLogic>().isGameOn,
+                gameName: 'Keno',
               ),
               body: Screenshot(
                 controller: screenshotController,
@@ -356,27 +311,35 @@ class Keno extends StatelessWidget {
                             childrenDelegate: SliverChildBuilderDelegate(
                               childCount: 40,
                               (context, index) => ClipRRect(
-                                borderRadius: BorderRadius.circular(15.0),
+                                borderRadius: BorderRadius.circular(12.0),
                                 child: Material(
                                   clipBehavior: Clip.antiAlias,
-                                  color:
-                                      kenoLogic.userNumbersList.contains(index)
-                                          ? Colors.lightBlueAccent
-                                          : Theme.of(context).canvasColor,
                                   child: InkWell(
                                     onTap: () =>
                                         kenoLogic.selectCustomNumber(index),
-                                    child: Container(
+                                    child: AnimatedContainer(
+                                      duration:
+                                          const Duration(milliseconds: 200),
                                       decoration: BoxDecoration(
+                                          color: kenoLogic.userNumbersList
+                                                  .contains(index)
+                                              ? const Color(0xffedf2fb)
+                                              : const Color(0xff013a63),
                                           borderRadius:
-                                              BorderRadius.circular(15.0),
+                                              BorderRadius.circular(12.0),
                                           border: Border.all(
-                                              width: 2.0,
+                                              width: kenoLogic.randomNumbersList
+                                                      .contains(index)
+                                                  ? kenoLogic.userNumbersList
+                                                          .contains(index)
+                                                      ? 3.0
+                                                      : 2.0
+                                                  : 0.0,
                                               color: kenoLogic.randomNumbersList
                                                       .contains(index)
                                                   ? kenoLogic.userNumbersList
                                                           .contains(index)
-                                                      ? Colors.redAccent
+                                                      ? const Color(0xffff002b)
                                                       : Colors.redAccent
                                                           .withOpacity(0.5)
                                                   : Colors.transparent)),

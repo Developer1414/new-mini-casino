@@ -24,6 +24,7 @@
         android:label="Mini Casino"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
+        android:enableOnBackInvokedCallback="true"
         android:networkSecurityConfig="@xml/network_security_config"
         tools:replace="android:label">
 

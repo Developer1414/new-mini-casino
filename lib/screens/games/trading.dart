@@ -19,7 +19,7 @@ import 'package:screenshot/screenshot.dart';
 class Trading extends StatelessWidget {
   const Trading({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -27,7 +27,7 @@ class Trading extends StatelessWidget {
   );
 
   static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('10000'));
+      TextEditingController(text: betFormatter.formatString('10000'));
 
   static TextEditingController targetCoefficient =
       TextEditingController(text: '2.0');

@@ -125,7 +125,8 @@ void periodPremiumAlert(
                                           children: [
                                             buttonModel(
                                               context: context,
-                                              color: Color.fromARGB(255, 240, 190, 96),
+                                              color: const Color.fromARGB(
+                                                  255, 223, 176, 89),
                                               buttonName: 'Месяц - 149 руб.',
                                               titleFontSize: 18.0,
                                               onPressed: () => choosePeriod(

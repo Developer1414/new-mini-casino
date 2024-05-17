@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
@@ -55,9 +56,26 @@ class GameStatistic extends StatelessWidget {
               return statistic.gameStatisticModel == null
                   ? Center(
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: smallHelperPanel(
-                            context: context, text: 'Статистики пока нет'),
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const FaIcon(
+                              FontAwesomeIcons.chartSimple,
+                              color: Colors.white60,
+                              size: 30.0,
+                            ),
+                            const SizedBox(height: 5.0),
+                            AutoSizeText('Статистики пока нет',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.roboto(
+                                  fontSize: 15.0,
+                                  letterSpacing: 0.1,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white60,
+                                )),
+                          ],
+                        ),
                       ),
                     )
                   : SingleChildScrollView(

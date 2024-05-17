@@ -16,7 +16,7 @@ import 'package:provider/provider.dart';
 class MoneyStorage extends StatelessWidget {
   const MoneyStorage({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter(
+  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -24,7 +24,7 @@ class MoneyStorage extends StatelessWidget {
   );
 
   static TextEditingController betController =
-      TextEditingController(text: betFormatter.format('100000'));
+      TextEditingController(text: betFormatter.formatString('100000'));
 
   @override
   Widget build(BuildContext context) {
@@ -229,6 +229,7 @@ class MoneyStorage extends StatelessWidget {
                                       const SizedBox(height: 15.0),
                                       smallHelperPanel(
                                           context: context,
+                                          icon: FontAwesomeIcons.circleInfo,
                                           text:
                                               'Перевод в хранилище доступен от ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(1000)}'),
                                     ],
