@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -8,6 +9,7 @@ import 'dart:io' as ui;
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/games_logic/mines_logic.dart';
 import 'package:new_mini_casino/main.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:provider/provider.dart';
@@ -283,31 +285,67 @@ class Mines extends StatelessWidget {
                           ],
                         ),
                         childrenDelegate: SliverChildBuilderDelegate(
-                          childCount: 25,
-                          (context, index) => Material(
-                            clipBehavior: Clip.antiAlias,
-                            borderRadius: BorderRadius.circular(15.0),
-                            color: setItemColor(minesLogic, index, context),
-                            elevation: 5.0,
-                            child: InkWell(
-                              onTap: () => minesLogic.checkItem(index),
-                              child: Container(
-                                padding: const EdgeInsets.all(12.0),
-                                child: !minesLogic.isGameOn
-                                    ? minesLogic.minesIndex.isNotEmpty
-                                        ? Image.asset(
-                                            'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
-                                          )
-                                        : Container()
-                                    : minesLogic.openedIndexes.contains(index)
-                                        ? Image.asset(
-                                            'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
-                                          )
-                                        : Container(),
-                              ),
-                            ),
-                          ),
-                        ),
+                            childCount: 25,
+                            (context, index) => Material(
+                                  clipBehavior: Clip.antiAlias,
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  color:
+                                      setItemColor(minesLogic, index, context),
+                                  elevation: 5.0,
+                                  child: InkWell(
+                                    onTap: () => minesLogic.checkItem(index),
+                                    child: Container(
+                                      padding: const EdgeInsets.all(12.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(12.0),
+                                        border: Border.all(
+                                          width: 2.0,
+                                          color: minesLogic.openedIndexes
+                                                      .contains(index) ||
+                                                  minesLogic.minesIndex
+                                                          .contains(index) &&
+                                                      !minesLogic.isGameOn
+                                              ? lighten(
+                                                  setItemColor(minesLogic,
+                                                      index, context),
+                                                  0.15,
+                                                )
+                                              : lighten(
+                                                  setItemColor(minesLogic,
+                                                      index, context),
+                                                  0.15,
+                                                ).withOpacity(0.5),
+                                        ),
+                                      ),
+                                      child: !minesLogic.isGameOn
+                                          ? minesLogic.minesIndex.isNotEmpty
+                                              ? Opacity(
+                                                  opacity: minesLogic
+                                                              .openedIndexes
+                                                              .contains(
+                                                                  index)
+                                                      ? 1.0
+                                                      : 0.4,
+                                                  child: Image.asset(
+                                                    'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
+                                                  ).animate().fade().scale(
+                                                        begin: const Offset(
+                                                            0.9, 0.9),
+                                                        end: const Offset(
+                                                            1.0, 1.0),
+                                                      ),
+                                                )
+                                              : Container()
+                                          : minesLogic.openedIndexes
+                                                  .contains(index)
+                                              ? Image.asset(
+                                                  'assets/mines/${!minesLogic.minesIndex.contains(index) ? 'brilliant' : 'bomb'}.png',
+                                                )
+                                              : Container(),
+                                    ),
+                                  ),
+                                )),
                       ),
                     ),
                   ),
@@ -325,10 +363,13 @@ class Mines extends StatelessWidget {
     if (minesLogic.minesIndex.isNotEmpty) {
       if (minesLogic.openedIndexes.contains(index)) {
         if (!minesLogic.minesIndex.contains(index)) {
-          return Colors.blueAccent.shade100;
+          return Colors.blueAccent.shade100.withOpacity(0.5);
         } else {
-          return Colors.redAccent.shade100;
+          return Colors.redAccent.shade200.withOpacity(0.5);
         }
+      } else if (minesLogic.minesIndex.contains(index) &&
+          !minesLogic.isGameOn) {
+        return Colors.redAccent.shade200.withOpacity(0.3);
       } else {
         return Theme.of(context).canvasColor;
       }

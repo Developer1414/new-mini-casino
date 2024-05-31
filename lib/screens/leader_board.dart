@@ -42,7 +42,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
               padding: EdgeInsets.zero,
               onPressed: () async {
                 LeaderBoard.scrollOffset = 0.0;
-                 Navigator.of(context).pop();
+                Navigator.of(context).pop();
               },
               icon: FaIcon(
                 FontAwesomeIcons.arrowLeft,
@@ -201,6 +201,7 @@ class _LeaderBoardState extends State<LeaderBoard> {
                                           height: 40.0,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 6.0,
+                                            strokeCap: StrokeCap.round,
                                             color: Color.fromARGB(
                                                 255, 179, 242, 31),
                                           ),

@@ -10,6 +10,8 @@ import 'package:new_mini_casino/business/tax_manager.dart';
 import 'package:new_mini_casino/controllers/game_statistic_controller.dart';
 import 'package:new_mini_casino/controllers/latest_max_wins_controller.dart';
 import 'package:new_mini_casino/controllers/leader_day_controller.dart';
+import 'package:new_mini_casino/controllers/online_games_logic/online_crash_logic.dart';
+import 'package:new_mini_casino/controllers/online_games_logic/online_slide_logic.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/games_logic/blackjack_logic.dart';
 import 'package:new_mini_casino/games_logic/coinflip_logic.dart';
@@ -44,6 +46,7 @@ class CommonFunctions {
   static Future callOnStart(
       {required BuildContext context,
       required double bet,
+      bool isSubstractMoneys = true,
       required String gameName,
       required VoidCallback callback,
       bool isPlaceBet = true}) async {
@@ -86,7 +89,6 @@ class CommonFunctions {
 
       if (context.mounted) {
         LocalPromocodes().getPromocode(context);
-        Provider.of<TaxManager>(context, listen: false).addTax(bet);
       }
 
       SupabaseController().levelUp();
@@ -101,10 +103,18 @@ class CommonFunctions {
 
       if (isPlaceBet) {
         if (context.mounted) {
-          await balance.subtractMoney(bet);
+          if (isSubstractMoneys) {
+            await balance.subtractMoney(bet);
+          } else {
+            balance.showLoading(false);
+          }
+
+          callback.call();
+
           Provider.of<RakebackManager>(context, listen: false)
               .updateRakeback(bet);
-          callback.call();
+
+          Provider.of<TaxManager>(context, listen: false).addTax(bet);
         }
       }
 
@@ -126,6 +136,8 @@ class CommonFunctions {
     Provider.of<CrashLogic>(context, listen: false).bet = defaultMinBet;
     Provider.of<KenoLogic>(context, listen: false).bet = defaultMinBet;
     Provider.of<SlotsLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<OnlineCrashLogic>(context, listen: false).bet = defaultMinBet;
+    Provider.of<OnlineSlideLogic>(context, listen: false).bet = defaultMinBet;
   }
 
   static void callOnProfit({

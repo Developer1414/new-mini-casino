@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:in_app_notification/in_app_notification.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/main.dart';
+import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 enum NotificationType {
@@ -17,7 +20,6 @@ enum NotificationType {
 
 class NotificationService {
   static Future setToken(BuildContext context) async {
-    await FirebaseMessaging.instance.requestPermission();
     await FirebaseMessaging.instance.getAPNSToken();
 
     var fcmToken = await FirebaseMessaging.instance.getToken();
@@ -29,6 +31,12 @@ class NotificationService {
     FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) async {
       await getFCMToken(fcmToken);
     });
+
+    if (context.mounted) {
+      requestPermissionNotification(context);
+    }
+
+    //await FirebaseMessaging.instance.requestPermission();
   }
 
   static Future getFCMToken(String fcmToken) async {
@@ -43,17 +51,86 @@ class NotificationService {
     }
   }
 
+  static Future requestPermissionNotification(BuildContext context) async {
+    PermissionStatus status = await Permission.notification.status;
+
+    if (!status.isGranted && !status.isDenied) {
+      if (context.mounted) {
+        alertDialogConfirm(
+          context: context,
+          title: 'Push-уведомления',
+          text:
+              'Получайте уведомления о зачислениях средств, розыгрышах, обновлениях и других важных событиях. Включите push-уведомления, чтобы всегда быть в курсе!',
+          confirmBtnText: 'Включить',
+          cancelBtnText: 'Не нужно',
+          canCloseAlert: false,
+          onConfirmBtnTap: () async {
+            await Permission.notification.request().whenComplete(() {
+              Navigator.of(navigatorKey.currentContext!).pop();
+            });
+          },
+          onCancelBtnTap: () => Navigator.of(navigatorKey.currentContext!).pop(),
+        );
+      }
+    }
+  }
+
   static Future listenNotifications(BuildContext context) async {
     FirebaseMessaging.onMessage.listen((payload) async {
       final notification = payload.notification;
 
       if (notification != null) {
-        NotificationService.showInAppNotification(
-          context: context,
-          title: 'Пополнение',
-          notificationType: NotificationType.transfer,
-          content: notification.body!,
-        );
+        String notificationType = payload.data['notificationType'];
+
+        switch (notificationType) {
+          case 'transfer_moneys':
+            NotificationService.showInAppNotification(
+              context: context,
+              title: 'Пополнение',
+              notificationType: NotificationType.transfer,
+              content: notification.body!,
+            );
+            break;
+
+          case 'new_leader':
+            NotificationService.showInAppNotification(
+              context: context,
+              title: 'Новый лидер',
+              notificationType: NotificationType.error,
+              content: notification.body!,
+            );
+            break;
+
+          case 'ban':
+            await SupabaseController().checkOnBanned().then((value) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/ban',
+                (value) => false,
+                arguments: value,
+              );
+            });
+            break;
+        }
+      }
+    });
+
+    showScreenFromPushNotification(context);
+  }
+
+  static void showScreenFromPushNotification(BuildContext context) {
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      String notificationType = message.data['notificationType'];
+
+      switch (notificationType) {
+        case 'ban':
+          await SupabaseController().checkOnBanned().then((value) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              '/ban',
+              (value) => false,
+              arguments: value,
+            );
+          });
+          break;
       }
     });
   }
@@ -131,6 +208,8 @@ class NotificationService {
         child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
                 padding: const EdgeInsets.only(right: 15.0),

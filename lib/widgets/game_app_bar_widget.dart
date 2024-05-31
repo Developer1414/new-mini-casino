@@ -8,8 +8,12 @@ import 'package:provider/provider.dart';
 PreferredSizeWidget gameAppBarWidget({
   required BuildContext context,
   required bool isGameOn,
+  bool isShowActions = true,
+  IconData? actionButtonIcon,
+  List<Widget>? actions,
   required String gameName,
-  //required String statisticScreenName,
+  Function()? onPressed,
+  Function()? actionButtonOnPressed,
 }) {
   return AppBar(
     toolbarHeight: 76.0,
@@ -20,11 +24,13 @@ PreferredSizeWidget gameAppBarWidget({
       child: IconButton(
           splashRadius: 25.0,
           padding: EdgeInsets.zero,
-          onPressed: isGameOn
-              ? null
-              : () {
-                  Navigator.of(context).pop();
-                },
+          onPressed: onPressed != null
+              ? () => onPressed.call()
+              : isGameOn
+                  ? null
+                  : () {
+                      Navigator.of(context).pop();
+                    },
           icon: FaIcon(
             FontAwesomeIcons.arrowLeft,
             color: Theme.of(context).appBarTheme.iconTheme!.color,
@@ -46,22 +52,30 @@ PreferredSizeWidget gameAppBarWidget({
         )
       ],
     ),
-    actions: [
-      Padding(
-        padding: const EdgeInsets.only(right: 15.0),
-        child: IconButton(
-            splashRadius: 25.0,
-            padding: EdgeInsets.zero,
-            onPressed: isGameOn
-                ? null
-                : () => Navigator.of(context).pushNamed('/game-statistic',
-                    arguments: gameName.toLowerCase().replaceAll(' ', '-')),
-            icon: FaIcon(
-              FontAwesomeIcons.chartSimple,
-              color: Theme.of(context).appBarTheme.iconTheme!.color,
-              size: Theme.of(context).appBarTheme.iconTheme!.size,
-            )),
-      ),
-    ],
+    actions: !isShowActions
+        ? null
+        : actions ??
+            [
+              Padding(
+                padding: const EdgeInsets.only(right: 15.0),
+                child: IconButton(
+                    splashRadius: 25.0,
+                    padding: EdgeInsets.zero,
+                    onPressed: isGameOn
+                        ? null
+                        : actionButtonOnPressed != null
+                            ? () => actionButtonOnPressed.call()
+                            : () => Navigator.of(context).pushNamed(
+                                '/game-statistic',
+                                arguments: gameName
+                                    .toLowerCase()
+                                    .replaceAll(' ', '-')),
+                    icon: FaIcon(
+                      actionButtonIcon ?? FontAwesomeIcons.chartSimple,
+                      color: Theme.of(context).appBarTheme.iconTheme!.color,
+                      size: Theme.of(context).appBarTheme.iconTheme!.size,
+                    )),
+              ),
+            ],
   );
 }

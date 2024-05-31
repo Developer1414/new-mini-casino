@@ -27,7 +27,8 @@ import 'package:screenshot/screenshot.dart';
 class Slots extends StatefulWidget {
   const Slots({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
+  static CurrencyTextInputFormatter betFormatter =
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -158,6 +159,36 @@ class _SlotsState extends State<Slots> {
     return coefficientsIndexWinner;
   }
 
+  int generateReelIndex() {
+    double random = Random.secure().nextDouble();
+
+    int resultIndex = 1;
+
+    if (random <= 1.0 && random > 0.8) {
+      resultIndex = reelItems.indexWhere((str) => str == 'bar');
+    } else if (random <= 0.8 && random > 0.7) {
+      resultIndex = reelItems.indexWhere((str) => str == 'watermelon');
+    } else if (random <= 0.7 && random > 0.6) {
+      resultIndex = reelItems.indexWhere((str) => str == 'orange');
+    } else if (random <= 0.6 && random > 0.5) {
+      resultIndex = reelItems.indexWhere((str) => str == 'orange');
+    } else if (random <= 0.5 && random > 0.4) {
+      resultIndex = reelItems.indexWhere((str) => str == 'plum');
+    } else if (random <= 0.4 && random > 0.2) {
+      resultIndex = reelItems.indexWhere((str) => str == 'grapes');
+    } else if (random <= 0.2 && random > 0.1) {
+      resultIndex = reelItems.indexWhere((str) => str == 'cherries');
+    } else if (random <= 0.1 && random > 0.05) {
+      resultIndex = reelItems.indexWhere((str) => str == 'lemon');
+    } else if (random <= 0.05 && random > 0.01) {
+      resultIndex = reelItems.indexWhere((str) => str == 'diamond');
+    } else if (random <= 0.01) {
+      resultIndex = reelItems.indexWhere((str) => str == 'seven');
+    }
+
+    return resultIndex;
+  }
+
   void makeBet(BuildContext context) async {
     if (Provider.of<Balance>(context, listen: false).isLoading) {
       return;
@@ -195,7 +226,7 @@ class _SlotsState extends State<Slots> {
 
             if (!isFast) {
               for (int i = startIndex; i < 3; i++) {
-                choosedReels[i] = reelItems[Random().nextInt(reelItems.length)];
+                choosedReels[i] = reelItems[generateReelIndex()];
                 controllers[i].animateTo(100,
                     duration: const Duration(milliseconds: 100),
                     curve: Curves.linear);
@@ -203,21 +234,18 @@ class _SlotsState extends State<Slots> {
 
               if (time == 10) {
                 startIndex++;
-                choosedReels[0] =
-                    reelItems[Random.secure().nextInt(reelItems.length)];
+                choosedReels[0] = reelItems[generateReelIndex()];
                 isReelsSpinning[0] = false;
               }
 
               if (time == 20) {
                 startIndex++;
-                choosedReels[1] =
-                    reelItems[Random.secure().nextInt(reelItems.length)];
+                choosedReels[1] = reelItems[generateReelIndex()];
                 isReelsSpinning[1] = false;
               }
 
               if (time == 30) {
-                choosedReels[2] =
-                    reelItems[Random.secure().nextInt(reelItems.length)];
+                choosedReels[2] = reelItems[generateReelIndex()];
                 isReelsSpinning[2] = false;
 
                 timer.cancel();
@@ -227,14 +255,12 @@ class _SlotsState extends State<Slots> {
               }
             } else {
               for (int i = 0; i < choosedReels.length; i++) {
-                choosedReels[i] =
-                    reelItems[Random.secure().nextInt(reelItems.length)];
+                choosedReels[i] = reelItems[generateReelIndex()];
               }
 
               if (time == 5) {
                 for (int i = 0; i < choosedReels.length; i++) {
-                  choosedReels[i] =
-                      reelItems[Random.secure().nextInt(reelItems.length)];
+                  choosedReels[i] = reelItems[generateReelIndex()];
                   isReelsSpinning[i] = false;
                 }
 
@@ -457,88 +483,6 @@ class _SlotsState extends State<Slots> {
                 isGameOn: isSpinning || isAutoBets,
                 gameName: 'Slots',
               ),
-
-              // AppBar(
-              //   toolbarHeight: 76.0,
-              //   elevation: 0,
-              //   backgroundColor: Colors.transparent,
-              //   leading: Padding(
-              //     padding: const EdgeInsets.only(left: 15.0),
-              //     child: IconButton(
-              //         splashRadius: 25.0,
-              //         padding: EdgeInsets.zero,
-              //         onPressed: () {
-              //           if (isSpinning) return;
-
-              //           if (isAutoBets) return;
-
-              //           Navigator.of(context).pop();
-              //         },
-              //         icon: FaIcon(
-              //           FontAwesomeIcons.arrowLeft,
-              //           color: Theme.of(context).appBarTheme.iconTheme!.color,
-              //           size: Theme.of(context).appBarTheme.iconTheme!.size,
-              //         )),
-              //   ),
-              //   title: Column(
-              //     crossAxisAlignment: CrossAxisAlignment.start,
-              //     children: [
-              //       AutoSizeText(
-              //         'Slots',
-              //         style: Theme.of(context).appBarTheme.titleTextStyle,
-              //       ),
-              //       Consumer<Balance>(
-              //         builder: (context, value, _) {
-              //           return currencyNormalFormat(
-              //               context: context, moneys: value.currentBalance);
-              //         },
-              //       )
-              //     ],
-              //   ),
-              //   actions: [
-              //     IconButton(
-              //         splashRadius: 25.0,
-              //         padding: EdgeInsets.zero,
-              //         onPressed: () {
-              //           setState(() {
-              //             isAutoBets = !isAutoBets;
-              //           });
-
-              //           if (isAutoBets) {
-              //             makeBet(context);
-              //           }
-              //         },
-              //         icon: FaIcon(
-              //           isAutoBets
-              //               ? FontAwesomeIcons.circleStop
-              //               : FontAwesomeIcons.rotate,
-              //           color: isAutoBets
-              //               ? Colors.redAccent
-              //               : Theme.of(context).appBarTheme.iconTheme!.color,
-              //           size: Theme.of(context).appBarTheme.iconTheme!.size,
-              //         )),
-              //     const SizedBox(width: 5.0),
-              //     Padding(
-              //       padding: const EdgeInsets.only(right: 15.0),
-              //       child: IconButton(
-              //           splashRadius: 25.0,
-              //           padding: EdgeInsets.zero,
-              //           onPressed: () {
-              //             if (isSpinning) return;
-
-              //             if (isAutoBets) return;
-
-              //             Navigator.of(context)
-              //                 .pushNamed('/game-statistic', arguments: 'slots');
-              //           },
-              //           icon: FaIcon(
-              //             FontAwesomeIcons.circleInfo,
-              //             color: Theme.of(context).appBarTheme.iconTheme!.color,
-              //             size: Theme.of(context).appBarTheme.iconTheme!.size,
-              //           )),
-              //     ),
-              //   ],
-              // ),
               body: Padding(
                 padding: const EdgeInsets.only(bottom: 15.0),
                 child: Screenshot(

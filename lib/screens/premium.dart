@@ -1,4 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -6,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/premium_period_alert.dart';
@@ -42,6 +44,7 @@ class PremiumInfo extends StatelessWidget {
         });
 
         return Stack(
+          alignment: Alignment.topCenter,
           children: [
             paymentController.isLoading
                 ? loading(context: context, text: paymentController.loadingText)
@@ -305,7 +308,7 @@ class PremiumInfo extends StatelessWidget {
                                                               31))),
                                           const SizedBox(height: 5.0),
                                           Text(
-                                              '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000000)}\n• Возможность установить кастомный фон\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация бонусов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Доступны игры с пометкой «Premium».',
+                                              '• Нет рекламы\n• Нет налогов\n• Переводы игрокам без комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(100000000)}\n• Возможность установить кастомный фон\n• Ежедневные бонусы увеличены в 2 раза\n• Генерация бонусов на сумму до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(10000)} через каждые 350 ставок\n• Создание промокодов без комиссии\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000)}\n• Доступны игры с пометкой «Premium»\n• Доступны онлайн игры\n• Максимальная сумма рейкбека - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(300000)}.',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!
@@ -364,7 +367,7 @@ class PremiumInfo extends StatelessWidget {
                                         color: Theme.of(context)
                                             .buttonTheme
                                             .colorScheme!
-                                            .background,
+                                            .surface,
                                         width: 3.0),
                                     boxShadow: [
                                       BoxShadow(
@@ -388,7 +391,7 @@ class PremiumInfo extends StatelessWidget {
                                                   .titleMedium),
                                           const SizedBox(height: 5.0),
                                           Text(
-                                              '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}\n• Игры с пометкой «Premium» не доступны.',
+                                              '• Есть реклама\n• Переводы игрокам с 60% комиссии\n• Максимальная ставка - ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(1000000)}\n• Погашение кредита на 10% больше\n• Создание промокодов с 60% комиссии\n• Каждая ставка облагается налогом в размере 1% от ставки\n• Бесплатный бонус до ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(800)}\n• Игры с пометкой «Premium» не доступны\n• Онлайн игры не доступны\n• Максимальная сумма рейкбека - ${NumberFormat.simpleCurrency(locale: ui.Platform.localeName).format(50000)}.',
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .bodySmall!
@@ -409,7 +412,7 @@ class PremiumInfo extends StatelessWidget {
                                                   color: Theme.of(context)
                                                       .buttonTheme
                                                       .colorScheme!
-                                                      .background,
+                                                      .surface,
                                                   borderRadius:
                                                       const BorderRadius.only(
                                                     bottomLeft:
@@ -491,6 +494,13 @@ class PremiumInfo extends StatelessWidget {
                       )
                       ..loadRequest(paymentController.uri))
                 : Container(),
+            ConfettiWidget(
+              confettiController: confettiController,
+              numberOfParticles: 15,
+              emissionFrequency: 0.1,
+              gravity: 0.1,
+              blastDirectionality: BlastDirectionality.explosive,
+            ),
           ],
         );
       },

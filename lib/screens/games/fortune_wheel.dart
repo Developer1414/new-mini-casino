@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:io' as ui;
 import 'package:intl/intl.dart';
@@ -10,6 +11,7 @@ import 'package:new_mini_casino/fortune_wheel_preferences/board_view.dart';
 import 'package:new_mini_casino/fortune_wheel_preferences/model.dart';
 import 'package:new_mini_casino/games_logic/fortune_wheel_logic.dart';
 import 'package:new_mini_casino/main.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/game_app_bar_widget.dart';
 import 'package:new_mini_casino/widgets/game_bet_count_widget.dart';
 import 'package:new_mini_casino/widgets/last_bets_widget.dart';
@@ -25,8 +27,9 @@ class FortuneWheel extends StatefulWidget {
 
 class _FortuneWheelState extends State<FortuneWheel>
     with SingleTickerProviderStateMixin {
-  dynamic wheelResult = 0;
+  bool isSimplifiedView = false;
 
+  dynamic wheelResult = 0;
   double _angle = 0;
   double _current = 0;
 
@@ -316,24 +319,72 @@ class _FortuneWheelState extends State<FortuneWheel>
                 context: context,
                 isGameOn: context.watch<FortuneWheelLogic>().isGameOn,
                 gameName: 'Fortune Wheel',
+                actions: [
+                  IconButton(
+                      splashRadius: 25.0,
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        setState(() {
+                          isSimplifiedView = !isSimplifiedView;
+                        });
+                      },
+                      icon: FaIcon(
+                        isSimplifiedView
+                            ? FontAwesomeIcons.magnifyingGlassMinus
+                            : FontAwesomeIcons.magnifyingGlassPlus,
+                        color: Theme.of(context).appBarTheme.iconTheme!.color,
+                        size: Theme.of(context).appBarTheme.iconTheme!.size,
+                      )),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15.0),
+                    child: IconButton(
+                        splashRadius: 25.0,
+                        padding: EdgeInsets.zero,
+                        onPressed: () => fortuneWheelLogic.isGameOn
+                            ? null
+                            : Navigator.of(context).pushNamed('/game-statistic',
+                                arguments: 'fortune-wheel'),
+                        icon: FaIcon(
+                          FontAwesomeIcons.chartSimple,
+                          color: Theme.of(context).appBarTheme.iconTheme!.color,
+                          size: Theme.of(context).appBarTheme.iconTheme!.size,
+                        )),
+                  ),
+                ],
               ),
               body: Screenshot(
                 controller: screenshotController,
                 child: Center(
-                  child: AnimatedBuilder(
-                      animation: _ani,
-                      builder: (context, child) {
-                        wheelResult = _ani.value;
-                        final angle = wheelResult * _angle;
-                        return Stack(
-                          alignment: Alignment.center,
-                          children: <Widget>[
-                            BoardView(
-                                items: _items, current: _current, angle: angle),
-                            buildResult(wheelResult)
-                          ],
-                        );
-                      }),
+                  child: Material(
+                    clipBehavior: Clip.antiAlias,
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(80.0),
+                    child: Transform.rotate(
+                      angle: !isSimplifiedView ? 0.0 : -360 / pi,
+                      child: Transform.translate(
+                        offset: Offset(0, !isSimplifiedView ? 0.0 : 200),
+                        child: Transform.scale(
+                          scale: !isSimplifiedView ? 1.0 : 2.5,
+                          child: AnimatedBuilder(
+                              animation: _ani,
+                              builder: (context, child) {
+                                wheelResult = _ani.value;
+                                final angle = wheelResult * _angle;
+                                return Stack(
+                                  alignment: Alignment.center,
+                                  children: <Widget>[
+                                    BoardView(
+                                        items: _items,
+                                        current: _current,
+                                        angle: angle),
+                                    buildResult(wheelResult)
+                                  ],
+                                );
+                              }),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -362,11 +413,11 @@ class _FortuneWheelState extends State<FortuneWheel>
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5.0),
         child: Material(
-          borderRadius: BorderRadius.circular(15.0),
+          borderRadius: BorderRadius.circular(12.0),
           clipBehavior: Clip.antiAlias,
           color: fortuneWheelLogic.selectedNumber != number
               ? currentColor.withOpacity(0.4)
-              : currentColor, // Theme.of(context).buttonTheme.colorScheme!.background,
+              : currentColor,
           child: InkWell(
             onTap: () {
               if (!fortuneWheelLogic.isGameOn) {
@@ -379,13 +430,13 @@ class _FortuneWheelState extends State<FortuneWheel>
             },
             child: Container(
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15.0),
+                  borderRadius: BorderRadius.circular(12.0),
                   border: fortuneWheelLogic.selectedNumber == number
                       ? Border.all(
                           width: 2.5,
                           color: fortuneWheelLogic.selectedNumber != number
                               ? Colors.transparent
-                              : Colors.lightBlueAccent,
+                              : lighten(currentColor, 0.2),
                         )
                       : null),
               child: Center(

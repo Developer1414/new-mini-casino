@@ -52,29 +52,29 @@ class LimboLogic extends ChangeNotifier {
   void startGame(
       {required BuildContext context,
       required double selectedCoefficient}) async {
-    if (AutoclickerSecure.isCanPlay) {
-      CommonFunctions.callOnStart(
-          context: context,
-          bet: bet,
-          gameName: 'limbo',
-          callback: () {
-            this.selectedCoefficient = selectedCoefficient;
-            this.context = context;
+    //if (AutoclickerSecure.isCanPlay) {
+    CommonFunctions.callOnStart(
+        context: context,
+        bet: bet,
+        gameName: 'limbo',
+        callback: () {
+          this.selectedCoefficient = selectedCoefficient;
+          this.context = context;
 
-            isGameOn = true;
+          isGameOn = true;
 
-            targetCoefficient = 1.0;
-            profit = 0.0;
+          targetCoefficient = 1.0;
+          profit = 0.0;
 
-            crashStatus = LimboStatus.idle;
+          crashStatus = LimboStatus.idle;
 
-            incrementCoefficient();
+          incrementCoefficient();
 
-            notifyListeners();
-          });
-    } else {
-      AutoclickerSecure().checkClicksBeforeCanPlay(context);
-    }
+          notifyListeners();
+        });
+    // } else {
+    //   AutoclickerSecure().checkClicksBeforeCanPlay(context);
+    // }
   }
 
   void cashout() {
@@ -142,8 +142,24 @@ class LimboLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  double generateDouble(double minValue, double maxValue) {
-    return minValue + (maxValue - minValue) * Random.secure().nextDouble();
+  double generateCoefficient() {
+    double random = Random.secure().nextDouble() - selectedCoefficient / 100;
+
+    if (random < 0.1) {
+      return 1.0;
+    } else if (random < 0.7) {
+      return (1 + Random.secure().nextDouble());
+    } else if (random < 0.75) {
+      return (1.5 + Random.secure().nextDouble() * 1.3);
+    } else if (random < 0.79) {
+      return (3.5 + Random.secure().nextDouble() * 1.9);
+    } else if (random < 0.85) {
+      return (5.7 + Random.secure().nextDouble() * 3.5);
+    } else if (random < 0.995) {
+      return (15.3 + Random.secure().nextDouble() * 8.9);
+    } else {
+      return (30.8 + Random.secure().nextDouble() * 20.2);
+    }
   }
 
   void incrementCoefficient() {
@@ -152,9 +168,7 @@ class LimboLogic extends ChangeNotifier {
     double maxCoefficient = 0.0;
     double speed = 0.01;
 
-    double randomNumber = Random().nextDouble();
-    double scaledNumber = -log(randomNumber) * 2.8;
-    maxCoefficient = scaledNumber.clamp(1.0, 100.0);
+    maxCoefficient = generateCoefficient();
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (targetCoefficient < maxCoefficient) {

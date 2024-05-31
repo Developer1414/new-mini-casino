@@ -23,7 +23,9 @@ class MoneyStorageManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<String> loadBalance(BuildContext context) async {
+  Future loadBalance(BuildContext context) async {
+    showLoading(true);
+
     try {
       await SupabaseController.supabase!
           .from('users')
@@ -44,8 +46,7 @@ class MoneyStorageManager extends ChangeNotifier {
       }
     }
 
-    return NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
-        .format(balance);
+    showLoading(false);
   }
 
   Future subtractFromStorage(double amount) async {

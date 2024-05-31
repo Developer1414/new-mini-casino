@@ -149,8 +149,22 @@ class CrashLogic extends ChangeNotifier {
     notifyListeners();
   }
 
-  double generateDouble(double minValue, double maxValue) {
-    return minValue + (maxValue - minValue) * Random.secure().nextDouble();
+  double generateCoefficient() {
+    double random = Random.secure().nextDouble();
+
+    if (random < 0.5) {
+      return (1 + Random.secure().nextDouble());
+    } else if (random < 0.75) {
+      return (2 + Random.secure().nextDouble() * 3);
+    } else if (random < 0.9) {
+      return (5 + Random.secure().nextDouble() * 5);
+    } else if (random < 0.97) {
+      return (10 + Random.secure().nextDouble() * 10);
+    } else if (random < 0.995) {
+      return (20 + Random.secure().nextDouble() * 30);
+    } else {
+      return (50 + Random.secure().nextDouble() * 50);
+    }
   }
 
   void incrementCoefficient() {
@@ -158,9 +172,7 @@ class CrashLogic extends ChangeNotifier {
 
     double speed = 0.005;
 
-    double randomNumber = Random().nextDouble();
-    double scaledNumber = -log(randomNumber) * 2.5;
-    maxCoefficient = scaledNumber.clamp(1.0, 100.0);
+    maxCoefficient = generateCoefficient();
 
     timer = Timer.periodic(Duration(milliseconds: time), (timer) {
       if (winCoefficient < maxCoefficient) {

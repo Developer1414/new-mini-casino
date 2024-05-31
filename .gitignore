@@ -49,3 +49,6 @@ app.*.map.json
 /lib/business/purchasing_game_currency_controller.dart
 /lib/firebase_options.dart
 /lib/secret
+upload-keystore.jks
+upload-keystore.jks.old
+firebase.json

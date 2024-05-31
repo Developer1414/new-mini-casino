@@ -457,8 +457,8 @@ class _CoinflipState extends State<Coinflip>
                               -randAngle * pi / 180 * flipAnimation.value;
 
                           return SizedBox(
-                            height: 150,
-                            width: 150,
+                            height: 200,
+                            width: 200,
                             child: Transform(
                               transform: Matrix4.identity()
                                 ..rotateX(rotationAngle * pi / 180),

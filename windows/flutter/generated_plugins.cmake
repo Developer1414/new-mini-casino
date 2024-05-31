@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   app_links
   connectivity_plus
   firebase_core
+  permission_handler_windows
   sentry_flutter
   share_plus
   smart_auth

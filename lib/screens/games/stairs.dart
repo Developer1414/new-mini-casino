@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -241,161 +242,155 @@ class _StairsState extends State<Stairs> {
                             child: Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: Center(
-                                  child:
-                                      !stairsLogic.isGameOn &&
-                                              !stairsLogic.isGameOver
-                                          ? Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
+                                  child: !stairsLogic.isGameOn &&
+                                          !stairsLogic.isGameOver
+                                      ? Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Image.asset(
+                                                height: 150,
+                                                'assets/games_logo/Stairs.png'),
+                                            const SizedBox(height: 15.0),
+                                            AutoSizeText(
+                                              'Сделайте ставку',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .displayMedium,
+                                            ),
+                                          ],
+                                        )
+                                      : ListView.separated(
+                                          shrinkWrap: true,
+                                          controller: scrollController,
+                                          itemCount: 10,
+                                          separatorBuilder: (context, index) =>
+                                              const SizedBox(height: 15.0),
+                                          itemBuilder: (context, columnIndex) {
+                                            return Row(
+                                              mainAxisAlignment: stairsLogic
+                                                      .cellCount[columnIndex]
+                                                      .isEven
+                                                  ? MainAxisAlignment.start
+                                                  : MainAxisAlignment.end,
                                               children: [
-                                                Image.asset(
-                                                    height: 150,
-                                                    'assets/games_logo/Stairs.png'),
-                                                const SizedBox(height: 15.0),
-                                                AutoSizeText(
-                                                  'Сделайте ставку',
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .displayMedium,
-                                                ),
-                                              ],
-                                            )
-                                          : ListView.separated(
-                                              shrinkWrap: true,
-                                              controller: scrollController,
-                                              itemCount: 10,
-                                              separatorBuilder: (context,
-                                                      index) =>
-                                                  const SizedBox(height: 15.0),
-                                              itemBuilder:
-                                                  (context, columnIndex) {
-                                                return Row(
-                                                  mainAxisAlignment: stairsLogic
-                                                          .cellCount[
-                                                              columnIndex]
-                                                          .isEven
-                                                      ? MainAxisAlignment.start
-                                                      : MainAxisAlignment.end,
-                                                  children: [
-                                                    for (int rowIndex = 0;
-                                                        rowIndex <
-                                                            stairsLogic
-                                                                    .cellCount[
-                                                                columnIndex];
-                                                        rowIndex++)
-                                                      Padding(
-                                                        padding: EdgeInsets.only(
-                                                            right: rowIndex +
-                                                                        1 <
-                                                                    stairsLogic
-                                                                            .cellCount[
-                                                                        columnIndex]
-                                                                ? 10.0
-                                                                : 0.0),
-                                                        child: SizedBox(
-                                                          width: MediaQuery.of(
-                                                                      context)
+                                                for (int rowIndex = 0;
+                                                    rowIndex <
+                                                        stairsLogic.cellCount[
+                                                            columnIndex];
+                                                    rowIndex++)
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: rowIndex + 1 <
+                                                                stairsLogic
+                                                                        .cellCount[
+                                                                    columnIndex]
+                                                            ? 10.0
+                                                            : 0.0),
+                                                    child: SizedBox(
+                                                      width:
+                                                          MediaQuery.of(context)
                                                                   .size
                                                                   .width /
                                                               12,
-                                                          height: 30.0,
-                                                          child: !stairsLogic
-                                                                  .isGameOn
-                                                              ? stairsLogic
-                                                                      .isGameOver
-                                                                  ? Image(
-                                                                      image:
-                                                                          AssetImage(
-                                                                        'assets/stairs/${!stairsLogic.stonesIndex[columnIndex]!.contains(rowIndex) ? 'stairs' : 'rocks'}.png',
-                                                                      ),
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                      opacity: AlwaysStoppedAnimation(stairsLogic.openedColumnIndex[columnIndex] ==
+                                                      height: 30.0,
+                                                      child: !stairsLogic
+                                                              .isGameOn
+                                                          ? stairsLogic
+                                                                  .isGameOver
+                                                              ? Image(
+                                                                  image:
+                                                                      AssetImage(
+                                                                    'assets/stairs/${!stairsLogic.stonesIndex[columnIndex]!.contains(rowIndex) ? 'stairs' : 'rocks'}.png',
+                                                                  ),
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  opacity: AlwaysStoppedAnimation(
+                                                                      stairsLogic.openedColumnIndex[columnIndex] ==
                                                                               rowIndex
                                                                           ? 1.0
                                                                           : 0.4),
-                                                                    )
-                                                                  : FaIcon(
-                                                                      FontAwesomeIcons
-                                                                          .solidCircleQuestion,
-                                                                      color: const Color
-                                                                              .fromARGB(
-                                                                              255,
-                                                                              221,
-                                                                              163,
-                                                                              75)
-                                                                          .withOpacity(
-                                                                              0.7),
-                                                                      size:
-                                                                          30.0,
-                                                                    )
-                                                              : stairsLogic
-                                                                      .openedColumnIndex
-                                                                      .keys
-                                                                      .toList()
-                                                                      .contains(
-                                                                          columnIndex)
-                                                                  ? Image(
-                                                                      image:
-                                                                          AssetImage(
-                                                                        'assets/stairs/${!stairsLogic.stonesIndex[columnIndex]!.contains(rowIndex) ? 'stairs' : 'rocks'}.png',
-                                                                      ),
-                                                                      width:
-                                                                          40.0,
-                                                                      height:
-                                                                          40.0,
-                                                                      fit: BoxFit
-                                                                          .cover,
-                                                                      opacity: AlwaysStoppedAnimation(stairsLogic.openedColumnIndex[columnIndex] ==
+                                                                )
+                                                              : FaIcon(
+                                                                  FontAwesomeIcons
+                                                                      .solidCircleQuestion,
+                                                                  color: const Color
+                                                                          .fromARGB(
+                                                                          255,
+                                                                          221,
+                                                                          163,
+                                                                          75)
+                                                                      .withOpacity(
+                                                                          0.7),
+                                                                  size: 30.0,
+                                                                )
+                                                          : stairsLogic
+                                                                  .openedColumnIndex
+                                                                  .keys
+                                                                  .toList()
+                                                                  .contains(
+                                                                      columnIndex)
+                                                              ? Image(
+                                                                  image:
+                                                                      AssetImage(
+                                                                    'assets/stairs/${!stairsLogic.stonesIndex[columnIndex]!.contains(rowIndex) ? 'stairs' : 'rocks'}.png',
+                                                                  ),
+                                                                  width: 40.0,
+                                                                  height: 40.0,
+                                                                  fit: BoxFit
+                                                                      .cover,
+                                                                  opacity: AlwaysStoppedAnimation(
+                                                                      stairsLogic.openedColumnIndex[columnIndex] ==
                                                                               rowIndex
                                                                           ? 1.0
                                                                           : 0.4))
-                                                                  : Container(
-                                                                      decoration:
-                                                                          BoxDecoration(
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(15.0),
-                                                                        border: Border.all(
-                                                                            color: stairsLogic.currentIndex != columnIndex
-                                                                                ? Colors.transparent
-                                                                                : const Color.fromARGB(255, 255, 199, 114),
-                                                                            width: 2.0),
-                                                                      ),
-                                                                      child:
-                                                                          Material(
-                                                                        clipBehavior:
-                                                                            Clip.antiAlias,
-                                                                        color: Colors
-                                                                            .transparent,
-                                                                        shape:
-                                                                            const CircleBorder(),
-                                                                        child:
-                                                                            InkWell(
-                                                                          onTap:
-                                                                              () {
-                                                                            if (stairsLogic.currentIndex !=
-                                                                                columnIndex) {
-                                                                              return;
-                                                                            }
+                                                              : Material(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              12.0),
+                                                                  color: Colors
+                                                                      .transparent,
+                                                                  clipBehavior:
+                                                                      Clip.antiAlias,
+                                                                  child:
+                                                                      InkWell(
+                                                                    onTap: () {
+                                                                      if (stairsLogic
+                                                                              .currentIndex !=
+                                                                          columnIndex) {
+                                                                        return;
+                                                                      }
 
-                                                                            stairsLogic.selectCell(rowIndex,
-                                                                                columnIndex);
-                                                                          },
-                                                                          child:
-                                                                              FaIcon(
+                                                                      stairsLogic.selectCell(
+                                                                          rowIndex,
+                                                                          columnIndex);
+                                                                    },
+                                                                    child: stairsLogic.currentIndex ==
+                                                                            columnIndex
+                                                                        ? Container(
+                                                                            decoration:
+                                                                                BoxDecoration(
+                                                                              borderRadius: BorderRadius.circular(12.0),
+                                                                              color: const Color.fromARGB(255, 255, 199, 114),
+                                                                            ),
+                                                                          )
+                                                                            .animate()
+                                                                            .fade()
+                                                                        : FaIcon(
                                                                             FontAwesomeIcons.solidCircleQuestion,
                                                                             color:
                                                                                 const Color.fromARGB(255, 221, 163, 75).withOpacity(0.7),
                                                                             size:
                                                                                 26.0,
                                                                           ),
-                                                                        ),
-                                                                      )),
-                                                        ),
-                                                      ),
-                                                  ],
-                                                );
-                                              }),
+                                                                  ),
+                                                                ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            );
+                                          }),
                                 )))
                       ],
                     );

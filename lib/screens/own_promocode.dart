@@ -20,7 +20,8 @@ class OwnPromocode extends StatelessWidget {
   static TextEditingController prizeController = TextEditingController();
   static TextEditingController countController = TextEditingController();
 
-  static CurrencyTextInputFormatter prizeFormatter = CurrencyTextInputFormatter.currency(
+  static CurrencyTextInputFormatter prizeFormatter =
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -129,7 +130,7 @@ class OwnPromocode extends StatelessWidget {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                           Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -240,21 +241,21 @@ class OwnPromocode extends StatelessWidget {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 15.0),
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   AutoSizeText('Активаций:',
                                       style: Theme.of(context)
                                           .textTheme
                                           .displaySmall),
-                                  Slider(
-                                    value: value.countActivation,
-                                    max: 50,
-                                    min: 1,
-                                    divisions: 49,
-                                    onChanged: (double v) {
-                                      value.onCountActivationChanged(v);
-                                    },
+                                  Expanded(
+                                    child: Slider(
+                                      value: value.countActivation,
+                                      max: 50,
+                                      min: 1,
+                                      divisions: 49,
+                                      onChanged: (double v) {
+                                        value.onCountActivationChanged(v);
+                                      },
+                                    ),
                                   ),
                                   AutoSizeText(
                                       value.countActivation.round().toString(),

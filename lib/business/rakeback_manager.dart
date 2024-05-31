@@ -17,7 +17,7 @@ class RakebackManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future loadRakeback(BuildContext context) async {
+  Future loadRakeback() async {
     showLoading(true);
 
     await SupabaseController.supabase!

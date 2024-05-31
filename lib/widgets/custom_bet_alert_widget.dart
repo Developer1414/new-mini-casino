@@ -44,7 +44,7 @@ Future<double> getCustomBet(BuildContext context) async {
                             children: [
                               const SizedBox(height: 10.0),
                               Text(
-                                'Ваша ставка',
+                                'Ваша сумма',
                                 textAlign: TextAlign.center,
                                 style: GoogleFonts.roboto(
                                   color: Colors.white,
@@ -97,7 +97,7 @@ Future<double> getCustomBet(BuildContext context) async {
                                     }
                                   },
                                   decoration: InputDecoration(
-                                      hintText: 'Ставка...',
+                                      hintText: 'Сумма...',
                                       hintStyle: Theme.of(context)
                                           .textTheme
                                           .displaySmall!

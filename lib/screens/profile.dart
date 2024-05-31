@@ -184,22 +184,12 @@ class _ProfileState extends State<Profile> {
                                 buttonName: 'Хранилище',
                                 color: const Color.fromARGB(255, 226, 153, 57),
                                 onPressed: () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
-
-                                  await Provider.of<MoneyStorageManager>(
-                                          context,
+                                  Provider.of<MoneyStorageManager>(context,
                                           listen: false)
-                                      .loadBalance(context)
-                                      .whenComplete(() {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
+                                      .loadBalance(context);
 
-                                    Navigator.of(context)
-                                        .pushNamed('/money-storage');
-                                  });
+                                  Navigator.of(context)
+                                      .pushNamed('/money-storage');
                                 }),
                             const SizedBox(height: 15.0),
                           ],

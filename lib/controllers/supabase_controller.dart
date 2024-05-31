@@ -2,13 +2,16 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/widgets.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
+import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/controllers/account_exception_controller.dart';
 import 'package:new_mini_casino/controllers/audio_controller.dart';
 import 'package:new_mini_casino/controllers/friend_code_controller.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/secret/api_keys_constant.dart';
 import 'package:new_mini_casino/services/ad_service.dart';
 import 'package:new_mini_casino/services/google_sign_in_service.dart';
@@ -46,7 +49,7 @@ class SupabaseController extends ChangeNotifier {
 
   Timer? timer;
 
-  static late BuildContext context;
+  //static late BuildContext context;
 
   AuthorizationAction authorizationAction = AuthorizationAction.register;
 
@@ -81,7 +84,7 @@ class SupabaseController extends ChangeNotifier {
 
         if (!isFinded) {
           alertDialogError(
-              context: context,
+              context: navigatorKey.currentContext!,
               title: 'Ошибка',
               confirmBtnText: 'Окей',
               text: 'Код друга не найден!');
@@ -108,7 +111,7 @@ class SupabaseController extends ChangeNotifier {
             password: password,
           );
 
-          Navigator.of(context).pushNamedAndRemoveUntil(
+          Navigator.of(navigatorKey.currentContext!).pushNamedAndRemoveUntil(
               '/verify-email', (route) => false,
               arguments: [email, false]);
         } on AuthException catch (e) {
@@ -120,7 +123,7 @@ class SupabaseController extends ChangeNotifier {
 
           if (e.statusCode == '409') {
             alertDialogError(
-                context: context,
+                context: navigatorKey.currentContext!,
                 title: 'Ошибка',
                 confirmBtnText: 'Окей',
                 text: 'Адрес электронной почты уже существует!');
@@ -128,7 +131,7 @@ class SupabaseController extends ChangeNotifier {
 
           if (e.statusCode == '429') {
             alertDialogError(
-                context: context,
+                context: navigatorKey.currentContext!,
                 title: 'Ошибка',
                 confirmBtnText: 'Окей',
                 text:
@@ -139,7 +142,8 @@ class SupabaseController extends ChangeNotifier {
         loading(false);
 
         AccountExceptionController.showException(
-            context: context, code: 'nickname_already_exist');
+            context: navigatorKey.currentContext!,
+            code: 'nickname_already_exist');
       }
     });
   }
@@ -163,25 +167,21 @@ class SupabaseController extends ChangeNotifier {
       int count = res.count;
 
       if (count == 1) {
-        if (context.mounted) {
-          alertDialogSuccess(
-              context: context,
-              title: 'Уведомление',
-              confirmBtnText: 'Перезайти',
-              text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
-              onConfirmBtnTap: () => Restart.restartApp());
-        }
+        alertDialogSuccess(
+            context: navigatorKey.currentContext!,
+            title: 'Уведомление',
+            confirmBtnText: 'Перезайти',
+            text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
+            onConfirmBtnTap: () => Restart.restartApp());
       } else {
         await supabase!.auth.signOut();
 
-        if (context.mounted) {
-          alertDialogError(
-            context: context,
-            title: 'Ошибка',
-            text:
-                'Вы не можете войти в этот аккаунт, т.к. он ещё не зарегистрирован!',
-          );
-        }
+        alertDialogError(
+          context: navigatorKey.currentContext!,
+          title: 'Ошибка',
+          text:
+              'Вы не можете войти в этот аккаунт, т.к. он ещё не зарегистрирован!',
+        );
       }
     } on AuthException catch (e) {
       if (kDebugMode) {
@@ -217,7 +217,8 @@ class SupabaseController extends ChangeNotifier {
         }
       } else {
         AccountExceptionController.showException(
-            context: context, code: 'nickname_already_exist');
+            context: navigatorKey.currentContext!,
+            code: 'nickname_already_exist');
       }
     });
 
@@ -315,8 +316,11 @@ class SupabaseController extends ChangeNotifier {
     }
   }
 
-  Future signInWithPassword(
-      {required String email, required String password}) async {
+  Future signInWithPassword({
+    required String email,
+    required String password,
+    required BuildContext context,
+  }) async {
     loading(true);
 
     try {
@@ -325,16 +329,14 @@ class SupabaseController extends ChangeNotifier {
         password: password,
       );
 
-      loading(false);
+      await alertDialogSuccess(
+          context: context,
+          title: 'Уведомление',
+          confirmBtnText: 'Перезайти',
+          text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
+          onConfirmBtnTap: () => Restart.restartApp());
 
-      if (context.mounted) {
-        alertDialogSuccess(
-            context: context,
-            title: 'Уведомление',
-            confirmBtnText: 'Перезайти',
-            text: 'Для обновления настроек игры, пожалуйста, перезайдите!',
-            onConfirmBtnTap: () => Restart.restartApp());
-      }
+      loading(false);
     } on AuthException catch (e) {
       loading(false);
 
@@ -427,14 +429,12 @@ class SupabaseController extends ChangeNotifier {
           .resend(type: OtpType.signup, email: email);
     } on AuthException catch (e) {
       if (e.statusCode == '429') {
-        if (context.mounted) {
-          alertDialogError(
-              context: context,
-              title: 'Ошибка',
-              confirmBtnText: 'Окей',
-              text:
-                  'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
-        }
+        alertDialogError(
+            context: navigatorKey.currentContext!,
+            title: 'Ошибка',
+            confirmBtnText: 'Окей',
+            text:
+                'Вы превысили лимит отправки электронных писем. Пожалуйста, подождите некоторое время, прежде чем отправить новое письмо.');
       }
     }
   }
@@ -490,7 +490,7 @@ class SupabaseController extends ChangeNotifier {
       }
 
       alertDialogError(
-          context: context,
+          context: navigatorKey.currentContext!,
           title: 'Ошибка',
           confirmBtnText: 'Окей',
           text: 'createUserDates: ${e.message} (Code: ${e.code})');
@@ -560,36 +560,6 @@ class SupabaseController extends ChangeNotifier {
     }
   }
 
-  Future<bool> checkAccountForFreezing(BuildContext context) async {
-    bool result = false;
-
-    try {
-      await SupabaseController.supabase!
-          .from('users')
-          .select('*')
-          .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
-          .then((value) {
-        Map<dynamic, dynamic> map = (value as List<dynamic>).first;
-
-        result = map['freeze'] as bool;
-      });
-    } on PostgrestException catch (e) {
-      if (kDebugMode) {
-        print('checkAccountForFreezing: $e, ${e.code}');
-      }
-
-      if (context.mounted) {
-        alertDialogError(
-            context: context,
-            title: 'Ошибка',
-            confirmBtnText: 'Окей',
-            text: '[checkAccountForFreezing]: ${e.toString()}');
-      }
-    }
-
-    return result;
-  }
-
   Future<List<dynamic>> checkOnBanned() async {
     List<dynamic> result = [];
 
@@ -619,13 +589,11 @@ class SupabaseController extends ChangeNotifier {
         print('checkAccountOnBlock: $e, ${e.code}');
       }
 
-      if (context.mounted) {
-        alertDialogError(
-            context: context,
-            title: 'Ошибка',
-            confirmBtnText: 'Окей',
-            text: '[checkAccountOnBlock]: ${e.toString()}');
-      }
+      alertDialogError(
+          context: navigatorKey.currentContext!,
+          title: 'Ошибка',
+          confirmBtnText: 'Окей',
+          text: '[checkAccountOnBlock]: ${e.toString()}');
     }
 
     return result;
@@ -683,7 +651,32 @@ class SupabaseController extends ChangeNotifier {
     return result;
   }
 
-  Future loadGameServices(BuildContext context) async {
+  Future showPremiumSubscription(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    if (SupabaseController.isPremium ||
+        SupabaseController.supabase?.auth.currentUser == null) return;
+
+    if (!prefs.containsKey('premiumSubscription')) {
+      Navigator.of(context).pushNamed('/premium');
+
+      prefs.setString('premiumSubscription', DateTime.now().toString());
+    } else {
+      if (DateTime.now()
+              .difference(
+                  DateTime.parse(prefs.getString('premiumSubscription')!))
+              .inDays >=
+          30) {
+        Navigator.of(context).pushNamed('/premium');
+
+        prefs.setString('premiumSubscription', DateTime.now().toString());
+      }
+    }
+  }
+
+  Future loadGameServices() async {
+    BuildContext context = navigatorKey.currentContext!;
+
     await Connectivity()
         .checkConnectivity()
         .then((ConnectivityResult result) async {
@@ -696,7 +689,7 @@ class SupabaseController extends ChangeNotifier {
             confirmBtnText: 'Переподключиться',
             onConfirmBtnTap: () async {
               Navigator.of(context).pop();
-              await loadGameServices(context);
+              await loadGameServices();
             });
       } else {
         await checkOnBanned().then((blockValue) async {
@@ -741,7 +734,7 @@ class SupabaseController extends ChangeNotifier {
 
                     await provider.Provider.of<TaxManager>(context,
                             listen: false)
-                        .getTax();
+                        .checkTax();
 
                     await LocalPromocodes().initializeMyPromocodes();
 
@@ -749,18 +742,26 @@ class SupabaseController extends ChangeNotifier {
                             listen: false)
                         .loadSettings(context);
 
-                    await provider.Provider.of<DailyBonusManager>(context,
-                            listen: false)
-                        .checkDailyBonus(context);
-
                     await AdService.loadCountBet();
 
                     await AudioController.initializeAudios();
 
                     await NotificationService.setToken(context);
 
+                    await NotificationService.listenNotifications(context);
+
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil('/games', (route) => false);
+
+                    await showPremiumSubscription(context);
+
+                    await provider.Provider.of<DailyBonusManager>(context,
+                            listen: false)
+                        .checkDailyBonus(context);
+
+                    await provider.Provider.of<RaffleManager>(context,
+                            listen: false)
+                        .checkOnExistRaffle();
                   }
                 });
               }

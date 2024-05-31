@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/screens/bank/bank.dart';
-import 'package:new_mini_casino/screens/bank/loan_moneys.dart';
 import 'package:new_mini_casino/screens/bank/purchasing_game_currency.dart';
 import 'package:new_mini_casino/screens/bank/rakeback.dart';
 import 'package:new_mini_casino/screens/bank/tax.dart';
@@ -32,6 +31,9 @@ import 'package:new_mini_casino/screens/menu.dart';
 import 'package:new_mini_casino/screens/money_storage.dart';
 import 'package:new_mini_casino/screens/no_internet_connection.dart';
 import 'package:new_mini_casino/screens/notifications.dart';
+import 'package:new_mini_casino/screens/online_games/online_crash_page.dart';
+import 'package:new_mini_casino/screens/online_games/online_games_main_page.dart';
+import 'package:new_mini_casino/screens/online_games/online_slide_page.dart';
 import 'package:new_mini_casino/screens/own_promocode.dart';
 import 'package:new_mini_casino/screens/premium.dart';
 import 'package:new_mini_casino/screens/privacy_policy.dart';
@@ -81,9 +83,6 @@ class RouteController {
             builder: (_) => buildScreen(const TransferMoneys()));
       case '/tax':
         return MaterialPageRoute(builder: (_) => buildScreen(const Tax()));
-      case '/loan-moneys':
-        return MaterialPageRoute(
-            builder: (_) => buildScreen(const LoanMoneys()));
       case '/no-internet':
         return MaterialPageRoute(
             builder: (_) => buildScreen(const NoInternetConnection()));
@@ -162,6 +161,15 @@ class RouteController {
       case '/leader-board':
         return MaterialPageRoute(
             builder: (_) => buildScreen(const LeaderBoard()));
+      case '/online-games-main':
+        return MaterialPageRoute(
+            builder: (_) => buildScreen(const OnlineGamesMainPage()));
+      case '/online-crash':
+        return MaterialPageRoute(
+            builder: (_) => buildScreen(const OnlineCrashPage()));
+      case '/online-slide':
+        return MaterialPageRoute(
+            builder: (_) => buildScreen(const OnlineSlidePage()));
       case '/rakeback':
         return MaterialPageRoute(builder: (_) => buildScreen(const Rakeback()));
       case '/ban':

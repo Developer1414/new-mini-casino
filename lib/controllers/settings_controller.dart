@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/models/background_model.dart';
 import 'package:new_mini_casino/screens/settings.dart';
 import 'package:new_mini_casino/services/common_functions.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,6 +20,7 @@ class SettingsController extends ChangeNotifier {
 
   bool isEnabledConfetti = true;
   bool isEnabledMaxWinNotification = true;
+  bool isEnabledPushNotifications = true;
 
   int currentDefaultBackgrond = 0;
 
@@ -72,6 +75,34 @@ class SettingsController extends ChangeNotifier {
     isEnabledMaxWinNotification = value;
 
     prefs.setBool('isEnabledMaxWinNotification', isEnabledMaxWinNotification);
+
+    notifyListeners();
+  }
+
+  void changePushNotificationsSetting({
+    required bool value,
+    required BuildContext context,
+  }) async {
+    if (!value) {
+      alertDialogError(
+        context: context,
+        title: 'Ошибка',
+        text:
+            'Для отключения push-уведомлений Вам нужно перейти в настройки устройства и самостоятельно их отключить для этого приложения.',
+        confirmBtnText: 'Открыть настройки',
+        onConfirmBtnTap: () => openAppSettings(),
+      );
+    } else {
+      await Permission.notification.isDenied.then((isDenied) async {
+        if (isDenied) {
+          await Permission.notification.request();
+        }
+      });
+
+      isEnabledPushNotifications = await Permission.notification.isGranted;
+    }
+
+    //loading(false);
 
     notifyListeners();
   }
@@ -132,6 +163,12 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future getPushNotificationSetting() async {
+    isEnabledPushNotifications = await Permission.notification.isGranted;
+
+    notifyListeners();
+  }
+
   Future loadSettings(BuildContext context) async {
     prefs = await SharedPreferences.getInstance();
 
@@ -140,6 +177,7 @@ class SettingsController extends ChangeNotifier {
     await getMaxWinNotificationSetting();
     // ignore: use_build_context_synchronously
     await getMinimumBetSetting(context);
+    await getPushNotificationSetting();
   }
 
   Future signOut(BuildContext context) async {
@@ -155,7 +193,7 @@ class SettingsController extends ChangeNotifier {
 
           SupabaseController.supabase!.auth.signOut().whenComplete(() {
             Provider.of<Balance>(context, listen: false).balance = 0.0;
-             Navigator.of(context).pushNamed('/login');
+            Navigator.of(context).pushNamed('/login');
           });
         });
   }

@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -8,7 +7,6 @@ import 'package:new_mini_casino/business/raffle_manager.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class RaffleInfo extends StatelessWidget {
   const RaffleInfo({super.key});
@@ -212,7 +210,7 @@ class RaffleInfo extends StatelessWidget {
                                                           .textTheme
                                                           .titleMedium!
                                                           .copyWith(
-                                                              fontSize: 22.0)),
+                                                              fontSize: 24.0)),
                                                 ),
                                           !raffleManager.isRaffleStarted &&
                                                   raffleManager.isSummarized
@@ -277,7 +275,7 @@ class RaffleInfo extends StatelessWidget {
                                                             .bodyMedium!
                                                             .copyWith(
                                                                 fontSize:
-                                                                    13.0)),
+                                                                    15.0)),
                                                     !raffleManager
                                                                 .isSummarized &&
                                                             !raffleManager
@@ -285,66 +283,26 @@ class RaffleInfo extends StatelessWidget {
                                                         ? Container()
                                                         : Column(
                                                             children: [
-                                                              AutoSizeText(
-                                                                raffleManager
-                                                                    .raffleText,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                style: Theme.of(
-                                                                        context)
-                                                                    .textTheme
-                                                                    .bodyMedium!
-                                                                    .copyWith(
-                                                                        fontSize:
-                                                                            13.0),
-                                                              ),
-                                                              RichText(
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
-                                                                text: TextSpan(
-                                                                  text:
-                                                                      '\nТак-же, видео как выбирались победители будет в нашем ',
-                                                                  style: Theme.of(
-                                                                          context)
-                                                                      .textTheme
-                                                                      .bodyMedium!
-                                                                      .copyWith(
-                                                                          fontSize:
-                                                                              13.0),
-                                                                  children: [
-                                                                    TextSpan(
-                                                                      recognizer:
-                                                                          TapGestureRecognizer()
-                                                                            ..onTap =
-                                                                                () async {
-                                                                              if (!await launchUrl(Uri.parse('https://t.me/mini_casino_info'), mode: LaunchMode.externalNonBrowserApplication)) {
-                                                                                throw Exception('Could not launch ${Uri.parse('https://t.me/mini_casino_info')}');
-                                                                              }
-                                                                            },
-                                                                      text:
-                                                                          'телеграм канале.',
-                                                                      style: Theme.of(
-                                                                              context)
-                                                                          .textTheme
-                                                                          .bodyMedium!
-                                                                          .copyWith(
-                                                                            fontSize:
-                                                                                13.0,
-                                                                            decorationColor:
-                                                                                Colors.blue,
-                                                                            decoration:
-                                                                                TextDecoration.underline,
-                                                                            color:
-                                                                                Colors.blue,
-                                                                          ),
-                                                                    )
-                                                                  ],
+                                                              Container(
+                                                                width: double
+                                                                    .infinity,
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(
+                                                                        10.0),
+                                                                decoration:
+                                                                    BoxDecoration(
+                                                                  color: Colors
+                                                                      .redAccent,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10.0),
                                                                 ),
-                                                              ),
-                                                              AutoSizeText(
-                                                                  '\nУспейте принять участие до окончания времени!\n\nЖелаем всем удачи!',
+                                                                child:
+                                                                    AutoSizeText(
+                                                                  raffleManager
+                                                                      .raffleText,
                                                                   textAlign:
                                                                       TextAlign
                                                                           .center,
@@ -354,7 +312,21 @@ class RaffleInfo extends StatelessWidget {
                                                                       .bodyMedium!
                                                                       .copyWith(
                                                                           fontSize:
-                                                                              13.0)),
+                                                                              15.0),
+                                                                ),
+                                                              ),
+                                                              AutoSizeText(
+                                                                  '\nУспейте принять участие до окончания времени!\nЖелаем всем удачи!',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodyMedium!
+                                                                      .copyWith(
+                                                                          fontSize:
+                                                                              15.0)),
                                                             ],
                                                           ),
                                                     const SizedBox(height: 5.0),
@@ -711,7 +683,7 @@ class RaffleInfo extends StatelessWidget {
                       numberOfParticles: 15,
                       emissionFrequency: 0.1,
                       gravity: 0.1,
-                      blastDirectionality: BlastDirectionality.explosive)
+                      blastDirectionality: BlastDirectionality.explosive),
                 ],
               );
       },

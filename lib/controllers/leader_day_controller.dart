@@ -151,19 +151,27 @@ class LeaderDayController {
     DateTime dateTimeNow = await NTP.now();
     dateTimeNow = dateTimeNow.toUtc();
 
-    await SupabaseController.supabase!.from('leader_day').update({
-      'name': ProfileController.profileModel.nickname,
-      'profit': profit,
-      'bet': bet,
-      'game': gameName,
-      'date': dateTimeNow.toIso8601String(),
-      'uid': SupabaseController.supabase!.auth.currentUser!.id,
-    }).eq('id', 1);
-
     await SupabaseController.supabase!.storage.from('leader').update(
         'leader.png', file,
         fileOptions: const FileOptions(cacheControl: '3600', upsert: false));
 
     await file.delete();
+
+    await SupabaseController.supabase!
+        .from('leader_day')
+        .select('*')
+        .eq('id', 1)
+        .single()
+        .then((value) async {
+      await SupabaseController.supabase!.from('leader_day').update({
+        'name': ProfileController.profileModel.nickname,
+        'profit': profit,
+        'bet': bet,
+        'uid': SupabaseController.supabase!.auth.currentUser!.id,
+        'game': gameName,
+        'date': dateTimeNow.toIso8601String(),
+        'last_leader': value['uid'],
+      }).eq('id', 1);
+    });
   }
 }

@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/controllers/settings_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
@@ -27,32 +28,45 @@ class Settings extends StatelessWidget {
 
   Widget switchSetting({
     required String title,
+    required String hint,
     required BuildContext context,
     required bool value,
     required void Function(bool)? onChanged,
   }) {
     return Container(
-      height: 60.0,
       width: double.infinity,
       padding: const EdgeInsets.all(15.0),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.1),
-        border: Border.all(color: Colors.blueAccent, width: 3.0),
-        borderRadius: BorderRadius.circular(15.0),
+        color: Theme.of(context).canvasColor, //Colors.white.withOpacity(0.1),
+        //border: Border.all(color: Colors.blueAccent, width: 3.0),
+        borderRadius: BorderRadius.circular(12.0),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: AutoSizeText(
-              '$title:',
-              maxLines: 1,
-              style: Theme.of(context)
-                  .appBarTheme
-                  .titleTextStyle!
-                  .copyWith(fontSize: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  '$title:',
+                  maxLines: 1,
+                  style: Theme.of(context)
+                      .appBarTheme
+                      .titleTextStyle!
+                      .copyWith(fontSize: 20.0),
+                ),
+                AutoSizeText(hint,
+                    style: GoogleFonts.roboto(
+                      fontSize: 12.0,
+                      letterSpacing: 0.1,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white60,
+                    )),
+              ],
             ),
           ),
+          const SizedBox(width: 15.0),
           Switch(
             value: value,
             onChanged: onChanged,
@@ -167,7 +181,8 @@ class Settings extends StatelessWidget {
                               smallHelperPanel(
                                 context: context,
                                 icon: FontAwesomeIcons.circleInfo,
-                                text: 'Не ставьте яркие фоны, интерфейс с ним будет сливаться!',
+                                text:
+                                    'Не ставьте яркие фоны, интерфейс с ним будет сливаться!',
                               ),
                             ],
                           ),
@@ -270,6 +285,8 @@ class Settings extends StatelessWidget {
                         const SizedBox(height: 15.0),
                         switchSetting(
                           title: 'Конфетти',
+                          hint:
+                              'При каждом выигрыше будут показываться конфетти.',
                           context: context,
                           value: settingsController.isEnabledConfetti,
                           onChanged: (value) {
@@ -278,7 +295,9 @@ class Settings extends StatelessWidget {
                         ),
                         const SizedBox(height: 15.0),
                         switchSetting(
-                          title: 'Уведомления о крупном выигрыше',
+                          title: 'Увед. о крупном выигрыше',
+                          hint:
+                              'Вверху экрана Вам будут отображаться уведомления о том, что Вы попали в «Крупные выигрыши».',
                           context: context,
                           value: settingsController.isEnabledMaxWinNotification,
                           onChanged: (value) {
@@ -287,120 +306,151 @@ class Settings extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 15.0),
+                        switchSetting(
+                          title: 'Push-уведомления',
+                          hint:
+                              'Push-уведомления о зачислениях средств, смещении с лидера дня, розыгрышах и т.д.',
+                          context: context,
+                          value: settingsController.isEnabledPushNotifications,
+                          onChanged: (value) {
+                            settingsController.changePushNotificationsSetting(
+                              value: value,
+                              context: context,
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 15.0),
                         Container(
-                          height: 60.0,
                           width: double.infinity,
                           padding: const EdgeInsets.all(15.0),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
-                            border: Border.all(
-                                color: Colors.blueAccent, width: 3.0),
-                            borderRadius: BorderRadius.circular(15.0),
+                            color: Theme.of(context).canvasColor,
+                            borderRadius: BorderRadius.circular(12.0),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  AutoSizeText(
+                                    'Мин. ставка:',
+                                    maxLines: 1,
+                                    style: Theme.of(context)
+                                        .appBarTheme
+                                        .titleTextStyle!
+                                        .copyWith(fontSize: 20.0),
+                                  ),
+                                  const SizedBox(width: 50.0),
+                                  Expanded(
+                                    child: SizedBox(
+                                      height: 40.0,
+                                      child: TextField(
+                                        inputFormatters: [minBetFormatter],
+                                        controller: minBetController,
+                                        keyboardType: TextInputType.number,
+                                        textInputAction: TextInputAction.done,
+                                        onTapOutside: (event) {
+                                          FocusScope.of(context).unfocus();
+                                        },
+                                        onChanged: (value) {
+                                          if (minBetFormatter
+                                                      .getUnformattedValue()
+                                                      .toDouble() <=
+                                                  0.0 ||
+                                              minBetController.text.isEmpty) {
+                                            settingsController.changeMinimumBet(
+                                              value: 100.0,
+                                              context: context,
+                                            );
+
+                                            return;
+                                          }
+
+                                          if (SupabaseController.isPremium) {
+                                            if (minBetFormatter
+                                                    .getUnformattedValue()
+                                                    .toDouble()
+                                                    .truncate() >
+                                                100000000) {
+                                              settingsController
+                                                  .changeMinimumBet(
+                                                value: 100000000,
+                                                context: context,
+                                              );
+                                            } else {
+                                              settingsController
+                                                  .changeMinimumBet(
+                                                value: minBetFormatter
+                                                    .getUnformattedValue()
+                                                    .toDouble(),
+                                                context: context,
+                                              );
+                                            }
+                                          } else {
+                                            if (minBetFormatter
+                                                    .getUnformattedValue()
+                                                    .toDouble()
+                                                    .truncate() >
+                                                1000000) {
+                                              settingsController
+                                                  .changeMinimumBet(
+                                                value: 1000000,
+                                                context: context,
+                                              );
+                                            } else {
+                                              settingsController
+                                                  .changeMinimumBet(
+                                                value: minBetFormatter
+                                                    .getUnformattedValue()
+                                                    .toDouble(),
+                                                context: context,
+                                              );
+                                            }
+                                          }
+                                        },
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .displaySmall!
+                                            .copyWith(fontSize: 15.0),
+                                        textAlign: TextAlign.center,
+                                        decoration: InputDecoration(
+                                            hintText: 'Ставка...',
+                                            hintStyle: Theme.of(context)
+                                                .textTheme
+                                                .displaySmall!
+                                                .copyWith(
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .displaySmall!
+                                                        .color!
+                                                        .withOpacity(0.5)),
+                                            enabledBorder: UnderlineInputBorder(
+                                                borderRadius: const BorderRadius.all(
+                                                    Radius.circular(0.0)),
+                                                borderSide: BorderSide(
+                                                    width: 1.0,
+                                                    color: Colors.white
+                                                        .withOpacity(0.3))),
+                                            focusedBorder: UnderlineInputBorder(
+                                                borderRadius: const BorderRadius.all(
+                                                    Radius.circular(0.0)),
+                                                borderSide: BorderSide(width: 2.5, color: Colors.white.withOpacity(0.5)))),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 15.0),
                               AutoSizeText(
-                                'Мин. ставка:',
-                                maxLines: 1,
-                                style: Theme.of(context)
-                                    .appBarTheme
-                                    .titleTextStyle!
-                                    .copyWith(fontSize: 20.0),
-                              ),
-                              const SizedBox(width: 50.0),
-                              Expanded(
-                                child: TextField(
-                                  inputFormatters: [minBetFormatter],
-                                  controller: minBetController,
-                                  keyboardType: TextInputType.number,
-                                  textInputAction: TextInputAction.done,
-                                  onTapOutside: (event) {
-                                    FocusScope.of(context).unfocus();
-                                  },
-                                  onChanged: (value) {
-                                    if (minBetFormatter
-                                                .getUnformattedValue()
-                                                .toDouble() <=
-                                            0.0 ||
-                                        minBetController.text.isEmpty) {
-                                      settingsController.changeMinimumBet(
-                                        value: 100.0,
-                                        context: context,
-                                      );
-
-                                      return;
-                                    }
-
-                                    if (SupabaseController.isPremium) {
-                                      if (minBetFormatter
-                                              .getUnformattedValue()
-                                              .toDouble()
-                                              .truncate() >
-                                          100000000) {
-                                        settingsController.changeMinimumBet(
-                                          value: 100000000,
-                                          context: context,
-                                        );
-                                      } else {
-                                        settingsController.changeMinimumBet(
-                                          value: minBetFormatter
-                                              .getUnformattedValue()
-                                              .toDouble(),
-                                          context: context,
-                                        );
-                                      }
-                                    } else {
-                                      if (minBetFormatter
-                                              .getUnformattedValue()
-                                              .toDouble()
-                                              .truncate() >
-                                          1000000) {
-                                        settingsController.changeMinimumBet(
-                                          value: 1000000,
-                                          context: context,
-                                        );
-                                      } else {
-                                        settingsController.changeMinimumBet(
-                                          value: minBetFormatter
-                                              .getUnformattedValue()
-                                              .toDouble(),
-                                          context: context,
-                                        );
-                                      }
-                                    }
-                                  },
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall!
-                                      .copyWith(fontSize: 15.0),
-                                  textAlign: TextAlign.center,
-                                  decoration: InputDecoration(
-                                      contentPadding:
-                                          const EdgeInsets.only(bottom: 14.0),
-                                      hintText: 'Ставка...',
-                                      hintStyle: Theme.of(context)
-                                          .textTheme
-                                          .displaySmall!
-                                          .copyWith(
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .displaySmall!
-                                                  .color!
-                                                  .withOpacity(0.5)),
-                                      enabledBorder: UnderlineInputBorder(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(0.0)),
-                                          borderSide: BorderSide(
-                                              width: 1.0,
-                                              color: Colors.white
-                                                  .withOpacity(0.3))),
-                                      focusedBorder: UnderlineInputBorder(
-                                          borderRadius:
-                                              const BorderRadius.all(Radius.circular(0.0)),
-                                          borderSide: BorderSide(width: 2.5, color: Colors.white.withOpacity(0.5)))),
-                                ),
-                              ),
+                                  'Минимальная ставка используемая во всех играх.',
+                                  style: GoogleFonts.roboto(
+                                    fontSize: 12.0,
+                                    letterSpacing: 0.1,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white60,
+                                  )),
                             ],
                           ),
                         ),

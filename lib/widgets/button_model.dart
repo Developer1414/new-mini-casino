@@ -2,6 +2,15 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+Color lighten(Color color, [double amount = .1]) {
+  assert(amount >= 0 && amount <= 1);
+
+  final hsl = HSLColor.fromColor(color);
+  final hslLight = hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
+
+  return hslLight.toColor();
+}
+
 Widget buttonModel(
     {required BuildContext context,
     String? buttonName,
@@ -25,8 +34,11 @@ Widget buttonModel(
         shadowColor: color.withOpacity(0.8),
         backgroundColor: color,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
-        ),
+            borderRadius: BorderRadius.circular(12.0),
+            side: BorderSide(
+              color: lighten(color),
+              width: 2.0,
+            )),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -60,15 +72,15 @@ Widget buttonModel(
           subtitle == null
               ? Container()
               : Padding(
-                padding: const EdgeInsets.only(top: 10.0),
-                child: AutoSizeText(subtitle,
-                    maxLines: 1,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall!.copyWith(
-                        fontSize: 12.0,
-                        color: subtitleColor ??
-                            Theme.of(context).textTheme.bodySmall!.color)),
-              ),
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: AutoSizeText(subtitle,
+                      maxLines: 1,
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall!.copyWith(
+                          fontSize: 12.0,
+                          color: subtitleColor ??
+                              Theme.of(context).textTheme.bodySmall!.color)),
+                ),
         ],
       ),
     ),

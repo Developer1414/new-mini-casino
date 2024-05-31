@@ -103,7 +103,7 @@ class DailyBonusManager extends ChangeNotifier {
 
     await alertDialogConfirm(
       context: context,
-      barrierDismissible: false,
+      canCloseAlert: false,
       title: 'Поздравляем',
       confirmBtnText: 'Спасибо',
       cancelBtnText: 'Ещё раз',

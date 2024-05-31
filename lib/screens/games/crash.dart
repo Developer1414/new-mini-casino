@@ -1,11 +1,10 @@
-import 'dart:math';
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
+import 'package:new_mini_casino/custom_painters/crash_line_custom_painter.dart';
 import 'package:new_mini_casino/games_logic/crash_logic.dart';
 import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
@@ -133,7 +132,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                                 : 0.0),
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(10.0),
+                                                BorderRadius.circular(8.0),
                                             color: value[index].isWin
                                                 ? Colors.green
                                                 : Colors.redAccent),
@@ -175,6 +174,12 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                   baseOffset: 0,
                                   extentOffset:
                                       Crash.targetCoefficient.text.length);
+                            },
+                            onTapOutside: (value) {
+                              if (double.parse(Crash.targetCoefficient.text) <
+                                  1.1) {
+                                Crash.targetCoefficient.text = '1.1';
+                              }
                             },
                             onSubmitted: (value) {
                               if (double.parse(value) < 1.1) {
@@ -339,7 +344,8 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                 padding: const EdgeInsets.only(
                                     left: 15.0, right: 15.0, top: 15.0),
                                 child: CustomPaint(
-                                  painter: MyLinePainter(_animation.value),
+                                  painter:
+                                      CrashLineCustomPainter(_animation.value),
                                   size: Size.infinite,
                                 )),
                             AutoSizeText(
@@ -355,7 +361,7 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
                                                   .textTheme
                                                   .displayLarge!
                                                   .color,
-                                  fontSize: 60.0,
+                                  fontSize: 80.0,
                                   fontWeight: FontWeight.w900),
                             ),
                           ],
@@ -373,64 +379,5 @@ class _CrashState extends State<Crash> with SingleTickerProviderStateMixin {
         ),
       ),
     );
-  }
-}
-
-class MyLinePainter extends CustomPainter {
-  final double value;
-
-  MyLinePainter(this.value);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()
-      ..color = Colors.white
-      ..strokeWidth = 10.0
-      ..style = PaintingStyle.stroke;
-
-    final Paint paintShadow = Paint()
-      ..color = Colors.black.withOpacity(0.5)
-      ..strokeWidth = 10.0
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0)
-      ..style = PaintingStyle.stroke;
-
-    final Path path = Path();
-
-    final double maxLineLength = size.width * 1.8;
-    final double lineLength = maxLineLength * value;
-    final double angle = value * (pi / 3.2);
-    final double dx = lineLength * cos(angle);
-    final double dy = lineLength * sin(angle);
-
-    final double controlX = dx / 2;
-
-    final Paint fillPaint = Paint()
-      ..color = Colors.orange
-      ..style = PaintingStyle.fill;
-
-    final Path fillPath = Path();
-    fillPath.moveTo(0, size.height);
-    fillPath.quadraticBezierTo(
-        controlX, size.height, dx, size.height - dy / 1.45);
-    fillPath.lineTo(dx, size.height);
-    fillPath.lineTo(0, size.height);
-
-    canvas.drawPath(fillPath, fillPaint);
-
-    path.moveTo(0, size.height);
-    path.quadraticBezierTo(controlX, size.height, dx, size.height - dy / 1.45);
-
-    canvas.drawPath(path, paintShadow);
-    canvas.drawPath(path, paint);
-
-    final Paint circlePaint = Paint()
-      ..color = Colors.white
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(dx, size.height - dy / 1.45), 10.0, circlePaint);
-  }
-
-  @override
-  bool shouldRepaint(MyLinePainter oldDelegate) {
-    return oldDelegate.value != value;
   }
 }

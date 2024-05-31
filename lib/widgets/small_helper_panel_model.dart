@@ -11,7 +11,9 @@ Widget smallHelperPanel(
     Color? borderColor,
     Color? iconColor,
     double? iconSize,
+    double? fontSize,
     TextStyle? textStyle,
+    bool isCenter = false,
     Color? color}) {
   return Container(
     decoration: BoxDecoration(
@@ -38,10 +40,11 @@ Widget smallHelperPanel(
                   ),
                 ),
           Expanded(
+            flex: isCenter ? 0 : 1,
             child: AutoSizeText(text,
                 style: textStyle ??
                     GoogleFonts.roboto(
-                      fontSize: 12.0,
+                      fontSize: fontSize ?? 12.0,
                       letterSpacing: 0.1,
                       fontWeight: FontWeight.w600,
                       color: const Color(0xffffb300),

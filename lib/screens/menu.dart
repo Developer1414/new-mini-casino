@@ -4,6 +4,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +15,6 @@ import 'package:new_mini_casino/controllers/games_controller.dart';
 import 'package:new_mini_casino/controllers/profile_controller.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
-import 'package:new_mini_casino/services/notification_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:new_mini_casino/widgets/button_model.dart';
 import 'package:new_mini_casino/widgets/menu_game_button.dart';
@@ -40,13 +40,6 @@ class AllGames extends StatefulWidget {
 }
 
 class _AllGamesState extends State<AllGames> {
-  @override
-  void initState() {
-    super.initState();
-    //Provider.of<RaffleManager>(context, listen: false).checkOnExistRaffle();
-    NotificationService.listenNotifications(context);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -119,7 +112,7 @@ class _AllGamesState extends State<AllGames> {
                                         Container(
                                           decoration: BoxDecoration(
                                               borderRadius:
-                                                  BorderRadius.circular(15.0),
+                                                  BorderRadius.circular(12.0),
                                               color: Colors.black87),
                                           child: Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -348,6 +341,10 @@ class _AllGamesState extends State<AllGames> {
                                 buttonName: 'Заплатить налог',
                                 color: Theme.of(context).canvasColor,
                                 onPressed: () {
+                                  Provider.of<TaxManager>(context,
+                                          listen: false)
+                                      .loadTax();
+
                                   Navigator.of(context).pushNamed('/tax');
                                 }),
                           ],
@@ -355,7 +352,7 @@ class _AllGamesState extends State<AllGames> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 15.0),
                           child: AutoSizeText(
-                            'P.S. а с Premium платить налоги не нужно :)',
+                            'P.S. с Premium платить налоги не нужно :)',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.roboto(
                                 color: Colors.white.withOpacity(0.5),
@@ -368,9 +365,32 @@ class _AllGamesState extends State<AllGames> {
                   )
                 : SingleChildScrollView(
                     child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: AnimateList(
+                        interval: 200.ms,
+                        effects: [FadeEffect(duration: 100.ms)],
                         children: [
                           premiumButton(),
+                          buttonModel(
+                            context: context,
+                            icon: FontAwesomeIcons.users,
+                            buttonName: 'Онлайн-игры',
+                            color: const Color.fromARGB(255, 238, 42, 42),
+                            onPressed: () {
+                              if (SupabaseController.isPremium) {
+                                Navigator.of(context)
+                                    .pushNamed('/online-games-main');
+                              } else {
+                                alertDialogError(
+                                  context: context,
+                                  title: 'Ошибка',
+                                  text:
+                                      'Онлайн игры доступны только Premium-подписчикам!',
+                                );
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 15.0),
                           GridView.custom(
                             shrinkWrap: true,
                             physics: const BouncingScrollPhysics(),
@@ -630,7 +650,9 @@ class _AllGamesState extends State<AllGames> {
                                     ),
                                   ),
                                 )
-                        ]),
+                        ],
+                      ),
+                    ),
                   ),
           ),
         ));
@@ -651,7 +673,7 @@ class _AllGamesState extends State<AllGames> {
                   const Color.fromARGB(255, 179, 242, 31).withOpacity(0.8),
               backgroundColor: const Color.fromARGB(255, 179, 242, 31),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15.0),
+                borderRadius: BorderRadius.circular(12.0),
               ),
             ),
             child: Row(
@@ -670,7 +692,7 @@ class _AllGamesState extends State<AllGames> {
                 const SizedBox(width: 5.0),
                 Container(
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0),
+                      borderRadius: BorderRadius.circular(12.0),
                       color: Colors.black87),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

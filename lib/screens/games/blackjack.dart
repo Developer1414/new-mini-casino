@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
@@ -298,7 +299,12 @@ class Blackjack extends StatelessWidget {
                                                         child: Image.asset(
                                                             height: 110,
                                                             'assets/blackjack/${blackjackLogic.lastDealerMoves.length == 2 && i == 1 && blackjackLogic.isGameOn ? 'ShirtCard' : blackjackLogic.lastDealerMoves[i]}.png'),
-                                                      ),
+                                                      ).animate().fade().scale(
+                                                            begin: const Offset(
+                                                                0.9, 0.9),
+                                                            end: const Offset(
+                                                                1.0, 1.0),
+                                                          ),
                                                   ],
                                                 ),
                                               ),
@@ -413,7 +419,12 @@ class Blackjack extends StatelessWidget {
                                                   child: Image.asset(
                                                       height: 110,
                                                       'assets/blackjack/${blackjackLogic.lastPlayerMoves[i]}.png'),
-                                                ),
+                                                ).animate().fade().scale(
+                                                      begin: const Offset(
+                                                          0.9, 0.9),
+                                                      end: const Offset(
+                                                          1.0, 1.0),
+                                                    ),
                                             ],
                                           ),
                                         ),

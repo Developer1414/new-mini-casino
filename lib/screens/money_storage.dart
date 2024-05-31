@@ -16,7 +16,8 @@ import 'package:provider/provider.dart';
 class MoneyStorage extends StatelessWidget {
   const MoneyStorage({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
+  static CurrencyTextInputFormatter betFormatter =
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -28,9 +29,6 @@ class MoneyStorage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final storageManager =
-    //     Provider.of<MoneyStorageManager>(context, listen: true);
-
     return GestureDetector(
       onTap: () {
         FocusScopeNode currentFocus = FocusScope.of(context);
@@ -54,7 +52,7 @@ class MoneyStorage extends StatelessWidget {
                           splashRadius: 25.0,
                           padding: EdgeInsets.zero,
                           onPressed: () {
-                             Navigator.of(context).pop();
+                            Navigator.of(context).pop();
                           },
                           icon: FaIcon(
                             FontAwesomeIcons.arrowLeft,
@@ -132,7 +130,7 @@ class MoneyStorage extends StatelessWidget {
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            15.0),
+                                                            12.0),
                                                   ),
                                                 ),
                                                 child: Column(
@@ -189,7 +187,7 @@ class MoneyStorage extends StatelessWidget {
                                                   shape: RoundedRectangleBorder(
                                                     borderRadius:
                                                         BorderRadius.circular(
-                                                            15.0),
+                                                            12.0),
                                                   ),
                                                 ),
                                                 child: Column(

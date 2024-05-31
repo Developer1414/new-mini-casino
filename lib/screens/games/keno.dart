@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -362,7 +363,10 @@ class Keno extends StatelessWidget {
                                                           .color),
                                         ),
                                       ),
-                                    ),
+                                    ).animate().fade().scale(
+                                          begin: const Offset(0.9, 0.9),
+                                          end: const Offset(1.0, 1.0),
+                                        ),
                                   ),
                                 ),
                               ),

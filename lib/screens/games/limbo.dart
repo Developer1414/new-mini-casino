@@ -97,7 +97,7 @@ class Limbo extends StatelessWidget {
                                                 : 0.0),
                                         decoration: BoxDecoration(
                                             borderRadius:
-                                                BorderRadius.circular(10.0),
+                                                BorderRadius.circular(8.0),
                                             color: value[index].isWin
                                                 ? Colors.green
                                                 : Colors.redAccent),
@@ -139,6 +139,12 @@ class Limbo extends StatelessWidget {
                                   baseOffset: 0,
                                   extentOffset:
                                       Limbo.targetCoefficient.text.length);
+                            },
+                            onTapOutside: (value) {
+                              if (double.parse(Limbo.targetCoefficient.text) <
+                                  1.1) {
+                                Limbo.targetCoefficient.text = '1.1';
+                              }
                             },
                             onSubmitted: (value) {
                               if (double.parse(value) < 1.1) {
@@ -306,7 +312,7 @@ class Limbo extends StatelessWidget {
                                         .textTheme
                                         .displayLarge!
                                         .color,
-                            fontSize: 60.0,
+                            fontSize: 80.0,
                             fontWeight: FontWeight.w900),
                       ),
                     );

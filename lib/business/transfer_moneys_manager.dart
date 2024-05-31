@@ -132,7 +132,7 @@ class TransferMoneysManager extends ChangeNotifier {
           .abs();
 
       String timeToNextTransfer =
-          'Вы можете осуществить следующий перевод через ${format(difference)}';
+          'Вы можете осуществить следующий перевод через ${difference.inHours}ч ${difference.inMinutes % 60}м';
 
       await SupabaseController.supabase!
           .from('transactions')

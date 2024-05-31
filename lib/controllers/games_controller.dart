@@ -9,11 +9,11 @@ class GamesController {
     //     buttonColor: Color.fromARGB(255, 210, 251, 64),
     //     nextScreen: '/trading'),
 
-    GameButtonDetails(
-        title: 'Roulette',
-        gameLogo: 'RouletteLogo',
-        buttonColor: Color.fromARGB(255, 71, 136, 82),
-        nextScreen: '/roulette-wheel'),
+    // GameButtonDetails(
+    //     title: 'Roulette',
+    //     gameLogo: 'RouletteLogo',
+    //     buttonColor: const Color.fromARGB(255, 71, 136, 82),
+    //     nextScreen: '/roulette-wheel'),
 
     // GameButtonDetails(
     //     title: 'Plinko',
@@ -25,12 +25,12 @@ class GamesController {
     GameButtonDetails(
         title: 'Dice Classic',
         gameLogo: 'DiceClassic',
-        forPremium: true,
         buttonColor: const Color.fromARGB(255, 136, 71, 126),
         nextScreen: '/dice-classic'),
     GameButtonDetails(
         title: 'Limbo',
         gameLogo: 'Limbo',
+        forPremium: true,
         buttonColor: const Color.fromARGB(255, 98, 64, 251),
         nextScreen: '/limbo'),
     GameButtonDetails(

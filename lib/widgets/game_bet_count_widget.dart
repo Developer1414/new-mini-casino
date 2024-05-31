@@ -13,7 +13,13 @@ Widget gameBetCount({
   required BuildContext context,
   required dynamic gameLogic,
   required double bet,
+  bool isBlockBetPanel = false,
 }) {
+  isBlockBetPanel = isBlockBetPanel == true
+      ? true
+      : Provider.of<Balance>(context, listen: true).isLoading ||
+          gameLogic.isGameOn;
+
   return Row(
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
     children: [
@@ -22,13 +28,9 @@ Widget gameBetCount({
           style:
               Theme.of(context).textTheme.bodyMedium!.copyWith(fontSize: 12.0)),
       Opacity(
-        opacity: Provider.of<Balance>(context, listen: true).isLoading ||
-                gameLogic.isGameOn
-            ? 0.5
-            : 1.0,
+        opacity: isBlockBetPanel ? 0.5 : 1.0,
         child: IgnorePointer(
-          ignoring: Provider.of<Balance>(context, listen: true).isLoading ||
-              gameLogic.isGameOn,
+          ignoring: isBlockBetPanel,
           child: SizedBox(
             height: 20.0,
             child: Row(
@@ -107,7 +109,7 @@ Widget gameBetCount({
                       onPressed: () {
                         if (gameLogic.isGameOn) return;
 
-                        double num = gameLogic.bet / 2;
+                        double num = gameLogic.bet / 2 < 10.0 ? gameLogic.bet : gameLogic.bet / 2;
 
                         gameLogic.changeBet(num);
                       },
@@ -172,7 +174,7 @@ Widget gameBetCount({
 
                         double customBet = await getCustomBet(context);
 
-                        if (customBet > 0.0) {
+                        if (customBet >= 10.0) {
                           gameLogic.changeBet(customBet);
                         }
                       },

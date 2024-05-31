@@ -1,11 +1,15 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/business/purchasing_game_currency_controller.dart';
+import 'package:new_mini_casino/main.dart';
 import 'package:new_mini_casino/services/animated_currency_service.dart';
+import 'package:new_mini_casino/widgets/button_model.dart';
+import 'package:new_mini_casino/widgets/custom_bet_alert_widget.dart';
 import 'package:new_mini_casino/widgets/loading.dart';
 import 'package:new_mini_casino/widgets/small_helper_panel_model.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +25,7 @@ class PurchasingGameCurrency extends StatelessWidget {
     return Consumer<PurchasingGameCurrencyController>(
         builder: (context, purchasingGameCurrencyController, child) {
       return Stack(
+        alignment: Alignment.topCenter,
         children: [
           purchasingGameCurrencyController.isLoading
               ? loading(
@@ -138,7 +143,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: const EdgeInsets.all(15.0),
+                            padding: const EdgeInsets.all(12.0),
                             child: Column(
                               children: [
                                 Column(
@@ -204,7 +209,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          15.0)),
+                                                                          12.0)),
                                                     ),
                                                     child: FaIcon(
                                                       FontAwesomeIcons.minus,
@@ -258,7 +263,7 @@ class PurchasingGameCurrency extends StatelessWidget {
                                                               borderRadius:
                                                                   BorderRadius
                                                                       .circular(
-                                                                          15.0)),
+                                                                          12.0)),
                                                     ),
                                                     child: FaIcon(
                                                       FontAwesomeIcons.plus,
@@ -275,6 +280,23 @@ class PurchasingGameCurrency extends StatelessWidget {
                                       ],
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 15.0),
+                                buttonModel(
+                                  context: context,
+                                  color:
+                                      const Color.fromARGB(255, 179, 242, 31),
+                                  onPressed: () async {
+                                    double customBet =
+                                        await getCustomBet(context);
+
+                                    if (customBet >= 100000) {
+                                      purchasingGameCurrencyController
+                                          .custromCurrency(customBet);
+                                    }
+                                  },
+                                  buttonName: 'Моя сумма',
+                                  textColor: const Color.fromARGB(255, 5, 2, 1),
                                 ),
                               ],
                             ),
@@ -300,6 +322,13 @@ class PurchasingGameCurrency extends StatelessWidget {
                     )
                     ..loadRequest(purchasingGameCurrencyController.uri))
               : Container(),
+          ConfettiWidget(
+            confettiController: confettiController,
+            numberOfParticles: 15,
+            emissionFrequency: 0.1,
+            gravity: 0.1,
+            blastDirectionality: BlastDirectionality.explosive,
+          ),
         ],
       );
     });

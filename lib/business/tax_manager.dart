@@ -1,12 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:new_mini_casino/business/balance.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
+import 'package:new_mini_casino/main.dart';
+import 'package:new_mini_casino/services/ad_service.dart';
+import 'package:new_mini_casino/services/notification_service.dart';
 import 'package:new_mini_casino/widgets/alert_dialog_model.dart';
 import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TaxManager extends ChangeNotifier {
   bool isLoading = false;
@@ -14,88 +14,126 @@ class TaxManager extends ChangeNotifier {
 
   double currentTax = 0.0;
 
-  DateTime taxPeriod = DateTime(2000);
+  DateTime lastDayPaymentDate = DateTime(2000);
 
-  Future getTax() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    DateTime dateTimeNow = await NTP.now();
-
-    if (prefs.containsKey('gamblingTax')) {
-      taxPeriod = DateTime.parse(
-          (jsonDecode(prefs.getString('gamblingTax').toString()) as List)[1]);
-
-      currentTax = double.parse(
-          jsonDecode(prefs.getString('gamblingTax').toString())[0].toString());
-
-      if (currentTax <= 0.0) {
-        prefs.remove('gamblingTax');
-      }
-
-      if (taxPeriod.difference(dateTimeNow).inHours <= 0) {
-        isCanPlay = false;
-      }
-    }
-  }
-
-  void payTax(BuildContext context) async {
-    if (currentTax <= 0) {
-      return;
-    }
-
-    final balance = Provider.of<Balance>(context, listen: false);
-
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    if (balance.currentBalance < currentTax) {
-      if (context.mounted) {
-        alertDialogError(
-          context: context,
-          title: 'Ошибка',
-          confirmBtnText: 'Окей',
-          text: 'Недостаточно средств на балансе!',
-        );
-      }
-
-      return;
-    }
-
-    balance.subtractMoney(currentTax);
-    prefs.remove('gamblingTax');
-
-    if (context.mounted) {
-      alertDialogSuccess(
-          context: context, title: 'Успех', text: 'Налог успешно оплачен!');
-    }
-
-    currentTax = 0.0;
-    isCanPlay = true;
-    taxPeriod = DateTime(2000);
-
+  void showLoading(bool isActive) {
+    isLoading = isActive;
     notifyListeners();
   }
 
-  void addTax(double bet) async {
+  Future loadTax() async {
+    showLoading(true);
+
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      currentTax = map['taxAmount'] == null
+          ? 0.0
+          : double.parse(map['taxAmount'].toString());
+
+      if (currentTax > 0.0) {
+        lastDayPaymentDate = map['taxLastDate'] == null
+            ? DateTime(2000)
+            : DateTime.parse(map['taxLastDate'].toString()).toLocal();
+      }
+    });
+
+    showLoading(false);
+  }
+
+  Future checkTax() async {
     if (SupabaseController.isPremium) return;
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    DateTime dateTimeNow = await NTP.now();
+    await loadTax();
 
-    await getTax();
+    DateTime ntpDate = await NTP.now();
 
-    double tax = 0.0;
+    Duration difference = lastDayPaymentDate.difference(ntpDate);
 
-    if (prefs.containsKey('gamblingTax')) {
-      tax = double.parse(
-          jsonDecode(prefs.getString('gamblingTax').toString())[0].toString());
+    print(difference.inHours);
+    print(difference.inMinutes);
 
-      dateTimeNow = DateTime.parse(
-          (jsonDecode(prefs.getString('gamblingTax').toString()) as List)[1]);
-    } else {
-      dateTimeNow = dateTimeNow.add(const Duration(days: 8));
+    if (difference.inDays <= 0 && currentTax > 0.0) {
+      if (difference.inHours > 0 || difference.inMinutes > 0) {
+        NotificationService.showInAppNotification(
+          context: navigatorKey.currentContext!,
+          title: 'Налог',
+          content:
+              'Вы должны оплатить налог в течение ${difference.inHours}ч. ${difference.inMinutes % 60}м., иначе Вы не сможете продолжить играть!',
+          notificationType: NotificationType.warning,
+        );
+      } else {
+        isCanPlay = false;
+        notifyListeners();
+      }
     }
+  }
 
-    tax += bet * 1 / 100;
+  Future payTax(BuildContext context) async {
+    final balance = Provider.of<Balance>(context, listen: false);
 
-    prefs.setString('gamblingTax', jsonEncode([tax, dateTimeNow.toString()]));
+    showLoading(true);
+
+    await balance.checkOnExistSpecificAmount(currentTax).then((isExist) async {
+      if (isExist) {
+        await balance.subtractMoney(currentTax);
+
+        await SupabaseController.supabase!.from('users').update({
+          'taxAmount': 0.0,
+        }).eq('uid', SupabaseController.supabase?.auth.currentUser!.id);
+
+        if (context.mounted) {
+          alertDialogSuccess(
+              context: context, title: 'Успех', text: 'Налог успешно оплачен!');
+
+          await AdService.showInterstitialAd(
+              context: context, func: () {}, isBet: false);
+        }
+      } else {
+        await showErrorAlertNoBalance(context);
+      }
+    });
+
+    currentTax = 0.0;
+    isCanPlay = true;
+
+    showLoading(false);
+  }
+
+  Future addTax(double bet) async {
+    if (SupabaseController.isPremium) return;
+
+    await SupabaseController.supabase!
+        .from('users')
+        .select('*')
+        .eq('uid', SupabaseController.supabase?.auth.currentUser!.id)
+        .then((value) async {
+      Map<dynamic, dynamic> map = (value as List<dynamic>).first;
+
+      DateTime ntpDate = DateTime(2000);
+
+      double tax = map['taxAmount'] == null
+          ? 0.0
+          : double.parse(map['taxAmount'].toString());
+
+      if (tax == 0.0) {
+        ntpDate = await NTP.now();
+      }
+
+      DateTime date = tax == 0.0
+          ? ntpDate.add(const Duration(days: 7))
+          : DateTime.parse(map['taxLastDate'].toString());
+
+      tax += bet * 1.2 / 100;
+
+      await SupabaseController.supabase!.from('users').update({
+        'taxAmount': tax,
+        'taxLastDate': date.toIso8601String(),
+      }).eq('uid', SupabaseController.supabase?.auth.currentUser!.id);
+    });
   }
 }

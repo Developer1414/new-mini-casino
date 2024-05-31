@@ -16,8 +16,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 ScreenshotController screenshotController = ScreenshotController();
+
 ConfettiController confettiController =
     ConfettiController(duration: const Duration(seconds: 1));
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +38,8 @@ void main() async {
         AppodealAdType.MREC
       ],
       onInitializationFinished: (errors) => {});
+
+  //await SupabaseController.supabase!.auth.signOut();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((value) {
@@ -71,8 +76,10 @@ class _MainAppState extends State<MainApp> with WidgetsBindingObserver {
       providers: providerList,
       child: InAppNotification(
         child: MaterialApp(
+          navigatorKey: navigatorKey,
           initialRoute: '/',
-          onGenerateRoute: (settings) => RouteController.generateRoute(settings),
+          onGenerateRoute: (settings) =>
+              RouteController.generateRoute(settings),
           theme: darkThemeData(context),
           debugShowCheckedModeBanner: false,
         ),

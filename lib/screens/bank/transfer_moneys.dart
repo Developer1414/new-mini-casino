@@ -16,7 +16,8 @@ import 'dart:io' as ui;
 class TransferMoneys extends StatelessWidget {
   const TransferMoneys({super.key});
 
-  static CurrencyTextInputFormatter betFormatter = CurrencyTextInputFormatter.currency(
+  static CurrencyTextInputFormatter betFormatter =
+      CurrencyTextInputFormatter.currency(
     locale: ui.Platform.localeName,
     enableNegative: false,
     symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName)
@@ -73,66 +74,35 @@ class TransferMoneys extends StatelessWidget {
                     ],
                   ),
                 ),
-                bottomNavigationBar: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () => transferManager.transfer(
-                                    amount: double.parse(betFormatter
-                                        .getUnformattedValue()
-                                        .toString()),
-                                    context: context,
-                                    name: usernameController.text.trim()),
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 5,
-                                  backgroundColor: Colors.green,
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(25.0),
-                                        topRight: Radius.circular(25.0)),
-                                  ),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 15.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      FaIcon(
-                                        FontAwesomeIcons.moneyBillTransfer,
-                                        color: Theme.of(context)
-                                            .appBarTheme
-                                            .iconTheme!
-                                            .color,
-                                        size: Theme.of(context)
-                                            .appBarTheme
-                                            .iconTheme!
-                                            .size,
-                                      ),
-                                      const SizedBox(width: 10.0),
-                                      AutoSizeText(
-                                        'Перевести',
-                                        maxLines: 1,
-                                        style: GoogleFonts.roboto(
-                                            color: Colors.white,
-                                            fontSize: 22.0,
-                                            fontWeight: FontWeight.w800),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ],
-                ),
+                bottomNavigationBar: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                    child: ElevatedButton(
+                      onPressed: () => transferManager.transfer(
+                          amount: double.parse(
+                              betFormatter.getUnformattedValue().toString()),
+                          context: context,
+                          name: usernameController.text.trim()),
+                      style: ElevatedButton.styleFrom(
+                        elevation: 5,
+                        backgroundColor: Colors.green,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(25.0),
+                              topRight: Radius.circular(25.0)),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: AutoSizeText(
+                          'Перевести',
+                          maxLines: 1,
+                          style: GoogleFonts.roboto(
+                              color: Colors.white,
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.w800),
+                        ),
+                      ),
+                    )),
                 body: Center(
                   child: SingleChildScrollView(
                     child: Column(
@@ -243,7 +213,7 @@ class TransferMoneys extends StatelessWidget {
                                     icon: FontAwesomeIcons.circleInfo,
                                     context: context,
                                     text:
-                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'}Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за день!',
+                                        '${SupabaseController.isPremium ? '' : 'Комиссия 60%.\nP.S. c Premium комиссии нет.\n\n'}Перевести можно не больше ${NumberFormat.currency(locale: ui.Platform.localeName, symbol: NumberFormat.simpleCurrency(locale: ui.Platform.localeName).currencySymbol).format(5000000)} за сутки!',
                                   ),
                                 ],
                               ),

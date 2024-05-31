@@ -27,6 +27,18 @@ class _DailyBonusState extends State<DailyBonus> {
       canPop: false,
       child: Consumer<DailyBonusManager>(builder: (context, value, child) {
         return Scaffold(
+          bottomNavigationBar: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: AutoSizeText(
+              'Сотрите одну из ячеек',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                    fontSize: 15.0,
+                    letterSpacing: 0.1,
+                    color: Colors.white60,
+                  ),
+            ),
+          ),
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(20.0),
@@ -42,7 +54,7 @@ class _DailyBonusState extends State<DailyBonus> {
                         const SizedBox(height: 5.0),
                         Container(
                           decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(18.0),
+                              borderRadius: BorderRadius.circular(15.0),
                               color: Colors.redAccent),
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -74,42 +86,45 @@ class _DailyBonusState extends State<DailyBonus> {
                           borderRadius: BorderRadius.circular(12.0),
                           child: AnimatedSwitcher(
                             duration: const Duration(milliseconds: 100),
-                            child: Scratcher(
-                              key: dailyBonusManager.scratchKeys[index],
-                              enabled: dailyBonusManager.choosedIndex == -1
-                                  ? true
-                                  : dailyBonusManager.choosedIndex == index,
-                              brushSize: 20,
-                              threshold: 70,
-                              color: dailyBonusManager.choosedIndex == -1
-                                  ? const Color(0xffe01e37)
-                                  : dailyBonusManager.choosedIndex == index
-                                      ? const Color(0xffda1e37)
-                                      : const Color(0xffa71e34),
-                              onChange: (value) {
-                                if (dailyBonusManager.choosedIndex == -1) {
-                                  dailyBonusManager.chooseIndex(index);
-                                }
-                              },
-                              onThreshold: () => dailyBonusManager.getBonus(
-                                  context: context,
-                                  bonus: dailyBonusManager.bonuses[index]),
-                              child: Container(
-                                height: 100,
-                                width: 100,
-                                color: Colors.transparent,
-                                child: Center(
-                                  child: AutoSizeText(
-                                    NumberFormat.simpleCurrency(
-                                            locale: ui.Platform.localeName)
-                                        .format(
-                                            dailyBonusManager.bonuses[index]),
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displaySmall!
-                                        .copyWith(
-                                          fontSize: 15.0,
-                                        ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: Scratcher(
+                                key: dailyBonusManager.scratchKeys[index],
+                                enabled: dailyBonusManager.choosedIndex == -1
+                                    ? true
+                                    : dailyBonusManager.choosedIndex == index,
+                                brushSize: 20,
+                                threshold: 70,
+                                color: dailyBonusManager.choosedIndex == -1
+                                    ? const Color(0xffe01e37)
+                                    : dailyBonusManager.choosedIndex == index
+                                        ? const Color(0xffda1e37)
+                                        : const Color(0xffa71e34),
+                                onChange: (value) {
+                                  if (dailyBonusManager.choosedIndex == -1) {
+                                    dailyBonusManager.chooseIndex(index);
+                                  }
+                                },
+                                onThreshold: () => dailyBonusManager.getBonus(
+                                    context: context,
+                                    bonus: dailyBonusManager.bonuses[index]),
+                                child: Container(
+                                  height: 100,
+                                  width: 100,
+                                  color: Colors.transparent,
+                                  child: Center(
+                                    child: AutoSizeText(
+                                      NumberFormat.simpleCurrency(
+                                              locale: ui.Platform.localeName)
+                                          .format(
+                                              dailyBonusManager.bonuses[index]),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .displaySmall!
+                                          .copyWith(
+                                            fontSize: 15.0,
+                                          ),
+                                    ),
                                   ),
                                 ),
                               ),

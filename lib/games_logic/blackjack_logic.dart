@@ -128,7 +128,7 @@ class BlackjackLogic extends ChangeNotifier {
                 context: context,
                 title: 'Страховка',
                 text: 'Хотите получить страховку?',
-                barrierDismissible: false,
+                canCloseAlert: false,
                 confirmBtnText: 'Да',
                 cancelBtnText: 'Нет',
                 onConfirmBtnTap: () {

@@ -1,6 +1,8 @@
 import 'package:new_mini_casino/business/rakeback_manager.dart';
 import 'package:new_mini_casino/business/store_manager.dart';
 import 'package:new_mini_casino/controllers/latest_max_wins_controller.dart';
+import 'package:new_mini_casino/controllers/online_games_logic/online_crash_logic.dart';
+import 'package:new_mini_casino/controllers/online_games_logic/online_slide_logic.dart';
 import 'package:new_mini_casino/controllers/supabase_controller.dart';
 import 'package:new_mini_casino/themes/dark_theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +30,6 @@ import 'package:new_mini_casino/business/bank_manager.dart';
 import 'package:new_mini_casino/business/bonus_manager.dart';
 import 'package:new_mini_casino/business/daily_bonus_manager.dart';
 import 'package:new_mini_casino/business/get_premium_version.dart';
-import 'package:new_mini_casino/business/loan_moneys_manager.dart';
 import 'package:new_mini_casino/business/money_storage_manager.dart';
 import 'package:new_mini_casino/business/own_promocode_manager.dart';
 import 'package:new_mini_casino/business/promocode_manager.dart';
@@ -44,7 +45,6 @@ List<SingleChildWidget> providerList = [
   ChangeNotifierProvider(create: (ctx) => SupabaseController()),
   ChangeNotifierProvider(create: (ctx) => LimboLogic()),
   ChangeNotifierProvider(create: (ctx) => SettingsController()),
-  ChangeNotifierProvider(create: (ctx) => LoanMoneysManager()),
   ChangeNotifierProvider(create: (ctx) => AutoBetsController()),
   ChangeNotifierProvider(create: (ctx) => TransferMoneysManager()),
   ChangeNotifierProvider(create: (ctx) => NotificationController()),
@@ -76,4 +76,6 @@ List<SingleChildWidget> providerList = [
   ChangeNotifierProvider(create: (ctx) => SlotsLogic()),
   ChangeNotifierProvider(create: (ctx) => LatestMaxWinsController()),
   ChangeNotifierProvider(create: (ctx) => RakebackManager()),
+  ChangeNotifierProvider(create: (ctx) => OnlineCrashLogic()),
+  ChangeNotifierProvider(create: (ctx) => OnlineSlideLogic()),
 ];
